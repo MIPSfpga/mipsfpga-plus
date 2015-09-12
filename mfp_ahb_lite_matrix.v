@@ -1,6 +1,6 @@
 `include "mfp_ahb_lite.vh"
 
-module mfp_ahb_lite
+module mfp_ahb_lite_matrix
 (
     input               HCLK,
     input               HRESETn,
@@ -28,9 +28,9 @@ module mfp_ahb_lite
 
     mfp_ahb_lite_mem_slave
     # (
-        .ADDR_WIDTH (6)
+        .ADDR_WIDTH (`MFP_RAM_RESET_ADDR_WIDTH)
     )
-    slave0
+    reset_ram
     (
         .HCLK       ( HCLK       ),
         .HRESETn    ( HRESETn    ),
@@ -46,6 +46,57 @@ module mfp_ahb_lite
         .HRDATA     ( HRDATA_0   ),
         .HREADY     ( HREADY_0   ),
         .HRESP      ( HRESP_0    ),
+        .SI_Endian  ( SI_Endian  ),
+    );
+
+    mfp_ahb_lite_mem_slave
+    # (
+        .ADDR_WIDTH (`MFP_RAM_ADDR_WIDTH)
+    )
+    ram
+    (
+        .HCLK       ( HCLK       ),
+        .HRESETn    ( HRESETn    ),
+        .HADDR      ( HADDR      ),
+        .HBURST     ( HBURST     ),
+        .HMASTLOCK  ( HMASTLOCK  ),
+        .HPROT      ( HPROT      ),
+        .HSEL       ( HSEL [1]   ),
+        .HSIZE      ( HSIZE      ),
+        .HTRANS     ( HTRANS     ),
+        .HWDATA     ( HWDATA     ),
+        .HWRITE     ( HWRITE     ),
+        .HRDATA     ( HRDATA_1   ),
+        .HREADY     ( HREADY_1   ),
+        .HRESP      ( HRESP_1    ),
+        .SI_Endian  ( SI_Endian  ),
+    );
+
+    input               HCLK,
+    input               HRESETn,
+    input      [  3: 0] HADDR,
+    input      [ 31: 0] HWDATA,
+    input               HWRITE,
+    input               HSEL,
+    output reg [ 31: 0] HRDATA,
+
+
+    mfp_ahb_lite_gpio_slave gpio
+    (
+        .HCLK       ( HCLK       ),
+        .HRESETn    ( HRESETn    ),
+        .HADDR      ( HADDR      ),
+        .HBURST     ( HBURST     ),
+        .HMASTLOCK  ( HMASTLOCK  ),
+        .HPROT      ( HPROT      ),
+        .HSEL       ( HSEL [2]   ),
+        .HSIZE      ( HSIZE      ),
+        .HTRANS     ( HTRANS     ),
+        .HWDATA     ( HWDATA     ),
+        .HWRITE     ( HWRITE     ),
+        .HRDATA     ( HRDATA_2   ),
+        .HREADY     ( HREADY_2   ),
+        .HRESP      ( HRESP_2    ),
         .SI_Endian  ( SI_Endian  ),
     );
 

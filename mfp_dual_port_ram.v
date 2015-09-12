@@ -1,4 +1,4 @@
-module mfp_dual_port_mem
+module mfp_dual_port_ram
 # (
     parameter ADDR_WIDTH = 6,
     parameter DATA_WIDTH = 8
@@ -12,14 +12,14 @@ module mfp_dual_port_mem
     output reg [DATA_WIDTH - 1:0] read_data
 );
 
-    reg [DATA_WIDTH - 1:0] mem [(1 << ADDR_WIDTH) - 1:0];
+    reg [DATA_WIDTH - 1:0] ram [(1 << ADDR_WIDTH) - 1:0];
 
     always @ (posedge clk)
     begin
         if (write_enable)
-            mem [write_addr] <= write_data;
+            ram [write_addr] <= write_data;
 
-        read_data <= mem [read_addr];
+        read_data <= ram [read_addr];
     end
 
 endmodule

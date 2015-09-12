@@ -1,6 +1,6 @@
 `include "mfp_ahb_lite.vh"
 
-module mfp_ahb_mem_slave
+module mfp_ahb_ram_slave
 # (
     parameter ADDR_WIDTH = 6
 )
@@ -58,12 +58,12 @@ module mfp_ahb_mem_slave
 
         for (i = 0; i <= 3; i = i + 1)
         begin : u
-           mfp_dual_port_mem
+           mfp_dual_port_ram
            # (
                .ADDR_WIDTH ( ADDR_WIDTH - 2 ),
                .DATA_WIDTH ( 8              )
            )
-           mem
+           ram
            (
                .clk          ( HCLK                            ),
                .read_addr    ( HADDR     [ ADDR_WIDTH - 1 : 2] ),
