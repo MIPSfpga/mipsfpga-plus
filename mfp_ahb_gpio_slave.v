@@ -19,7 +19,7 @@
 `include "mfp_ahb_lite.vh"
 `include "mfp_ahb_lite_matrix_config.vh"
 
-module mipsfpga_ahb_gpio
+module mfp_ahb_gpio_slave
 (
     input             HCLK,
     input             HRESETn,

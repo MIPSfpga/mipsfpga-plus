@@ -92,7 +92,7 @@ module mfp_ahb_lite_matrix
         .SI_Endian  ( SI_Endian  )
     );
 
-    mfp_ahb_lite_gpio_slave gpio
+    mfp_ahb_gpio_slave gpio
     (
         .HCLK         ( HCLK         ),
         .HRESETn      ( HRESETn      ),

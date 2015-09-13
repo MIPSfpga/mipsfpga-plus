@@ -22,7 +22,7 @@ module mfp_system
     input  [17:0] IO_Switches,
     input  [ 4:0] IO_Buttons,
     output [17:0] IO_RedLEDs,
-    output [ 8:0] IO_GreenLEDs
+    output [ 8:0] IO_GreenLEDs,
 
     input         UART_RX,
     output        UART_TX
@@ -35,7 +35,7 @@ module mfp_system
     wire [ 0:0] DSP_fromdsp;
     wire [ 0:0] DSP_todsp;
     wire        EJ_DebugM;
-    wire        EJ_DINT;
+//  wire        EJ_DINT;
     wire        EJ_DINTsup;
     wire        EJ_DisableProbeDebug;
     wire        EJ_ECREjtagBrk;
@@ -44,11 +44,11 @@ module mfp_system
     wire        EJ_PerRst;
     wire        EJ_PrRst;
     wire        EJ_SRstE;
-    wire        EJ_TCK;
-    wire        EJ_TDI;
-    wire        EJ_TDO;
+//  wire        EJ_TCK;
+//  wire        EJ_TDI;
+//  wire        EJ_TDO;
     wire        EJ_TDOzstate;
-    wire        EJ_TMS;
+//  wire        EJ_TMS;
     wire        EJ_TRST_N;
     wire [ 3:0] EJ_Version;
     wire [ 7:0] gmb_dc_algorithm;
@@ -70,27 +70,27 @@ module mfp_system
     wire        gscanmode;
     wire [ 0:0] gscanout;
     wire        gscanramwr;
-    wire [31:0] HADDR;
+//  wire [31:0] HADDR;
     wire [ 2:0] HBURST;
     wire        HCLK;
     wire        HMASTLOCK;
     wire [ 3:0] HPROT;
-    wire [31:0] HRDATA;
+//  wire [31:0] HRDATA;
     wire        HREADY;
     wire        HRESETn;
     wire        HRESP;
     wire [ 2:0] HSIZE;
     wire [ 1:0] HTRANS;
-    wire [31:0] HWDATA;
-    wire        HWRITE;
+//  wire [31:0] HWDATA;
+//  wire        HWRITE;
     wire [ 0:0] ISP_fromisp;
     wire [ 0:0] ISP_toisp;
     wire        PM_InstnComplete;
     wire        SI_AHBStb;
     wire        SI_BootExcISAMode;
-    wire        SI_ClkIn;
+//  wire        SI_ClkIn;
     wire        SI_ClkOut;
-    wire        SI_ColdReset;
+//  wire        SI_ColdReset;
     wire [ 9:0] SI_CPUNum;
     wire [ 3:0] SI_Dbs;
     wire        SI_EICPresent;
@@ -116,7 +116,7 @@ module mfp_system
     wire        SI_NMITaken;
     wire [17:1] SI_Offset;
     wire        SI_PCInt;
-    wire        SI_Reset;
+//  wire        SI_Reset;
     wire        SI_RP;
     wire        SI_Sleep;
     wire [ 3:0] SI_SRSDisable;
@@ -195,7 +195,7 @@ module mfp_system
         .SI_BootExcISAMode     ( SI_BootExcISAMode     ),
         .SI_ClkIn              ( SI_ClkIn              ),
         .SI_ClkOut             ( SI_ClkOut             ),
-        .SI_ColdReset          ( SI_ColdReset          )
+        .SI_ColdReset          ( SI_ColdReset          ),
         .SI_CPUNum             ( SI_CPUNum             ),
         .SI_Dbs                ( SI_Dbs                ),
         .SI_EICPresent         ( SI_EICPresent         ),
@@ -235,7 +235,7 @@ module mfp_system
         .TC_Valid              ( TC_Valid              ),
         .UDI_fromudi           ( UDI_fromudi           ),
         .UDI_toudi             ( UDI_toudi             )
-    )
+    );
 
     assign BistIn                =  1'b0;
     assign CP2_tocp2             =  1'b0;
