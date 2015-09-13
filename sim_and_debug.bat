@@ -7,4 +7,5 @@ vlog +define+MFP_INITIALIZE_MEMORY_FROM_TXT_FILE -vlog01compat +incdir+.. +incdi
 type z
 
 copy ..\*.txt .
-vsim mfp_testbench
+vsim
+
