@@ -28,6 +28,7 @@ module mipsfpga_ahb_gpio
     input               HMASTLOCK,
     input      [  3: 0] HPROT,
     input      [  2: 0] HSIZE,
+    input               HSEL,
     input      [  1: 0] HTRANS,
     input      [ 31: 0] HWDATA,
     input               HWRITE,

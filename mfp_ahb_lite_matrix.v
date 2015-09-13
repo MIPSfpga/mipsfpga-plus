@@ -25,10 +25,17 @@ module mfp_ahb_lite_matrix
 );
 
     wire [ 2:0] HSEL;
+
+    mfp_ahb_lite_decoder decoder (HADDR, HSEL);
+
     reg  [ 2:0] HSEL_dly;
 
     always @ (posedge HCLK)
         HSEL_dly <= HSEL;
+
+    wire        HREADY_0 , HREADY_1 , HREADY_2 ;
+    wire [31:0] HRDATA_0 , HRDATA_1 , HRDATA_2 ;
+    wire        HRESP_0  , HRESP_1  , HRESP_2  ;
 
     mfp_ahb_lite_mem_slave
     # (
@@ -51,7 +58,7 @@ module mfp_ahb_lite_matrix
         .HRDATA     ( HRDATA_0   ),
         .HREADY     ( HREADY_0   ),
         .HRESP      ( HRESP_0    ),
-        .SI_Endian  ( SI_Endian  ),
+        .SI_Endian  ( SI_Endian  )
     );
 
     mfp_ahb_lite_mem_slave
@@ -75,7 +82,7 @@ module mfp_ahb_lite_matrix
         .HRDATA     ( HRDATA_1   ),
         .HREADY     ( HREADY_1   ),
         .HRESP      ( HRESP_1    ),
-        .SI_Endian  ( SI_Endian  ),
+        .SI_Endian  ( SI_Endian  )
     );
 
     mfp_ahb_lite_gpio_slave gpio
@@ -99,14 +106,8 @@ module mfp_ahb_lite_matrix
         .IO_Switches  ( IO_Switches  ),
         .IO_Buttons   ( IO_Buttons   ),
         .IO_RedLEDs   ( IO_RedLEDs   ),
-        .IO_GreenLEDs ( IO_GreenLEDs ),
+        .IO_GreenLEDs ( IO_GreenLEDs )
     );
-
-    mfp_ahb_lite_decoder decoder (HADDR, HSEL);
-
-    wire        HREADY_0 , HREADY_1 , HREADY_2 ;
-    wire [31:0] HRDATA_0 , HRDATA_1 , HRDATA_2 ;
-    wire        HRESP_0  , HRESP_1  , HRESP_2  ;
 
     assign HREADY = HREADY_0 | HREADY_1 | HREADY_2;
 
@@ -138,15 +139,15 @@ module mfp_ahb_lite_decoder
 
     // 128 KB RAM at 0xbfc00000 (physical: 0x1fc00000)
 
-    assign HSEL [0] = ( HADDR [28:22] == `H_RAM_RESET_ADDR_Match );
+    assign HSEL [0] = ( HADDR [28:22] == `MFP_RAM_RESET_ADDR_MATCH );
 
     // 256 KB RAM at 0x80000000 (physical: 0x00000000)
 
-    assign HSEL [1] = ( HADDR [28]    == `H_RAM_ADDR_Match       );
+    assign HSEL [1] = ( HADDR [28]    == `MFP_RAM_ADDR_MATCH       );
 
     // GPIO       at 0xbf800000 (physical: 0x1f800000)
 
-    assign HSEL [2] = ( HADDR [28:22] == `H_LEDR_ADDR_Match      );
+    assign HSEL [2] = ( HADDR [28:22] == `MFP_GPIO_ADDR_MATCH      );
 
 endmodule
 
@@ -168,10 +169,10 @@ module mfp_ahb_lite_response_mux
 
     always @*
         casez (HSEL)
-	3'b??1:   begin HRDATA = HRDATA0; HRRESP = HRRESP0; end
-	3'b?10:   begin HRDATA = HRDATA1; HRRESP = HRRESP1; end
-	3'b100:   begin HRDATA = HRDATA2; HRRESP = HRRESP2; end
-	default:  begin HRDATA = HRDATA1; HRRESP = HRRESP1; end
+	3'b??1:   begin HRDATA = HRDATA_0; HRRESP = HRRESP_0; end
+	3'b?10:   begin HRDATA = HRDATA_1; HRRESP = HRRESP_1; end
+	3'b100:   begin HRDATA = HRDATA_2; HRRESP = HRRESP_2; end
+	default:  begin HRDATA = HRDATA_1; HRRESP = HRRESP_1; end
         endcase
 
 endmodule
