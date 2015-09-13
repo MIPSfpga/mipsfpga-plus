@@ -7,6 +7,8 @@
 `define MFP_RAM_RESET_INIT_FILENAME   "ram_reset_init.txt"
 `define MFP_RAM_INIT_FILENAME         "ram_program_init.txt"
 
+`define MFP_USE_UART_PROGRAM_LOADER
+
 //
 //  Memory-mapped I/O addresses
 //

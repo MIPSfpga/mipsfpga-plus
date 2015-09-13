@@ -3,26 +3,33 @@
 
 module mfp_ahb_lite_matrix
 (
-    input           HCLK,
-    input           HRESETn,
-    input  [ 31: 0] HADDR,
-    input  [  2: 0] HBURST,
-    input           HMASTLOCK,
-    input  [  3: 0] HPROT,
-    input  [  2: 0] HSIZE,
-    input  [  1: 0] HTRANS,
-    input  [ 31: 0] HWDATA,
-    input           HWRITE,
-    output [ 31: 0] HRDATA,
-    output          HREADY,
-    output          HRESP,
-    input           SI_Endian,
+    input         HCLK,
+    input         HRESETn,
+    input  [31:0] HADDR,
+    input  [ 2:0] HBURST,
+    input         HMASTLOCK,
+    input  [ 3:0] HPROT,
+    input  [ 2:0] HSIZE,
+    input  [ 1:0] HTRANS,
+    input  [31:0] HWDATA,
+    input         HWRITE,
+    output [31:0] HRDATA,
+    output        HREADY,
+    output        HRESP,
+    input         SI_Endian,
 
-    input  [ 17: 0] IO_Switches,
-    input  [  4: 0] IO_Buttons,
-    output [ 17: 0] IO_RedLEDs,
-    output [  8: 0] IO_GreenLEDs
+    input  [17:0] IO_Switches,
+    input  [ 4:0] IO_Buttons,
+    output [17:0] IO_RedLEDs,
+    output [ 8:0] IO_GreenLEDs,
+
+    input         UART_RX,
+    output        UART_TX
 );
+
+    // UART is not supported this implementation of the module
+
+    assign UART_TX = 1'b0;
 
     wire [ 2:0] HSEL;
 

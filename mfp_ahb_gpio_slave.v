@@ -21,26 +21,26 @@
 
 module mipsfpga_ahb_gpio
 (
-    input               HCLK,
-    input               HRESETn,
-    input      [ 31: 0] HADDR,
-    input      [  2: 0] HBURST,
-    input               HMASTLOCK,
-    input      [  3: 0] HPROT,
-    input      [  2: 0] HSIZE,
-    input               HSEL,
-    input      [  1: 0] HTRANS,
-    input      [ 31: 0] HWDATA,
-    input               HWRITE,
-    output reg [ 31: 0] HRDATA,
-    output              HREADY,
-    output              HRESP,
-    input               SI_Endian,
+    input             HCLK,
+    input             HRESETn,
+    input      [31:0] HADDR,
+    input      [ 2:0] HBURST,
+    input             HMASTLOCK,
+    input      [ 3:0] HPROT,
+    input      [ 2:0] HSIZE,
+    input             HSEL,
+    input      [ 1:0] HTRANS,
+    input      [31:0] HWDATA,
+    input             HWRITE,
+    output reg [31:0] HRDATA,
+    output            HREADY,
+    output            HRESP,
+    input             SI_Endian,
                
-    input      [ 17: 0] IO_Switches,
-    input      [  4: 0] IO_Buttons,
-    output reg [ 17: 0] IO_RedLEDs,
-    output reg [  8: 0] IO_GreenLEDs
+    input      [17:0] IO_Switches,
+    input      [ 4:0] IO_Buttons,
+    output reg [17:0] IO_RedLEDs,
+    output reg [ 8:0] IO_GreenLEDs
 );
 
     // Ignored: HMASTLOCK, HPROT

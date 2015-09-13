@@ -6,21 +6,21 @@ module mfp_ahb_ram_slave
     parameter INIT_FILENAME = ""
 )
 (
-    input           HCLK,
-    input           HRESETn,
-    input  [ 31: 0] HADDR,
-    input  [  2: 0] HBURST,
-    input           HMASTLOCK,
-    input  [  3: 0] HPROT,
-    input           HSEL,
-    input  [  2: 0] HSIZE,
-    input  [  1: 0] HTRANS,
-    input  [ 31: 0] HWDATA,
-    input           HWRITE,
-    output [ 31: 0] HRDATA,
-    output          HREADY,
-    output          HRESP,
-    input           SI_Endian
+    input         HCLK,
+    input         HRESETn,
+    input  [31:0] HADDR,
+    input  [ 2:0] HBURST,
+    input         HMASTLOCK,
+    input  [ 3:0] HPROT,
+    input         HSEL,
+    input  [ 2:0] HSIZE,
+    input  [ 1:0] HTRANS,
+    input  [31:0] HWDATA,
+    input         HWRITE,
+    output [31:0] HRDATA,
+    output        HREADY,
+    output        HRESP,
+    input         SI_Endian
 );
 
     // Ignored: HMASTLOCK, HPROT
