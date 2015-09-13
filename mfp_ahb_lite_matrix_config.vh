@@ -13,15 +13,15 @@
 //  Memory-mapped I/O addresses
 //
 
-`define MFP_SWITCHES_ADDR     32'h1f800000
-`define MFP_BUTTONS_ADDR      32'h1f800004
-`define MFP_RED_LEDS_ADDR     32'h1f800008
-`define MFP_GREEN_LEDS_ADDR   32'h1f80000C
+`define MFP_RED_LEDS_ADDR     32'h1f800000
+`define MFP_GREEN_LEDS_ADDR   32'h1f800004
+`define MFP_SWITCHES_ADDR     32'h1f800008
+`define MFP_BUTTONS_ADDR      32'h1f80000C
 
-`define MFP_SWITCHES_IONUM    4'h0
-`define MFP_BUTTONS_IONUM     4'h1
-`define MFP_RED_LEDS_IONUM    4'h2
-`define MFP_GREEN_LEDS_IONUM  4'h3
+`define MFP_RED_LEDS_IONUM    4'h0
+`define MFP_GREEN_LEDS_IONUM  4'h1
+`define MFP_SWITCHES_IONUM    4'h2
+`define MFP_BUTTONS_IONUM     4'h3
 
 //
 // RAM addresses

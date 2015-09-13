@@ -44,7 +44,7 @@ module mfp_ahb_lite_matrix
     wire [31:0] HRDATA_0 , HRDATA_1 , HRDATA_2 ;
     wire        HRESP_0  , HRESP_1  , HRESP_2  ;
 
-    mfp_ahb_lite_mem_slave
+    mfp_ahb_ram_slave
     # (
         .ADDR_WIDTH (`MFP_RAM_RESET_ADDR_WIDTH),
         .INIT_FILENAME (`MFP_RAM_RESET_INIT_FILENAME)
@@ -68,7 +68,7 @@ module mfp_ahb_lite_matrix
         .SI_Endian  ( SI_Endian  )
     );
 
-    mfp_ahb_lite_mem_slave
+    mfp_ahb_ram_slave
     # (
         .ADDR_WIDTH (`MFP_RAM_ADDR_WIDTH),
         .INIT_FILENAME (`MFP_RAM_INIT_FILENAME)
@@ -126,12 +126,12 @@ module mfp_ahb_lite_matrix
         .HRDATA_1 ( HRDATA_1 ),
         .HRDATA_2 ( HRDATA_2 ),
 
-        .HRRESP_0 ( HRRESP_0 ),
-        .HRRESP_1 ( HRRESP_1 ),
-        .HRRESP_2 ( HRRESP_2 ),
+        .HRESP_0  ( HRESP_0  ),
+        .HRESP_1  ( HRESP_1  ),
+        .HRESP_2  ( HRESP_2  ),
 
         .HRDATA   ( HRDATA   ),
-        .HRRESP   ( HRRESP   )
+        .HRESP    ( HRESP    )
     );
 
 endmodule
@@ -166,20 +166,20 @@ module mfp_ahb_lite_response_mux
     input      [31:0] HRDATA_1,
     input      [31:0] HRDATA_2,
                
-    input             HRRESP_0,
-    input             HRRESP_1,
-    input             HRRESP_2,
+    input             HRESP_0,
+    input             HRESP_1,
+    input             HRESP_2,
 
     output reg [31:0] HRDATA,
-    output reg        HRRESP
+    output reg        HRESP
 );
 
     always @*
         casez (HSEL)
-	3'b??1:   begin HRDATA = HRDATA_0; HRRESP = HRRESP_0; end
-	3'b?10:   begin HRDATA = HRDATA_1; HRRESP = HRRESP_1; end
-	3'b100:   begin HRDATA = HRDATA_2; HRRESP = HRRESP_2; end
-	default:  begin HRDATA = HRDATA_1; HRRESP = HRRESP_1; end
+	3'b??1:   begin HRDATA = HRDATA_0; HRESP = HRESP_0; end
+	3'b?10:   begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
+	3'b100:   begin HRDATA = HRDATA_2; HRESP = HRESP_2; end
+	default:  begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
         endcase
 
 endmodule

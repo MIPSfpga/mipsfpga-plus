@@ -1,6 +1,6 @@
-`timescale 1 ns / 1 ns
+`timescale 1 ns / 100 ps
 
-module testbench;
+module mfp_testbench;
 
     reg         SI_ClkIn;
     reg         SI_ColdReset;
@@ -58,7 +58,7 @@ module testbench;
         SI_ClkIn = 0;
 
         forever
-            # 5 SI_ClkIn = ~ SI_ClkIn;
+            # 50 SI_ClkIn = ~ SI_ClkIn;
     end
 
     initial
@@ -83,7 +83,7 @@ module testbench;
         SI_ColdReset <= 1;
         SI_Reset     <= 1;
 
-        repeat (10)  @(posedge SI_ClkIn);
+        repeat (20)  @(posedge SI_ClkIn);
 
         SI_ColdReset <= 0;
         SI_Reset     <= 0;
@@ -116,10 +116,20 @@ module testbench;
 	end
     end
 
+    integer cycle; initial cycle = 0;
+
     always @ (posedge SI_ClkIn)
     begin
-        $display ("HADDR %h HRDATA %h HWDATA %h HWRITE %b LEDR %b LEDG %b",
-            HADDR, HRDATA, HWDATA, HWRITE, IO_RedLEDs, IO_GreenLEDs);
+        $display ("%5d HCLK %b HADDR %h HRDATA %h HWDATA %h HWRITE %b LEDR %b LEDG %b",
+            cycle, mfp_system.HCLK, HADDR, HRDATA, HWDATA, HWRITE, IO_RedLEDs, IO_GreenLEDs);
+
+        cycle = cycle + 1;
+
+        if (cycle > 1000)
+        begin
+            $display ("Timeout");
+            $finish;
+        end
     end
 
 endmodule
