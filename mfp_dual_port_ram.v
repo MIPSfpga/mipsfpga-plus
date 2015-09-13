@@ -1,7 +1,8 @@
 module mfp_dual_port_ram
 # (
-    parameter ADDR_WIDTH = 6,
-    parameter DATA_WIDTH = 8
+    parameter ADDR_WIDTH    = 6,
+    parameter DATA_WIDTH    = 32,
+    parameter INIT_FILENAME = ""
 )
 (
     input                         clk,
@@ -21,5 +22,12 @@ module mfp_dual_port_ram
 
         read_data <= ram [read_addr];
     end
+
+    `ifdef MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
+
+    initial
+        $readmemh (INIT_FILENAME, ram);
+
+    `endif
 
 endmodule
