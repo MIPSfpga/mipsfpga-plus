@@ -1,7 +1,3 @@
-//
-//  Top module, board-dependent
-//
-
 module de0_cv
 (
     input           CLOCK2_50,
@@ -54,81 +50,39 @@ module de0_cv
     inout   [35:0]  GPIO_1
 );
 
-    wire [17:0] IO_LEDR;
-    wire [ 8:0] IO_LEDG;
+    wire [17:0] IO_RedLEDs;
+    wire [ 8:0] IO_GreenLEDs;
 
-    assign LEDR = { 1'b0, IO_LEDG };
+    assign LEDR = { 1'b0, IO_GreenLEDs };
 
     wire [31:0] HADDR, HRDATA, HWDATA;
     wire        HWRITE;
 
-    `ifdef UNNECESSARY
-
-    wire EJ_TRST_N_probe  = GPIO_1 [22];
-    wire EJ_TDI           = GPIO_1 [21];
-    // wire EJ_TDO           = 1'bz;
-    wire EJ_TMS           = GPIO_1 [23];
-    wire EJ_TCK           = GPIO_1 [17];
-    wire SI_ColdReset_N   = GPIO_1 [20];
-    wire EJ_DINT          = 1'b0;
-
-    assign GPIO_1 [22]    = 1'bz;
-    assign GPIO_1 [21]    = 1'bz;
-    assign GPIO_1 [19]    = EJ_TDO;
-    assign GPIO_1 [23]    = 1'bz;
-    assign GPIO_1 [17]    = 1'bz;
-    assign GPIO_1 [20]    = 1'bz;
-
-    mipsfpga_sys mipsfpga_sys
+    mfp_system mfp_system
     (
-        .SI_ClkIn         ( CLOCK_50        ),
-        .SI_Reset_N       ( RESET_N         ),
+        .SI_ClkIn         (   CLOCK_50      ),
+        .SI_Reset         ( ~ RESET_N       ),
                           
         .HADDR            ( HADDR           ),
         .HRDATA           ( HRDATA          ),
         .HWDATA           ( HWDATA          ),
         .HWRITE           ( HWRITE          ),
                           
-        .IO_PB            ( { 1'b0, ~ KEY } ),
-        .IO_Switch        ( { 8'b0,   SW  } ),
-                          
-        .IO_LEDR          ( IO_LEDR         ),
-        .IO_LEDG          ( IO_LEDG         ),
-                          
-        .EJ_TRST_N_probe  ( EJ_TRST_N_probe ),
-        .EJ_TDI           ( EJ_TDI          ),
-        .EJ_TDO           ( EJ_TDO          ),
-        .EJ_TMS           ( EJ_TMS          ),
-        .EJ_TCK           ( EJ_TCK          ),
-        .SI_ColdReset_N   ( SI_ColdReset_N  ),
-        .EJ_DINT          ( EJ_DINT         )
-    );
+        .EJ_TRST_N_probe  (   GPIO_1 [22]   ),
+        .EJ_TDI           (   GPIO_1 [21]   ),
+        .EJ_TDO           (   GPIO_1 [19]   ),
+        .EJ_TMS           (   GPIO_1 [23]   ),
+        .EJ_TCK           (   GPIO_1 [17]   ),
+        .SI_ColdReset     ( ~ GPIO_1 [20]   ),
+        .EJ_DINT          (   1'b0          ),
 
-    `endif
-
-    mipsfpga_sys mipsfpga_sys
-    (
-        .SI_ClkIn         ( CLOCK_50        ),
-        .SI_Reset_N       ( RESET_N         ),
+        .IO_Switches      ( { 8'b0,   SW  } ),
+        .IO_Buttons       ( { 1'b0, ~ KEY } ),
+        .IO_RedLEDs       ( IO_RedLEDs      ),
+        .IO_GreenLEDs     ( IO_GreenLEDs    ),
                           
-        .HADDR            ( HADDR           ),
-        .HRDATA           ( HRDATA          ),
-        .HWDATA           ( HWDATA          ),
-        .HWRITE           ( HWRITE          ),
-                          
-        .IO_PB            ( { 1'b0, ~ KEY } ),
-        .IO_Switch        ( { 8'b0,   SW  } ),
-                          
-        .IO_LEDR          ( IO_LEDR         ),
-        .IO_LEDG          ( IO_LEDG         ),
-                          
-        .EJ_TRST_N_probe  ( GPIO_1 [22]     ),
-        .EJ_TDI           ( GPIO_1 [21]     ),
-        .EJ_TDO           ( GPIO_1 [19]     ),
-        .EJ_TMS           ( GPIO_1 [23]     ),
-        .EJ_TCK           ( GPIO_1 [17]     ),
-        .SI_ColdReset_N   ( GPIO_1 [20]     ),
-        .EJ_DINT          ( 1'b0            )
+        .UART_RX          ( GPIO_1 [31]     ),
+        .UART_TX          ( /* TODO */      )
     );
 
     assign GPIO_1 [15] = 1'b0;
@@ -136,12 +90,12 @@ module de0_cv
     assign GPIO_1 [13] = 1'b1;
     assign GPIO_1 [12] = 1'b1;
 
-    single_digit_display digit_5 (         HADDR   [31:28]   , HEX5 );
-    single_digit_display digit_4 ( { 2'b0, IO_LEDR [17:16] } , HEX4 );
-    single_digit_display digit_3 (         IO_LEDR [15:12]   , HEX3 );
-    single_digit_display digit_2 (         IO_LEDR [11: 8]   , HEX2 );
-    single_digit_display digit_1 (         IO_LEDR [ 7: 4]   , HEX1 );
-    single_digit_display digit_0 (         IO_LEDR [ 3: 0]   , HEX0 );
+    single_digit_display digit_5 (         HADDR      [31:28]   , HEX5 );
+    single_digit_display digit_4 ( { 2'b0, IO_RedLEDs [17:16] } , HEX4 );
+    single_digit_display digit_3 (         IO_RedLEDs [15:12]   , HEX3 );
+    single_digit_display digit_2 (         IO_RedLEDs [11: 8]   , HEX2 );
+    single_digit_display digit_1 (         IO_RedLEDs [ 7: 4]   , HEX1 );
+    single_digit_display digit_0 (         IO_RedLEDs [ 3: 0]   , HEX0 );
 
 endmodule
 
