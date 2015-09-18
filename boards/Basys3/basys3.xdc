@@ -8,9 +8,6 @@ set_property PACKAGE_PIN W5 [get_ports clk]
 	set_property IOSTANDARD LVCMOS33 [get_ports clk]
 	create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]
  
-set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets tck_in]
-
-
 ## Switches
 set_property PACKAGE_PIN V17 [get_ports {sw[0]}]					
 	set_property IOSTANDARD LVCMOS33 [get_ports {sw[0]}]
@@ -82,32 +79,32 @@ set_property PACKAGE_PIN L1 [get_ports {led[15]}]
 	
 	
 ##7 segment display
-#set_property PACKAGE_PIN W7 [get_ports {seg[0]}]					
-#	set_property IOSTANDARD LVCMOS33 [get_ports {seg[0]}]
-#set_property PACKAGE_PIN W6 [get_ports {seg[1]}]					
-#	set_property IOSTANDARD LVCMOS33 [get_ports {seg[1]}]
-#set_property PACKAGE_PIN U8 [get_ports {seg[2]}]					
-#	set_property IOSTANDARD LVCMOS33 [get_ports {seg[2]}]
-#set_property PACKAGE_PIN V8 [get_ports {seg[3]}]					
-#	set_property IOSTANDARD LVCMOS33 [get_ports {seg[3]}]
-#set_property PACKAGE_PIN U5 [get_ports {seg[4]}]					
-#	set_property IOSTANDARD LVCMOS33 [get_ports {seg[4]}]
-#set_property PACKAGE_PIN V5 [get_ports {seg[5]}]					
-#	set_property IOSTANDARD LVCMOS33 [get_ports {seg[5]}]
-#set_property PACKAGE_PIN U7 [get_ports {seg[6]}]					
-#	set_property IOSTANDARD LVCMOS33 [get_ports {seg[6]}]
+set_property PACKAGE_PIN W7 [get_ports {seg[0]}]					
+	set_property IOSTANDARD LVCMOS33 [get_ports {seg[0]}]
+set_property PACKAGE_PIN W6 [get_ports {seg[1]}]					
+	set_property IOSTANDARD LVCMOS33 [get_ports {seg[1]}]
+set_property PACKAGE_PIN U8 [get_ports {seg[2]}]					
+	set_property IOSTANDARD LVCMOS33 [get_ports {seg[2]}]
+set_property PACKAGE_PIN V8 [get_ports {seg[3]}]					
+	set_property IOSTANDARD LVCMOS33 [get_ports {seg[3]}]
+set_property PACKAGE_PIN U5 [get_ports {seg[4]}]					
+	set_property IOSTANDARD LVCMOS33 [get_ports {seg[4]}]
+set_property PACKAGE_PIN V5 [get_ports {seg[5]}]					
+	set_property IOSTANDARD LVCMOS33 [get_ports {seg[5]}]
+set_property PACKAGE_PIN U7 [get_ports {seg[6]}]					
+	set_property IOSTANDARD LVCMOS33 [get_ports {seg[6]}]
 
-#set_property PACKAGE_PIN V7 [get_ports dp]							
-	#set_property IOSTANDARD LVCMOS33 [get_ports dp]
+set_property PACKAGE_PIN V7 [get_ports dp]							
+	set_property IOSTANDARD LVCMOS33 [get_ports dp]
 
-#set_property PACKAGE_PIN U2 [get_ports {an[0]}]					
-#	set_property IOSTANDARD LVCMOS33 [get_ports {an[0]}]
-#set_property PACKAGE_PIN U4 [get_ports {an[1]}]					
-#	set_property IOSTANDARD LVCMOS33 [get_ports {an[1]}]
-#set_property PACKAGE_PIN V4 [get_ports {an[2]}]					
-#	set_property IOSTANDARD LVCMOS33 [get_ports {an[2]}]
-#set_property PACKAGE_PIN W4 [get_ports {an[3]}]					
-#	set_property IOSTANDARD LVCMOS33 [get_ports {an[3]}]
+set_property PACKAGE_PIN U2 [get_ports {an[0]}]					
+	set_property IOSTANDARD LVCMOS33 [get_ports {an[0]}]
+set_property PACKAGE_PIN U4 [get_ports {an[1]}]					
+	set_property IOSTANDARD LVCMOS33 [get_ports {an[1]}]
+set_property PACKAGE_PIN V4 [get_ports {an[2]}]					
+	set_property IOSTANDARD LVCMOS33 [get_ports {an[2]}]
+set_property PACKAGE_PIN W4 [get_ports {an[3]}]					
+	set_property IOSTANDARD LVCMOS33 [get_ports {an[3]}]
 
 
 ##Buttons
@@ -168,18 +165,15 @@ set_property PACKAGE_PIN B16 [get_ports {JB[3]}]
 ##Sch name = JB7
 set_property PACKAGE_PIN A15 [get_ports {JB[4]}]					
 	set_property IOSTANDARD LVCMOS33 [get_ports {JB[4]}]
-	set_property PULLUP true [get_ports {JB[4]}]
-
 ##Sch name = JB8
 set_property PACKAGE_PIN A17 [get_ports {JB[5]}]					
 	set_property IOSTANDARD LVCMOS33 [get_ports {JB[5]}]
-	set_property PULLUP true [get_ports {JB[5]}]
 ##Sch name = JB9
-#set_property PACKAGE_PIN C15 [get_ports {JB[6]}]					
-	#set_property IOSTANDARD LVCMOS33 [get_ports {JB[6]}]
+set_property PACKAGE_PIN C15 [get_ports {JB[6]}]					
+	set_property IOSTANDARD LVCMOS33 [get_ports {JB[6]}]
 ##Sch name = JB10 
-#set_property PACKAGE_PIN C16 [get_ports {JB[7]}]					
-	#set_property IOSTANDARD LVCMOS33 [get_ports {JB[7]}]
+set_property PACKAGE_PIN C16 [get_ports {JB[7]}]					
+	set_property IOSTANDARD LVCMOS33 [get_ports {JB[7]}]
  
 
 
@@ -298,44 +292,4 @@ set_property PACKAGE_PIN A17 [get_ports {JB[5]}]
 	#set_property IOSTANDARD LVCMOS33 [get_ports {QspiDB[3]}]
 #set_property PACKAGE_PIN K19 [get_ports QspiCSn]					
 	#set_property IOSTANDARD LVCMOS33 [get_ports QspiCSn]
-
-
-# I/O virtual clock
-create_clock -period 10.000 -name "clk_virt"
-
-
-# EJTAG virtual clock
-create_clock -name "tck" -period 10.0
-
-# cut all paths to and from "clk_virt", "tck"
-set_clock_groups -physically_exclusive -group "clk_virt"
-set_clock_groups -physically_exclusive -group "tck"
-
-# tsu/th constraints
-set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports {sw[*]}]
-set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports {sw[*]}]
-set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports btnC]
-set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports btnC]
-set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports btnD]
-set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports btnD]
-set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports btnL]
-set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports btnL]
-set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports btnR]
-set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports btnR]
-set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports btnU]
-set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports btnU]
-set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports JB[0]]
-set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports JB[0]]
-set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports JB[1]]
-set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports JB[1]]
-set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports JB[3]]
-set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports JB[3]]
-
-
-set_output_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports {led[*]}]
-set_output_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports {led[*]}]
-set_output_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports {JB[2]}]
-set_output_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports {JB[2]}]
-
-
 
