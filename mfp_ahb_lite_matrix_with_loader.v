@@ -74,7 +74,7 @@ module mfp_ahb_lite_matrix_with_loader
     always @ (posedge HCLK)
         write_byte_dly <= write_byte;
 
-    wire [ 1:0] loader_HTRANS = write_enable ? HTRANS_NONSEQ : HTRANS_IDLE;
+    wire [ 1:0] loader_HTRANS = write_enable ? `HTRANS_NONSEQ : `HTRANS_IDLE;
     wire [31:0] loader_HWDATA = { 24'b0, write_byte } << write_address [1:0];
 
     mfp_ahb_lite_matrix ahb_lite_matrix
