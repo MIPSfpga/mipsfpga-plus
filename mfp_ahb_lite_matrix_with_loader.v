@@ -74,6 +74,7 @@ module mfp_ahb_lite_matrix_with_loader
     always @ (posedge HCLK)
         write_byte_dly <= write_byte;
 
+    wire [31:0] loader_HADDR  = { 2'b0, write_address [29:0] };
     wire [ 1:0] loader_HTRANS = write_enable ? `HTRANS_NONSEQ : `HTRANS_IDLE;
     wire [31:0] loader_HWDATA = { 24'b0, write_byte } << write_address [1:0];
 
@@ -82,7 +83,7 @@ module mfp_ahb_lite_matrix_with_loader
         .HCLK          ( HCLK          ),
         .HRESETn       ( HRESETn       ),
 
-        .HADDR         ( in_progress ? write_address  : HADDR     ),
+        .HADDR         ( in_progress ? loader_HADDR   : HADDR     ),
         .HBURST        ( in_progress ? `HBURST_SINGLE : HBURST    ),
         .HMASTLOCK     ( in_progress ? 1'b0           : HMASTLOCK ),
         .HPROT         ( in_progress ? 4'b0           : HPROT     ),
