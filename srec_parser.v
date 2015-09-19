@@ -6,6 +6,7 @@ module srec_parser
     input      [ 7:0] char_data,
     input             char_ready,
 
+    output reg        in_progress,
     output reg        format_error,
     output reg        checksum_error,
     output reg [ 7:0] error_location,
@@ -41,6 +42,7 @@ module srec_parser
         CHAR_CR = 8'h0D,
         CHAR_0  = 8'h30,
         CHAR_3  = 8'h33,
+        CHAR_7  = 8'h37,
         CHAR_9  = 8'h39,
         CHAR_A  = 8'h41,
         CHAR_F  = 8'h46,
@@ -168,6 +170,16 @@ module srec_parser
             reg_state <= state; 
             reg_write <= write;
         end
+    end
+
+    always @(posedge clock or negedge reset_n)
+    begin
+        if (! reset_n)
+            in_progress <= 0;
+        else if (rec_type == CHAR_3)
+            in_progress <= 1;
+        else if (rec_type == CHAR_7)
+            in_progress <= 0;
     end
 
     always @(posedge clock or negedge reset_n)

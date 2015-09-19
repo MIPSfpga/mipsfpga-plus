@@ -221,7 +221,7 @@ module mfp_system
         .SI_NMITaken           ( SI_NMITaken           ),
         .SI_Offset             ( SI_Offset             ),
         .SI_PCInt              ( SI_PCInt              ),
-        .SI_Reset              ( SI_Reset              ),
+        .SI_Reset              ( SI_Reset | MFP_Reset  ),
         .SI_RP                 ( SI_RP                 ),
         .SI_Sleep              ( SI_Sleep              ),
         .SI_SRSDisable         ( SI_SRSDisable         ),
@@ -298,7 +298,9 @@ module mfp_system
 
     assign UART_TX         = 1'b0;
 
-    mfp_ahb_lite_matrix ahb_lite_matrix
+    wire MFP_Reset;
+
+    mfp_ahb_lite_matrix_with_loader ahb_lite_matrix
     (
         .HCLK          ( HCLK          ),
         .HRESETn       ( HRESETn       ),
@@ -321,7 +323,9 @@ module mfp_system
         .IO_GreenLEDs  ( IO_GreenLEDs  ), 
 
         .UART_RX       ( UART_RX       ), 
-        .UART_TX       ( UART_TX       ) 
+        .UART_TX       ( UART_TX       ),
+
+        .MFP_Reset     ( MFP_Reset     )
     );
 
 endmodule
