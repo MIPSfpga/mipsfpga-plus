@@ -69,14 +69,14 @@ module mfp_ahb_lite_matrix_with_loader
 
     assign MFP_Reset = in_progress;
 
-    reg [7:0] write_byte_dly;
+    wire [31:0] loader_HADDR       = { 2'b0, write_address [29:0] };
+    wire [ 1:0] loader_HTRANS      = write_enable ? `HTRANS_NONSEQ : `HTRANS_IDLE;
+    wire [31:0] loader_HWDATA_next = { 24'b0, write_byte } << write_address [1:0];
+
+    reg  [31:0] loader_HWDATA;
 
     always @ (posedge HCLK)
-        write_byte_dly <= write_byte;
-
-    wire [31:0] loader_HADDR  = { 2'b0, write_address [29:0] };
-    wire [ 1:0] loader_HTRANS = write_enable ? `HTRANS_NONSEQ : `HTRANS_IDLE;
-    wire [31:0] loader_HWDATA = { 24'b0, write_byte } << write_address [1:0];
+        loader_HWDATA <= loader_HWDATA_next;
 
     mfp_ahb_lite_matrix ahb_lite_matrix
     (
