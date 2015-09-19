@@ -16,7 +16,7 @@ module basys3
     output        dp,
     output [ 3:0] an,
 
-    inout  [ 5:0] JB 
+    inout  [ 7:0] JB 
 );
 
     wire        SI_Reset     = btnC;
@@ -65,7 +65,7 @@ module basys3
         .IO_RedLEDs       ( IO_RedLEDs      ),
         .IO_GreenLEDs     ( IO_GreenLEDs    ),
                           
-        .UART_RX          ( GPIO_1 [31]     ),
+        .UART_RX          ( /* TODO */      ),
         .UART_TX          ( /* TODO */      )
     );
 
