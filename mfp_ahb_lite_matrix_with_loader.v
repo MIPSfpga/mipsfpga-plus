@@ -67,6 +67,9 @@ module mfp_ahb_lite_matrix_with_loader
         .write_enable    ( write_enable   )
     );
 
+    assign IO_RedLEDs   = { char_ready, write_address [9:0], char_data };
+    assign IO_GreenLEDs = { in_progress, format_error, checksum_error, error_location [5:0] };
+
     assign MFP_Reset = in_progress;
 
     wire [31:0] loader_HADDR       = { 2'b0, write_address [29:0] };
@@ -99,8 +102,8 @@ module mfp_ahb_lite_matrix_with_loader
                                          
         .IO_Switches   ( IO_Switches   ),
         .IO_Buttons    ( IO_Buttons    ),
-        .IO_RedLEDs    ( IO_RedLEDs    ),
-        .IO_GreenLEDs  ( IO_GreenLEDs  ), 
+        .IO_RedLEDs    ( /* IO_RedLEDs   */ ),
+        .IO_GreenLEDs  ( /* IO_GreenLEDs */ ), 
                                        
         .UART_RX       ( UART_RX       ), 
         .UART_TX       ( UART_TX       ) 

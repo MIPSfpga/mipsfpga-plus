@@ -50,10 +50,32 @@ module de0_cv
     inout   [35:0]  GPIO_1
 );
 
+    wire slow_clock, clock;
+
+    de0_clock_divider_50_MHz_to_0_75_Hz de0_clock_divider_50_MHz_to_0_75_Hz
+    (
+        .clock_50_MHz   ( CLOCK_50 ),
+        .reset_n        ( RESET_N  ),
+        .clock_0_75_Hz  ( slow_clk )
+    );
+
+    altclkctrl
+    # (
+        .number_of_clocks ( 2 ),
+        .width_clkselect  ( 1 )
+    )
+    altclkctrl
+    (
+        .clkselect ( SW [0]                 ),
+        .ena       ( 1'b1                   ),
+        .inclk     ( { slow_clk, CLOCK_50 } ),
+        .outclk    ( clock                  )
+    );
+
     wire [17:0] IO_RedLEDs;
     wire [ 8:0] IO_GreenLEDs;
 
-    assign LEDR = { 1'b0, IO_GreenLEDs };
+    assign LEDR = { clock, IO_GreenLEDs };
 
     wire [31:0] HADDR, HRDATA, HWDATA;
     wire        HWRITE;
@@ -90,18 +112,43 @@ module de0_cv
     assign GPIO_1 [13] = 1'b1;
     assign GPIO_1 [12] = 1'b1;
 
-    single_digit_display digit_5 (         HADDR      [31:28]   , HEX5 );
-    single_digit_display digit_4 ( { 2'b0, IO_RedLEDs [17:16] } , HEX4 );
-    single_digit_display digit_3 (         IO_RedLEDs [15:12]   , HEX3 );
-    single_digit_display digit_2 (         IO_RedLEDs [11: 8]   , HEX2 );
-    single_digit_display digit_1 (         IO_RedLEDs [ 7: 4]   , HEX1 );
-    single_digit_display digit_0 (         IO_RedLEDs [ 3: 0]   , HEX0 );
+    de0_single_digit_display digit_5 (         HADDR      [31:28]   , HEX5 );
+    de0_single_digit_display digit_4 ( { 2'b0, IO_RedLEDs [17:16] } , HEX4 );
+    de0_single_digit_display digit_3 (         IO_RedLEDs [15:12]   , HEX3 );
+    de0_single_digit_display digit_2 (         IO_RedLEDs [11: 8]   , HEX2 );
+    de0_single_digit_display digit_1 (         IO_RedLEDs [ 7: 4]   , HEX1 );
+    de0_single_digit_display digit_0 (         IO_RedLEDs [ 3: 0]   , HEX0 );
 
 endmodule
 
 //--------------------------------------------------------------------
 
-module single_digit_display
+module de0_clock_divider_50_MHz_to_0_75_Hz
+(
+    input  clock_50_MHz,
+    input  reset_n,
+    output clock_0_75_Hz
+);
+
+    // 50 MHz / 2 ** 26 = 0.75 Hz
+
+    reg [25:0] counter;
+
+    always @ (posedge clock_50_MHz or negedge reset_n)
+    begin
+        if (! reset_n)
+            counter <= 0;
+        else
+            counter <= counter + 1;
+    end
+
+    assign clock_0_75 = counter [25];
+
+endmodule
+
+//--------------------------------------------------------------------
+
+module de0_single_digit_display
 (
     input      [3:0] digit,
     output reg [6:0] seven_segments

@@ -1,3 +1,7 @@
 project/
 sim/
 *.bak
+*.o
+*.elf
+*.rec
+FPGA*.txt

@@ -302,30 +302,53 @@ module mfp_system
 
     mfp_ahb_lite_matrix_with_loader ahb_lite_matrix
     (
-        .HCLK          ( HCLK          ),
-        .HRESETn       ( HRESETn       ),
-        .HADDR         ( HADDR         ),
-        .HBURST        ( HBURST        ),
-        .HMASTLOCK     ( HMASTLOCK     ),
-        .HPROT         ( HPROT         ),
-        .HSIZE         ( HSIZE         ),
-        .HTRANS        ( HTRANS        ),
-        .HWDATA        ( HWDATA        ),
-        .HWRITE        ( HWRITE        ),
-        .HRDATA        ( HRDATA        ),
-        .HREADY        ( HREADY        ),
-        .HRESP         ( HRESP         ),
-        .SI_Endian     ( SI_Endian     ),
-                                         
-        .IO_Switches   ( IO_Switches   ),
-        .IO_Buttons    ( IO_Buttons    ),
-        .IO_RedLEDs    ( IO_RedLEDs    ),
-        .IO_GreenLEDs  ( IO_GreenLEDs  ), 
-
-        .UART_RX       ( UART_RX       ), 
-        .UART_TX       ( UART_TX       ),
-
-        .MFP_Reset     ( MFP_Reset     )
+        .HCLK          (   HCLK          ),
+        .HRESETn       ( ~ SI_Reset      ),  // Not HRESETn - this is necessary for serial loader
+        .HADDR         (   HADDR         ),
+        .HBURST        (   HBURST        ),
+        .HMASTLOCK     (   HMASTLOCK     ),
+        .HPROT         (   HPROT         ),
+        .HSIZE         (   HSIZE         ),
+        .HTRANS        (   HTRANS        ),
+        .HWDATA        (   HWDATA        ),
+        .HWRITE        (   HWRITE        ),
+        .HRDATA        (   HRDATA        ),
+        .HREADY        (   HREADY        ),
+        .HRESP         (   HRESP         ),
+        .SI_Endian     (   SI_Endian     ),
+                                           
+        .IO_Switches   (   IO_Switches   ),
+        .IO_Buttons    (   IO_Buttons    ),
+        .IO_RedLEDs    (   IO_RedLEDs    ),
+        .IO_GreenLEDs  (   IO_GreenLEDs  ), 
+                           
+        .UART_RX       (   UART_RX       ), 
+        .UART_TX       (   UART_TX       ),
+                           
+        .MFP_Reset     (   MFP_Reset     )
     );
+
+endmodule
+
+//--------------------------------------------------------------------
+
+module mfp_ejtag_reset
+(
+    input      clk,
+    output reg trst_n
+);
+
+    reg [3:0] trst_delay;
+  
+    always @ (posedge clk)
+    begin
+        if (trst_delay == 4'hf)
+            trst_n     <= 1'b1;
+        else
+        begin
+            trst_n     <= 1'b0;
+            trst_delay <= trst_delay + 4'b1;
+        end
+    end
 
 endmodule

@@ -46,8 +46,8 @@ module mfp_ahb_lite_matrix
 
     mfp_ahb_ram_slave
     # (
-        .ADDR_WIDTH (`MFP_RAM_RESET_ADDR_WIDTH),
-        .INIT_FILENAME (`MFP_RAM_RESET_INIT_FILENAME)
+        .ADDR_WIDTH    ( `MFP_RAM_RESET_ADDR_WIDTH    ),
+        .INIT_FILENAME ( `MFP_RAM_RESET_INIT_FILENAME )
     )
     reset_ram
     (
@@ -70,8 +70,8 @@ module mfp_ahb_lite_matrix
 
     mfp_ahb_ram_slave
     # (
-        .ADDR_WIDTH (`MFP_RAM_ADDR_WIDTH),
-        .INIT_FILENAME (`MFP_RAM_INIT_FILENAME)
+        .ADDR_WIDTH    ( `MFP_RAM_ADDR_WIDTH    ),
+        .INIT_FILENAME ( `MFP_RAM_INIT_FILENAME )
     )
     ram
     (
@@ -136,6 +136,8 @@ module mfp_ahb_lite_matrix
 
 endmodule
 
+//--------------------------------------------------------------------
+
 module mfp_ahb_lite_decoder
 (
     input  [31:0] HADDR,
@@ -157,6 +159,8 @@ module mfp_ahb_lite_decoder
     assign HSEL [2] = ( HADDR [28:22] == `MFP_GPIO_ADDR_MATCH      );
 
 endmodule
+
+//--------------------------------------------------------------------
 
 module mfp_ahb_lite_response_mux
 (

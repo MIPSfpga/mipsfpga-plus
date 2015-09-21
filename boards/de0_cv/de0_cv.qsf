@@ -207,6 +207,7 @@ set_global_assignment -name VERILOG_FILE ../../../../../MIPSfpga/rtl_up/RAMB4K_S
 set_global_assignment -name VERILOG_FILE ../../../../../MIPSfpga/rtl_up/tagram_2k2way_xilinx.v
 
 #set_global_assignment -name CDF_FILE de0_cv.cdf
+set_global_assignment -name SDC_FILE de0_cv.sdc
 
 # Pin & Location Assignments
 # ==========================
