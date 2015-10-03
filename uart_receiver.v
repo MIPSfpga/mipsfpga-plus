@@ -7,7 +7,7 @@ module uart_receiver
     output           byte_ready
 );
 
-    parameter  clock_frequency        = 50000000;
+    parameter  clock_frequency        = 50000000 / 2 /* TODO */;
     parameter  baud_rate              = 115200;
     localparam clock_cycles_in_symbol = clock_frequency / baud_rate;
 

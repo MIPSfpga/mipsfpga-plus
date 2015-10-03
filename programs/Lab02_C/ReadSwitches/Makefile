@@ -10,7 +10,8 @@ OD=mips-mti-elf-objdump
 OC=mips-mti-elf-objcopy
 SZ=mips-mti-elf-size
 
-CFLAGS = -O0 -g -EL -c -msoft-float -march=m14kc
+#CFLAGS = -O0 -g -EL -c -msoft-float -march=m14kc
+CFLAGS = -O2 -g -EL -c -msoft-float -march=m14kc
 LDFLAGS = -EL -msoft-float -march=m14kc -Wl,-Map=FPGA_Ram_map.txt
 
 # Set up the link addresses for a bootable C program on MIPSfpga

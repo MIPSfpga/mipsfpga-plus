@@ -50,39 +50,46 @@ module de0_cv
     inout   [35:0]  GPIO_1
 );
 
-    wire slow_clock, clock;
+    wire slow_clk_g, slow_clk, clock;
 
     de0_clock_divider_50_MHz_to_0_75_Hz de0_clock_divider_50_MHz_to_0_75_Hz
     (
-        .clock_50_MHz   ( CLOCK_50 ),
-        .reset_n        ( RESET_N  ),
-        .clock_0_75_Hz  ( slow_clk )
+        .clki   ( CLOCK_50 ),
+        .sel    ( SW [0]   ),
+        .clko   ( slow_clk )
     );
 
+    global gclk(slow_clk, slow_clk_g);
+
+/*
     altclkctrl
     # (
         .number_of_clocks ( 2 ),
         .width_clkselect  ( 1 )
-    )
+   )
     altclkctrl
     (
         .clkselect ( SW [0]                 ),
         .ena       ( 1'b1                   ),
-        .inclk     ( { slow_clk, CLOCK_50 } ),
+        .inclk     ( { slow_clk_g, CLOCK_50 } ),
         .outclk    ( clock                  )
     );
+*/
+
 
     wire [17:0] IO_RedLEDs;
     wire [ 8:0] IO_GreenLEDs;
 
-    assign LEDR = { clock, IO_GreenLEDs };
+    assign LEDR = { 1'b0, IO_GreenLEDs };
 
     wire [31:0] HADDR, HRDATA, HWDATA;
     wire        HWRITE;
 
+`define UNDEFINED
+`ifdef UNDEFINED
     mfp_system mfp_system
     (
-        .SI_ClkIn         (   CLOCK_50      ),
+        .SI_ClkIn         (   slow_clk_g    ),
         .SI_Reset         ( ~ RESET_N       ),
                           
         .HADDR            ( HADDR           ),
@@ -106,7 +113,7 @@ module de0_cv
         .UART_RX          ( GPIO_1 [31]     ),
         .UART_TX          ( /* TODO */      )
     );
-
+`endif
     assign GPIO_1 [15] = 1'b0;
     assign GPIO_1 [14] = 1'b0;
     assign GPIO_1 [13] = 1'b1;
@@ -125,24 +132,20 @@ endmodule
 
 module de0_clock_divider_50_MHz_to_0_75_Hz
 (
-    input  clock_50_MHz,
-    input  reset_n,
-    output clock_0_75_Hz
+    input      clki,
+    input      sel,
+    output reg clko
 );
 
     // 50 MHz / 2 ** 26 = 0.75 Hz
 
     reg [25:0] counter;
 
-    always @ (posedge clock_50_MHz or negedge reset_n)
-    begin
-        if (! reset_n)
-            counter <= 0;
-        else
-            counter <= counter + 1;
-    end
+    always @ (posedge clki)
+        counter <= counter + 1;
 
-    assign clock_0_75 = counter [25];
+    always @ (posedge clki)
+	clko <= sel ? counter[25] : ~clko;
 
 endmodule
 

@@ -19,16 +19,16 @@ int main() {
   while (1) {
     switches = *IO_SWITCHES;
     *IO_LEDR = switches;	  
-    delay();
-    *IO_LEDR = 0;  // turn off LEDs
-    delay();
+    //delay();
+    //*IO_LEDR = 0;  // turn off LEDs
+    //delay();
   }
   return 0;
 }
 
 void delay() {
   volatile unsigned int j;
-
+return;
   for (j = 0; j < (1000000); j++) ;	// delay 
 }
 
