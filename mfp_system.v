@@ -28,6 +28,8 @@ module mfp_system
     output        UART_TX
 );
 
+    wire MFP_Reset;
+
     wire [ 0:0] BistIn;
     wire [ 0:0] BistOut;
     wire [ 0:0] CP2_fromcp2;
@@ -297,8 +299,6 @@ module mfp_system
     assign SI_AHBStb       = 1'b1;     // AHB: Signal indicating phase and frequency relationship between clk and hclk.
 
     assign UART_TX         = 1'b0;
-
-    wire MFP_Reset;
 
     mfp_ahb_lite_matrix_with_loader ahb_lite_matrix
     (

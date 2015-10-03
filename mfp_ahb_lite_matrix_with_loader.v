@@ -69,31 +69,48 @@ module mfp_ahb_lite_matrix_with_loader
 
     assign MFP_Reset = in_progress;
 
-    wire [31:0] loader_HADDR       = { 3'b0, write_address [28:0] };
-    wire [ 1:0] loader_HTRANS      = write_enable ? `HTRANS_NONSEQ : `HTRANS_IDLE;
+    wire [31:0] loader_HADDR;
+    wire [ 2:0] loader_HBURST;
+    wire        loader_HMASTLOCK;
+    wire [ 3:0] loader_HPROT;
+    wire [ 2:0] loader_HSIZE;
+    wire [ 1:0] loader_HTRANS;
+    wire [31:0] loader_HWDATA;
+    wire        loader_HWRITE;
 
-    wire [31:0] padded_write_byte  = { 24'b0, write_byte };
-    wire [ 4:0] write_byte_shift   = { write_address [1:0], 3'b0 };
-    wire [31:0] loader_HWDATA_next = padded_write_byte << write_byte_shift;
-
-    reg  [31:0] loader_HWDATA;
-
-    always @ (posedge HCLK)
-        loader_HWDATA <= loader_HWDATA_next;
+    mfp_srec_parser_to_ahb_lite_bridge mfp_srec_parser_to_ahb_lite_bridge
+    (
+        .clock          ( HCLK             ),
+        .reset_n        ( HRESETn          ),
+        .big_endian     ( SI_Endian        ),
+    
+        .write_address  ( write_address    ),
+        .write_byte     ( write_byte       ),
+        .write_enable   ( write_enable     ), 
+    
+        .HADDR          ( loader_HADDR     ),
+        .HBURST         ( loader_HBURST    ),
+        .HMASTLOCK      ( loader_HMASTLOCK ),
+        .HPROT          ( loader_HPROT     ),
+        .HSIZE          ( loader_HSIZE     ),
+        .HTRANS         ( loader_HTRANS    ),
+        .HWDATA         ( loader_HWDATA    ),
+        .HWRITE         ( loader_HWRITE    )
+    );
 
     mfp_ahb_lite_matrix ahb_lite_matrix
     (
         .HCLK          ( HCLK          ),
         .HRESETn       ( HRESETn       ),
 
-        .HADDR         ( in_progress ? loader_HADDR   : HADDR     ),
-        .HBURST        ( in_progress ? `HBURST_SINGLE : HBURST    ),
-        .HMASTLOCK     ( in_progress ? 1'b0           : HMASTLOCK ),
-        .HPROT         ( in_progress ? 4'b0           : HPROT     ),
-        .HSIZE         ( in_progress ? HSIZE_1        : HSIZE     ),
-        .HTRANS        ( in_progress ? loader_HTRANS  : HTRANS    ),
-        .HWDATA        ( in_progress ? loader_HWDATA  : HWDATA    ),
-        .HWRITE        ( in_progress ? write_enable   : HWRITE    ),
+        .HADDR         ( in_progress ? loader_HADDR     : HADDR     ),
+        .HBURST        ( in_progress ? loader_HBURST    : HBURST    ),
+        .HMASTLOCK     ( in_progress ? loader_HMASTLOCK : HMASTLOCK ),
+        .HPROT         ( in_progress ? loader_HPROT     : HPROT     ),
+        .HSIZE         ( in_progress ? loader_HSIZE     : HSIZE     ),
+        .HTRANS        ( in_progress ? loader_HTRANS    : HTRANS    ),
+        .HWDATA        ( in_progress ? loader_HWDATA    : HWDATA    ),
+        .HWRITE        ( in_progress ? loader_HWRITE    : HWRITE    ),
 
         .HRDATA        ( HRDATA        ),
         .HREADY        ( HREADY        ),

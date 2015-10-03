@@ -53,6 +53,7 @@ set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_lite_matrix_with_loade
 set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_ram_slave.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_dual_port_ram.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_ejtag_reset.v
+set_global_assignment -name VERILOG_FILE ../../../mfp_srec_parser_to_ahb_lite_bridge.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_system.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_testbench.v
 set_global_assignment -name VERILOG_FILE ../../../srec_parser.v

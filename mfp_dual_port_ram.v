@@ -23,15 +23,17 @@ module mfp_dual_port_ram
         read_data <= ram [read_addr];
     end
 
-    `ifdef MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
-        //`ifdef MODEL_TECH
-        //    initial $readmemh (INIT_FILENAME, ram);
-        //`else
-            // Unfortunately neither Xilinx Vivado nor Altera Quartus II
-            // support parametrization for synthesizable $readmem
+    `ifdef MFP_INITIALIZE_MEMORY_FROM_TXT_FILE_FOR_SYNTHESIS
 
-            initial $readmemh ("ram_reset_init.txt", ram);
-        //`endif
+        // Unfortunately neither Xilinx Vivado nor Altera Quartus II
+        // support parametrization for synthesizable $readmem
+
+        initial $readmemh ("ram_reset_init.txt", ram);
+
+    `elsif MFP_INITIALIZE_MEMORY_FROM_TXT_FILE_FOR_SIMULATION
+
+        initial $readmemh (INIT_FILENAME, ram);
+
     `endif
 
 endmodule

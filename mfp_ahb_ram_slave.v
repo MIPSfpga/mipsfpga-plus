@@ -58,7 +58,7 @@ module mfp_ahb_ram_slave
         .read_addr    ( HADDR     [ ADDR_WIDTH - 1 + 2 : 2] ),
         .write_addr   ( HADDR_dly [ ADDR_WIDTH - 1 + 2 : 2] ),
         .write_data   ( HWDATA                              ),
-        .write_enable ( write_enabe                         ),
+        .write_enable ( write_enable                        ),
         .read_data    ( HRDATA                              )
     );
 

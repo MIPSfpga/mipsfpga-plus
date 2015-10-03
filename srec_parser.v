@@ -152,7 +152,6 @@ module srec_parser
 
     always @(posedge clock)
     begin
-        reg_rec_type  <= rec_type;
         reg_count     <= count;
         reg_address   <= address;
         reg_byte_data <= byte_data;
@@ -162,13 +161,15 @@ module srec_parser
     begin
         if (! reset_n)
         begin
-            reg_state <= WAITING_S; 
-            reg_write <= 0;
+            reg_state    <= WAITING_S; 
+            reg_rec_type <= 0;
+            reg_write    <= 0;
         end
         else
         begin
-            reg_state <= state; 
-            reg_write <= write;
+            reg_state    <= state; 
+            reg_rec_type <= rec_type;
+            reg_write    <= write;
         end
     end
 
