@@ -61,13 +61,6 @@ set_global_assignment -name VERILOG_FILE ../../../mfp_system.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_testbench.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_uart_receiver.v
 
-set_global_assignment -name VERILOG_FILE ../../../MIPSfpga/rtl_up/mipsfpga_sys.v
-set_global_assignment -name VERILOG_FILE ../../../MIPSfpga/rtl_up/mipsfpga_ahb_ram_reset.v
-set_global_assignment -name VERILOG_FILE ../../../MIPSfpga/rtl_up/mipsfpga_ahb_ram.v
-set_global_assignment -name VERILOG_FILE ../../../MIPSfpga/rtl_up/mipsfpga_ahb_gpio.v
-set_global_assignment -name VERILOG_FILE ../../../MIPSfpga/rtl_up/mipsfpga_ahb.v
-set_global_assignment -name VERILOG_FILE ../../../MIPSfpga/rtl_up/ejtag_reset.v
-
 set_global_assignment -name VERILOG_FILE ../../../../../MIPSfpga/rtl_up/d_wsram_2k2way_xilinx.v
 set_global_assignment -name VERILOG_FILE ../../../../../MIPSfpga/rtl_up/dataram_2k2way_xilinx.v
 set_global_assignment -name VERILOG_FILE ../../../../../MIPSfpga/rtl_up/i_wsram_2k2way_xilinx.v
