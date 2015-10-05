@@ -50,31 +50,45 @@ module de0_cv
     inout   [35:0]  GPIO_1
 );
 
-    wire slow_clk_g, slow_clk, clock;
+    wire       slow_clk_g, slow_clk, clock;
+    wire [1:0] sw_db;
 
-    de0_clock_divider_50_MHz_to_0_75_Hz de0_clock_divider_50_MHz_to_0_75_Hz
+    genvar sw_cnt;
+    generate
+    for(sw_cnt = 0; sw_cnt < 2; sw_cnt = sw_cnt + 1)
+    begin : GEN_DB_B
+       
+       sw_db_sync 
+       #( .DEPTH (8) )
+       sw_db_sync
+       (    
+          .clk    ( CLOCK_50  ),
+          .sw_in  ( SW    [sw_cnt] ),
+          .sw_out ( sw_db [sw_cnt] )
+       );
+
+    end // : GEN_DB_B
+    endgenerate 
+
+    de0_clock_divider_50_MHz_to_0_75_Hz 
+    #(
+        .DIV_POW (25)
+     )
+    de0_clock_divider_50_MHz_to_0_75_Hz
     (
-        .clki   ( CLOCK_50 ),
-        .sel    ( SW [0]   ),
-        .clko   ( slow_clk )
+        .clki    ( CLOCK_50 ),
+        .sel_lo  ( sw_db[0] ),
+        .sel_mid ( sw_db[1] ),
+        .clko    ( slow_clk )
     );
 
-    global gclk(slow_clk, slow_clk_g);
 
-/*
-    altclkctrl
-    # (
-        .number_of_clocks ( 2 ),
-        .width_clkselect  ( 1 )
-   )
-    altclkctrl
+    global gclk
     (
-        .clkselect ( SW [0]                 ),
-        .ena       ( 1'b1                   ),
-        .inclk     ( { slow_clk_g, CLOCK_50 } ),
-        .outclk    ( clock                  )
+        .in     ( slow_clk   ), 
+        .out    ( slow_clk_g )
     );
-*/
+
 
 
     wire [17:0] IO_RedLEDs;
@@ -85,8 +99,6 @@ module de0_cv
     wire [31:0] HADDR, HRDATA, HWDATA;
     wire        HWRITE;
 
-`define UNDEFINED
-`ifdef UNDEFINED
     mfp_system mfp_system
     (
         .SI_ClkIn         (   slow_clk_g    ),
@@ -113,7 +125,8 @@ module de0_cv
         .UART_RX          ( GPIO_1 [31]     ),
         .UART_TX          ( /* TODO */      )
     );
-`endif
+
+
     assign GPIO_1 [15] = 1'b0;
     assign GPIO_1 [14] = 1'b0;
     assign GPIO_1 [13] = 1'b1;
@@ -133,19 +146,55 @@ endmodule
 module de0_clock_divider_50_MHz_to_0_75_Hz
 (
     input      clki,
-    input      sel,
+    input      sel_lo,
+    input      sel_mid,
     output reg clko
 );
 
     // 50 MHz / 2 ** 26 = 0.75 Hz
+    parameter DIV_POW = 25;
 
-    reg [25:0] counter;
-
-    always @ (posedge clki)
-        counter <= counter + 1;
+    reg [DIV_POW:0] counter;
 
     always @ (posedge clki)
-	clko <= sel ? counter[25] : ~clko;
+        counter <= counter + 1'b1;
+
+    always @ (posedge clki)
+	clko <= sel_lo  ? counter[DIV_POW]   : 
+                sel_mid ? counter[DIV_POW-4] :
+                          ~clko;
+
+endmodule
+
+//-------------------------------------------------------------------
+
+module sw_db_sync
+(   
+    input      clk,
+    input      sw_in,
+    output reg sw_out
+);
+
+    parameter DEPTH = 8;
+
+    reg  [DEPTH-1:0] cnt;
+    reg        [2:0] sync;
+    wire             sw_in_s;
+
+    assign sw_in_s = sync[2];
+
+    always@(posedge clk)
+        sync <= {sync[1:0], sw_in};
+
+    always@(posedge clk)
+        if(sw_out ^ sw_in_s)
+            cnt <= cnt + 1'b1;
+        else
+            cnt <= {DEPTH{1'b0}};
+
+    always@(posedge clk)
+        if(cnt == {DEPTH{1'b1}})
+            sw_out <= sw_in_s;
 
 endmodule
 
