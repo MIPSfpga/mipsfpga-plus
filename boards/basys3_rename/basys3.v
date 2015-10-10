@@ -66,7 +66,7 @@ module basys3
         .IO_GreenLEDs     ( IO_GreenLEDs    ),
                           
         .UART_RX          ( /* TODO */      ),
-        .UART_TX          ( /* TODO */      )
+        .UART_TX          ( /* TODO */     )
     );
 
 endmodule
