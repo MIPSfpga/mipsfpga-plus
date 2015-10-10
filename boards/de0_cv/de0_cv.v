@@ -54,42 +54,38 @@ module de0_cv
     wire [1:0] sw_db;
 
     genvar sw_cnt;
-    generate
-    for(sw_cnt = 0; sw_cnt < 2; sw_cnt = sw_cnt + 1)
-    begin : GEN_DB_B
-       
-       sw_db_sync 
-       #( .DEPTH (8) )
-       sw_db_sync
-       (    
-          .clk    ( CLOCK_50  ),
-          .sw_in  ( SW    [sw_cnt] ),
-          .sw_out ( sw_db [sw_cnt] )
-       );
 
-    end // : GEN_DB_B
+    generate
+        for (sw_cnt = 0; sw_cnt < 2; sw_cnt = sw_cnt + 1)
+        begin : GEN_DB_B
+           
+           mfp_switch_sync_and_debouncer
+           # (.DEPTH (8))
+           mfp_switch_sync_and_debouncer
+           (    
+              .clk    ( CLOCK_50       ),
+              .sw_in  ( SW    [sw_cnt] ),
+              .sw_out ( sw_db [sw_cnt] )
+           );
+
+        end
     endgenerate 
 
-    de0_clock_divider_50_MHz_to_0_75_Hz 
-    #(
-        .DIV_POW (25)
-     )
-    de0_clock_divider_50_MHz_to_0_75_Hz
+    mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz 
+    # (.DIV_POW (25))
+    mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz
     (
-        .clki    ( CLOCK_50 ),
-        .sel_lo  ( sw_db[0] ),
-        .sel_mid ( sw_db[1] ),
-        .clko    ( slow_clk )
+        .clki    ( CLOCK_50  ),
+        .sel_lo  ( sw_db [0] ),
+        .sel_mid ( sw_db [1] ),
+        .clko    ( slow_clk  )
     );
-
 
     global gclk
     (
         .in     ( slow_clk   ), 
         .out    ( slow_clk_g )
     );
-
-
 
     wire [17:0] IO_RedLEDs;
     wire [ 8:0] IO_GreenLEDs;
@@ -132,18 +128,18 @@ module de0_cv
     assign GPIO_1 [13] = 1'b1;
     assign GPIO_1 [12] = 1'b1;
 
-    de0_single_digit_display digit_5 (         HADDR      [31:28]   , HEX5 );
-    de0_single_digit_display digit_4 ( { 2'b0, IO_RedLEDs [17:16] } , HEX4 );
-    de0_single_digit_display digit_3 (         IO_RedLEDs [15:12]   , HEX3 );
-    de0_single_digit_display digit_2 (         IO_RedLEDs [11: 8]   , HEX2 );
-    de0_single_digit_display digit_1 (         IO_RedLEDs [ 7: 4]   , HEX1 );
-    de0_single_digit_display digit_0 (         IO_RedLEDs [ 3: 0]   , HEX0 );
+    mfp_single_digit_display digit_5 (         HADDR      [31:28]   , HEX5 );
+    mfp_single_digit_display digit_4 ( { 2'b0, IO_RedLEDs [17:16] } , HEX4 );
+    mfp_single_digit_display digit_3 (         IO_RedLEDs [15:12]   , HEX3 );
+    mfp_single_digit_display digit_2 (         IO_RedLEDs [11: 8]   , HEX2 );
+    mfp_single_digit_display digit_1 (         IO_RedLEDs [ 7: 4]   , HEX1 );
+    mfp_single_digit_display digit_0 (         IO_RedLEDs [ 3: 0]   , HEX0 );
 
 endmodule
 
 //--------------------------------------------------------------------
 
-module de0_clock_divider_50_MHz_to_0_75_Hz
+module mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz
 (
     input      clki,
     input      sel_lo,
@@ -154,21 +150,21 @@ module de0_clock_divider_50_MHz_to_0_75_Hz
     // 50 MHz / 2 ** 26 = 0.75 Hz
     parameter DIV_POW = 25;
 
-    reg [DIV_POW:0] counter;
+    reg [DIV_POW : 0] counter;
 
     always @ (posedge clki)
         counter <= counter + 1'b1;
 
     always @ (posedge clki)
-	clko <= sel_lo  ? counter[DIV_POW]   : 
-                sel_mid ? counter[DIV_POW-4] :
-                          ~clko;
+	clko <= sel_lo  ? counter [DIV_POW    ] : 
+                sel_mid ? counter [DIV_POW - 4] :
+                          ~ clko;
 
 endmodule
 
 //-------------------------------------------------------------------
 
-module sw_db_sync
+module mfp_switch_sync_and_debouncer
 (   
     input      clk,
     input      sw_in,
@@ -177,30 +173,30 @@ module sw_db_sync
 
     parameter DEPTH = 8;
 
-    reg  [DEPTH-1:0] cnt;
-    reg        [2:0] sync;
-    wire             sw_in_s;
+    reg  [ DEPTH - 1 : 0] cnt;
+    reg  [         2 : 0] sync;
+    wire                  sw_in_s;
 
-    assign sw_in_s = sync[2];
+    assign sw_in_s = sync [2];
 
-    always@(posedge clk)
-        sync <= {sync[1:0], sw_in};
+    always @ (posedge clk)
+        sync <= { sync [1:0], sw_in };
 
-    always@(posedge clk)
-        if(sw_out ^ sw_in_s)
+    always @ (posedge clk)
+        if (sw_out ^ sw_in_s)
             cnt <= cnt + 1'b1;
         else
-            cnt <= {DEPTH{1'b0}};
+            cnt <= { DEPTH { 1'b0 } };
 
-    always@(posedge clk)
-        if(cnt == {DEPTH{1'b1}})
+    always @ (posedge clk)
+        if (cnt == { DEPTH { 1'b1 } })
             sw_out <= sw_in_s;
 
 endmodule
 
 //--------------------------------------------------------------------
 
-module de0_single_digit_display
+module mfp_single_digit_display
 (
     input      [3:0] digit,
     output reg [6:0] seven_segments
