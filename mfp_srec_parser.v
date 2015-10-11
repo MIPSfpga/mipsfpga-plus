@@ -1,4 +1,4 @@
-module srec_parser
+module mfp_srec_parser
 (
     input             clock,
     input             reset_n,

@@ -51,12 +51,15 @@ set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_gpio_slave.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_lite_matrix.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_lite_matrix_with_loader.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_ram_slave.v
+set_global_assignment -name VERILOG_FILE ../../../mfp_clock_dividers.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_dual_port_ram.v
+set_global_assignment -name VERILOG_FILE ../../../mfp_seven_segment_displays.v
+set_global_assignment -name VERILOG_FILE ../../../mfp_srec_parser.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_srec_parser_to_ahb_lite_bridge.v
+set_global_assignment -name VERILOG_FILE ../../../mfp_switch_and_button_debouncers.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_system.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_testbench.v
-set_global_assignment -name VERILOG_FILE ../../../srec_parser.v
-set_global_assignment -name VERILOG_FILE ../../../uart_receiver.v
+set_global_assignment -name VERILOG_FILE ../../../mfp_uart_receiver.v
 
 set_global_assignment -name VERILOG_FILE ../../../MIPSfpga/rtl_up/mipsfpga_sys.v
 set_global_assignment -name VERILOG_FILE ../../../MIPSfpga/rtl_up/mipsfpga_ahb_ram_reset.v

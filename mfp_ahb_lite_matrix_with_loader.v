@@ -31,7 +31,7 @@ module mfp_ahb_lite_matrix_with_loader
     wire [7:0] char_data;
     wire       char_ready;
 
-    uart_receiver uart_receiver
+    mfp_uart_receiver mfp_uart_receiver
     (
         .clock      ( HCLK       ),
         .reset_n    ( HRESETn    ),
@@ -49,7 +49,7 @@ module mfp_ahb_lite_matrix_with_loader
     wire [ 7:0] write_byte;
     wire        write_enable;
 
-    srec_parser srec_parser
+    mfp_srec_parser mfp_srec_parser
     (
         .clock           ( HCLK           ),
         .reset_n         ( HRESETn        ),
