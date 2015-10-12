@@ -23,6 +23,21 @@ endmodule
 
 //--------------------------------------------------------------------
 
+module mfp_clock_divider_100_MHz_to_25_MHz_12_Hz_0_75_Hz
+(
+    input  clki,
+    input  sel_lo,
+    input  sel_mid,
+    output clko
+);
+
+    mfp_clock_divider # (.DIV_POW (27))
+    mfp_clock_divider (clki, sel_lo, sel_mid, clko);
+
+endmodule
+
+//--------------------------------------------------------------------
+
 module mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz
 (
     input  clki,

@@ -7,6 +7,7 @@
 set_property -dict { PACKAGE_PIN E3    IOSTANDARD LVCMOS33 } [get_ports { CLK100MHZ }]; #IO_L12P_T1_MRCC_35 Sch=clk100mhz
 create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports {CLK100MHZ}];
 
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets ejtag_tck_in] 
 
 #Switches
 
@@ -252,14 +253,47 @@ set_property -dict { PACKAGE_PIN H16   IOSTANDARD LVCMOS33 } [get_ports { JB[10]
 #set_property -dict { PACKAGE_PIN L13   IOSTANDARD LVCMOS33 } [get_ports { QSPI_CSN }]; #IO_L6P_T0_FCS_B_14 Sch=qspi_csn
 
 
+# Slow clock
 
+create_clock -name "slow_clk_g" -period 40.0
 
+# I/O virtual clock
 
+#create_clock -period 10.000 -name "clk_virt"
+create_clock -period 40.000 -name "clk_virt"
 
+# EJTAG virtual clock
 
+#create_clock -name "ejtag_tck" -period 10.0
+create_clock -name "ejtag_tck" -period 40.0
 
+# cut all paths to and from "clk_virt", "tck"
+set_clock_groups -physically_exclusive -group "clk_virt"
+set_clock_groups -physically_exclusive -group "ejtag_tck"
 
+# tsu/th constraints
+set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports {SW[*]}]
+set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports {SW[*]}]
+set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports BTNC]
+set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports BTNC]
+set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports CPU_RESETN]
+set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports CPU_RESETN]
+set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports BTND]
+set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports BTND]
+set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports BTNL]
+set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports BTNL]
+set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports BTNR]
+set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports BTNR]
+set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports BTNU]
+set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports BTNU]
+set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports JB[1]]
+set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports JB[1]]
+set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports JB[2]]
+set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports JB[2]]
+set_input_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports JB[4]]
+set_input_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports JB[4]]
 
-
-
-
+set_output_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports {LED[*]}]
+set_output_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports {LED[*]}]
+set_output_delay -clock "clk_virt" -min -add_delay 0.000 [get_ports {JB[3]}]
+set_output_delay -clock "clk_virt" -max -add_delay 10.000 [get_ports {JB[3]}]

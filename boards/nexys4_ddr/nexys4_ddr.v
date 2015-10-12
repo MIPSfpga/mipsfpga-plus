@@ -56,7 +56,7 @@ module nexys4_ddr
         .clko    ( slow_clk  )
     );
 
-    BUFG BUFG (.O ( slow_clk ), .I ( slow_clk_g ));
+    BUFG BUFG_slow_clk (.O ( slow_clk ), .I ( slow_clk_g ));
 
     wire [17:0] IO_Switches  = { 2'b0, SW };
     wire [ 4:0] IO_Buttons   = { BTNU, BTND, BTNL, BTNC, BTNR };
@@ -80,8 +80,8 @@ module nexys4_ddr
 
     wire ejtag_tck_in, ejtag_tck;
 
-    IBUF IBUF (.O ( ejtag_tck_in ), .I ( JB [4]       ));
-    BUFG BUFG (.O ( ejtag_tck    ), .I ( ejtag_tck_in ));
+    IBUF IBUF           (.O ( ejtag_tck_in ), .I ( JB [4]       ));
+    BUFG BUFG_ejtag_tck (.O ( ejtag_tck    ), .I ( ejtag_tck_in ));
 
     mfp_system mfp_system
     (
@@ -98,7 +98,7 @@ module nexys4_ddr
         .EJ_TDO           (   JB [3]        ),
         .EJ_TMS           (   JB [1]        ),
         .EJ_TCK           (   ejtag_tck_in  ),
-        .SI_ColdReset_N   ( ~ JB [8]        ),
+        .SI_ColdReset     ( ~ JB [8]        ),
         .EJ_DINT          (   1'b0          ),
 
         .IO_Switches      ( IO_Switches     ),
