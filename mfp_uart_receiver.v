@@ -1,3 +1,5 @@
+`include "mfp_ahb_lite_matrix_config.vh"
+
 module mfp_uart_receiver
 (
     input  clock,
@@ -7,9 +9,12 @@ module mfp_uart_receiver
     output           byte_ready
 );
 
-    // " / 2" because of switcheable clock 
-
+    `ifdef MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
     parameter  clock_frequency        = 50000000 / 2;
+    `else
+    parameter  clock_frequency        = 50000000;
+    `endif
+
     parameter  baud_rate              = 115200;
     localparam clock_cycles_in_symbol = clock_frequency / baud_rate;
 

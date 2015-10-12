@@ -50,7 +50,11 @@ module de0_cv
     inout   [35:0]  GPIO_1
 );
 
-    wire       slow_clk_g, slow_clk;
+    wire clk;
+
+    `ifdef MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+
+    wire       muxed_clk;
     wire [1:0] sw_db;
 
     mfp_multi_switch_or_button_sync_and_debouncer
@@ -68,14 +72,20 @@ module de0_cv
         .clki    ( CLOCK_50  ),
         .sel_lo  ( sw_db [0] ),
         .sel_mid ( sw_db [1] ),
-        .clko    ( slow_clk  )
+        .clko    ( muxed_clk )
     );
 
     global gclk
     (
-        .in     ( slow_clk   ), 
-        .out    ( slow_clk_g )
+        .in     ( muxed_clk  ), 
+        .out    ( clk        )
     );
+
+    `else
+
+    assign clk = CLOCK_50;
+
+    `endif
 
     wire [17:0] IO_RedLEDs;
     wire [ 8:0] IO_GreenLEDs;
@@ -87,7 +97,7 @@ module de0_cv
 
     mfp_system mfp_system
     (
-        .SI_ClkIn         (   slow_clk_g    ),
+        .SI_ClkIn         (   clk           ),
         .SI_Reset         ( ~ RESET_N       ),
                           
         .HADDR            ( HADDR           ),
@@ -111,7 +121,6 @@ module de0_cv
         .UART_RX          ( GPIO_1 [31]     ),
         .UART_TX          ( /* TODO */      )
     );
-
 
     assign GPIO_1 [15] = 1'b0;
     assign GPIO_1 [14] = 1'b0;

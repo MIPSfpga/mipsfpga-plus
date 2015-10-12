@@ -31,11 +31,15 @@ module nexys4_ddr
 
     output [ 7:0] AN,
 
-    output [12:1] JA,
-    output [12:1] JB
+    inout  [12:1] JA,
+    inout  [12:1] JB
 );
 
-    wire       slow_clk_g, slow_clk;
+    wire clk;
+
+    `ifdef MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+
+    wire       muxed_clk;
     wire [1:0] sw_db;
 
     mfp_multi_switch_or_button_sync_and_debouncer
@@ -53,10 +57,16 @@ module nexys4_ddr
         .clki    ( CLK100MHZ ),
         .sel_lo  ( sw_db [0] ),
         .sel_mid ( sw_db [1] ),
-        .clko    ( slow_clk  )
+        .clko    ( muxed_clk )
     );
 
-    BUFG BUFG_slow_clk (.O ( slow_clk ), .I ( slow_clk_g ));
+    BUFG BUFG_slow_clk (.O ( clk ), .I ( muxed_clk ));
+
+    `else
+
+    clk_wiz_0 clk_wiz_0 (.clk_in1 (CLK100MHZ), .clk_out1 (clk));
+
+    `endif
 
     wire [17:0] IO_Switches  = { 2'b0, SW };
     wire [ 4:0] IO_Buttons   = { BTNU, BTND, BTNL, BTNC, BTNR };
@@ -85,7 +95,7 @@ module nexys4_ddr
 
     mfp_system mfp_system
     (
-        .SI_ClkIn         (   slow_clk_g    ),
+        .SI_ClkIn         (   clk           ),
         .SI_Reset         ( ~ CPU_RESETN    ),
                           
         .HADDR            ( HADDR           ),
