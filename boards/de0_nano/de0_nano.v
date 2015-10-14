@@ -80,7 +80,7 @@ module de0_nano
 
     wire [17:0] IO_RedLEDs;
     wire [ 8:0] IO_GreenLEDs;
-    wire [17:0] IO_Switches   = { 14'b0, SW  [3:0] },
+    wire [17:0] IO_Switches   = { 14'b0, SW  [3:0] };
     wire [ 4:0] IO_Buttons    = {  3'b0, KEY [1:0] };
 
     assign LED = IO_RedLEDs [7:0] | IO_GreenLEDs [7:0];
@@ -111,7 +111,7 @@ module de0_nano
         .IO_RedLEDs       ( IO_RedLEDs      ),
         .IO_GreenLEDs     ( IO_GreenLEDs    ),
                           
-        .UART_RX          ( GPIO_1 [31]     ),
+        .UART_RX          ( GPIO_1_D [31]   ),
         .UART_TX          ( /* TODO */      )
     );
 

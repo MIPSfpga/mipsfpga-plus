@@ -40,8 +40,8 @@
 `define MFP_RAM_RESET_ADDR          32'h1fc?????
 `define MFP_RAM_ADDR                32'h0???????
 
-`define MFP_RAM_RESET_ADDR_WIDTH    13 
-`define MFP_RAM_ADDR_WIDTH          14 
+`define MFP_RAM_RESET_ADDR_WIDTH    10  // 13 
+`define MFP_RAM_ADDR_WIDTH          11  // 14 
 
 `define MFP_RAM_RESET_ADDR_MATCH    7'h7f
 `define MFP_RAM_ADDR_MATCH          1'b0
