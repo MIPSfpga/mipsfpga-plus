@@ -7,6 +7,8 @@
 # Create Clock
 #**************************************************************
 create_clock -period 20 [get_ports CLOCK_50]
+create_clock -period 20 [get_nets de0_nano|clk]
+create_clock -period 20 [get_ports GPIO_1_D[15]]
 
 #**************************************************************
 # Create Generated Clock

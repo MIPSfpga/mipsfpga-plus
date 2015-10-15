@@ -3,4 +3,4 @@ QUARTUS_VERSION = "9.1"
 
 # Revisions
 
-PROJECT_REVISION = "DE0_NANO"
+PROJECT_REVISION = "de0_nano"

@@ -98,12 +98,12 @@ module de0_nano
         .HWDATA           ( HWDATA          ),
         .HWRITE           ( HWRITE          ),
                           
-        .EJ_TRST_N_probe  (   GPIO_1_D [22] ),
-        .EJ_TDI           (   GPIO_1_D [21] ),
-        .EJ_TDO           (   GPIO_1_D [19] ),
-        .EJ_TMS           (   GPIO_1_D [23] ),
-        .EJ_TCK           (   GPIO_1_D [17] ),
-        .SI_ColdReset     ( ~ GPIO_1_D [20] ),
+        .EJ_TRST_N_probe  (   GPIO_0_D [20] ),
+        .EJ_TDI           (   GPIO_0_D [19] ),
+        .EJ_TDO           (   GPIO_0_D [17] ),
+        .EJ_TMS           (   GPIO_0_D [21] ),
+        .EJ_TCK           (   GPIO_0_D [15] ),
+        .SI_ColdReset     ( ~ GPIO_0_D [18] ),
         .EJ_DINT          (   1'b0          ),
 
         .IO_Switches      ( IO_Switches     ),
@@ -111,15 +111,13 @@ module de0_nano
         .IO_RedLEDs       ( IO_RedLEDs      ),
         .IO_GreenLEDs     ( IO_GreenLEDs    ),
                           
-        .UART_RX          ( GPIO_1_D [31]   ),
+        .UART_RX          ( GPIO_0_D [29]   ),
         .UART_TX          ( /* TODO */      )
     );
 
-    /*
-    assign GPIO_1_D [15] = 1'b0;
-    assign GPIO_1_D [14] = 1'b0;
-    assign GPIO_1_D [13] = 1'b1;
-    assign GPIO_1_D [12] = 1'b1;
-    */
+    assign GPIO_0_D [13] = 1'b0;
+    assign GPIO_0_D [12] = 1'b0;
+    assign GPIO_0_D [11] = 1'b1;
+    assign GPIO_0_D [10] = 1'b1;
 
 endmodule
