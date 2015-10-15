@@ -1,3 +1,5 @@
+`include "mfp_ahb_lite_matrix_config.vh"
+
 module de0_nano
 (
     input         CLOCK_50,
@@ -83,8 +85,8 @@ module de0_nano
     wire [17:0] IO_Switches   = { 14'b0, SW  [3:0] };
     wire [ 4:0] IO_Buttons    = {  3'b0, KEY [1:0] };
 
-    assign LED = IO_RedLEDs [7:0] | IO_GreenLEDs [7:0];
-
+    assign LED = IO_RedLEDs [7:0] };
+                          
     wire [31:0] HADDR, HRDATA, HWDATA;
     wire        HWRITE;
 
@@ -112,7 +114,11 @@ module de0_nano
         .IO_GreenLEDs     ( IO_GreenLEDs    ),
                           
         .UART_RX          ( GPIO_0_D [29]   ),
-        .UART_TX          ( /* TODO */      )
+        .UART_TX          ( /* TODO */      ),
+
+        .SPI_CS           ( GPIO_0_D [32]   ),
+        .SPI_SCK          ( GPIO_0_D [26]   ),
+        .SPI_SDO          ( GPIO_0_D [28]   )
     );
 
     assign GPIO_0_D [13] = 1'b0;

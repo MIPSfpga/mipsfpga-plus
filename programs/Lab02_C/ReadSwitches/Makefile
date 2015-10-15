@@ -6,9 +6,10 @@ endif
 
 # Imagination CodeScape MIPS SDK
 #GCC_PREFIX = $(MIPS_ELF_ROOT)/bin/mips-mti-elf-
+GCC_PREFIX = mips-mti-elf-
 
 # Mentor Sourcery CodeBench Lite Edition for MIPS ELF
-GCC_PREFIX = /usr/local/mips-2014.05/bin/mips-sde-elf-
+#GCC_PREFIX = /usr/local/mips-2014.05/bin/mips-sde-elf-
 
 CC=$(GCC_PREFIX)gcc
 LD=$(GCC_PREFIX)gcc

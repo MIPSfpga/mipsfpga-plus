@@ -1,3 +1,5 @@
+`include "mfp_ahb_lite_matrix_config.vh"
+
 module de0_cv
 (
     input           CLOCK2_50,
@@ -119,7 +121,11 @@ module de0_cv
         .IO_GreenLEDs     ( IO_GreenLEDs    ),
                           
         .UART_RX          ( GPIO_1 [31]     ),
-        .UART_TX          ( /* TODO */      )
+        .UART_TX          ( /* TODO */      ),
+
+        .SPI_CS           ( /* TODO */      ),
+        .SPI_SCK          ( /* TODO */      ),
+        .SPI_SDO          ( /* TODO */      )
     );
 
     assign GPIO_1 [15] = 1'b0;

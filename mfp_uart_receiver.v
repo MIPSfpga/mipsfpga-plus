@@ -19,7 +19,7 @@ module mfp_uart_receiver
     localparam clock_cycles_in_symbol = clock_frequency / baud_rate;
 
     // Synchronize rx input to clock
-
+/*
     reg rx_sync1, rx_sync;
 
     always @(posedge clock or negedge reset_n)
@@ -35,6 +35,15 @@ module mfp_uart_receiver
             rx_sync  <= rx_sync1;
         end
     end
+*/
+    wire rx_sync;
+
+mfp_switch_or_button_sync_and_debouncer mfp_switch_or_button_sync_and_debouncer
+(   
+    .clk (clock),
+    .sw_in (rx),
+    .sw_out (rx_sync)
+);
 
     // Finding edge for start bit
 

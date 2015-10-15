@@ -25,7 +25,11 @@ module mfp_system
     output [ 8:0] IO_GreenLEDs,
 
     input         UART_RX,
-    output        UART_TX
+    output        UART_TX,
+
+    output        SPI_CS,
+    output        SPI_SCK,
+    input         SPI_SDO
 );
 
     wire MFP_Reset;
@@ -300,32 +304,45 @@ module mfp_system
 
     assign UART_TX         = 1'b0;
 
+    wire [15:0] IO_LightSensor;
+
     mfp_ahb_lite_matrix_with_loader ahb_lite_matrix
     (
-        .HCLK          (   HCLK          ),
-        .HRESETn       ( ~ SI_Reset      ),  // Not HRESETn - this is necessary for serial loader
-        .HADDR         (   HADDR         ),
-        .HBURST        (   HBURST        ),
-        .HMASTLOCK     (   HMASTLOCK     ),
-        .HPROT         (   HPROT         ),
-        .HSIZE         (   HSIZE         ),
-        .HTRANS        (   HTRANS        ),
-        .HWDATA        (   HWDATA        ),
-        .HWRITE        (   HWRITE        ),
-        .HRDATA        (   HRDATA        ),
-        .HREADY        (   HREADY        ),
-        .HRESP         (   HRESP         ),
-        .SI_Endian     (   SI_Endian     ),
-                                           
-        .IO_Switches   (   IO_Switches   ),
-        .IO_Buttons    (   IO_Buttons    ),
-        .IO_RedLEDs    (   IO_RedLEDs    ),
-        .IO_GreenLEDs  (   IO_GreenLEDs  ), 
+        .HCLK            (   HCLK            ),
+        .HRESETn         ( ~ SI_Reset        ),  // Not HRESETn - this is necessary for serial loader
+        .HADDR           (   HADDR           ),
+        .HBURST          (   HBURST          ),
+        .HMASTLOCK       (   HMASTLOCK       ),
+        .HPROT           (   HPROT           ),
+        .HSIZE           (   HSIZE           ),
+        .HTRANS          (   HTRANS          ),
+        .HWDATA          (   HWDATA          ),
+        .HWRITE          (   HWRITE          ),
+        .HRDATA          (   HRDATA          ),
+        .HREADY          (   HREADY          ),
+        .HRESP           (   HRESP           ),
+        .SI_Endian       (   SI_Endian       ),
+                                               
+        .IO_Switches     (   IO_Switches     ),
+        .IO_Buttons      (   IO_Buttons      ),
+        .IO_RedLEDs      (   IO_RedLEDs      ),
+        .IO_GreenLEDs    (   IO_GreenLEDs    ), 
+        .IO_LightSensor  (   IO_LightSensor  ), 
                            
-        .UART_RX       (   UART_RX       ), 
-        .UART_TX       (   UART_TX       ),
+        .UART_RX         (   UART_RX         ), 
+        .UART_TX         (   UART_TX         ),
                            
-        .MFP_Reset     (   MFP_Reset     )
+        .MFP_Reset       (   MFP_Reset       )
+    );
+
+    mfp_pmod_als_spi_receiver mfp_pmod_als_spi_receiver
+    (
+        .clock   (   SI_ClkIn       ),
+        .reset_n ( ~ SI_Reset       ),
+        .cs      (   SPI_CS         ),
+        .sck     (   SPI_SCK        ),
+        .sdo     (   SPI_SDO        ),
+        .value   (   IO_LightSensor )
     );
 
 endmodule

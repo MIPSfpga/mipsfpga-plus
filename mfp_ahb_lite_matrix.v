@@ -22,6 +22,7 @@ module mfp_ahb_lite_matrix
     input  [ 4:0] IO_Buttons,
     output [17:0] IO_RedLEDs,
     output [ 8:0] IO_GreenLEDs,
+    input  [15:0] IO_LightSensor,
 
     input         UART_RX,
     output        UART_TX
@@ -94,26 +95,27 @@ module mfp_ahb_lite_matrix
 
     mfp_ahb_gpio_slave gpio
     (
-        .HCLK         ( HCLK         ),
-        .HRESETn      ( HRESETn      ),
-        .HADDR        ( HADDR        ),
-        .HBURST       ( HBURST       ),
-        .HMASTLOCK    ( HMASTLOCK    ),
-        .HPROT        ( HPROT        ),
-        .HSEL         ( HSEL [2]     ),
-        .HSIZE        ( HSIZE        ),
-        .HTRANS       ( HTRANS       ),
-        .HWDATA       ( HWDATA       ),
-        .HWRITE       ( HWRITE       ),
-        .HRDATA       ( HRDATA_2     ),
-        .HREADY       ( HREADY_2     ),
-        .HRESP        ( HRESP_2      ),
-        .SI_Endian    ( SI_Endian    ),
-
-        .IO_Switches  ( IO_Switches  ),
-        .IO_Buttons   ( IO_Buttons   ),
-        .IO_RedLEDs   ( IO_RedLEDs   ),
-        .IO_GreenLEDs ( IO_GreenLEDs )
+        .HCLK            ( HCLK            ),
+        .HRESETn         ( HRESETn         ),
+        .HADDR           ( HADDR           ),
+        .HBURST          ( HBURST          ),
+        .HMASTLOCK       ( HMASTLOCK       ),
+        .HPROT           ( HPROT           ),
+        .HSEL            ( HSEL [2]        ),
+        .HSIZE           ( HSIZE           ),
+        .HTRANS          ( HTRANS          ),
+        .HWDATA          ( HWDATA          ),
+        .HWRITE          ( HWRITE          ),
+        .HRDATA          ( HRDATA_2        ),
+        .HREADY          ( HREADY_2        ),
+        .HRESP           ( HRESP_2         ),
+        .SI_Endian       ( SI_Endian       ),
+                                           
+        .IO_Switches     ( IO_Switches     ),
+        .IO_Buttons      ( IO_Buttons      ),
+        .IO_RedLEDs      ( IO_RedLEDs      ),
+        .IO_GreenLEDs    ( IO_GreenLEDs    ),
+        .IO_LightSensor  ( IO_LightSensor  )
     );
 
     assign HREADY = HREADY_0 | HREADY_1 | HREADY_2;

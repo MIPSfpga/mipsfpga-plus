@@ -394,6 +394,7 @@ set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_lite_matrix_with_loade
 set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_ram_slave.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_clock_dividers.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_dual_port_ram.v
+set_global_assignment -name VERILOG_FILE ../../../mfp_pmod_als_spi_receiver.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_seven_segment_displays.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_srec_parser.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_srec_parser_to_ahb_lite_bridge.v
@@ -548,3 +549,5 @@ set_global_assignment -name SEARCH_PATH ../../..
 set_global_assignment -name SEARCH_PATH ../../../../../MIPSfpga/rtl_up
 
 set_global_assignment -name SDC_FILE de0_nano.sdc
+
+set_global_assignment -name ADVANCED_PHYSICAL_OPTIMIZATION OFF

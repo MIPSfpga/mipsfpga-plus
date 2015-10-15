@@ -12,20 +12,34 @@ module mfp_pmod_als_spi_receiver
     reg [15:0] shift;
 
     always @ (posedge clock or negedge reset_n)
+    begin       
         if (! reset_n)
             cnt <= 22'b100;
         else
-            cnt <= cnt + 1;
+            cnt <= cnt + 22'b1;
+    end
 
-    assign cs  =   cnt [8];
     assign sck = ~ cnt [3];
+    assign cs  =   cnt [8];
+
+    assign sample_bit = ( cs == 1'b0 && cnt [3:0] == 4'b1111 );
+    assign value_done = ( cnt [21:0] == 22'b0 );
 
     always @ (posedge clock or negedge reset_n)
+    begin       
         if (! reset_n)
-            shift <= 16'b00;
-        else if (cs == 1'b0 && cnt [3:0] == 4'b0111)
+        begin       
+            shift <= 16'h0000;
+            value <= 16'h0000;
+        end
+        else if (sample_bit)
+        begin       
             shift <= (shift << 1) | sdo;
-        else if (cnt [21:0] == 22'b0)
+        end
+        else if (value_done)
+        begin       
             value <= shift;
+        end
+    end
 
 endmodule

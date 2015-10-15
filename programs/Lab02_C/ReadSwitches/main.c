@@ -16,6 +16,13 @@ int main() {
   volatile int *IO_LEDR = (int*)0xbf800000;
   volatile unsigned int switches;
 
+  while (1)
+  {
+    *IO_LEDR = switches;
+    switches += 5;
+    delay ();	  
+  }
+
   while (1) {
     switches = *IO_SWITCHES;
     *IO_LEDR = switches;	  
@@ -28,7 +35,7 @@ int main() {
 
 void delay() {
   volatile unsigned int j;
-return;
+//return;
   for (j = 0; j < (1000000); j++) ;	// delay 
 }
 

@@ -21,6 +21,7 @@ module mfp_ahb_lite_matrix_with_loader
     input  [ 4:0] IO_Buttons,
     output [17:0] IO_RedLEDs,
     output [ 8:0] IO_GreenLEDs,
+    input  [15:0] IO_LightSensor,
 
     input         UART_RX,
     output        UART_TX,
@@ -48,6 +49,8 @@ module mfp_ahb_lite_matrix_with_loader
     wire [31:0] write_address;
     wire [ 7:0] write_byte;
     wire        write_enable;
+
+//    assign IO_RedLEDs = { in_progress, format_error, checksum_error, write_enable, write_address [31:0] };
 
     mfp_srec_parser mfp_srec_parser
     (
@@ -100,30 +103,31 @@ module mfp_ahb_lite_matrix_with_loader
 
     mfp_ahb_lite_matrix ahb_lite_matrix
     (
-        .HCLK          ( HCLK          ),
-        .HRESETn       ( HRESETn       ),
-
-        .HADDR         ( in_progress ? loader_HADDR     : HADDR     ),
-        .HBURST        ( in_progress ? loader_HBURST    : HBURST    ),
-        .HMASTLOCK     ( in_progress ? loader_HMASTLOCK : HMASTLOCK ),
-        .HPROT         ( in_progress ? loader_HPROT     : HPROT     ),
-        .HSIZE         ( in_progress ? loader_HSIZE     : HSIZE     ),
-        .HTRANS        ( in_progress ? loader_HTRANS    : HTRANS    ),
-        .HWDATA        ( in_progress ? loader_HWDATA    : HWDATA    ),
-        .HWRITE        ( in_progress ? loader_HWRITE    : HWRITE    ),
-
-        .HRDATA        ( HRDATA        ),
-        .HREADY        ( HREADY        ),
-        .HRESP         ( HRESP         ),
-        .SI_Endian     ( SI_Endian     ),
-                                         
-        .IO_Switches   ( IO_Switches   ),
-        .IO_Buttons    ( IO_Buttons    ),
-        .IO_RedLEDs    ( IO_RedLEDs    ),
-        .IO_GreenLEDs  ( IO_GreenLEDs  ), 
+        .HCLK            ( HCLK            ),
+        .HRESETn         ( HRESETn         ),
+                         
+        .HADDR           ( in_progress ? loader_HADDR     : HADDR     ),
+        .HBURST          ( in_progress ? loader_HBURST    : HBURST    ),
+        .HMASTLOCK       ( in_progress ? loader_HMASTLOCK : HMASTLOCK ),
+        .HPROT           ( in_progress ? loader_HPROT     : HPROT     ),
+        .HSIZE           ( in_progress ? loader_HSIZE     : HSIZE     ),
+        .HTRANS          ( in_progress ? loader_HTRANS    : HTRANS    ),
+        .HWDATA          ( in_progress ? loader_HWDATA    : HWDATA    ),
+        .HWRITE          ( in_progress ? loader_HWRITE    : HWRITE    ),
+                         
+        .HRDATA          ( HRDATA          ),
+        .HREADY          ( HREADY          ),
+        .HRESP           ( HRESP           ),
+        .SI_Endian       ( SI_Endian       ),
+                                             
+        .IO_Switches     ( IO_Switches     ),
+        .IO_Buttons      ( IO_Buttons      ),
+        .IO_RedLEDs      ( IO_RedLEDs      ),
+        .IO_GreenLEDs    ( IO_GreenLEDs    ), 
+        .IO_LightSensor  ( IO_LightSensor  ), 
                                        
-        .UART_RX       ( UART_RX       ), 
-        .UART_TX       ( UART_TX       ) 
+        .UART_RX         ( UART_RX         ), 
+        .UART_TX         ( UART_TX         ) 
     );
 
 endmodule
