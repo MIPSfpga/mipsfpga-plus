@@ -6,8 +6,8 @@ create_clock -period 20 [get_ports CLOCK2_50]
 create_clock -period 20 [get_ports CLOCK3_50]
 create_clock -period 20 [get_ports CLOCK_50]
 create_clock -period 20 [get_ports CLOCK4_50]
-#create_clock -period 40 [get_nets mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz|clko]
-create_clock -period 20 [get_nets de0_cv|clk]
+create_clock -period 40 [get_nets mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz|clko]
+#create_clock -period 20 [get_nets de0_cv|clk]
 create_clock -period 20 [get_ports GPIO_1[17]]
 
 

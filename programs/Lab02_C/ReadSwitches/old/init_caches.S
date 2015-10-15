@@ -166,4 +166,5 @@ LEAF(change_k0_cca)
 	mtc0	v0, C0_CONFIG	// write C0_Config
 	jr.hb   ra
     	nop
+
 END(change_k0_cca)

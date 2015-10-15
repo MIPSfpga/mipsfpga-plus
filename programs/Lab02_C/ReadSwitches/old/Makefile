@@ -4,17 +4,25 @@ ifndef MIPS_ELF_ROOT
 $(error MIPS_ELF_ROOT must be set to point to toolkit installation root)
 endif
 
-CC=mips-mti-elf-gcc
-LD=mips-mti-elf-gcc
-OD=mips-mti-elf-objdump
-OC=mips-mti-elf-objcopy
-SZ=mips-mti-elf-size
+# Imagination CodeScape MIPS SDK
+#GCC_PREFIX = $(MIPS_ELF_ROOT)/bin/mips-mti-elf-
+GCC_PREFIX = mips-mti-elf-
 
-CFLAGS = -O1 -g -EL -c -msoft-float -march=m14kc
+# Mentor Sourcery CodeBench Lite Edition for MIPS ELF
+#GCC_PREFIX = /usr/local/mips-2014.05/bin/mips-sde-elf-
+
+CC=$(GCC_PREFIX)gcc
+LD=$(GCC_PREFIX)gcc
+OD=$(GCC_PREFIX)objdump
+OC=$(GCC_PREFIX)objcopy
+SZ=$(GCC_PREFIX)size
+
+#CFLAGS = -O0 -g -EL -c -msoft-float -march=m14kc
+CFLAGS = -O2 -g -EL -c -msoft-float -march=m14kc
 LDFLAGS = -EL -msoft-float -march=m14kc -Wl,-Map=FPGA_Ram_map.txt
 
 # Set up the link addresses for a bootable C program on MIPSfpga
-LDFLAGS += -T uhi32.ld
+LDFLAGS += -T boot-uhi32.ld
 # Place the boot code (physical address). The virtual address for
 # boot code entry point is hard-wired to 0x9fc00000.
 LDFLAGS += -Wl,--defsym,__flash_start=0xbfc00000
@@ -46,16 +54,16 @@ all: FPGA_RAM
 COBJECTS=$(CSOURCES:.c=.o)
 AOBJECTS=$(ASOURCES:.S=.o)
 
-FPGA_RAM : $(AOBJECTS) $(COBJECTS) 
+FPGA_RAM : $(AOBJECTS) $(COBJECTS)
 	$(LD)  $(LDFLAGS) $(AOBJECTS) $(COBJECTS) -o FPGA_Ram.elf
 	$(SZ) FPGA_Ram.elf
 	$(OD) -D -S -l FPGA_Ram.elf > FPGA_Ram_dasm.txt
-	$(OD) -D FPGA_Ram.elf > FPGA_Ram_modelsim.txt
+	$(OD) -D -z FPGA_Ram.elf > FPGA_Ram_modelsim.txt
 	$(OC) FPGA_Ram.elf -O srec FPGA_Ram.rec
-	
+
 .c.o:
 	$(CC) $(CFLAGS) $< -o $@
-	
+
 .S.o:
 	$(CC) $(CFLAGS) $< -o $@
 
@@ -67,5 +75,3 @@ clean:
 	rm -f FPGA_Ram.elf
 	rm -f *.o
 	rm -rf MemoryFiles
-
-	

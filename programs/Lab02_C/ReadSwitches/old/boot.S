@@ -100,8 +100,6 @@ init_resources:                 # initializes resources for "cpu".
     jalr    a2
     nop
 
-#ifdef YURI_TO_DEBUG
-
     # The changing of Kernel mode cacheability must be done from KSEG1
     # Since the code is executing from KSEG0 It needs to do a jump to KSEG1 change K0 and jump back to KSEG0
 
@@ -110,8 +108,6 @@ init_resources:                 # initializes resources for "cpu".
     ins         a2, a1, 29, 1   # changed to KSEG1 address by setting bit 29
     jalr        a2
     nop
-
-#endif
 
     # Initialize the Data cache
 
@@ -123,7 +119,7 @@ init_resources:                 # initializes resources for "cpu".
 
     la      ra, all_done        # If main returns then go to all_done:.
     move    a0, zero            # Indicate that there are no arguments available.
-    la      v0, _start          # load the address of the CRT entry point _start.
+    la      v0, main            # load the address of the CRT entry point _start.
     mtc0    v0, $30             # Write ErrorEPC with the address of main
     ehb                         # clear hazards (makes sure write to ErrorPC has completed)
 
@@ -186,4 +182,3 @@ END(__cpu_init)
     mfc0    a0, C0_DESAVE       # Restore a0
 1:  b       1b  /* Stay here */
     nop
-
