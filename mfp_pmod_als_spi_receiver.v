@@ -22,8 +22,8 @@ module mfp_pmod_als_spi_receiver
     assign sck = ~ cnt [3];
     assign cs  =   cnt [8];
 
-    assign sample_bit = ( cs == 1'b0 && cnt [3:0] == 4'b1111 );
-    assign value_done = ( cnt [21:0] == 22'b0 );
+    wire sample_bit = ( cs == 1'b0 && cnt [3:0] == 4'b1111 );
+    wire value_done = ( cnt [21:0] == 22'b0 );
 
     always @ (posedge clock or negedge reset_n)
     begin       

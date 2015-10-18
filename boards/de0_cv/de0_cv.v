@@ -123,15 +123,17 @@ module de0_cv
         .UART_RX          ( GPIO_1 [31]     ),
         .UART_TX          ( /* TODO */      ),
 
-        .SPI_CS           ( /* TODO */      ),
-        .SPI_SCK          ( /* TODO */      ),
-        .SPI_SDO          ( /* TODO */      )
+        .SPI_CS           ( GPIO_0 [34]     ),
+        .SPI_SCK          ( GPIO_0 [28]     ),
+        .SPI_SDO          ( GPIO_0 [30]     )
     );
 
     assign GPIO_1 [15] = 1'b0;
     assign GPIO_1 [14] = 1'b0;
     assign GPIO_1 [13] = 1'b1;
     assign GPIO_1 [12] = 1'b1;
+
+    assign GPIO_0 [26] = 1'b0;
 
     mfp_single_digit_seven_segment_display digit_5
         (         HADDR      [31:28]   , HEX5 );

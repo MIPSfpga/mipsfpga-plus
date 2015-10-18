@@ -104,7 +104,7 @@ init_resources:                 # initializes resources for "cpu".
     // (that code, according to Sergey Vakulenko was imported to M14Kc from 24K example
     // without taling into account Cop0 difference.
 
-// #ifndef CHANGE_KSEG0_KERNEL_MODE_CACHEABILITY
+#ifndef DONT_CHANGE_KSEG0_KERNEL_MODE_CACHEABILITY
 
     # The changing of Kernel mode cacheability must be done from KSEG1
     # Since the code is executing from KSEG0 It needs to do a jump to KSEG1 change K0 and jump back to KSEG0
@@ -115,7 +115,7 @@ init_resources:                 # initializes resources for "cpu".
     jalr        a2
     nop
 
-// #endif
+#endif
 
     # Initialize the Data cache
 
@@ -132,9 +132,9 @@ init_resources:                 # initializes resources for "cpu".
     // because I need to be able to use both Codescape and CodeSourcery
     // and I don't have time to accomodate the linker script for CodeSourcery approproately
 
-#ifdef DO_C_INITIALIZATION
     la      v0, _start          # load the address of the CRT entry point _start.
-#else
+
+#ifdef SKIP_C_INITIALIZATION
     la      v0, main            # load the address of the CRT entry point _start.
 #endif
 
