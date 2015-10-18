@@ -22,11 +22,9 @@ int main ()
     for (;;)
     {
         MFP_RED_LEDS   = MFP_LIGHT_SENSOR;
-        MFP_GREEN_LEDS = MFP_LIGHT_SENSOR;
+        MFP_GREEN_LEDS = n ++;
 
         delay ();
-
-        n ++;
     }
 
     return 0;
