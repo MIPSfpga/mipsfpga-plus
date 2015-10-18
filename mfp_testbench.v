@@ -27,6 +27,10 @@ module mfp_testbench;
     reg         UART_RX;
     wire        UART_TX;
 
+    wire        SPI_CS;
+    wire        SPI_SCK;
+    reg         SPI_SDO;
+
     mfp_system mfp_system
     (
         .SI_ClkIn         ( SI_ClkIn         ),
@@ -49,10 +53,13 @@ module mfp_testbench;
         .IO_Buttons       ( IO_Buttons       ),
         .IO_RedLEDs       ( IO_RedLEDs       ),
         .IO_GreenLEDs     ( IO_GreenLEDs     ),
-        .IO_LightSensor   ( IO_LightSensor   ), 
                                               
         .UART_RX          ( UART_RX          ),
-        .UART_TX          ( UART_TX          ) 
+        .UART_TX          ( UART_TX          ), 
+
+        .SPI_CS           ( SPI_CS           ),
+        .SPI_SCK          ( SPI_SCK          ),
+        .SPI_SDO          ( SPI_SDO          )
     );
 
     initial
@@ -104,6 +111,7 @@ module mfp_testbench;
         );
     end
 
+    /*
     always @ (negedge SI_ClkIn)
     begin
         if (HADDR == 32'h1fc00058)
@@ -117,6 +125,7 @@ module mfp_testbench;
             $stop;
 	end
     end
+    */
 
     integer cycle; initial cycle = 0;
 

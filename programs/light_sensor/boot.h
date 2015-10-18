@@ -70,5 +70,3 @@ OF SUCH DAMAGE.
 // $28 gp and $29 sp
 #define r30_cpc_addr    $30  /* s8 Address of CPC register block after cpc_init. 0 indicates no CPC. */
 // $31 ra
-
-

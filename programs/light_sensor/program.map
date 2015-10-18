@@ -1,0 +1,793 @@
+Archive member included to satisfy reference by file (symbol)
+
+c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-atexit.o)
+                              c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\crt0.o (atexit)
+c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o)
+                              c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\crt0.o (exit)
+c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-impure.o)
+                              c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o) (_global_impure_ptr)
+c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__atexit.o)
+                              c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-atexit.o) (__register_exitproc)
+c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__call_atexit.o)
+                              c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o) (__call_exitprocs)
+c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exit.o)
+                              c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\crt0.o (__exit)
+c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_getargs.o)
+                              c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\crt0.o (__getargs)
+c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_get_ram_range.o)
+                              c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\crt0.o (_get_ram_range)
+c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_entry.o)
+                              (__exception_entry)
+c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+                              (__exception_handle_verbose)
+c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_register.o)
+                              c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_entry.o) (__first_boot)
+c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_boot.o)
+                              c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_register.o) (__register_excpt_boot)
+c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_isr.o)
+                              (__isr_vec)
+c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-strlen.o)
+                              c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o) (strlen)
+c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_write.o)
+                              c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o) (write)
+c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exception.o)
+                              c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o) (__uhi_exception)
+c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_indirect.o)
+                              c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o) (__uhi_indirect)
+c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-errno.o)
+                              c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_write.o) (__errno)
+
+Discarded input sections
+
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .reginfo       0x0000000000000000       0x18 C:\Users\YURI~1.PAN\AppData\Local\Temp\ccCwSox4.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 C:\Users\YURI~1.PAN\AppData\Local\Temp\ccCwSox4.o
+ .reginfo       0x0000000000000000       0x18 C:\Users\YURI~1.PAN\AppData\Local\Temp\cccJpPm5.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 C:\Users\YURI~1.PAN\AppData\Local\Temp\cccJpPm5.o
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-atexit.o)
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-atexit.o)
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o)
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o)
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-impure.o)
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-impure.o)
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__atexit.o)
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__atexit.o)
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__call_atexit.o)
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__call_atexit.o)
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exit.o)
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exit.o)
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_getargs.o)
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_getargs.o)
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_get_ram_range.o)
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_get_ram_range.o)
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_entry.o)
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_entry.o)
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_register.o)
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_register.o)
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_boot.o)
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_boot.o)
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_isr.o)
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_isr.o)
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-strlen.o)
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-strlen.o)
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_write.o)
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_write.o)
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exception.o)
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exception.o)
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_indirect.o)
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_indirect.o)
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-errno.o)
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-errno.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\crt0.o
+LOAD c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+LOAD c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+                0x00000000bfc00000                __flash_start = 0xbfc00000
+                0x0000000080000000                __flash_app_start = 0x80000000
+                0x0000000080000000                __app_start = 0x80000000
+                0x0000000080040000                __stack = 0x80040000
+                0x000000000001f800                __memory_size = 0x1f800
+LOAD C:\Users\YURI~1.PAN\AppData\Local\Temp\ccCwSox4.o
+LOAD C:\Users\YURI~1.PAN\AppData\Local\Temp\cccJpPm5.o
+LOAD c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof\libgcc.a
+LOAD c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof\libgcc.a
+LOAD c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+LOAD c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+                0x00000000bfc00000                __entry = DEFINED (__reset_vector)?0xbfc00000:_start
+START GROUP
+LOAD c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a
+LOAD c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a
+LOAD c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof\libgcc.a
+LOAD c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a
+END GROUP
+                0x0000000000000000                __DYNAMIC = 0x0
+                0x0000000000000000                PROVIDE (__stack, 0x0)
+                0x0000000000300000                PROVIDE (__memory_size, 0x300000)
+                0x0000000080000000                PROVIDE (__memory_base, 0x80000000)
+                0x0000000000000001                PROVIDE (__tlb_stride_length, 0x1)
+                0x0000000000000000                PROVIDE (__enable_xpa, 0x0)
+                0x0000000000000001                PROVIDE (__use_excpt_boot, 0x1)
+                0x0000000000000001                ASSERT ((DEFINED (__register_excpt_boot) || (__use_excpt_boot == 0x0)), Registration for boot context is required for UHI chaining)
+                0x0000000000000001                PROVIDE (__flush_to_zero, 0x1)
+                0x0000000080000d94                PROVIDE (__exception_handle, DEFINED (__exception_handle_quiet)?__exception_handle_quiet:__exception_handle_verbose)
+                0x0000000080000d94                PROVIDE (_mips_handle_exception, __exception_handle)
+                0x0000000000000000                PROVIDE (hardware_exit_hook, 0x0)
+                0x0000000000000000                PROVIDE (hardware_hazard_hook, 0x0)
+                0x0000000000000000                PROVIDE (hardware_init_hook, 0x0)
+                0x0000000000000000                PROVIDE (software_init_hook, 0x0)
+                0x0000000080000000                PROVIDE (__app_start, DEFINED (__reset_vector)?0x80000000:0x80200000)
+                0x0000000000000020                PROVIDE (__isr_vec_space, 0x20)
+                0x0000000000000009                PROVIDE (__isr_vec_count, 0x9)
+                0x00000000bfc00000                PROVIDE (__flash_start, DEFINED (__reset_vector)?0xbfc00000:__app_start)
+
+.bootrom        0x000000009fc00000      0x4a0 load address 0x00000000bfc00000
+ *(.reset)
+ .reset         0x000000009fc00000      0x49c C:\Users\YURI~1.PAN\AppData\Local\Temp\ccCwSox4.o
+                0x000000009fc00000                __reset_vector
+                0x000000009fc00014                __cpu_init
+                0x000000009fc000a8                init_icache
+                0x000000009fc00100                init_dcache
+                0x000000009fc00160                change_k0_cca
+                0x000000009fc00288                init_cp0
+                0x000000009fc00308                init_tlb
+ *(.boot)
+                0x000000009fc004a0                . = ALIGN (0x8)
+ *fill*         0x000000009fc0049c        0x4 00000000
+                0x00000000bfc004a0                PROVIDE (__flash_app_start, (SIZEOF (.bootrom) + __flash_start))
+
+.exception_vector
+                0x0000000080000000      0x320
+                0x0000000080000000                __excpt_ebase = ABSOLUTE (.)
+                0x0000000080000000                __base = .
+ *(.text.__exception_entry)
+ .text.__exception_entry
+                0x0000000080000000      0x194 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_entry.o)
+                0x0000000080000000                __exception_entry
+                0x0000000080000200                . = (__base + 0x200)
+ *fill*         0x0000000080000194       0x6c 00000000
+ *(SORT(.text.__isr_vec*))
+ .text.__isr_vec
+                0x0000000080000200      0x118 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_isr.o)
+                0x0000000080000200                __isr_vec_sw0
+                0x0000000080000200                __isr_vec
+                0x0000000080000220                __isr_vec_sw1
+                0x0000000080000240                __isr_vec_hw0
+                0x0000000080000260                __isr_vec_hw1
+                0x0000000080000280                __isr_vec_hw2
+                0x00000000800002a0                __isr_vec_hw3
+                0x00000000800002c0                __isr_vec_hw4
+                0x00000000800002e0                __isr_vec_hw5
+                0x0000000080000300                __isr_vec_fallback
+                0x0000000080000320                . = ((__base + 0x200) + (__isr_vec_space * __isr_vec_count))
+ *fill*         0x0000000080000318        0x8 00000000
+                0x0000000000000001                ASSERT ((__isr_vec_space == DEFINED (__isr_vec_sw0)?(__isr_vec_sw1 - __isr_vec_sw0):__isr_vec_space), Actual ISR vector spacing does not match __isr_vec_space)
+                0x0000000000000001                ASSERT (((__base + 0x200) == DEFINED (__isr_vec_sw0)?(__isr_vec_sw0 & 0xfffffffe):(__base + 0x200)), __isr_vec_sw0 is not placed at EBASE + 0x200)
+                0x0000000080000320                . = ALIGN (0x8)
+
+.text           0x0000000080000320     0x1718
+                0x0000000080000320                _ftext = .
+                0x0000000080000320                PROVIDE (eprol, .)
+ *(.text)
+ .text          0x0000000080000320      0x298 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\crt0.o
+                0x0000000080000324                _start
+                0x0000000080000578                _exit
+ .text          0x00000000800005b8        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+ .text          0x00000000800005b8      0x1a4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .text          0x000000008000075c        0x0 C:\Users\YURI~1.PAN\AppData\Local\Temp\ccCwSox4.o
+ .text          0x000000008000075c       0xb4 C:\Users\YURI~1.PAN\AppData\Local\Temp\cccJpPm5.o
+                0x000000008000075c                delay
+                0x00000000800007c4                main
+ .text          0x0000000080000810       0x48 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+ .text          0x0000000080000858        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+ .text          0x0000000080000858       0x28 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-atexit.o)
+                0x0000000080000858                atexit
+ .text          0x0000000080000880       0x3c c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o)
+                0x0000000080000880                exit
+ .text          0x00000000800008bc        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-impure.o)
+ .text          0x00000000800008bc      0x108 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__atexit.o)
+                0x00000000800008bc                __register_exitproc
+ .text          0x00000000800009c4      0x180 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__call_atexit.o)
+                0x00000000800009c4                __call_exitprocs
+ .text          0x0000000080000b44       0x88 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exit.o)
+                0x0000000080000b44                __exit
+ .text          0x0000000080000bcc       0xb8 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_getargs.o)
+                0x0000000080000bcc                __getargs
+ .text          0x0000000080000c84       0x48 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_get_ram_range.o)
+                0x0000000080000c84                _get_ram_range
+ .text          0x0000000080000ccc        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_entry.o)
+ .text          0x0000000080000ccc      0x7a4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+                0x0000000080000d94                __exception_handle_verbose
+ .text          0x0000000080001470       0xb4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_register.o)
+                0x0000000080001470                __first_boot
+                0x0000000080001474                __register_excpt_handler
+ .text          0x0000000080001524      0x27c c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_boot.o)
+                0x0000000080001524                __register_excpt_boot
+                0x00000000800015a0                __return_to_boot
+                0x0000000080001640                __chain_uhi_excpt
+                0x00000000800016f8                __get_startup_BEV
+                0x0000000080001710                __convert_argv_pointers
+ .text          0x00000000800017a0        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_isr.o)
+ .text          0x00000000800017a0       0x1c c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-strlen.o)
+                0x00000000800017a0                strlen
+ .text          0x00000000800017bc       0x50 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_write.o)
+                0x00000000800017bc                write
+ .text          0x000000008000180c       0x14 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exception.o)
+                0x000000008000180c                __uhi_exception
+ .text          0x0000000080001820       0x44 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_indirect.o)
+                0x0000000080001820                __uhi_indirect
+ .text          0x0000000080001864        0xc c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-errno.o)
+                0x0000000080001864                __errno
+ *(.text.*)
+ .text.__exception_save
+                0x0000000080001870      0x1c8 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_entry.o)
+                0x0000000080001870                _mips_xtlb_refill
+                0x0000000080001870                _mips_general_exception
+                0x0000000080001870                _mips_tlb_refill
+                0x0000000080001870                __exception_save
+ *(.gnu.linkonce.t.*)
+ *(.mips16.fn.*)
+ *(.mips16.call.*)
+
+.init           0x0000000080001a38       0x24
+ *(.init)
+ .init          0x0000000080001a38        0x8 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+                0x0000000080001a38                _init
+ .init          0x0000000080001a40        0x8 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .init          0x0000000080001a48        0x8 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+ .init          0x0000000080001a50        0xc c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+
+.fini           0x0000000080001a5c       0x1c
+ *(.fini)
+ .fini          0x0000000080001a5c        0x8 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+                0x0000000080001a5c                _fini
+ .fini          0x0000000080001a64        0x8 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .fini          0x0000000080001a6c        0xc c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+
+.rel.sdata      0x0000000080001a78        0x0
+                0x0000000080001a78                PROVIDE (__runtime_reloc_start, .)
+ *(.rel.sdata)
+                0x0000000080001a78                PROVIDE (__runtime_reloc_stop, .)
+                0x0000000080001a78                PROVIDE (etext, .)
+                0x0000000080001a78                _etext = .
+
+.eh_frame_hdr
+ *(.eh_frame_hdr)
+
+.eh_frame       0x0000000080001a78        0x4
+ *(.eh_frame)
+ .eh_frame      0x0000000080001a78        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .eh_frame      0x0000000080001a78        0x4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+
+.gcc_except_table
+ *(.gcc_except_table)
+
+.jcr            0x0000000080001a7c        0x4
+ *(.jcr)
+ .jcr           0x0000000080001a7c        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .jcr           0x0000000080001a7c        0x4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+
+.ctors          0x0000000080001a80        0x8
+ *crtbegin.o(.ctors)
+ .ctors         0x0000000080001a80        0x4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ *(EXCLUDE_FILE(*crtend.o) .ctors)
+ *(SORT(.ctors.*))
+ *(.ctors)
+ .ctors         0x0000000080001a84        0x4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+
+.dtors          0x0000000080001a88        0x8
+ *crtbegin.o(.dtors)
+ .dtors         0x0000000080001a88        0x4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ *(EXCLUDE_FILE(*crtend.o) .dtors)
+ *(SORT(.dtors.*))
+ *(.dtors)
+ .dtors         0x0000000080001a8c        0x4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+                0x0000000080001a8c                __DTOR_END__
+                0x0000000080001a90                . = .
+
+.MIPS.abiflags  0x0000000080001a90       0x18
+                0x0000000080001a90                __MIPS_abiflags_start = .
+ *(.MIPS.abiflags)
+ .MIPS.abiflags
+                0x0000000080001a90       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\crt0.o
+                0x0000000080001aa8                __MIPS_abiflags_end = .
+
+.rodata         0x0000000080001aa8      0x4a4
+ *(.rdata)
+ *(.rodata)
+ .rodata        0x0000000080001aa8       0x78 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+ *(.rodata.*)
+ .rodata.str1.4
+                0x0000000080001b20        0x2 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-impure.o)
+                                          0x4 (size before relaxing)
+ *fill*         0x0000000080001b22        0x2 
+ .rodata.str1.4
+                0x0000000080001b24      0x428 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+                                        0x44c (size before relaxing)
+ *(.gnu.linkonce.r.*)
+                0x0000000080001f50                _fdata = ALIGN (0x10)
+
+.data           0x0000000080001f50      0x494
+ *(.data)
+ .data          0x0000000080001f50        0xc c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\crt0.o
+ .data          0x0000000080001f5c        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+ .data          0x0000000080001f5c        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .data          0x0000000080001f5c        0x0 C:\Users\YURI~1.PAN\AppData\Local\Temp\ccCwSox4.o
+ .data          0x0000000080001f5c        0x0 C:\Users\YURI~1.PAN\AppData\Local\Temp\cccJpPm5.o
+ .data          0x0000000080001f5c        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+ .data          0x0000000080001f5c        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+ .data          0x0000000080001f5c        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-atexit.o)
+ .data          0x0000000080001f5c        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o)
+ *fill*         0x0000000080001f5c        0x4 
+ .data          0x0000000080001f60      0x428 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-impure.o)
+ .data          0x0000000080002388        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__atexit.o)
+ .data          0x0000000080002388        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__call_atexit.o)
+ .data          0x0000000080002388        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exit.o)
+ .data          0x0000000080002388        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_getargs.o)
+ .data          0x0000000080002388        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_get_ram_range.o)
+ .data          0x0000000080002388        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_entry.o)
+ .data          0x0000000080002388        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+ .data          0x0000000080002388        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_register.o)
+ .data          0x0000000080002388       0x5c c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_boot.o)
+                0x0000000080002388                __start_ctx
+                0x00000000800023d0                __MIPS_UHI_BAD_POINTER
+ .data          0x00000000800023e4        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_isr.o)
+ .data          0x00000000800023e4        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-strlen.o)
+ .data          0x00000000800023e4        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_write.o)
+ .data          0x00000000800023e4        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exception.o)
+ .data          0x00000000800023e4        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_indirect.o)
+ .data          0x00000000800023e4        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-errno.o)
+ *(.data.*)
+ *(.gnu.linkonce.d.*)
+
+.tm_clone_table
+                0x00000000800023e4        0x0
+ .tm_clone_table
+                0x00000000800023e4        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .tm_clone_table
+                0x00000000800023e4        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+                0x00000000800023e8                . = ALIGN (0x8)
+                0x000000008000a3e8                _gp = (. + 0x8000)
+                0x000000008000a3e8                __global = _gp
+
+.lit8
+ *(.lit8)
+
+.lit4
+ *(.lit4)
+
+.sdata          0x00000000800023e8        0xc
+ *(.sdata)
+ .sdata         0x00000000800023e8        0x4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+                0x00000000800023e8                __dso_handle
+ .sdata         0x00000000800023ec        0x8 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-impure.o)
+                0x00000000800023ec                _global_impure_ptr
+                0x00000000800023f0                _impure_ptr
+ *(.sdata.*)
+ *(.gnu.linkonce.s.*)
+                0x00000000800023f4                . = ALIGN (0x4)
+                0x00000000800023f4                PROVIDE (edata, .)
+                0x00000000800023f4                _edata = .
+                0x00000000800023f4                _fbss = .
+
+.sbss
+ *(.sbss)
+ *(.sbss.*)
+ *(.gnu.linkonce.sb.*)
+ *(.scommon)
+
+.bss            0x00000000800023f4       0x20
+                0x00000000800023f4                _bss_start = .
+ *(.bss)
+ .bss           0x00000000800023f4        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\crt0.o
+ .bss           0x00000000800023f4        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+ .bss           0x00000000800023f4       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .bss           0x0000000080002414        0x0 C:\Users\YURI~1.PAN\AppData\Local\Temp\ccCwSox4.o
+ .bss           0x0000000080002414        0x0 C:\Users\YURI~1.PAN\AppData\Local\Temp\cccJpPm5.o
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-atexit.o)
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o)
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-impure.o)
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__atexit.o)
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__call_atexit.o)
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exit.o)
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_getargs.o)
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_get_ram_range.o)
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_entry.o)
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_register.o)
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_boot.o)
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_isr.o)
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-strlen.o)
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_write.o)
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exception.o)
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_indirect.o)
+ .bss           0x0000000080002414        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-errno.o)
+ *(.bss.*)
+ *(.gnu.linkonce.b.*)
+ *(COMMON)
+                0x0000000080002414                . = ALIGN (0x4)
+                0x0000000080002414                PROVIDE (end, .)
+                0x0000000080002414                _end = .
+
+.startdata      0x0000000080002420      0x410
+ *(.startdata)
+ .startdata     0x0000000080002420      0x410 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\crt0.o
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x0000000000000000      0x258
+ *(.debug_aranges)
+ .debug_aranges
+                0x0000000000000000       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\crt0.o
+ .debug_aranges
+                0x0000000000000020       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-atexit.o)
+ .debug_aranges
+                0x0000000000000040       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o)
+ .debug_aranges
+                0x0000000000000060       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-impure.o)
+ .debug_aranges
+                0x0000000000000078       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__atexit.o)
+ .debug_aranges
+                0x0000000000000098       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__call_atexit.o)
+ .debug_aranges
+                0x00000000000000b8       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exit.o)
+ .debug_aranges
+                0x00000000000000d8       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_getargs.o)
+ .debug_aranges
+                0x00000000000000f8       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_get_ram_range.o)
+ .debug_aranges
+                0x0000000000000118       0x28 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_entry.o)
+ .debug_aranges
+                0x0000000000000140       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+ .debug_aranges
+                0x0000000000000160       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_register.o)
+ .debug_aranges
+                0x0000000000000180       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_boot.o)
+ .debug_aranges
+                0x00000000000001a0       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_isr.o)
+ .debug_aranges
+                0x00000000000001c0       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-strlen.o)
+ .debug_aranges
+                0x00000000000001d8       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_write.o)
+ .debug_aranges
+                0x00000000000001f8       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exception.o)
+ .debug_aranges
+                0x0000000000000218       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_indirect.o)
+ .debug_aranges
+                0x0000000000000238       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-errno.o)
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info     0x0000000000000000     0x4727
+ *(.debug_info)
+ .debug_info    0x0000000000000000       0xb6 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\crt0.o
+ .debug_info    0x00000000000000b6      0x106 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-atexit.o)
+ .debug_info    0x00000000000001bc      0x8e0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o)
+ .debug_info    0x0000000000000a9c      0x890 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-impure.o)
+ .debug_info    0x000000000000132c      0x930 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__atexit.o)
+ .debug_info    0x0000000000001c5c      0x955 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__call_atexit.o)
+ .debug_info    0x00000000000025b1      0x126 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exit.o)
+ .debug_info    0x00000000000026d7       0xbd c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_getargs.o)
+ .debug_info    0x0000000000002794      0x10f c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_get_ram_range.o)
+ .debug_info    0x00000000000028a3       0xcb c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_entry.o)
+ .debug_info    0x000000000000296e      0xb75 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+ .debug_info    0x00000000000034e3       0xd2 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_register.o)
+ .debug_info    0x00000000000035b5       0xce c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_boot.o)
+ .debug_info    0x0000000000003683       0xcd c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_isr.o)
+ .debug_info    0x0000000000003750       0x6e c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-strlen.o)
+ .debug_info    0x00000000000037be      0x17e c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_write.o)
+ .debug_info    0x000000000000393c      0x2b0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exception.o)
+ .debug_info    0x0000000000003bec      0x2b6 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_indirect.o)
+ .debug_info    0x0000000000003ea2      0x885 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-errno.o)
+
+.debug_abbrev   0x0000000000000000     0x11ab
+ *(.debug_abbrev)
+ .debug_abbrev  0x0000000000000000       0x14 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\crt0.o
+ .debug_abbrev  0x0000000000000014       0xb3 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-atexit.o)
+ .debug_abbrev  0x00000000000000c7      0x1e4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o)
+ .debug_abbrev  0x00000000000002ab      0x17e c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-impure.o)
+ .debug_abbrev  0x0000000000000429      0x20d c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__atexit.o)
+ .debug_abbrev  0x0000000000000636      0x21d c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__call_atexit.o)
+ .debug_abbrev  0x0000000000000853       0xec c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exit.o)
+ .debug_abbrev  0x000000000000093f       0x14 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_getargs.o)
+ .debug_abbrev  0x0000000000000953       0xab c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_get_ram_range.o)
+ .debug_abbrev  0x00000000000009fe       0x12 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_entry.o)
+ .debug_abbrev  0x0000000000000a10      0x295 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+ .debug_abbrev  0x0000000000000ca5       0x14 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_register.o)
+ .debug_abbrev  0x0000000000000cb9       0x14 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_boot.o)
+ .debug_abbrev  0x0000000000000ccd       0x14 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_isr.o)
+ .debug_abbrev  0x0000000000000ce1       0x24 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-strlen.o)
+ .debug_abbrev  0x0000000000000d05       0xc9 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_write.o)
+ .debug_abbrev  0x0000000000000dce      0x128 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exception.o)
+ .debug_abbrev  0x0000000000000ef6      0x128 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_indirect.o)
+ .debug_abbrev  0x000000000000101e      0x18d c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-errno.o)
+
+.debug_line     0x0000000000000000     0x151d
+ *(.debug_line)
+ .debug_line    0x0000000000000000       0xde c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\crt0.o
+ .debug_line    0x00000000000000de       0xad c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-atexit.o)
+ .debug_line    0x000000000000018b      0x171 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o)
+ .debug_line    0x00000000000002fc      0x109 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-impure.o)
+ .debug_line    0x0000000000000405      0x184 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__atexit.o)
+ .debug_line    0x0000000000000589      0x1bf c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__call_atexit.o)
+ .debug_line    0x0000000000000748      0x111 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exit.o)
+ .debug_line    0x0000000000000859       0x8b c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_getargs.o)
+ .debug_line    0x00000000000008e4       0xf8 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_get_ram_range.o)
+ .debug_line    0x00000000000009dc      0x108 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_entry.o)
+ .debug_line    0x0000000000000ae4      0x2bb c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+ .debug_line    0x0000000000000d9f       0x9c c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_register.o)
+ .debug_line    0x0000000000000e3b      0x10d c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_boot.o)
+ .debug_line    0x0000000000000f48       0x8e c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_isr.o)
+ .debug_line    0x0000000000000fd6       0x1d c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-strlen.o)
+ .debug_line    0x0000000000000ff3      0x18c c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_write.o)
+ .debug_line    0x000000000000117f      0x138 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exception.o)
+ .debug_line    0x00000000000012b7      0x143 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_indirect.o)
+ .debug_line    0x00000000000013fa      0x123 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-errno.o)
+
+.debug_frame    0x0000000000000000      0x234
+ *(.debug_frame)
+ .debug_frame   0x0000000000000000       0x2c c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-atexit.o)
+ .debug_frame   0x000000000000002c       0x28 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o)
+ .debug_frame   0x0000000000000054       0x40 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__atexit.o)
+ .debug_frame   0x0000000000000094       0x4c c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__call_atexit.o)
+ .debug_frame   0x00000000000000e0       0x34 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exit.o)
+ .debug_frame   0x0000000000000114       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_get_ram_range.o)
+ .debug_frame   0x0000000000000134       0x70 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+ .debug_frame   0x00000000000001a4       0x30 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_write.o)
+ .debug_frame   0x00000000000001d4       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exception.o)
+ .debug_frame   0x00000000000001f4       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_indirect.o)
+ .debug_frame   0x0000000000000214       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-errno.o)
+
+.debug_str      0x0000000000000000      0xa63
+ *(.debug_str)
+ .debug_str     0x0000000000000000      0x17a c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-atexit.o)
+                                        0x1ba (size before relaxing)
+ .debug_str     0x000000000000017a      0x3e0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o)
+                                        0x557 (size before relaxing)
+ .debug_str     0x000000000000055a       0x40 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-impure.o)
+                                        0x54f (size before relaxing)
+ .debug_str     0x000000000000059a       0x3e c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__atexit.o)
+                                        0x596 (size before relaxing)
+ .debug_str     0x00000000000005d8       0x5d c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__call_atexit.o)
+                                        0x57b (size before relaxing)
+ .debug_str     0x0000000000000635      0x139 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exit.o)
+                                        0x1d3 (size before relaxing)
+ .debug_str     0x000000000000076e       0x8a c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_get_ram_range.o)
+                                        0x1e1 (size before relaxing)
+ .debug_str     0x00000000000007f8      0x128 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+                                        0x2d3 (size before relaxing)
+ .debug_str     0x0000000000000920       0x3b c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-strlen.o)
+                                        0x175 (size before relaxing)
+ .debug_str     0x000000000000095b       0x59 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_write.o)
+                                        0x1dc (size before relaxing)
+ .debug_str     0x00000000000009b4       0x37 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exception.o)
+                                        0x210 (size before relaxing)
+ .debug_str     0x00000000000009eb       0x45 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_indirect.o)
+                                        0x210 (size before relaxing)
+ .debug_str     0x0000000000000a30       0x33 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-errno.o)
+                                        0x537 (size before relaxing)
+
+.debug_loc      0x0000000000000000      0xa78
+ *(.debug_loc)
+ .debug_loc     0x0000000000000000       0x2c c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-atexit.o)
+ .debug_loc     0x000000000000002c       0x1e c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o)
+ .debug_loc     0x000000000000004a      0x112 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__atexit.o)
+ .debug_loc     0x000000000000015c      0x156 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__call_atexit.o)
+ .debug_loc     0x00000000000002b2       0x1e c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exit.o)
+ .debug_loc     0x00000000000002d0       0x3c c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_get_ram_range.o)
+ .debug_loc     0x000000000000030c      0x6eb c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+ .debug_loc     0x00000000000009f7       0x63 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_write.o)
+ .debug_loc     0x0000000000000a5a       0x1e c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_indirect.o)
+
+.debug_macinfo
+ *(.debug_macinfo)
+
+.debug_ranges   0x0000000000000000       0x40
+ *(.debug_ranges)
+ .debug_ranges  0x0000000000000000       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__call_atexit.o)
+ .debug_ranges  0x0000000000000020       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_entry.o)
+
+.debug_weaknames
+ *(.debug_weaknames)
+
+.debug_funcnames
+ *(.debug_funcnames)
+
+.debug_typenames
+ *(.debug_typenames)
+
+.debug_varnames
+ *(.debug_varnames)
+
+.mdebug.abi32   0x0000000000000000        0x0
+ *(.mdebug.abi32)
+ .mdebug.abi32  0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .mdebug.abi32  0x0000000000000000        0x0 C:\Users\YURI~1.PAN\AppData\Local\Temp\cccJpPm5.o
+ .mdebug.abi32  0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+ .mdebug.abi32  0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-atexit.o)
+ .mdebug.abi32  0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o)
+ .mdebug.abi32  0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-impure.o)
+ .mdebug.abi32  0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__atexit.o)
+ .mdebug.abi32  0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__call_atexit.o)
+ .mdebug.abi32  0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exit.o)
+ .mdebug.abi32  0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_get_ram_range.o)
+ .mdebug.abi32  0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+ .mdebug.abi32  0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-strlen.o)
+ .mdebug.abi32  0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_write.o)
+ .mdebug.abi32  0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exception.o)
+ .mdebug.abi32  0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_indirect.o)
+ .mdebug.abi32  0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-errno.o)
+
+.mdebug.abiN32
+ *(.mdebug.abiN32)
+
+.mdebug.abi64
+ *(.mdebug.abi64)
+
+.mdebug.abiO64
+ *(.mdebug.abiO64)
+
+.mdebug.eabi32
+ *(.mdebug.eabi32)
+
+.mdebug.eabi64
+ *(.mdebug.eabi64)
+
+.gcc_compiled_long32
+ *(.gcc_compiled_long32)
+
+.gcc_compiled_long64
+ *(.gcc_compiled_long64)
+OUTPUT(program.elf elf32-tradlittlemips)
+
+.reginfo        0x0000000000000000       0x18
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\crt0.o
+
+.pdr            0x0000000000000000      0x4a0
+ .pdr           0x0000000000000000       0x80 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\crt0.o
+ .pdr           0x0000000000000080        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+ .pdr           0x0000000000000080        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .pdr           0x0000000000000080       0xe0 C:\Users\YURI~1.PAN\AppData\Local\Temp\ccCwSox4.o
+ .pdr           0x0000000000000160       0x40 C:\Users\YURI~1.PAN\AppData\Local\Temp\cccJpPm5.o
+ .pdr           0x00000000000001a0        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+ .pdr           0x00000000000001a0        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+ .pdr           0x00000000000001a0       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-atexit.o)
+ .pdr           0x00000000000001c0       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o)
+ .pdr           0x00000000000001e0        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-impure.o)
+ .pdr           0x00000000000001e0       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__atexit.o)
+ .pdr           0x0000000000000200       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__call_atexit.o)
+ .pdr           0x0000000000000220       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exit.o)
+ .pdr           0x0000000000000240       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_getargs.o)
+ .pdr           0x0000000000000260       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_get_ram_range.o)
+ .pdr           0x0000000000000280       0x40 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_entry.o)
+ .pdr           0x00000000000002c0       0x60 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+ .pdr           0x0000000000000320       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_register.o)
+ .pdr           0x0000000000000340       0xa0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_boot.o)
+ .pdr           0x00000000000003e0       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_isr.o)
+ .pdr           0x0000000000000400       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-strlen.o)
+ .pdr           0x0000000000000420       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_write.o)
+ .pdr           0x0000000000000440       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exception.o)
+ .pdr           0x0000000000000460       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_indirect.o)
+ .pdr           0x0000000000000480       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-errno.o)
+
+.gnu.attributes
+                0x0000000000000000       0x10
+ .gnu.attributes
+                0x0000000000000000       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+ .gnu.attributes
+                0x0000000000000010       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .gnu.attributes
+                0x0000000000000020       0x10 C:\Users\YURI~1.PAN\AppData\Local\Temp\ccCwSox4.o
+ .gnu.attributes
+                0x0000000000000030       0x10 C:\Users\YURI~1.PAN\AppData\Local\Temp\cccJpPm5.o
+ .gnu.attributes
+                0x0000000000000040       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+ .gnu.attributes
+                0x0000000000000050       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+ .gnu.attributes
+                0x0000000000000060       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-atexit.o)
+ .gnu.attributes
+                0x0000000000000070       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o)
+ .gnu.attributes
+                0x0000000000000080       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-impure.o)
+ .gnu.attributes
+                0x0000000000000090       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__atexit.o)
+ .gnu.attributes
+                0x00000000000000a0       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__call_atexit.o)
+ .gnu.attributes
+                0x00000000000000b0       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exit.o)
+ .gnu.attributes
+                0x00000000000000c0       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_getargs.o)
+ .gnu.attributes
+                0x00000000000000d0       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_get_ram_range.o)
+ .gnu.attributes
+                0x00000000000000e0       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_entry.o)
+ .gnu.attributes
+                0x00000000000000f0       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+ .gnu.attributes
+                0x0000000000000100       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_register.o)
+ .gnu.attributes
+                0x0000000000000110       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_boot.o)
+ .gnu.attributes
+                0x0000000000000120       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_isr.o)
+ .gnu.attributes
+                0x0000000000000130       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-strlen.o)
+ .gnu.attributes
+                0x0000000000000140       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_write.o)
+ .gnu.attributes
+                0x0000000000000150       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exception.o)
+ .gnu.attributes
+                0x0000000000000160       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_indirect.o)
+ .gnu.attributes
+                0x0000000000000170       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-errno.o)
+
+.comment        0x0000000000000000       0x44
+ .comment       0x0000000000000000       0x44 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+                                         0x45 (size before relaxing)
+ .comment       0x0000000000000044       0x45 C:\Users\YURI~1.PAN\AppData\Local\Temp\cccJpPm5.o
+ .comment       0x0000000000000044       0x45 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+ .comment       0x0000000000000044       0x45 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-atexit.o)
+ .comment       0x0000000000000044       0x45 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-exit.o)
+ .comment       0x0000000000000044       0x45 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-impure.o)
+ .comment       0x0000000000000044       0x45 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__atexit.o)
+ .comment       0x0000000000000044       0x45 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-__call_atexit.o)
+ .comment       0x0000000000000044       0x45 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exit.o)
+ .comment       0x0000000000000044       0x45 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_get_ram_range.o)
+ .comment       0x0000000000000044       0x45 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libhal.a(mips_excpt_handler.o)
+ .comment       0x0000000000000044       0x45 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-strlen.o)
+ .comment       0x0000000000000044       0x45 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_write.o)
+ .comment       0x0000000000000044       0x45 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_exception.o)
+ .comment       0x0000000000000044       0x45 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libuhi.a(uhi_indirect.o)
+ .comment       0x0000000000000044       0x45 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/../../../../mips-mti-elf/lib/el/sof\libc.a(lib_a-errno.o)

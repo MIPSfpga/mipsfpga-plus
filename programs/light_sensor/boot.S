@@ -47,7 +47,7 @@ OF SUCH DAMAGE.
 #include <mips/regdef.h>
 #include <mips/asm.h>
 #include "boot.h"
-#include "fpga.h"
+#include "mfp_memory_mapped_registers.h"
 #include <mips/m32c0.h>
 
 .set    noreorder               # Don't allow the assembler to reorder instructions.
@@ -100,6 +100,12 @@ init_resources:                 # initializes resources for "cpu".
     jalr    a2
     nop
 
+    // Yuri Panchul : I had to #ifdef this to workaround a software bug in L1D initialization
+    // (that code, according to Sergey Vakulenko was imported to M14Kc from 24K example
+    // without taling into account Cop0 difference.
+
+// #ifndef CHANGE_KSEG0_KERNEL_MODE_CACHEABILITY
+
     # The changing of Kernel mode cacheability must be done from KSEG1
     # Since the code is executing from KSEG0 It needs to do a jump to KSEG1 change K0 and jump back to KSEG0
 
@@ -108,6 +114,8 @@ init_resources:                 # initializes resources for "cpu".
     ins         a2, a1, 29, 1   # changed to KSEG1 address by setting bit 29
     jalr        a2
     nop
+
+// #endif
 
     # Initialize the Data cache
 
@@ -119,7 +127,17 @@ init_resources:                 # initializes resources for "cpu".
 
     la      ra, all_done        # If main returns then go to all_done:.
     move    a0, zero            # Indicate that there are no arguments available.
+
+    // Yuri Panchul : I had to #ifdef C initialization
+    // because I need to be able to use both Codescape and CodeSourcery
+    // and I don't have time to accomodate the linker script for CodeSourcery approproately
+
+#ifdef DO_C_INITIALIZATION
+    la      v0, _start          # load the address of the CRT entry point _start.
+#else
     la      v0, main            # load the address of the CRT entry point _start.
+#endif
+
     mtc0    v0, $30             # Write ErrorEPC with the address of main
     ehb                         # clear hazards (makes sure write to ErrorPC has completed)
 
@@ -165,9 +183,9 @@ END(__cpu_init)
 
 .org 0x380    /* General exception. */
     # display alternating one-zeros on board LEDs
-    li      k0, BOARD_16_LEDS_ADDR  # Board LEDs display
-    li      k1, 0x5555          # alternating one-zeros
-    sw      k1, 0(k0)           # Write pattern to LEDs
+    li      k0, BOARD_16_LEDS_ADDR # Board LEDs display
+    li      k1, 0x5555             # alternating one-zeros
+    sw      k1, 0(k0)              # Write pattern to LEDs
     eret
     nop
 

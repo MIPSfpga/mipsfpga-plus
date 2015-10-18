@@ -159,12 +159,11 @@ END(init_dcache)
 
 LEAF(change_k0_cca)
 	// NOTE! This code must be executed in KSEG1 (not KSGE0 uncached)
-    // Set CCA for kseg0 to cacheable
+	// Set CCA for kseg0 to cacheable
 	mfc0	v0, C0_CONFIG	// read C0_Config
 	li	v1, 3			// CCA for single-core processors
-      ins	v0, v1, 0, 3	// insert K0
+	ins	v0, v1, 0, 3	// insert K0
 	mtc0	v0, C0_CONFIG	// write C0_Config
 	jr.hb   ra
-    	nop
-
+	nop
 END(change_k0_cca)

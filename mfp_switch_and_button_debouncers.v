@@ -1,11 +1,12 @@
 module mfp_switch_or_button_sync_and_debouncer
+# (
+    parameter DEPTH = 8
+)
 (   
     input      clk,
     input      sw_in,
     output reg sw_out
 );
-
-    parameter DEPTH = 8;
 
     reg  [ DEPTH - 1 : 0] cnt;
     reg  [         2 : 0] sync;
@@ -31,14 +32,14 @@ endmodule
 //-------------------------------------------------------------------
 
 module mfp_multi_switch_or_button_sync_and_debouncer
+# (
+    parameter WIDTH = 1, DEPTH = 8
+)
 (   
     input                    clk,
     input  [ WIDTH - 1 : 0 ] sw_in,
     output [ WIDTH - 1 : 0 ] sw_out
 );
-
-    parameter WIDTH = 1;
-    parameter DEPTH = 8;
 
     genvar sw_cnt;
 
