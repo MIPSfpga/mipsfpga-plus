@@ -36,13 +36,26 @@ module mfp_ahb_ram_slave
 
     always @ (posedge HCLK)
     begin
-        HTRANS_dly <= HTRANS;
-        HADDR_dly  <= HADDR;
-        HWRITE_dly <= HWRITE;
-        HSEL_dly   <= HSEL;
+        if (! HRESETn)
+        begin
+            HTRANS_dly <= 2'b0;
+            HADDR_dly  <= 32'h0;
+            HWRITE_dly <= 1'b0;
+            HSEL_dly   <= 1'b0;
+        end
+        else
+        begin
+            HTRANS_dly <= HTRANS;
+            HADDR_dly  <= HADDR;
+            HWRITE_dly <= HWRITE;
+            HSEL_dly   <= HSEL;
+        end
     end
 
     `ifdef MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
+
+    initial $display ("Memory: address width: %d bits, initialized with \"%s\"",
+        ADDR_WIDTH, INIT_FILENAME);
 
     wire write_enable = HTRANS_dly != `HTRANS_IDLE && HSEL_dly && HWRITE_dly;
 
