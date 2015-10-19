@@ -4,10 +4,9 @@
 
 ENTRY(_start)
 OUTPUT_FORMAT("elf32-tradlittlemips", "elf32-tradbigmips", "elf32-tradlittlemips")
-GROUP(-lc -luhi -lgcc -lhal)
+GROUP(-lc -lgcc)
 SEARCH_DIR(.)
 __DYNAMIC  =  0;
-STARTUP(crt0.o)
 EXTERN(__exception_entry)
 EXTERN(__getargs)
 
@@ -21,7 +20,7 @@ PROVIDE (__stack = 0);
 /* Size of the memory returned by get_mem_info */
 PROVIDE (__memory_size = 1M);
 
-/* 
+/*
  * 0 = Do not use exception handler present in boot
  * 1 = Use exception handler present in boot if BEV is 0 at startup
  * 2 = Always use exception handler present in boot

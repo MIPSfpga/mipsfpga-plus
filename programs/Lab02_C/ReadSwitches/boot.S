@@ -123,7 +123,7 @@ init_resources:                 # initializes resources for "cpu".
 
     la      ra, all_done        # If main returns then go to all_done:.
     move    a0, zero            # Indicate that there are no arguments available.
-    la      v0, _start          # load the address of the CRT entry point _start.
+    la      v0, main            # load the address of the CRT entry point _start.
     mtc0    v0, $30             # Write ErrorEPC with the address of main
     ehb                         # clear hazards (makes sure write to ErrorPC has completed)
 
@@ -186,4 +186,3 @@ END(__cpu_init)
     mfc0    a0, C0_DESAVE       # Restore a0
 1:  b       1b  /* Stay here */
     nop
-
