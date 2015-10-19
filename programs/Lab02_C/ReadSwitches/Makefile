@@ -5,7 +5,7 @@ $(error MIPS_ELF_ROOT must be set to point to toolkit installation root)
 endif
 
 # Imagination CodeScape toolchain
-ifeq ($(MIPS_ELF_ROOT)/bin/mips-mti-elf-gcc,$(wildcard $(MIPS_ELF_ROOT)/bin/mips-mti-elf-gcc))
+ifneq (,$(wildcard $(MIPS_ELF_ROOT)/bin/mips-mti-elf-gcc))
     CC = $(MIPS_ELF_ROOT)/bin/mips-mti-elf-gcc
     LD = $(MIPS_ELF_ROOT)/bin/mips-mti-elf-gcc
     OD = $(MIPS_ELF_ROOT)/bin/mips-mti-elf-objdump
@@ -14,7 +14,7 @@ ifeq ($(MIPS_ELF_ROOT)/bin/mips-mti-elf-gcc,$(wildcard $(MIPS_ELF_ROOT)/bin/mips
 endif
 
 # Mentor CodeSourcery toolchain
-ifeq ($(MIPS_ELF_ROOT)/bin/mips-sde-elf-gcc,$(wildcard $(MIPS_ELF_ROOT)/bin/mips-sde-elf-gcc))
+ifneq (,$(wildcard $(MIPS_ELF_ROOT)/bin/mips-sde-elf-gcc))
     CC = $(MIPS_ELF_ROOT)/bin/mips-sde-elf-gcc
     LD = $(MIPS_ELF_ROOT)/bin/mips-sde-elf-gcc
     OD = $(MIPS_ELF_ROOT)/bin/mips-sde-elf-objdump
