@@ -132,10 +132,10 @@ init_resources:                 # initializes resources for "cpu".
     // because I need to be able to use both Codescape and CodeSourcery
     // and I don't have time to accomodate the linker script for CodeSourcery approproately
 
-    la      v0, _start          # load the address of the CRT entry point _start.
-
 #ifdef SKIP_C_INITIALIZATION
     la      v0, main            # load the address of the CRT entry point _start.
+#else
+    la      v0, _start          # load the address of the CRT entry point _start.
 #endif
 
     mtc0    v0, $30             # Write ErrorEPC with the address of main
@@ -180,7 +180,6 @@ END(__cpu_init)
 
 #include "init_tlb.S"
 
-
 .org 0x380    /* General exception. */
     # display alternating one-zeros on board LEDs
     li      k0, BOARD_16_LEDS_ADDR # Board LEDs display
@@ -188,6 +187,10 @@ END(__cpu_init)
     sw      k1, 0(k0)              # Write pattern to LEDs
     eret
     nop
+
+    // Yuri Panchul : I had to fit the boot code in 1k
+
+#ifdef INCLUDE_CODE_FOR_EJTAG_DEBUG_EXCEPTION
 
 # If you want the above code to fit into 1k flash you will need to leave out the
 # code below. This is the code that covers the debug exception which you normally will not get.
@@ -200,3 +203,5 @@ END(__cpu_init)
     mfc0    a0, C0_DESAVE       # Restore a0
 1:  b       1b  /* Stay here */
     nop
+
+#endif

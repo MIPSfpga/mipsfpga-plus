@@ -50,8 +50,8 @@
 `define MFP_RAM_RESET_ADDR          32'h1fc?????
 `define MFP_RAM_ADDR                32'h0???????
 
-`define MFP_RAM_RESET_ADDR_WIDTH    11 // DE0-Nano 13 DE0-CV or Basys3 // 15 Nexys 4 or DE2-115
-`define MFP_RAM_ADDR_WIDTH          14 //          14                  // 16
+`define MFP_RAM_RESET_ADDR_WIDTH    10 // DE0-Nano 13 DE0-CV or Basys3 // 15 Nexys 4 or DE2-115
+`define MFP_RAM_ADDR_WIDTH          13 //          14                  // 16
 
 `define MFP_RAM_RESET_ADDR_MATCH    7'h7f
 `define MFP_RAM_ADDR_MATCH          1'b0
