@@ -1,3 +1,5 @@
+`include "mfp_ahb_lite_matrix_config.vh"
+
 `timescale 1 ns / 100 ps
 
 module mfp_testbench;
@@ -31,7 +33,9 @@ module mfp_testbench;
     wire        SPI_SCK;
     reg         SPI_SDO;
 
-    mfp_system mfp_system
+    //----------------------------------------------------------------
+
+    mfp_system system
     (
         .SI_ClkIn         ( SI_ClkIn         ),
         .SI_ColdReset     ( SI_ColdReset     ),
@@ -61,6 +65,8 @@ module mfp_testbench;
         .SPI_SCK          ( SPI_SCK          ),
         .SPI_SDO          ( SPI_SDO          )
     );
+
+    //----------------------------------------------------------------
 
     initial
     begin
@@ -98,6 +104,8 @@ module mfp_testbench;
         SI_Reset     <= 0;
     end
 
+    //----------------------------------------------------------------
+
     initial
     begin
         $dumpvars;
@@ -110,6 +118,44 @@ module mfp_testbench;
             10     // Max number of digits 
         );
     end
+
+    //----------------------------------------------------------------
+
+    `ifdef MFP_USE_WORD_MEMORY
+
+    reg [7:0] reset_ram [0 : (1 << `MFP_RESET_RAM_ADDR_WIDTH ) - 1];
+    reg [7:0] ram       [0 : (1 << `MFP_RAM_ADDR_WIDTH       ) - 1];
+
+    integer i;
+
+    initial
+    begin
+        $readmemh ("program_1fc00000.hex", reset_ram);
+
+        for (i = 0; i < (1 << `MFP_RESET_RAM_ADDR_WIDTH); i = i + 4)
+        begin
+            system.ahb_lite_matrix.ahb_lite_matrix.reset_ram.ram.ram [i / 4]
+                = { reset_ram [i + 3],
+                    reset_ram [i + 2],
+                    reset_ram [i + 1],
+                    reset_ram [i + 0] };
+        end
+
+        $readmemh ("program_00000000.hex", ram);
+
+        for (i = 0; i < (1 << `MFP_RAM_ADDR_WIDTH); i = i + 4)
+        begin
+            system.ahb_lite_matrix.ahb_lite_matrix.ram.ram.ram [i / 4]
+                = { ram [i + 3],
+                    ram [i + 2],
+                    ram [i + 1],
+                    ram [i + 0] };
+        end
+    end
+
+    `endif
+
+    //----------------------------------------------------------------
 
     /*
     always @ (negedge SI_ClkIn)
@@ -127,16 +173,18 @@ module mfp_testbench;
     end
     */
 
+    //----------------------------------------------------------------
+
     integer cycle; initial cycle = 0;
 
     always @ (posedge SI_ClkIn)
     begin
         $display ("%5d HCLK %b HADDR %h HRDATA %h HWDATA %h HWRITE %b LEDR %b LEDG %b LS %b",
-            cycle, mfp_system.HCLK, HADDR, HRDATA, HWDATA, HWRITE, IO_RedLEDs, IO_GreenLEDs, IO_LightSensor);
+            cycle, system.HCLK, HADDR, HRDATA, HWDATA, HWRITE, IO_RedLEDs, IO_GreenLEDs, IO_LightSensor);
 
         cycle = cycle + 1;
 
-        if (cycle > 1000)
+        if (cycle > 10000)
         begin
             $display ("Timeout");
             $finish;

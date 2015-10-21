@@ -2,8 +2,7 @@
 
 module mfp_ahb_ram_slave
 # (
-    parameter ADDR_WIDTH    = 6,
-    parameter INIT_FILENAME = ""
+    parameter ADDR_WIDTH = 6
 )
 (
     input         HCLK,
@@ -52,18 +51,14 @@ module mfp_ahb_ram_slave
         end
     end
 
-    `ifdef MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
-
-    initial $display ("Memory: address width: %d bits, initialized with \"%s\"",
-        ADDR_WIDTH, INIT_FILENAME);
+    `ifdef MFP_USE_WORD_MEMORY
 
     wire write_enable = HTRANS_dly != `HTRANS_IDLE && HSEL_dly && HWRITE_dly;
 
     mfp_dual_port_ram
     # (
-        .ADDR_WIDTH     ( ADDR_WIDTH    ),
-        .DATA_WIDTH     ( 32            ),
-        .INIT_FILENAME  ( INIT_FILENAME )
+        .ADDR_WIDTH ( ADDR_WIDTH ),
+        .DATA_WIDTH ( 32         )
     )
     ram
     (
