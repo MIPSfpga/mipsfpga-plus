@@ -21,8 +21,15 @@ int main ()
 
     for (;;)
     {
-        MFP_RED_LEDS   = MFP_LIGHT_SENSOR;
-        MFP_GREEN_LEDS = n ++;
+        if (MFP_SWITCHES & 4)
+        {
+            MFP_RED_LEDS = n ++;
+        }
+        else
+        {
+            MFP_RED_LEDS = MFP_LIGHT_SENSOR;
+            MFP_GREEN_LEDS = n ++;
+        }
 
         // delay ();
     }
