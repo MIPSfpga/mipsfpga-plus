@@ -1,3 +1,5 @@
+`include "mfp_ahb_lite_matrix_config.vh"
+
 module nexys4_ddr
 (
     input         CLK100MHZ,
@@ -11,7 +13,7 @@ module nexys4_ddr
 
     input  [15:0] SW, 
 
-    input  [15:0] LED,
+    output [15:0] LED,
 
     output        LED16_B,
     output        LED16_G,
@@ -117,7 +119,11 @@ module nexys4_ddr
         .IO_GreenLEDs     ( IO_GreenLEDs    ),
                           
         .UART_RX          (   JA [10]       ),
-        .UART_TX          ( /* TODO */      )
+        .UART_TX          ( /* TODO */      ),
+
+        .SPI_CS           ( /* TODO */      ),
+        .SPI_SCK          ( /* TODO */      ),
+        .SPI_SDO          ( /* TODO */      )
     );
 
     assign JA [7] = 1'b0;
