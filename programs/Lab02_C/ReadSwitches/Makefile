@@ -26,7 +26,7 @@ CFLAGS = -O1 -g -EL -c -msoft-float -march=m14kc
 LDFLAGS = -EL -msoft-float -march=m14kc -Wl,-Map=FPGA_Ram_map.txt
 
 # Set up the link addresses for a bootable C program on MIPSfpga
-LDFLAGS += -T boot-uhi32.ld
+LDFLAGS += -T FPGA_Ram.ld
 # Place the boot code (physical address). The virtual address for
 # boot code entry point is hard-wired to 0x9fc00000.
 LDFLAGS += -Wl,--defsym,__flash_start=0xbfc00000
