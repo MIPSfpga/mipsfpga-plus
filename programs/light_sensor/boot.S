@@ -1,4 +1,3 @@
-
 // This boot code is derived from https://github.com/sergev/LiteBSD/blob/master/sys/mips/pic32/locore.s
 
 #include <mips/regdef.h>
@@ -13,8 +12,7 @@
  */
         .globl  start
         .type   start, @function
-
-        .section    .reset
+        .section .reset
 start:
         mtc0    zero, C0_COUNT          # Clear cp0 Count (Used to measure boot time.)
 
@@ -77,7 +75,7 @@ next_shadow_set:                        # set PSS to shadow set to be initialize
         //
 init_cp0:
         # Initialize Status
-        li      v1, 0x00400004 // (M_StatusERL | M_StatusBEV)
+	li	v1, 0x00400004		// (M_StatusERL | M_StatusBEV)
         mtc0    v1, C0_STATUS           # write Status
 
         # Initialize Watch registers if implemented.
@@ -252,21 +250,21 @@ done_dcache:
 
         # Prepare for eret to main.
 
-        la      ra, all_done            # If main returns then go to all_done:.
-        move    a0, zero                # Indicate that there are no arguments available.
+        la      ra, all_done        # If main returns then go to all_done:.
+        move    a0, zero            # Indicate that there are no arguments available.
 
-        la      v0, main                # load the address of the CRT entry point _start.
-        mtc0    v0, $30                 # Write ErrorEPC with the address of main
-        ehb                             # clear hazards (makes sure write to ErrorPC has completed)
+        la      v0, main            # load the address of the CRT entry point _start.
+        mtc0    v0, $30             # Write ErrorEPC with the address of main
+        ehb                         # clear hazards (makes sure write to ErrorPC has completed)
 
         # Set stack and global data
 
-        la      sp, __stack
+        la	sp, __stack
         la      gp, _gp
 
         # Return from exception will now execute code in main
 
-        eret                            # Exit reset exception handler and start execution of main().
+        eret                        # Exit reset exception handler and start execution of _start.
 
 
 /**************************************************************************************/

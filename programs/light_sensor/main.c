@@ -24,7 +24,7 @@ int main ()
         MFP_RED_LEDS   = MFP_LIGHT_SENSOR;
         MFP_GREEN_LEDS = n ++;
 
-        delay ();
+        // delay ();
     }
 
     return 0;
