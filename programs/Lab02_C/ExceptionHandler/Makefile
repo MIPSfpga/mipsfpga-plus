@@ -1,9 +1,5 @@
 # microAptiv_UP makefile for MIPSfpga
 
-ifndef MIPS_ELF_ROOT
-$(error MIPS_ELF_ROOT must be set to point to toolkit installation root)
-endif
-
 # Imagination CodeScape toolchain
 ifneq (,$(wildcard $(MIPS_ELF_ROOT)/bin/mips-mti-elf-gcc))
     CC = $(MIPS_ELF_ROOT)/bin/mips-mti-elf-gcc
@@ -20,6 +16,14 @@ ifneq (,$(wildcard $(MIPS_ELF_ROOT)/bin/mips-sde-elf-gcc))
     OD = $(MIPS_ELF_ROOT)/bin/mips-sde-elf-objdump
     OC = $(MIPS_ELF_ROOT)/bin/mips-sde-elf-objcopy
     SZ = $(MIPS_ELF_ROOT)/bin/mips-sde-elf-size
+endif
+
+ifndef MIPS_ELF_ROOT
+    CC = mips-mti-elf-gcc
+    LD = mips-mti-elf-gcc
+    OD = mips-mti-elf-objdump
+    OC = mips-mti-elf-objcopy
+    SZ = mips-mti-elf-size
 endif
 
 CFLAGS = -O0 -g -EL -c -msoft-float -march=m14kc
