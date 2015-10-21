@@ -121,9 +121,9 @@ module nexys4_ddr
         .UART_RX          (   JA [10]       ),
         .UART_TX          ( /* TODO */      ),
 
-        .SPI_CS           ( /* TODO */      ),
-        .SPI_SCK          ( /* TODO */      ),
-        .SPI_SDO          ( /* TODO */      )
+        .SPI_CS           (   JA [ 1]       ),
+        .SPI_SCK          (   JA [ 4]       ),
+        .SPI_SDO          (   JA [ 3]       )
     );
 
     assign JA [7] = 1'b0;

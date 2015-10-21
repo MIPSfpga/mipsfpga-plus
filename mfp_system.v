@@ -330,7 +330,7 @@ module mfp_system
         .IO_LightSensor  (   IO_LightSensor  ), 
                            
         .UART_RX         (   UART_RX         ), 
-        .UART_TX         (   UART_TX         ),
+        .UART_TX         (   /* UART_TX */   ),
                            
         .MFP_Reset       (   MFP_Reset       )
     );
