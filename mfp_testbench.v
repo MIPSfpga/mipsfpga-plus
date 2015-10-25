@@ -24,7 +24,10 @@ module mfp_testbench;
     reg  [ 4:0] IO_Buttons;
     wire [17:0] IO_RedLEDs;
     wire [ 8:0] IO_GreenLEDs;
+
+    `ifdef DEMO_LIGHT_SENSOR
     wire [15:0] IO_LightSensor;
+    `endif
 
     reg         UART_RX;
     wire        UART_TX;
@@ -179,8 +182,8 @@ module mfp_testbench;
 
     always @ (posedge SI_ClkIn)
     begin
-        $display ("%5d HCLK %b HADDR %h HRDATA %h HWDATA %h HWRITE %b LEDR %b LEDG %b LS %b",
-            cycle, system.HCLK, HADDR, HRDATA, HWDATA, HWRITE, IO_RedLEDs, IO_GreenLEDs, IO_LightSensor);
+        $display ("%5d HCLK %b HADDR %h HRDATA %h HWDATA %h HWRITE %b LEDR %b LEDG %b",
+            cycle, system.HCLK, HADDR, HRDATA, HWDATA, HWRITE, IO_RedLEDs, IO_GreenLEDs);
 
         cycle = cycle + 1;
 

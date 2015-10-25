@@ -304,7 +304,9 @@ module mfp_system
 
     assign UART_TX         = 1'b0;
 
+    `ifdef DEMO_LIGHT_SENSOR
     wire [15:0] IO_LightSensor;
+    `endif
 
     mfp_ahb_lite_matrix_with_loader ahb_lite_matrix
     (
@@ -327,13 +329,18 @@ module mfp_system
         .IO_Buttons      (   IO_Buttons      ),
         .IO_RedLEDs      (   IO_RedLEDs      ),
         .IO_GreenLEDs    (   IO_GreenLEDs    ), 
+
+        `ifdef DEMO_LIGHT_SENSOR
         .IO_LightSensor  (   IO_LightSensor  ), 
+        `endif
                            
         .UART_RX         (   UART_RX         ), 
         .UART_TX         (   /* UART_TX */   ),
                            
         .MFP_Reset       (   MFP_Reset       )
     );
+
+    `ifdef DEMO_LIGHT_SENSOR
 
     mfp_pmod_als_spi_receiver mfp_pmod_als_spi_receiver
     (
@@ -344,6 +351,8 @@ module mfp_system
         .sdo     (   SPI_SDO        ),
         .value   (   IO_LightSensor )
     );
+
+    `endif
 
 endmodule
 

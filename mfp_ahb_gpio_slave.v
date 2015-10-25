@@ -40,8 +40,12 @@ module mfp_ahb_gpio_slave
     input      [17:0] IO_Switches,
     input      [ 4:0] IO_Buttons,
     output reg [17:0] IO_RedLEDs,
-    output reg [ 8:0] IO_GreenLEDs,
+    output reg [ 8:0] IO_GreenLEDs
+
+    `ifdef DEMO_LIGHT_SENSOR
+    ,
     input      [15:0] IO_LightSensor
+    `endif
 );
 
     // Ignored: HMASTLOCK, HPROT
@@ -88,7 +92,11 @@ module mfp_ahb_gpio_slave
         case (read_ionum)
         `MFP_SWITCHES_IONUM      : HRDATA = { 14'b0, IO_Switches    };
         `MFP_BUTTONS_IONUM       : HRDATA = { 27'b0, IO_Buttons     };
+
+        `ifdef DEMO_LIGHT_SENSOR
         `MFP_LIGHT_SENSOR_IONUM  : HRDATA = { 16'b0, IO_LightSensor };
+        `endif
+
         default:                   HRDATA = 32'h00000000;
         endcase
     end

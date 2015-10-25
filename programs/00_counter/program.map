@@ -1,0 +1,193 @@
+
+Discarded input sections
+
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .reginfo       0x0000000000000000       0x18 C:\Users\YURI~1.PAN\AppData\Local\Temp\ccoW8fbM.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 C:\Users\YURI~1.PAN\AppData\Local\Temp\ccoW8fbM.o
+ .reginfo       0x0000000000000000       0x18 C:\Users\YURI~1.PAN\AppData\Local\Temp\cczCKny7.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 C:\Users\YURI~1.PAN\AppData\Local\Temp\cczCKny7.o
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+ .reginfo       0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+ .MIPS.abiflags
+                0x0000000000000000       0x18 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+LOAD c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+                0x00000000bfc00000                __flash_start = 0xbfc00000
+                0x0000000080000000                __flash_app_start = 0x80000000
+                0x0000000080000000                __app_start = 0x80000000
+                0x0000000080040000                __stack = 0x80040000
+                0x000000000001f800                __memory_size = 0x1f800
+LOAD C:\Users\YURI~1.PAN\AppData\Local\Temp\ccoW8fbM.o
+LOAD C:\Users\YURI~1.PAN\AppData\Local\Temp\cczCKny7.o
+LOAD c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof\libgcc.a
+LOAD c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof\libgcc.a
+LOAD c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+LOAD c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+                0x00000000bfc00000                hwreset = 0xbfc00000
+
+.reset          0x000000009fc00000      0x280
+                0x000000009fc00000                _ftext_init = ABSOLUTE (.)
+ *(.reset)
+ .reset         0x000000009fc00000      0x27c C:\Users\YURI~1.PAN\AppData\Local\Temp\ccoW8fbM.o
+                0x000000009fc00000                start
+ *(.boot)
+                0x000000009fc00280                . = ALIGN (0x8)
+ *fill*         0x000000009fc0027c        0x4 00000000
+                0x000000009fc00280                _etext_init = ABSOLUTE (.)
+
+.pdr            0x0000000000000000       0x20
+ .pdr           0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+ .pdr           0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .pdr           0x0000000000000000        0x0 C:\Users\YURI~1.PAN\AppData\Local\Temp\ccoW8fbM.o
+ .pdr           0x0000000000000000       0x20 C:\Users\YURI~1.PAN\AppData\Local\Temp\cczCKny7.o
+ .pdr           0x0000000000000020        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+ .pdr           0x0000000000000020        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+
+.gnu.attributes
+                0x0000000000000000       0x10
+ .gnu.attributes
+                0x0000000000000000       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+ .gnu.attributes
+                0x0000000000000010       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .gnu.attributes
+                0x0000000000000020       0x10 C:\Users\YURI~1.PAN\AppData\Local\Temp\ccoW8fbM.o
+ .gnu.attributes
+                0x0000000000000030       0x10 C:\Users\YURI~1.PAN\AppData\Local\Temp\cczCKny7.o
+ .gnu.attributes
+                0x0000000000000040       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+ .gnu.attributes
+                0x0000000000000050       0x10 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+
+.mdebug.abi32   0x0000000000000000        0x0
+ .mdebug.abi32  0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .mdebug.abi32  0x0000000000000000        0x0 C:\Users\YURI~1.PAN\AppData\Local\Temp\cczCKny7.o
+ .mdebug.abi32  0x0000000000000000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+
+.comment        0x0000000000000000       0x44
+ .comment       0x0000000000000000       0x44 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+                                         0x45 (size before relaxing)
+ .comment       0x0000000000000044       0x45 C:\Users\YURI~1.PAN\AppData\Local\Temp\cczCKny7.o
+ .comment       0x0000000000000044       0x45 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+
+.text_ram       0x0000000080001000      0x208
+                0x0000000080001000                _ftext_ram = ABSOLUTE (.)
+ *(.text)
+ .text          0x0000000080001000        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+ .text          0x0000000080001000      0x1a4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .text          0x00000000800011a4        0x0 C:\Users\YURI~1.PAN\AppData\Local\Temp\ccoW8fbM.o
+ .text          0x00000000800011a4        0x0 C:\Users\YURI~1.PAN\AppData\Local\Temp\cczCKny7.o
+ .text          0x00000000800011a4       0x48 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+ .text          0x00000000800011ec        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+ *(.text.*)
+ .text.startup  0x00000000800011ec       0x18 C:\Users\YURI~1.PAN\AppData\Local\Temp\cczCKny7.o
+                0x00000000800011ec                main
+ *(.rodata)
+ *(.rodata.*)
+                0x0000000080001208                . = ALIGN (0x8)
+ *fill*         0x0000000080001204        0x4 00000000
+                0x0000000080001208                _etext_ram = ABSOLUTE (.)
+
+.init           0x0000000080001208       0x24
+ .init          0x0000000080001208        0x8 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+                0x0000000080001208                _init
+ .init          0x0000000080001210        0x8 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .init          0x0000000080001218        0x8 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+ .init          0x0000000080001220        0xc c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+
+.fini           0x000000008000122c       0x1c
+ .fini          0x000000008000122c        0x8 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+                0x000000008000122c                _fini
+ .fini          0x0000000080001234        0x8 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .fini          0x000000008000123c        0xc c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+
+.eh_frame       0x0000000080001248        0x4
+ .eh_frame      0x0000000080001248        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .eh_frame      0x0000000080001248        0x4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+
+.data           0x000000008000124c        0xc
+                0x000000008000124c                _fdata_ram = ABSOLUTE (.)
+ *(.data)
+ .data          0x000000008000124c        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+ .data          0x000000008000124c        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .data          0x000000008000124c        0x0 C:\Users\YURI~1.PAN\AppData\Local\Temp\ccoW8fbM.o
+ .data          0x000000008000124c        0x0 C:\Users\YURI~1.PAN\AppData\Local\Temp\cczCKny7.o
+ .data          0x000000008000124c        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+ .data          0x000000008000124c        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+                0x0000000080001250                . = ALIGN (0x8)
+ *fill*         0x000000008000124c        0x4 
+                0x0000000080009250                _gp = ABSOLUTE ((. + 0x8000))
+ *(.lit8)
+ *(.lit4)
+ *(.sdata)
+ .sdata         0x0000000080001250        0x4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+                0x0000000080001250                __dso_handle
+                0x0000000080001258                . = ALIGN (0x8)
+ *fill*         0x0000000080001254        0x4 
+                0x0000000080001258                _edata_ram = ABSOLUTE (.)
+                0x0000000080001258                _fbss = .
+
+.ctors          0x0000000080001258        0x8
+ .ctors         0x0000000080001258        0x4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .ctors         0x000000008000125c        0x4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+
+.dtors          0x0000000080001260        0x8
+ .dtors         0x0000000080001260        0x4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .dtors         0x0000000080001264        0x4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+                0x0000000080001264                __DTOR_END__
+
+.jcr            0x0000000080001268        0x4
+ .jcr           0x0000000080001268        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .jcr           0x0000000080001268        0x4 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+
+.tm_clone_table
+                0x000000008000126c        0x0
+ .tm_clone_table
+                0x000000008000126c        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .tm_clone_table
+                0x000000008000126c        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+
+.sbss
+ *(.sbss)
+ *(.scommon)
+
+.bss            0x000000008000126c       0x20
+ *(.bss)
+ .bss           0x000000008000126c        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crti.o
+ .bss           0x000000008000126c       0x20 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtbegin.o
+ .bss           0x000000008000128c        0x0 C:\Users\YURI~1.PAN\AppData\Local\Temp\ccoW8fbM.o
+ .bss           0x000000008000128c        0x0 C:\Users\YURI~1.PAN\AppData\Local\Temp\cczCKny7.o
+ .bss           0x000000008000128c        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtend.o
+ .bss           0x000000008000128c        0x0 c:/progra~1/imagin~1/toolch~1/mips-mti-elf/2015.06-05/bin/../lib/gcc/mips-mti-elf/4.9.2/el/sof/crtn.o
+ *(COMMON)
+                0x000000008000128c                _end = .
+
+.gptab.sdata
+ *(.gptab.data)
+ *(.gptab.sdata)
+
+.gptab.sbss
+ *(.gptab.bss)
+ *(.gptab.sbss)
+
+/DISCARD/
+ *(.reginfo)
+ *(.MIPS.abiflags)
+                0x000000008000128c                _freemem = .
+OUTPUT(program.elf elf32-tradlittlemips)

@@ -21,7 +21,10 @@ module mfp_ahb_lite_matrix_with_loader
     input  [ 4:0] IO_Buttons,
     output [17:0] IO_RedLEDs,
     output [ 8:0] IO_GreenLEDs,
+
+    `ifdef DEMO_LIGHT_SENSOR
     input  [15:0] IO_LightSensor,
+    `endif
 
     input         UART_RX,
     output        UART_TX,
@@ -124,7 +127,10 @@ module mfp_ahb_lite_matrix_with_loader
         .IO_Buttons      ( IO_Buttons      ),
         .IO_RedLEDs      ( IO_RedLEDs      ),
         .IO_GreenLEDs    ( IO_GreenLEDs    ), 
+
+        `ifdef DEMO_LIGHT_SENSOR
         .IO_LightSensor  ( IO_LightSensor  ), 
+        `endif
                                        
         .UART_RX         ( UART_RX         ), 
         .UART_TX         ( UART_TX         ) 

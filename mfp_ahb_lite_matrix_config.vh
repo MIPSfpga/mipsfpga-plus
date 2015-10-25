@@ -5,6 +5,7 @@
 `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 `define MFP_USE_UART_PROGRAM_LOADER
 // `define MFP_USE_WORD_MEMORY
+`define DEMO_LIGHT_SENSOR
 
 //
 //  Memory-mapped I/O addresses
@@ -14,13 +15,19 @@
 `define MFP_GREEN_LEDS_ADDR     32'h1f800004
 `define MFP_SWITCHES_ADDR       32'h1f800008
 `define MFP_BUTTONS_ADDR        32'h1f80000C
+
+`ifdef DEMO_LIGHT_SENSOR
 `define MFP_LIGHT_SENSOR_ADDR   32'h1f800010
+`endif
 
 `define MFP_RED_LEDS_IONUM      4'h0
 `define MFP_GREEN_LEDS_IONUM    4'h1
 `define MFP_SWITCHES_IONUM      4'h2
 `define MFP_BUTTONS_IONUM       4'h3
+
+`ifdef DEMO_LIGHT_SENSOR
 `define MFP_LIGHT_SENSOR_IONUM  4'h4
+`endif
 
 //
 // RAM addresses
