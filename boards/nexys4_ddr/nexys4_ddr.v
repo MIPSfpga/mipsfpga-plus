@@ -34,7 +34,9 @@ module nexys4_ddr
     output [ 7:0] AN,
 
     inout  [12:1] JA,
-    inout  [12:1] JB
+    inout  [12:1] JB,
+
+    input         UART_TXD_IN
 );
 
     wire clk;
@@ -75,7 +77,7 @@ module nexys4_ddr
     wire [17:0] IO_RedLEDs;
     wire [ 8:0] IO_GreenLEDs;
 
-    assign LED = IO_RedLEDs [15:0];
+    assign LED = { 7'b0, clk, IO_GreenLEDs [7 /* 8 */:0] };
 
     assign LED16_B = 1'b0;
     assign LED16_G = 1'b0;
@@ -84,8 +86,8 @@ module nexys4_ddr
     assign LED17_G = 1'b0;
     assign LED17_R = 1'b0;
 
-    assign { CA, CB, CC, CD, CE, CF, CG, DP } = 8'b0;
-    assign AN = 8'hFF;
+    // assign { CA, CB, CC, CD, CE, CF, CG, DP } = 8'b0;
+    // assign AN = 8'hFF;
 
     wire [31:0] HADDR, HRDATA, HWDATA;
     wire        HWRITE;
@@ -118,7 +120,7 @@ module nexys4_ddr
         .IO_RedLEDs       ( IO_RedLEDs      ),
         .IO_GreenLEDs     ( IO_GreenLEDs    ),
                           
-        .UART_RX          (   JA [10]       ),
+        .UART_RX          ( /* UART_TXD_IN */ JA [10] ),
         .UART_TX          ( /* TODO */      ),
 
         .SPI_CS           (   JA [ 1]       ),
@@ -127,5 +129,21 @@ module nexys4_ddr
     );
 
     assign JA [7] = 1'b0;
+
+    wire display_clock;
+
+    mfp_clock_divider_100_MHz_to_763_Hz mfp_clock_divider_100_MHz_to_763_Hz
+        (CLK100MHZ, display_clock);
+
+    mfp_multi_digit_display multi_digit_display
+    (
+        .clock          ( display_clock                  ),
+        .resetn         ( CPU_RESETN                     ),
+        .number         ( { 14'b0, IO_RedLEDs [17:0] }   ),
+
+        .seven_segments ( { CG, CF, CE, CD, CC, CB, CA } ),
+        .dot            ( DP                             ),
+        .anodes         ( AN                             )
+    );
 
 endmodule

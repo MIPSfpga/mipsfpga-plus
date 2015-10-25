@@ -32,11 +32,11 @@ module mfp_multi_digit_display
 (
     input             clock,
     input             resetn,
-    input      [15:0] number,
+    input      [31:0] number,
 
     output reg [ 6:0] seven_segments,
     output reg        dot,
-    output reg [ 3:0] anodes
+    output reg [ 7:0] anodes
 );
 
     function [6:0] bcd_to_seg (input [3:0] bcd);
@@ -62,7 +62,7 @@ module mfp_multi_digit_display
 
     endfunction
 
-    reg [1:0] i;
+    reg [2:0] i;
 
     always @ (posedge clock or negedge resetn)
     begin
@@ -70,7 +70,7 @@ module mfp_multi_digit_display
         begin
             seven_segments <=   bcd_to_seg (0);
             dot            <= ~ 0;
-            anodes         <= ~ 'b0001;
+            anodes         <= ~ 8'b00000001;
 
             i <= 0;
         end

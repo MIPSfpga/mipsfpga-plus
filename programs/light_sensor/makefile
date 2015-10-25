@@ -1,5 +1,11 @@
 # microAptiv_UP makefile for MIPSfpga
 
+CC = mips-mti-elf-gcc
+LD = mips-mti-elf-gcc
+OD = mips-mti-elf-objdump
+OC = mips-mti-elf-objcopy
+SZ = mips-mti-elf-size
+
 # Imagination CodeScape toolchain
 ifneq (,$(wildcard $(MIPS_ELF_ROOT)/bin/mips-mti-elf-gcc))
     CC = $(MIPS_ELF_ROOT)/bin/mips-mti-elf-gcc
@@ -18,19 +24,11 @@ ifneq (,$(wildcard $(MIPS_ELF_ROOT)/bin/mips-sde-elf-gcc))
     SZ = $(MIPS_ELF_ROOT)/bin/mips-sde-elf-size
 endif
 
-ifndef MIPS_ELF_ROOT
-    CC = mips-mti-elf-gcc
-    LD = mips-mti-elf-gcc
-    OD = mips-mti-elf-objdump
-    OC = mips-mti-elf-objcopy
-    SZ = mips-mti-elf-size
-endif
-
-CFLAGS = -O1 -g -EL -c -msoft-float -march=m14kc
-LDFLAGS = -EL -msoft-float -march=m14kc -Wl,-Map=FPGA_Ram_map.txt
+CFLAGS  = -EL -march=m14kc -msoft-float -O2
+LDFLAGS = -EL -march=m14kc -msoft-float -Wl,-Map=program.map
 
 # Set up the link addresses for a bootable C program on MIPSfpga
-LDFLAGS += -T FPGA_Ram.ld
+LDFLAGS += -T program.ld
 # Place the boot code (physical address). The virtual address for
 # boot code entry point is hard-wired to 0x9fc00000.
 LDFLAGS += -Wl,--defsym,__flash_start=0xbfc00000
@@ -57,29 +55,33 @@ boot.S
 CSOURCES= \
 main.c
 
-all: FPGA_RAM
+COBJECTS = $(CSOURCES:.c=.o)
+CASMS    = $(CSOURCES:.c=.s)
+AOBJECTS = $(ASOURCES:.S=.o)
 
-COBJECTS=$(CSOURCES:.c=.o)
-AOBJECTS=$(ASOURCES:.S=.o)
+all: program $(CASMS)
 
-FPGA_RAM : $(AOBJECTS) $(COBJECTS)
-	$(LD)  $(LDFLAGS) $(AOBJECTS) $(COBJECTS) -o FPGA_Ram.elf
-	$(SZ) FPGA_Ram.elf
-	$(OD) -D -S -l FPGA_Ram.elf > FPGA_Ram_dasm.txt
-	$(OD) -D FPGA_Ram.elf > FPGA_Ram_modelsim.txt
-	$(OC) FPGA_Ram.elf -O srec FPGA_Ram.rec
+program : $(AOBJECTS) $(COBJECTS) 
+	$(LD)  $(LDFLAGS) $(AOBJECTS) $(COBJECTS) -o program.elf
+	$(SZ) program.elf
+	$(OD) -D -l program.elf > program.dis
+	$(OC) program.elf -O verilog program.hex
+	$(OC) program.elf -O srec program.rec
 
 .c.o:
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) -c $(CFLAGS) $< -o $@
 
 .S.o:
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) -c $(CFLAGS) $< -o $@
+
+.c.s:
+	$(CC) -S $(CFLAGS) $< -o $@
 
 clean:
-	rm -f FPGA_Ram_dasm.txt
-	rm -f FPGA_Ram_modelsim.txt
-	rm -f FPGA_Ram_map.txt
-	rm -f FPGA_Ram.rec
-	rm -f FPGA_Ram.elf
+	rm -f main.s
 	rm -f *.o
-	rm -rf MemoryFiles
+	rm -f program.elf
+	rm -f program.map
+	rm -f program.dis
+	rm -f program.hex
+	rm -f program.rec
