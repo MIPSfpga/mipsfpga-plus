@@ -5,26 +5,24 @@ int a [8][8];
 int main ()
 {
     int n = 0;
+    int i, j;
 
-    for (;;)
+    // Wait for switch 2
+
+    while ((MFP_SWITCHES & 4) == 0)
+        ;
+
+    if (MFP_SWITCHES & 8)
     {
-        // Wait for switch 2
-
-        while ((MFP_SWITCHES & 4) == 0)
-            ;
-
-        if (MFP_SWITCHES & 8)
-        {
-            for (i = 0; i < 8; i ++)
-                for (i = 0; i < 8; i ++)
-                    a [i][j] = i + j;
-        }
-        else
-        {
-            for (i = 0; i < 8; i ++)
-                for (i = 0; i < 8; i ++)
-                    a [j][i] = i + j;
-        }
+        for (i = 0; i < 8; i ++)
+            for (j = 0; j < 8; j ++)
+                a [i][j] = i + j;
+    }
+    else
+    {
+        for (i = 0; i < 8; i ++)
+            for (j = 0; j < 8; j ++)
+                a [j][i] = i + j;
     }
 
     return 0;

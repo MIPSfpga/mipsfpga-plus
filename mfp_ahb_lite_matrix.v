@@ -94,6 +94,11 @@ module mfp_ahb_lite_matrix
         .SI_Endian  ( SI_Endian  )
     );
 
+    `ifdef DEMO_CACHE_MISSES
+    assign IO_RedLEDs   = { 10'b0, HTRANS [1:0], HADDR [7:2] };
+    assign IO_GreenLEDs = {        HTRANS [1:0], HADDR [7:2] };
+    `endif
+
     mfp_ahb_gpio_slave gpio
     (
         .HCLK            ( HCLK            ),
@@ -114,8 +119,18 @@ module mfp_ahb_lite_matrix
                                            
         .IO_Switches     ( IO_Switches     ),
         .IO_Buttons      ( IO_Buttons      ),
+
+        `ifdef DEMO_CACHE_MISSES
+
+        .IO_RedLEDs      (                 ),
+        .IO_GreenLEDs    (                 )
+
+        `else
+
         .IO_RedLEDs      ( IO_RedLEDs      ),
         .IO_GreenLEDs    ( IO_GreenLEDs    )
+
+        `endif
 
         `ifdef DEMO_LIGHT_SENSOR
         ,
