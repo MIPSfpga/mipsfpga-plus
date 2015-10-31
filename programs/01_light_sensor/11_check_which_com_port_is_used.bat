@@ -30,3 +30,14 @@ mode com26
 mode com27
 mode com28
 mode com29
+pause
+mode com30
+mode com31
+mode com32
+mode com33
+mode com34
+mode com35
+mode com36
+mode com37
+mode com38
+mode com39

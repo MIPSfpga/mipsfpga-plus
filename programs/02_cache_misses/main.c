@@ -2,6 +2,24 @@
 
 int a [8][8];
 
+void fill_ij ()
+{
+    int i, j;
+
+    for (i = 0; i < 8; i ++)
+        for (j = 0; j < 8; j ++)
+            a [i][j] = i + j;
+}
+
+void fill_ji ()
+{
+    int i, j;
+
+    for (i = 0; i < 8; i ++)
+        for (j = 0; j < 8; j ++)
+            a [j][i] = i + j;
+}
+
 int main ()
 {
     int n = 0;
@@ -13,17 +31,9 @@ int main ()
         ;
 
     if (MFP_SWITCHES & 8)
-    {
-        for (i = 0; i < 8; i ++)
-            for (j = 0; j < 8; j ++)
-                a [i][j] = i + j;
-    }
+        fill_ij ();
     else
-    {
-        for (i = 0; i < 8; i ++)
-            for (j = 0; j < 8; j ++)
-                a [j][i] = i + j;
-    }
+        fill_ji ();
 
     return 0;
 }

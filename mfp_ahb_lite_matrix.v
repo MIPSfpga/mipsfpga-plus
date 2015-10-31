@@ -95,8 +95,10 @@ module mfp_ahb_lite_matrix
     );
 
     `ifdef DEMO_CACHE_MISSES
-    assign IO_RedLEDs   = { 10'b0, HTRANS [1:0], HADDR [7:2] };
-    assign IO_GreenLEDs = {        HTRANS [1:0], HADDR [7:2] };
+
+    wire burst = HTRANS == `HTRANS_NONSEQ && HBURST == `HBURST_WRAP4;
+    assign IO_GreenLEDs = { 1'b0, HCLK, burst, HADDR [7:2] };
+
     `endif
 
     mfp_ahb_gpio_slave gpio
@@ -120,16 +122,12 @@ module mfp_ahb_lite_matrix
         .IO_Switches     ( IO_Switches     ),
         .IO_Buttons      ( IO_Buttons      ),
 
-        `ifdef DEMO_CACHE_MISSES
-
-        .IO_RedLEDs      (                 ),
-        .IO_GreenLEDs    (                 )
-
-        `else
-
         .IO_RedLEDs      ( IO_RedLEDs      ),
-        .IO_GreenLEDs    ( IO_GreenLEDs    )
 
+        `ifdef DEMO_CACHE_MISSES
+        .IO_GreenLEDs    (                 )
+        `else
+        .IO_GreenLEDs    ( IO_GreenLEDs    )
         `endif
 
         `ifdef DEMO_LIGHT_SENSOR

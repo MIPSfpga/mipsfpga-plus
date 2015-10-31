@@ -85,7 +85,7 @@ module de0_nano
     wire [17:0] IO_Switches   = { 14'b0, SW  [3:0] };
     wire [ 4:0] IO_Buttons    = {  3'b0, KEY [1:0] };
 
-    assign LED = IO_RedLEDs [7:0];  // { clk, HADDR [8:2] };
+    assign LED = IO_GreenLEDs [7:0];
                           
     wire [31:0] HADDR, HRDATA, HWDATA;
     wire        HWRITE;
