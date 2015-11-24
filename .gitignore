@@ -3,5 +3,6 @@ sim/
 *.bak
 *.o
 *.elf
+*.map
 *.rec
 FPGA*.txt
