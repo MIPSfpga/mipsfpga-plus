@@ -53,7 +53,7 @@ void module
 
     p ("<table width=100%%");
 
-    if (module_name != NULL || instance_name != NULL || description != NULL) p (" border=1");
+    if (module_name != NULL || instance_name != NULL || description != NULL) p (" border=5");
 
     p (" cellpadding=10 cellspacing=0 rules=none>\n");
 
