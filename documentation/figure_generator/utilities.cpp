@@ -53,7 +53,7 @@ void module
 
     p ("<table width=100%%");
 
-    if (module_name != NULL || instance_name != NULL || description != NULL) p (" border=5");
+    if (module_name != NULL || instance_name != NULL || description != NULL) p (" border=2");
 
     p (" cellpadding=10 cellspacing=0 rules=none>\n");
 
@@ -86,7 +86,7 @@ void module
 
     if (description != NULL) p ("%s", description);
 
-    p ("</td></tr><tr><td>\n");
+    p ("</td></tr><tr><td valign=top>\n");
 
     if (describe_current_module)
         current_module_is_already_described = 1;

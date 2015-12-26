@@ -81,6 +81,7 @@ void print_hierarchy ()
                 leaf ("mfp_clock_dividers.v", "mfp_clock_divider");
 
             _module
+
             hbreak
 
             if (b -> altera)
@@ -100,6 +101,8 @@ void print_hierarchy ()
             hbreak
             leaf ("mfp_seven_segment_displays.v", "mfp_single_digit_seven_segment_display", "digit_1");
             hbreak
+            leaf ("mfp_seven_segment_displays.v", "mfp_single_digit_seven_segment_display", "digit_2");
+            hbreak
             ellipsis
             _group
         }
@@ -115,18 +118,18 @@ void print_hierarchy ()
 
         vbreak
 
-        module ("mfp_system.v", "mfp_system");
+        module ("mfp_system.v", "mfp_system", NULL, NULL, 2 + light_sensor);
             group
-            leaf ("mfp_system.v", "mfp_ejtag_reset");
-            vbreak
             leaf (mipsfpga_download_instruction, "m14k_top", NULL, "the CPU core");
+            vbreak
+            leaf ("mfp_system.v", "mfp_ejtag_reset");
             _group
 
             hbreak
 
             if (serial_loader)
             {
-                module ("mfp_ahb_lite_matrix_with_loader.v", "mfp_ahb_lite_matrix_with_loader");
+                module ("mfp_ahb_lite_matrix_with_loader.v", "mfp_ahb_lite_matrix_with_loader", NULL, NULL, 2);
                     group
                     leaf ("mfp_uart_receiver.v", "mfp_uart_receiver" );
                     vbreak
@@ -145,18 +148,22 @@ void print_hierarchy ()
 
                 module ("mfp_ahb_ram_slave.v", "mfp_ahb_ram_slave", "reset_ram");
                     leaf ("mfp_dual_port_ram.v", "mfp_dual_port_ram", "i0");
-                    leaf ("mfp_dual_port_ram.v", "mfp_dual_port_ram", "i0");
-                    leaf ("mfp_dual_port_ram.v", "mfp_dual_port_ram", "i0");
-                    leaf ("mfp_dual_port_ram.v", "mfp_dual_port_ram", "i0");
+                    vbreak
+                    leaf ("mfp_dual_port_ram.v", "mfp_dual_port_ram", "i1");
+                    vbreak
+                    leaf ("mfp_dual_port_ram.v", "mfp_dual_port_ram", "i2");
+                    vbreak
+                    leaf ("mfp_dual_port_ram.v", "mfp_dual_port_ram", "i3");
                 _module
             
                 vbreak
 
                 module ("mfp_ahb_ram_slave.v", "mfp_ahb_ram_slave", "ram");
                     leaf ("mfp_dual_port_ram.v", "mfp_dual_port_ram", "i0");
-                    leaf ("mfp_dual_port_ram.v", "mfp_dual_port_ram", "i0");
-                    leaf ("mfp_dual_port_ram.v", "mfp_dual_port_ram", "i0");
-                    leaf ("mfp_dual_port_ram.v", "mfp_dual_port_ram", "i0");
+                    vbreak
+                    leaf ("mfp_dual_port_ram.v", "mfp_dual_port_ram", "i1");
+                    vbreak
+                    ellipsis
                 _module
             
                 vbreak
