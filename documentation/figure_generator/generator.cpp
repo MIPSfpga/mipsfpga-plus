@@ -62,16 +62,18 @@ void print_hierarchy ()
         b -> description
     );
 
+        group
+
         if (switchable_clock)
         {
             group
 
             module ("mfp_switch_and_button_debouncers.v", "mfp_multi_switch_or_button_sync_and_debouncer");
-                leaf ("mfp_switch_and_button_debouncers.v", "mfp_switch_or_button_sync_and_debouncer",
-                    "debouncer for switches that controls the clock");
+                leaf ("mfp_switch_and_button_debouncers.v", "mfp_switch_or_button_sync_and_debouncer", NULL,
+                    "Debouncer for switches that controls the clock");
             _module
 
-            hbreak
+            vbreak
 
             if (b -> clock_frequency == 50)
                 module ("mfp_clock_dividers.v", "mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz");
@@ -82,27 +84,27 @@ void print_hierarchy ()
 
             _module
 
-            hbreak
+            vbreak
 
             if (b -> altera)
-                leaf (NULL, "global", "gclk", "needed for the divided clock");
+                leaf (NULL, "global", "gclk", "Needed for the divided clock");
             else
-                leaf (NULL, "BUFG", NULL, "needed for the divided clock");
+                leaf (NULL, "BUFG", NULL, "Needed for the divided clock");
 
             _group
         }
 
-        vbreak
+        hbreak
 
         if (b -> static_7_segment_display)
         {
             group
             leaf ("mfp_seven_segment_displays.v", "mfp_single_digit_seven_segment_display", "digit_0");
-            hbreak
+            vbreak
             leaf ("mfp_seven_segment_displays.v", "mfp_single_digit_seven_segment_display", "digit_1");
-            hbreak
+            vbreak
             leaf ("mfp_seven_segment_displays.v", "mfp_single_digit_seven_segment_display", "digit_2");
-            hbreak
+            vbreak
             ellipsis
             _group
         }
@@ -110,17 +112,19 @@ void print_hierarchy ()
         if (b -> dynamic_7_segment_display)
         {
             group
-            leaf ("mfp_clock_dividers.v", "mfp_clock_divider_100_MHz_to_763_Hz", NULL, "clock for 7-segment display");
-            hbreak
+            leaf ("mfp_clock_dividers.v", "mfp_clock_divider_100_MHz_to_763_Hz", NULL, "Clock for 7-segment display");
+            vbreak
             leaf ("mfp_seven_segment_displays.v", "mfp_multi_digit_display");
             _group
         }
+
+        _group
 
         vbreak
 
         module ("mfp_system.v", "mfp_system", NULL, NULL, 2 + light_sensor);
             group
-            leaf (mipsfpga_download_instruction, "m14k_top", NULL, "the CPU core");
+            leaf (mipsfpga_download_instruction, "m14k_top", NULL, "The CPU core");
             vbreak
             leaf ("mfp_system.v", "mfp_ejtag_reset");
             _group
@@ -131,11 +135,11 @@ void print_hierarchy ()
             {
                 module ("mfp_ahb_lite_matrix_with_loader.v", "mfp_ahb_lite_matrix_with_loader", NULL, NULL, 2);
                     group
-                    leaf ("mfp_uart_receiver.v", "mfp_uart_receiver" );
+                    leaf ("mfp_uart_receiver.v", "mfp_uart_receiver");
                     vbreak
-                    leaf ("mfp_srec_parser.v", "mfp_srec_parser" );
+                    leaf ("mfp_srec_parser.v", "mfp_srec_parser");
                     vbreak
-                    leaf ("mfp_srec_parser_to_ahb_lite_bridge.v", "mfp_srec_parser_to_ahb_lite_bridge" );
+                    leaf ("mfp_srec_parser_to_ahb_lite_bridge.v", "mfp_srec_parser_to_ahb_lite_bridge");
                     _group
 
                     hbreak
