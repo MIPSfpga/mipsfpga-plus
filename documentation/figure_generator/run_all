@@ -1,0 +1,15 @@
+#!/bin/bash
+
+mkdir -p ../run
+g++ generator.cpp
+./a.out
+rm -f a.out
+exit
+
+for f in ../run/figure_*.html
+do
+    mozilla file://$PWD/$f
+done
+g++ generator.cpp
+a.exe
+del a.exe
