@@ -19,11 +19,13 @@ int          current_module_is_already_described = 0;
 #define td        p ("<td valign=top>\n");
 #define _tr       p ("</tr>\n");
 #define _td       p ("</td>\n");
+#define hbreak    _td td
+#define vbreak    _td _tr tr td
 #define ellipsis  p (". . . . . . . . . .<br><br>");
 
 //----------------------------------------------------------------------------
 
-void module_instance
+void module
 (
     const char * file_url      = NULL,
     const char * module_name   = NULL,
@@ -84,7 +86,7 @@ void module_instance
 
     if (description != NULL) p ("%s", description);
 
-    p ("</td></tr>\n");
+    p ("</td></tr><tr><td>\n");
 
     if (describe_current_module)
         current_module_is_already_described = 1;
@@ -94,28 +96,28 @@ void module_instance
 
 //----------------------------------------------------------------------------
 
-void end_module_instance ()
-{
-    p ("</table>\n");
-}
+#define _module  p ("</td></tr></table>\n");
+
+#define group   module ();
+#define _group  _module
 
 //----------------------------------------------------------------------------
 
-void leaf_module_instance
+void leaf
 (
-    const char * file_name     = NULL,
+    const char * file_url      = NULL,
     const char * module_name   = NULL,
     const char * instance_name = NULL,
     const char * description   = NULL
 )
 {
-    module_instance
+    module
     (
-        file_name,
+        file_url,
         module_name,
         instance_name,
         description
     );
 
-    end_module_instance ();
+    _module
 }
