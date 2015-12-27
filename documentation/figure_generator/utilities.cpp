@@ -7,14 +7,17 @@ char const mipsfpga_download_instruction [] = "http://www.silicon-russia.com/201
 const char * module_names [1000];
 int          n_module_names;
 
-const char * current_module_name                 = NULL;
-int          current_module_is_already_described = 0;
+const char * current_module_name;
+int          current_module_is_already_described;
 
 int level = 0;
 
 //----------------------------------------------------------------------------
 
 #define p         printf
+
+#define header    p ("<font size=2 face=\"Verdana, Arial, Helvetica, sans_serif\">\n");
+#define footer    p ("</font>\n");
 
 #define tr        p ("<tr>\n");
 #define td        p ("<td valign=top>\n");
@@ -46,13 +49,11 @@ void module
           && module_name         != NULL
           && strcmp (module_name, current_module_name) == 0;
 
-    if (the_module_is_current)
-    { 
-        if (current_module_is_already_described)
-            description = NULL;
+    // if (! the_module_is_current || current_module_is_already_described)
+    //     description = NULL;
 
+    if (the_module_is_current)
         current_module_is_already_described = 1;
-    }
 
     char buf [BUFSIZ];
 
@@ -62,12 +63,12 @@ void module
         file_url = buf;
     }
 
-    p ("<table width=100%%");
+    p ("<table width=%s", level == 1 ? "1000" : "100%%");
 
     char const * level_colors []
-        = { "C6D7EC", "DAC6EC", "C6ECC7", "ECC7C6" };
+        = { "A3FFD1", "A3FFFF", "A3D1FF" };
 
-    p (" bgcolor=#%s", the_module_is_current ? "FFFF3F"
+    p (" bgcolor=#%s", the_module_is_current ? "FFFF29"
         : level_colors [level % (sizeof (level_colors) / sizeof (* level_colors))]);
         
     if (module_name != NULL || instance_name != NULL || description != NULL) p (" border=2");
@@ -76,7 +77,8 @@ void module
 
     if (module_name != NULL || instance_name != NULL || description != NULL)
     {
-        p ("<tr><td valign=top nowrap=nowrap");
+        // p ("<tr><td valign=top nowrap=nowrap");
+        p ("<tr><td valign=top");
         
         if (colspan != 1)
             p (" colspan=%d", colspan);
@@ -100,7 +102,7 @@ void module
         
         if (module_name != NULL || instance_name != NULL) p ("</b>");
         
-        if ((module_name != NULL || instance_name != NULL) && description != NULL) p ("<br>\n");
+        if ((module_name != NULL || instance_name != NULL) && description != NULL) p ("<br><br>\n");
         
         if (description != NULL) p ("%s", description);
         

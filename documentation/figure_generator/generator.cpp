@@ -27,6 +27,8 @@ int serial_loader;
 
 void print_hierarchy ()
 {
+    current_module_is_already_described = 0;
+
     board_descriptor * b = & boards [i_board];
 
     char buf [BUFSIZ];
@@ -56,6 +58,8 @@ void print_hierarchy ()
         file_url = buf;
     }
 
+    header
+
     module
     (
         file_url,
@@ -72,7 +76,7 @@ void print_hierarchy ()
 
                 module ("mfp_switch_and_button_debouncers.v", "mfp_multi_switch_or_button_sync_and_debouncer");
                     leaf ("mfp_switch_and_button_debouncers.v", "mfp_switch_or_button_sync_and_debouncer", NULL,
-                        "Debouncer for switches that controls the clock");
+                        "Debouncer for the switches that control the clock");
                 _module
 
                 vbreak
@@ -137,11 +141,11 @@ void print_hierarchy ()
             {
                 module ("mfp_ahb_lite_matrix_with_loader.v", "mfp_ahb_lite_matrix_with_loader", NULL, NULL, 2);
                     group
-                    leaf ("mfp_uart_receiver.v", "mfp_uart_receiver");
+                    leaf ("mfp_uart_receiver.v", "mfp_uart_receiver", NULL, "Receives data bytes from the PC via UART");
                     vbreak
-                    leaf ("mfp_srec_parser.v", "mfp_srec_parser");
+                    leaf ("mfp_srec_parser.v", "mfp_srec_parser", NULL, "Parses data received via UART as text in Motorola S-Record format and issues transactions to fill the system memory with this data");
                     vbreak
-                    leaf ("mfp_srec_parser_to_ahb_lite_bridge.v", "mfp_srec_parser_to_ahb_lite_bridge");
+                    leaf ("mfp_srec_parser_to_ahb_lite_bridge.v", "mfp_srec_parser_to_ahb_lite_bridge", NULL, "Converts the transactions from S-Record parser into AHB-Lite protocol. Also converts virtual addresses into physical using fixed mapping");
                     _group
 
                     hbreak
@@ -185,12 +189,13 @@ void print_hierarchy ()
             if (light_sensor)
             {
                 hbreak
-                leaf ("mfp_pmod_als_spi_receiver.v", "mfp_pmod_als_spi_receiver" );
+                leaf ("mfp_pmod_als_spi_receiver.v", "mfp_pmod_als_spi_receiver", NULL, "Receives data from the light sensor using a version of SPI protocol");
             }
 
         _module
 
     _module
+    footer
 }
 
 //----------------------------------------------------------------------------
@@ -204,10 +209,10 @@ int main ()
 
     print_hierarchy ();
 
-    for (i_board = 1; i_board < sizeof (boards) / sizeof (* boards); i_board ++)
-    for (switchable_clock = 0; switchable_clock <= 1; switchable_clock ++)
-    for (light_sensor     = 0; light_sensor     <= 1; light_sensor     ++)
-    for (serial_loader    = 0; serial_loader    <= 1; serial_loader    ++)
+    for (i_board = 1; i_board < 2; i_board ++) // sizeof (boards) / sizeof (* boards); i_board ++)
+    for (switchable_clock = 1; switchable_clock <= 1; switchable_clock ++)
+    for (light_sensor     = 1; light_sensor     <= 1; light_sensor     ++)
+    for (serial_loader    = 1; serial_loader    <= 1; serial_loader    ++)
     {
         // module_names and n_module_names are extracted when current_module_name is NULL
 
