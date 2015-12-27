@@ -6,7 +6,6 @@ char const mipsfpga_download_instruction [] = "http://www.silicon-russia.com/201
 
 const char * module_names [1000];
 int          n_module_names;
-int          i_module_to_highlight;
 
 const char * current_module_name                 = NULL;
 int          current_module_is_already_described = 0;
@@ -38,14 +37,22 @@ void module
 {
     level ++;
 
-    int describe_current_module
+    if (current_module_name == NULL && module_name != NULL)
+        module_names [n_module_names ++] = module_name;
 
-        =      current_module_name != NULL
-          && ! current_module_is_already_described
-          &&   strcmp (module_name, current_module_name) == 0;
+    int the_module_is_current
 
-//    if (! describe_current_module)
-//        description = NULL;
+        =    current_module_name != NULL
+          && module_name         != NULL
+          && strcmp (module_name, current_module_name) == 0;
+
+    if (the_module_is_current)
+    { 
+        if (current_module_is_already_described)
+            description = NULL;
+
+        current_module_is_already_described = 1;
+    }
 
     char buf [BUFSIZ];
 
@@ -57,17 +64,11 @@ void module
 
     p ("<table width=100%%");
 
-    char const * level_color = "ffffff";
+    char const * level_colors []
+        = { "C6D7EC", "DAC6EC", "C6ECC7", "ECC7C6" };
 
-    switch (level & 3)
-    {
-        case 0:  level_color = "afafff"; break;
-        case 1:  level_color = "ffafaf"; break;
-        case 2:  level_color = "afffaf"; break;
-        case 3:  level_color = "afffff"; break;
-    }
-
-    p (" bgcolor=#%s", describe_current_module ? "ffff3f" : level_color);
+    p (" bgcolor=#%s", the_module_is_current ? "FFFF3F"
+        : level_colors [level % (sizeof (level_colors) / sizeof (* level_colors))]);
         
     if (module_name != NULL || instance_name != NULL || description != NULL) p (" border=2");
 
@@ -107,9 +108,6 @@ void module
     }
 
     p ("<tr><td valign=top>\n");
-
-    if (describe_current_module)
-        current_module_is_already_described = 1;
 
     colspan = 1;
 }

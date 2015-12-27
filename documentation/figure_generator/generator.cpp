@@ -34,11 +34,13 @@ void print_hierarchy ()
     sprintf
     (
         buf,
-        "../run/hierarchy_%s%s%s%s.html",
+        "../run/hierarchy_%s%s%s%s%s%s.html",
         b -> module_name,
-        switchable_clock ? "_switchable_clock" : "", 
-        light_sensor     ? "_light_sensor"     : "", 
-        serial_loader    ? "_serial_loader"    : "" 
+        switchable_clock            ? "_switchable_clock" : "", 
+        light_sensor                ? "_light_sensor"     : "", 
+        serial_loader               ? "_serial_loader"    : "",
+        current_module_name != NULL ? "_"                 : "",  
+        current_module_name != NULL ? current_module_name : ""
     );
 
     freopen (buf, "w", stdout);
@@ -68,23 +70,23 @@ void print_hierarchy ()
         {
             group
 
-            module ("mfp_switch_and_button_debouncers.v", "mfp_multi_switch_or_button_sync_and_debouncer");
-                leaf ("mfp_switch_and_button_debouncers.v", "mfp_switch_or_button_sync_and_debouncer", NULL,
-                    "Debouncer for switches that controls the clock");
-            _module
+                module ("mfp_switch_and_button_debouncers.v", "mfp_multi_switch_or_button_sync_and_debouncer");
+                    leaf ("mfp_switch_and_button_debouncers.v", "mfp_switch_or_button_sync_and_debouncer", NULL,
+                        "Debouncer for switches that controls the clock");
+                _module
 
-            vbreak
+                vbreak
 
             if (b -> clock_frequency == 50)
                 module ("mfp_clock_dividers.v", "mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz");
             else if (b -> clock_frequency == 100)
                 module ("mfp_clock_dividers.v", "mfp_clock_divider_100_MHz_to_25_MHz_12_Hz_0_75_Hz");
 
-                leaf ("mfp_clock_dividers.v", "mfp_clock_divider");
+                    leaf ("mfp_clock_dividers.v", "mfp_clock_divider");
 
-            _module
+                _module
 
-            vbreak
+                vbreak
 
             if (b -> altera)
                 leaf (NULL, "global", "gclk", "Needed for the divided clock");
@@ -207,7 +209,16 @@ int main ()
     for (light_sensor     = 0; light_sensor     <= 1; light_sensor     ++)
     for (serial_loader    = 0; serial_loader    <= 1; serial_loader    ++)
     {
+        // module_names and n_module_names are extracted when current_module_name is NULL
+
+        current_module_name = NULL;
         print_hierarchy ();
+
+        for (int i = 0; i < n_module_names; i ++)
+        {
+            current_module_name = module_names [i];
+            print_hierarchy ();
+        }
     }
 
     return 0;
