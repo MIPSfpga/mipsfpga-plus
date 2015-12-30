@@ -40,9 +40,9 @@ void print_hierarchy ()
         "../run/hierarchy_%s%s%s%s%s%s%s.html",
         b -> module_name,
         narrow_write_support        ? "__narrow_write_support" : "",
-        switchable_clock            ? "__switchable_clock"     : "", 
         light_sensor                ? "__light_sensor"         : "", 
         serial_loader               ? "__serial_loader"        : "",
+        switchable_clock            ? "__switchable_clock"     : "", 
         current_module_name != NULL ? "__"                     : "",  
         current_module_name != NULL ? current_module_name      : ""
     );
@@ -222,6 +222,8 @@ void print_hierarchy ()
 
 int main ()
 {
+    if (0)
+    {
     for (i_board              = 0; i_board < sizeof (boards) / sizeof (* boards); i_board ++)
     for (narrow_write_support = 0; narrow_write_support <= 1; narrow_write_support ++)
     for (switchable_clock     = 0; switchable_clock     <= 1; switchable_clock     ++)
@@ -252,6 +254,44 @@ int main ()
             if (current_module_name != NULL)
                 print_hierarchy ();
         }
+    }
+    }
+
+    // Special cases
+
+    current_module_name = NULL;
+
+    i_board              = 0;
+    narrow_write_support = 0;
+    switchable_clock     = 0;
+    light_sensor         = 0;
+    serial_loader        = 0;
+
+    print_hierarchy ();
+
+    narrow_write_support = 1;
+    print_hierarchy ();
+
+    for (i_board = 1; i_board <= 2; i_board ++)
+    {
+        narrow_write_support = 0;
+        switchable_clock     = 0;
+        light_sensor         = 0;
+        serial_loader        = 0;
+
+        print_hierarchy ();
+
+        narrow_write_support = 1;
+        print_hierarchy ();
+
+        light_sensor = 1;
+        print_hierarchy ();
+
+        serial_loader = 1;
+        print_hierarchy ();
+
+        switchable_clock = 1;
+        print_hierarchy ();
     }
 
     return 0;
