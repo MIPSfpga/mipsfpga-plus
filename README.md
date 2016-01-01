@@ -1,56 +1,44 @@
-MIPSfpga+ / mipsfpga-plus / mfp is a cleaned-up and improved variant of
-MIPSfpga-based system defined in MIPSfpga Getting Started package.
+MIPSfpga+ / mipsfpga-plus / MFP is a cleaned-up and improved variant of MIPSfpga-based system defined in MIPSfpga Getting Started package (MFGS). The new features include:
 
-Right now mipsfpga-plus works on Terasic DE0-CV board with Altera Cyclone V
-FPGA ($150 commercial price, $99 academic price). It will take probably less
-then 1/2 hour to make it working on Digilent Basys3 or Nexys 4 DDR boards
-with Xilinx Artix-7 FPGA. All pieces for Xilinx are there.
+<ol>
+<li>The ability to load a software program using ubiquitous $5 FTDI-based USB-to-UART connector instead of $50 Bus Blaster that is difficult to get in some places of the globe</li>
+<li>The ability to change the clock frequency on the fly from 50 or 25 MHz down to 1 Hz (one cycle a second) to observe the work of CPU in real time, including cache misses and pipeline forwarding</li>
+<li>An example of integration of a light sensor with SPI protocol</li>
+<li>Smaller software initialization sequence that fits in 1 KB instead of 32 KB memory, which allows porting MIPSfpga to a wider selection of FPGA boards, without using external memory</li>
+<li>Miscellaneous fixes like improving AHB-Lite slave to handle narrow uncached writes of sizes 1 or 2-bytes</li>
+</ol>
 
-The improvements over the original MIPSfpga wrapper are:
+The hierarchy of synthesizable modules for Digilent Nexys 4 DDR with Xilinx Artix-7 FPGA:
 
-1. There are two additional modules - uart_receiver and srec_parser.
-uart_receiver receives file from PC using FTDI-based USB-to-UART connector
-that is widely available and cost less than $3 in bulk on aliexpress.com.
-srec_parser parses Motorola S-Records file produced by running makefile in
-MIPSfpga original software examples.
+<a href="http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr_full.html"><img src="http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr_full.png"></a>
 
-2. Text is more uniform and clean, there are many cosmetic fixes in text
-alignment, consistency of identifiers etc.
+MIPSfpga+ currently works on two FPGA boards:
 
-3. AHB-Lite protocol is implemented in more correct fashion, allows narrow
-(1-byte, 2-bytes) writes. AHB-Lite memory slave in the original MIPSfpga
-allowed only words.
+<ol>
+<li><a href="http://store.digilentinc.com/nexys-4-ddr-artix-7-fpga-trainer-board-recommended-for-ece-curriculum/">Digilent Nexys 4 DDR</a> board with Xilinx Artix-7 FPGA. See the Appendix A about how the board is connected with the applicable peripherals.</li>
+<li><a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V. See the Appendix B about how the board is connected with the applicable peripherals.</li>
+</ol>
 
-The combination of uart_receiver and srec_parser is an aternative to using
-Bus Blaster and OpenOCD to load programs into MIPSfpga memory (AHB-Lite
-slave). The solution requires no software on PC side; user just has to run
-the following three commands ("21" is an example number assigned by Windows
-to virtual COM port in USB, it should be tuned by each user according to his
-Windows device manager):
+There is also one unfinisned port and four planned ports:
 
-set a=21
-mode com%a% baud=115200 parity=n data=8 stop=1 to=off xon=off odsr=off octs=off dtr=off rts=off idsr=off
-type FPGA_Ram.rec >\\.\COM%a%
+<ol>
+<li><a href="http://de0-nano.terasic.com.tw">Terasic DE0-Nano</a> board with Altera Cyclone IV FPGA. This port is implemented but it has some issues with clocking and interfacing to be investigated and fixed. See the Appendix C about how the board is connected with the applicable peripherals.</li>
+<li><a href="http://marsohod.org/plata-marsokhod3">Marsohod 3</a> board with Altera MAX10 FPGA</li>
+<li><a href="http://store.digilentinc.com/basys-3-artix-7-fpga-trainer-board-recommended-for-introductory-users/">Digilent Basys 3</a> with Xilinx Artix-7. MIPSfpga+ is likely to work on this board with no modification except adding Basys 3 wrapper (top-level Verilog and pin constraints).</li>
+<li><a href="http://store.digilentinc.com/arty-board-artix-7-fpga-development-board-for-makers-and-hobbyists/">Digilent Arty</a> with Xilinx Artix-7. MIPSfpga+ is likely to work on this board with no modification except adding the board wrapper (top-level Verilog and pin constraints).</li>
+<li><a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV</li>
+</ol>
 
-This solution does not remove support for BusBlaster/OpenOCD, you can still
-use them with the system.
+The source code for MIPSfpga+ is located at <a href="http://github.com/MIPSfpga/mipsfpga-plus">http://github.com/MIPSfpga/mipsfpga-plus</a>; this code does not include any source code of MIPS microAptiv UP CPU core from MIPSfpga Getting Started package. A user of MIPSfpga+ is supposed to download Getting Started package version 1.2 from Imagination Technologies web site <a href="http://community.imgtec.com/downloads/mipsfpga-getting-started-version-1-2">http://community.imgtec.com/downloads/mipsfpga-getting-started-version-1-2</a>.
 
-A major disadvantage of loading the program through
-USB-FTDI-UART-uart_receiver-srec_parser is that you cannot debug the
-software this way.  To use a debugger like gdb, you still need BusBlaster.
+After downloading both MIPSfpga from Imagination site and MIPSfpga+ from GitHub, the user is expected to install MIPSfpga under 64-bit Microsoft Windows (either Windows 7 or Windows 8) by placing MIPSfpga into directory C:\MIPSfpga and MIPSfpga+ into C:\github\mipsfpga_plus. The paths inside MIPSfpga+ synthesis and simulation scripts rely on such installation.
 
-A minor disadvantage of mipsfpga-plus (can be fixed): it does not allow
-hardwiring ram and reset_ram with different .txt files during synthesys.
-Since hardwired memory is typically used in the first example only, where
-the second ram is empty, this should not be a problem.
+MIPSfpga+ (as well as the original MFGS package) can be also used on a workstation with 32-bit Windows, 32-bit Linux, 64-bit Linux, with or without Windows or Linux virtual machine. It is possible to install MIPSfpga+ in different directories, and use it with a number of Verilog simulators and synthesis tools: Synopsys VCS, Cadence IES, Mentor ModelSim, Icarus Verilog with GTKWave, Xilinx ISim and Vivado, Altera Quartus II, Synopsys Synplify Pro and others. Some usage scenarios require modifying the scripts and adhering to specific versions of EDA and software development tools, for example:
 
-However UART-based loader (I would call it "Serial Loader") can still be
-used with MIPSfpga in places when BusBlaster is not available or software is
-not compatible (like 32-bit Windows).
-
-mipsfpga-plus uses relative file paths. It is expected to be installed in
-C:\github\mipsfpga-plus and it expects the original MIPSfpga package to be
-installed in C:\MIPSfpga.
+<ul>
+<li>In order to use MIPSfpga or MIPSfpga+ on a workstation with 32-bit Windows, it is necessary to use <a href="https://sourcery.mentor.com/GNUToolchain/subscription3537?lite=MIPS">Mentor Sourcery CodeBench Lite Edition for MIPS ELF</a> instead of <a href="https://community.imgtec.com/developers/mips/tools/codescape-mips-sdk/download-codescape-mips-sdk-essentials/">Imagination Codescape MIPS SDK Essentials</a>. This requires some minimal modifications of certain scripts (changing the program name prefixes).</li>
+<li>In order to use MIPSfpga or MIPSfpga+ with Altera FPGAs on a workstation with 32-bit Windows <i>or</i> 32-Linux, it is necessary to use <a href="http://dl.altera.com/13.1/?edition=web">Altera Quartus II Web Edition version 13.1</a> instead of the latest <a href="http://dl.altera.com/15.1/?edition=lite">version 15.1</a> that does not work on workstations with 32-bit operating systems.</li>
+</ul> 
 
 How to synthesize mipsfpga-plus for Terasic DE0-CV board:
 
@@ -68,17 +56,27 @@ How to synthesize mipsfpga-plus for Terasic DE0-CV board:
 
 7. Analyze/Synthesize/Place&Route/Assemble
 
-8. Open Device / Hardware Setup / ByteBlaster / Set file / ouput_files /
-de0_cv.sof / Start
+8. Open Device / Hardware Setup / ByteBlaster / Set file / ouput_files / de0_cv.sof / Start
 
-How to load a software example into mipsfpga-plus using BusBlaster and
-OpenOCD:
+How to load a software example into mipsfpga-plus using BusBlaster and OpenOCD:
 
-cd C:\github\mipsfpga-plus\programs\Lab02_C\ReadSwitches\
-upload_using_bus_blaster.bat 
+<pre>
+cd C:\github\mipsfpga-plus\programs\00_counter
+02_compile_and_link.bat
+10_upload_to_altera_board_using_bus_blaster.bat
+</pre>
 
-How to load a software example into mipsfpga-plus using FTDI-based "Serial
-Loader" / uart_receiver / srec_parser:
+How to load a software example into mipsfpga-plus using USB-to-UART-based serial loader:
 
-cd C:\github\mipsfpga-plus\programs\Lab02_C\ReadSwitches\
-upload_using_uart.bat
+<pre>
+cd C:\github\mipsfpga-plus\programs\00_counter
+02_compile_and_link.bat
+08_generate_motorola_s_record_file.bat
+11_check_which_com_port_is_used.bat
+</pre>
+
+Modify <i>12_upload_to_the_board_using_uart.bat</i>.
+
+<pre>
+12_upload_to_the_board_using_uart.bat
+</pre>
