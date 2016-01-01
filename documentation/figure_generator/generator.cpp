@@ -270,6 +270,12 @@ int main ()
     print_hierarchy ();
 
     narrow_write_support = 1;
+
+    print_hierarchy ();
+
+    light_sensor         = 1;
+    serial_loader        = 1;
+
     print_hierarchy ();
 
     for (i_board = 1; i_board <= 2; i_board ++)
