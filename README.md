@@ -42,21 +42,16 @@ MIPSfpga+ (as well as the original MFGS package) can be also used on a workstati
 
 How to synthesize mipsfpga-plus for Terasic DE0-CV board:
 
-1. Unzip MIPSfpga to C:\MIPSfpga
-
-2. Get mipsfpgfa-plus into C:\github\mipsfpga-plus
-
-3. cd C:\github\mipsfpga-plus\boards\de0_cv
-
-4. make_project.bat
-
-5. Run Altera Quartus II
-
-6. Open project C:\github\mipsfpga-plus\boards\de0_cv\project\de0_cv.qpf
-
-7. Analyze/Synthesize/Place&Route/Assemble
-
-8. Open Device / Hardware Setup / ByteBlaster / Set file / ouput_files / de0_cv.sof / Start
+<ol>
+<li>Unzip MIPSfpga to C:\MIPSfpga</li>
+<li>Get mipsfpgfa-plus into C:\github\mipsfpga-plus</li>
+<li>cd C:\github\mipsfpga-plus\boards\de0_cv</li>
+<li>make_project.bat</li>
+<li>Run Altera Quartus II</li>
+<li>Open project C:\github\mipsfpga-plus\boards\de0_cv\project\de0_cv.qpf</li>
+<li>Analyze/Synthesize/Place&Route/Assemble</li>
+<li>Open Device / Hardware Setup / ByteBlaster / Set file / ouput_files / de0_cv.sof / Start</li>
+</ol>
 
 How to load a software example into mipsfpga-plus using BusBlaster and OpenOCD:
 
