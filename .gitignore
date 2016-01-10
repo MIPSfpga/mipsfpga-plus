@@ -8,3 +8,5 @@ sim/
 *.map
 *.rec
 FPGA*.txt
+test.html
+test.html.imgtec_forum
