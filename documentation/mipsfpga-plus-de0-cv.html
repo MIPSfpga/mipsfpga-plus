@@ -1,0 +1,91 @@
+<h2>Connecting the parts and running the synthesis for Terasic DE0 CV board with Altera Cyclone V FPGA</h2>
+
+An appendix to the main article <a href="http://community.imgtec.com/forums/topic/test-to-find-the-topic-restrictions">MIPSfpga+ allows loading programs via UART and has switchable clock</a>
+
+Copy at <a href="http://github.com/MIPSfpga/mipsfpga-plus/wiki">http://github.com/MIPSfpga/mipsfpga-plus/wiki</a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_114528.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_114528.jpg" class="alignnone size-full wp-image-164" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_114617.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_114617.jpg" class="alignnone size-full wp-image-165" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_115610.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_115610.jpg" class="alignnone size-full wp-image-166" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121318.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121318.jpg" class="alignnone size-full wp-image-167" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121450.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121450.jpg" class="alignnone size-full wp-image-168" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121503.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121503.jpg" class="alignnone size-full wp-image-169" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121521.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121521.jpg" class="alignnone size-full wp-image-170" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121534.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121534.jpg" class="alignnone size-full wp-image-171" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121602.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121602.jpg" class="alignnone size-full wp-image-172" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121639.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121639.jpg" class="alignnone size-full wp-image-173" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.02.18.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.02.18.png" class="alignnone size-full wp-image-222" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.03.16.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.03.16.png" class="alignnone size-large wp-image-223" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.04.04.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.04.04.png" class="alignnone size-large wp-image-224" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.13.58.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.13.58.png" class="alignnone size-large wp-image-225" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.15.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.15.png" class="alignnone size-large wp-image-226" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.31.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.31.png" class="alignnone size-large wp-image-227" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.40.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.40.png" class="alignnone size-large wp-image-228" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.45.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.45.png" class="alignnone size-large wp-image-229" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.52.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.52.png" class="alignnone size-large wp-image-230" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.06.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.06.png" class="alignnone size-large wp-image-231" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.14.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.14.png" class="alignnone size-large wp-image-232" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.24.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.24.png" class="alignnone size-large wp-image-233" /></a>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.33.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.33.png" class="alignnone size-large wp-image-234" /></a>
+
+Information about GPIO pin assignment:
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/08/MIPSfpga-EJTAG-pin-connections.png" rel="attachment wp-att-93"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/08/MIPSfpga-EJTAG-pin-connections.png" alt="MIPSfpga EJTAG pin connections" class="alignnone size-full wp-image-93" /></a>
+
+How to synthesize mipsfpga-plus for Terasic DE0-CV board:
+
+<ol>
+<li>Unzip MIPSfpga to C:\MIPSfpga</li>
+<li>Get mipsfpgfa-plus into C:\github\mipsfpga-plus</li>
+<li>cd C:\github\mipsfpga-plus\boards\de0_cv</li>
+<li>make_project.bat</li>
+<li>Run Altera Quartus II</li>
+<li>Open project C:\github\mipsfpga-plus\boards\de0_cv\project\de0_cv.qpf</li>
+<li>Analyze/Synthesize/Place&Route/Assemble</li>
+<li>Open Device / Hardware Setup / ByteBlaster / Set file / ouput_files / de0_cv.sof / Start</li>
+</ol>
+
+How to load a software example into mipsfpga-plus using BusBlaster and OpenOCD:
+
+<pre>
+cd C:\github\mipsfpga-plus\programs\00_counter
+02_compile_and_link.bat
+10_upload_to_altera_board_using_bus_blaster.bat
+</pre>
+
+How to load a software example into mipsfpga-plus using USB-to-UART-based serial loader:
+
+<pre>
+cd C:\github\mipsfpga-plus\programs\00_counter
+02_compile_and_link.bat
+08_generate_motorola_s_record_file.bat
+11_check_which_com_port_is_used.bat
+</pre>
+
+Modify <i>12_upload_to_the_board_using_uart.bat</i>.
+
+<pre>
+12_upload_to_the_board_using_uart.bat
+</pre>

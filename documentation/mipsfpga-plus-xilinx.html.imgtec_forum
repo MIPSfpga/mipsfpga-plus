@@ -1,0 +1,311 @@
+[b][size=30]MIPSfpga+ allows loading programs via UART and has a switchable clock[/size=30][/b]
+
+MIPSfpga+ / mipsfpga-plus / MFP is a cleaned-up and improved variant of [url=http://www.eetimes.com/author.asp?section_id=36&doc_id=1327535]MIPSfpga[/url]-based system defined in MIPSfpga Getting Started package (MFGS). The new features include:
+
+[ol]
+[li]The ability to load a software program (into a synthesized system) using ubiquitous $5 FTDI-based USB-to-UART connector instead of $50 Bus Blaster that is difficult to get in some places of the globe[/li]
+[li]The ability to change the clock frequency on the fly from 50 or 25 MHz down to 12 Hz and 0.75 Hz (less than one cycle a second) to observe the work of CPU in real time, including cache misses and pipeline forwarding[/li]
+[li]An example of integration of a light sensor with SPI protocol[/li]
+[li]Smaller software initialization sequence that fits in 1 KB instead of 32 KB memory, which allows porting MIPSfpga to a wider selection of FPGA boards, without using external memory[/li]
+[li]Miscellaneous fixes like improving AHB-Lite slave to handle narrow uncached writes of sizes 1 or 2-bytes[/li]
+[/ol]
+
+The hierarchy of synthesizable modules for Digilent Nexys 4 DDR with Xilinx Artix-7 FPGA:
+
+[url=http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr_full.html][img]http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr_full.png[/img][/url]
+
+The hierarchy for RTL simulation:
+
+[url=http://silicon-russia.com/pages/2015_12_28/hierarchy_mfp_testbench_full.html][img]http://silicon-russia.com/pages/2015_12_28/hierarchy_mfp_testbench_full.png[/img][/url]
+
+MIPSfpga+ currently works on two FPGA boards:
+
+[ol]
+[li][url=http://store.digilentinc.com/nexys-4-ddr-artix-7-fpga-trainer-board-recommended-for-ece-curriculum]Digilent Nexys 4 DDR[/url] board with Xilinx Artix-7 FPGA. See the Appendix A about how the board is connected with the applicable peripherals.[/li]
+[li][url=http://de0-cv.terasic.com.tw]Terasic DE0-CV[/url] with Altera Cyclone V. See the Appendix B about how the board is connected with the applicable peripherals.[/li]
+[/ol]
+
+There is also one unfinisned port and four planned ports:
+
+[ol]
+[li][url=http://de0-nano.terasic.com.tw]Terasic DE0-Nano[/url] board with Altera Cyclone IV FPGA. This port is implemented but it has some issues with clocking and interfacing to be investigated and fixed. See the Appendix C about how the board is connected with the applicable peripherals.[/li]
+[li][url=http://marsohod.org/plata-marsokhod3]Marsohod 3[/url] board with Altera MAX10 FPGA[/li]
+[li][url=http://store.digilentinc.com/basys-3-artix-7-fpga-trainer-board-recommended-for-introductory-users]Digilent Basys 3[/url] with Xilinx Artix-7. MIPSfpga+ is likely to work on this board with no modification except adding Basys 3 wrapper (top-level Verilog and pin constraints).[/li]
+[li][url=http://store.digilentinc.com/arty-board-artix-7-fpga-development-board-for-makers-and-hobbyists]Digilent Arty[/url] with Xilinx Artix-7. MIPSfpga+ is likely to work on this board with no modification except adding the board wrapper (top-level Verilog and pin constraints).[/li]
+[li][url=http://de2-115.terasic.com]Terasic DE2-115[/url] with Altera Cyclone IV[/li]
+[/ol]
+
+The description of MIPSfpga+ starts with the description of a basic system derived from MIPSfpga Getting Started package (later called MFGS), and gradually proceeds by adding more and more components and features. The source code for MIPSfpga+ is located at [url=http://github.com/MIPSfpga/mipsfpga-plus]http://github.com/MIPSfpga/mipsfpga-plus[/url]; this code does not include any source code of MIPS microAptiv UP CPU core from MIPSfpga Getting Started package. A user of MIPSfpga+ is supposed to download Getting Started package version 1.2 from Imagination Technologies web site [url=http://community.imgtec.com/downloads/mipsfpga-getting-started-version-1-2]http://community.imgtec.com/downloads/mipsfpga-getting-started-version-1-2[/url].
+
+After downloading both MIPSfpga from Imagination site and MIPSfpga+ from GitHub, the user is expected to install MIPSfpga under 64-bit Microsoft Windows (either Windows 7 or Windows 8) by placing MIPSfpga into directory C:\MIPSfpga and MIPSfpga+ into C:\github\mipsfpga_plus. The paths inside MIPSfpga+ synthesis and simulation scripts rely on such installation.
+
+MIPSfpga+ (as well as the original MFGS package) can be also used on a workstation with 32-bit Windows, 32-bit Linux, 64-bit Linux, with or without Windows or Linux virtual machine. It is possible to install MIPSfpga+ in different directories, and use it with a number of Verilog simulators and synthesis tools: Synopsys VCS, Cadence IES, Mentor ModelSim, Icarus Verilog with GTKWave, Xilinx ISim and Vivado, Altera Quartus II, Synopsys Synplify Pro and others. Some usage scenarios require modifying the scripts and adhering to specific versions of EDA and software development tools, for example:
+
+[ul]
+[li]In order to use MIPSfpga or MIPSfpga+ on a workstation with 32-bit Windows, it is necessary to use [url=https://sourcery.mentor.com/GNUToolchain/subscription3537?lite=MIPS]Mentor Sourcery CodeBench Lite Edition for MIPS ELF[/url] instead of [url=https://community.imgtec.com/developers/mips/tools/codescape-mips-sdk/download-codescape-mips-sdk-essentials]Imagination Codescape MIPS SDK Essentials[/url]. This requires some minimal modifications of certain scripts (changing the program name prefixes).[/li]
+[li]In order to use MIPSfpga or MIPSfpga+ with Altera FPGAs on a workstation with 32-bit Windows [i]or[/i] 32-Linux, it is necessary to use [url=http://dl.altera.com/13.1/?edition=web]Altera Quartus II Web Edition version 13.1[/url] instead of the latest [url=http://dl.altera.com/15.1/?edition=lite]version 15.1[/url] that does not work on workstations with 32-bit operating systems.[/li]
+[/ul]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_011050.jpg][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_011050.jpg[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_114528.jpg][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_114528.jpg[/img][/url]
+
+[b][size=25]1. Basic System[/size=25][/b]
+
+[b][size=20]1.1. General cleanup[/size=20][/b]
+
+Before adding any new features, it was necessary to make the original MFGS code more consistent in formatting, make module names more uniform, improve move some registers across hierarchy to avoid separating closely related registers in different modules etc. The resulting MIPSfpga+ basic system had the following structure:
+
+The hierarchy of synthesizable modules for Digilent Nexys 4 DDR with Xilinx Artix-7 FPGA:
+
+[url=http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr_basic.html][img]http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr_basic.png[/img][/url]
+
+The hierarchy for RTL simulation:
+
+[url=http://silicon-russia.com/pages/2015_12_28/hierarchy_mfp_testbench_basic.html][img]http://silicon-russia.com/pages/2015_12_28/hierarchy_mfp_testbench_basic.png[/img][/url]
+
+[b][size=20]1.2. Adding batch files to Makefile[/size=20][/b]
+
+A standard practice is to use makefiles to run tasks like software build and simulation. However it order to make the first experience with MIPSfpga more digestible and less confusing, a set of batch files with self-descriptive names were introduced in a directory for each software example:
+
+[ul]
+[li][i]00_clean_all.bat[/i][/li]
+[li][i]01_compile_c_to_assembly.bat[/i][/li]
+[li][i]02_compile_and_link.bat[/i][/li]
+[li][i]03_check_program_size.bat[/i][/li]
+[li][i]04_disassemble.bat[/i][/li]
+[li][i]05_generate_verilog_readmemh_file.bat[/i][/li]
+[li][i]06_simulate_with_modelsim.bat[/i][/li]
+[li][i]07_simulate_with_icarus.bat[/i][/li]
+[li][i]08_generate_motorola_s_record_file.bat[/i][/li]
+[li][i]09_upload_to_xilinx_board_using_bus_blaster.bat[/i][/li]
+[li][i]10_upload_to_altera_board_using_bus_blaster.bat[/i][/li]
+[li][i]11_check_which_com_port_is_used.bat[/i][/li]
+[li][i]12_upload_to_the_board_using_uart.bat[/i][/li]
+[/ul]
+
+Some students do not like the complexity of running Mentor ModelSim. For those students two shortcuts were added:
+
+[ul]
+[li]Two scripts (batch file and ModelSim Tcl script) that run ModelSim automatically and display the resulting waveforms - [i]06_simulate_with_modelsim.bat[/i] and [i]modelsim_script.tcl[/i][/li]
+[li]A script that runs free (but slow) Icarus Verilog and displays the resulting waveforms using GTKwave VCD viewer - [i]07_simulate_with_icarus.bat[/i][/li]
+[/ul]
+
+[b][size=20]1.3. A compact software boot sequence[/size=20][/b]
+
+Some FPGA boards have a very limited amount of internal block memory. These boards include Terasic DE0-Nano with Altera Cyclone IV and (not tried) Digilent Nexys 3 with Xilinx Spartan-6. For those boards spending 32 or even 8 kilobytes of block memory on boot/reset sequence is not an option - the design will simply not fit the FPGA. It is possibly, of course, to add an interface to external memory, but there is a simpler software-only solution - [url=http://github.com/MIPSfpga/mipsfpga-plus/blob/master/programs/01_light_sensor/boot.S]a version of of boot code that fits just 1 kilobyte[/url].
+
+The major difference between this small version and the original MFGS version is that small version does not link to C startup code of [url=https://en.wikipedia.org/wiki/Crt0]ANSI C library crt0[/url]. This MIPSfpga+ small boot is based on code, [url=http://blog.imgtec.com/mips-processors/can-it-run-bsd-the-story-of-a-mips-based-pic32-microcontroller]developed by Serge Vakulenko for LiteBSD[/url].
+
+[b][size=25]2. Fixing AHB-Lite interface[/size=25][/b]
+
+[b][size=20]2.1. Synthesis[/size=20][/b]
+
+[url=http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr__narrow_write_support.html][img]http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr__narrow_write_support.png[/img][/url]
+
+The original MFGS memory slave did not not handle AHB-Lite transactions resulting from narrow uncached writes of sizes 1 or 2-bytes. MIPSfpga+ fixes it by splitting each 4 byte word-wide memory into four 1-byte-wide memories and forming a proper mask based on AHB-Lite transaction size and alignment. 
+
+The original RAM instantiation in AHB-Lite slave:
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/12/Screenshot-2015-12-30-21.20.36.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/12/Screenshot-2015-12-30-21.20.36.png[/img][/url]
+
+The instantiations of for RAMs and forming mask in the improved AHB-Lite slave:
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/12/Screenshot-2015-12-30-21.21.12.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/12/Screenshot-2015-12-30-21.21.12.png[/img][/url]
+
+This functionality during synthesis can be turned off by defining a macro [i]MFP_USE_WORD_MEMORY[/i].
+
+[b][size=20]2.2. Remaining need for two fixes in simulation[/size=20][/b]
+
+[url=http://silicon-russia.com/pages/2015_12_28/hierarchy_mfp_testbench__narrow_write_support.html][img]http://silicon-russia.com/pages/2015_12_28/hierarchy_mfp_testbench__narrow_write_support.png[/img][/url]
+
+The simulation (unlike synthesis) is always run in [i]MFP_USE_WORD_MEMORY[/i] mode. The original MFGS package prepared the HEX file to load into ModelSim for simulation using [i]objdump[/i] utility in combination with some long-running Windows-only script. The HEX file in MIPSfpga+ is generated using a more standard way, buy using [i]objcopy[/i] utility with an option "-O verilog":
+
+[pre]
+mips-mti-elf-objcopy program.elf -O verilog program.hex
+[/pre]
+
+Unfortunately [i]objcopy[/i] produces files with virtual addresses; they are now converted into physical addresses manually, by editing two numbers in HEX file. This has to be fixed (by two substitutions using [i]sed[/i] under Linux or its equivalent under Windows).
+
+In order to load the file created with [i]objcopy[/i] into 4-byte-wide ram register array, the following code is used. It has to be improved for non-[i]MFP_USE_WORD_MEMORY[/i] mode:
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/12/Screenshot-2015-12-30-22.07.14.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/12/Screenshot-2015-12-30-22.07.14.png[/img][/url] 
+
+[b][size=25]3. Light sensor integration [/size=25][/b]
+
+[url=http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr__narrow_write_support__light_sensor.html][img]http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr__narrow_write_support__light_sensor.png[/img][/url]
+
+[url=https://digilentinc.com/Products/Detail.cfm?NavPath=2,401,1190&Prod=PMOD-ALS]Digilent PmodALS - Ambient Light Sensor[/url] is inexpensive peripheral with simple version of SPI protocol. The original MIPSfpga Fundamental package demonstrates SPI protocol using LCD display peripheral as an example. Using Digilent Light sensor for the labs is a nice alternative: since the students already experienced an output device (7-segment display), they may want to add an input device (light sensor) and make a useful system that inputs data from the sensor and shows it on 7-segment indicator.
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121450.jpg][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121450.jpg[/img][/url]
+
+The version of [url=https://reference.digilentinc.com/pmod:communication_protocols:spi]SPI protocol[/url] used by the light sensor is very simple, it is described in just two paragraphs in Digilent documentation:
+
+[url=http://digilentinc.com/Data/Products/PMOD-ALS/PmodALS_RM.pdf]http://digilentinc.com/Data/Products/PMOD-ALS/PmodALS_RM.pdf[/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/12/Screenshot-2015-12-30-22.44.55.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/12/Screenshot-2015-12-30-22.44.55.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/12/Screenshot-2015-12-30-22.45.24.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/12/Screenshot-2015-12-30-22.45.24.png[/img][/url]
+
+The code needed to get data from the sensor is correspondingly also very simple:
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/11/Screenshot-2015-11-24-23.21.15.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/11/Screenshot-2015-11-24-23.21.15.png[/img][/url]
+
+Adding the sensor to the basic MIPSfpga+ system can be converted into an exercise / student lab in a fashion similar to Lab 8 in MIPSfpga Fundamentals. The students would be required to create the module above, instantiate it in some reasonable place in MIPSfpga+ basic system, and modify GPIO slave to map the sensor's output to some software memory address.
+
+[b][size=25]4. A hardware-only solution that loads programs into the synthesized system via UART[/size=25][/b]
+
+The original MIPSfpga Getting Started package (MFGS) allowed two ways of loading a software program into the memory of a synthesized MIPSfpga-based system. One way is to hardcode the program during RTL synthesis using Xilinx Vivado or Altera Quertus II. Another way is load the program using [url=http://blog.imgtec.com/mips-processors/bus-blaster-v3c-is-an-affordable-debug-probe-for-mips-cpus]Bus Blaster debug probe in combination with OpenOCD software[/url]. The developers can buy such probes in places like [url=http://www.seeedstudio.com/depot/Bus-Blaster-V3c-for-MIPS-Kit-p-2258.html]SeeedStudio[/url] for $43.95.
+
+Unfortunately Bus Blaster / OpenOCD solution is relatively new and has a history of driver conflicts under some operating systems. Besides it is difficult to buy it in some places of the globe.
+
+MIPSfpga+ introduces a third, alternative way to load the program, using easy to find FTDI-based USB-to-UART connectors that cost less than $5 (in fact [url=http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB]less than $2 on AliExpress[/url]). MIPSfpga+ UART loader, or simply serial loader, also avoids any software driver conflict by putting all the functionality (UART communication, file parsing and filling the memory) into hardware.
+
+[b][size=20]4.1. Hardware compatible with serial loader[/size=20][/b]
+
+A picture of Bus Blaster:
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121503.jpg][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121503.jpg[/img][/url]
+
+A picture of FTDI-based USB-to-UART connector:
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121521.jpg][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121521.jpg[/img][/url]
+
+Serial loader loader is also compatible with [url=http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable]PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1[/url]. This cable is convenient to connect PC to Terasic/Altera boards with male GPIO pins, notably Terasic DE0-Nano. There is another, alternative cable, based on [url=http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182718&SearchText=PL2303HX]PL2303HX chip[/url] however this cable has more compatibility problems with Windows 8.x and we recommend to use cables based on PL2303TA instead.
+
+A picture of connecting Terasic DE0-Nano board to PC using PL2303TA USB TTL to RS232 Converter Serial Cable:
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/IMG_0099.jpg][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/IMG_0099.jpg[/img][/url]
+
+[b][size=20]4.2. Module hierarchy with serial loader[/size=20][/b]
+
+Four new modules: [i]mfp_ahb_lite_matrix_with_loader[/i] takes the place of [i]mfp_ahb_lite_matrix[/i] from earlier hierarchy. [i]mfp_ahb_lite_matrix_with_loader[/i] wraps previous [i]mfp_ahb_lite_matrix[/i] together with three pieces of new functionality - [i]mfp_uart_receiver[/i], [i]mfp_srec_parser[/i] and [i]mfp_srec_parser_to_ahb_lite_bridge[/i].
+
+[url=http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr__narrow_write_support__light_sensor__serial_loader.html][img]http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr__narrow_write_support__light_sensor__serial_loader.png[/img][/url]
+
+[b][size=15]4.2.1. [i]mfp_uart_receiver[/i][/size=15][/b]
+
+[i]mfp_uart_receiver[/i] receives data serially from UART RX pin and outputs 8-bit bytes when data is ready. It assumes a simple version of [url=https://reference.digilentinc.com/pmod:communication_protocols:uart]UART protocol[/url], without control signals, and with one start bit. The baud rate and the expected main clock rate is hardcoded. The module contains a state machine that waits for a negative edge (detecting a start bit) and samples data bits by counting clock cycles. Since the width of each symbol is quite big 50,000,000 Hz / 115,200 baud = 434 clock cycles (or 217 for 25 MHz), this method of getting the data is quite reliable:
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.41.49.png][img]http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.41.49.png[/img][/url]
+
+[b][size=15]4.2.2. [i]srec_parser[/i][/size=15][/b]
+
+[i]srec_parser[/i] received data from [i]mfp_uart_receiver[/i] and parses them as text in Motorola S-record file format. During parsing the state machine inside [i]srec_parser[/i] forms the transactions to the memory of MIPSfpga+ synthesized system, filling the memory with specified bytes at specified locations:
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.42.17.png][img]http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.42.17.png[/img][/url]
+
+Here is [url=https://en.wikipedia.org/wiki/SREC_(file_format)]the description of Motorola S-record format from Wikipedia[/url]:
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/11/Motorola_SREC_Chart.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/11/Motorola_SREC_Chart-1024x705.png[/img][/url]
+
+Text in Motorola S-record format produced by the standard GCC toolchain utility [i]objcopy[/i] from ELF file:
+
+[pre]
+mips-mti-elf-objcopy program.elf -O srec program.rec
+[/pre]
+
+No specialized software is required to send this file from PC to MIPSfpga+, user just has to run the following three commands ("21" is an example number assigned by Windows to virtual COM port in USB, it should be tuned by each user according to his Windows device manager):
+
+[pre]
+set a=21
+mode com%a% baud=115200 parity=n data=8 stop=1 to=off xon=off odsr=off octs=off dtr=off rts=off idsr=off type FPGA_Ram.rec >\.\COM%a%
+[/pre]
+
+The same approach theoretically can be used with PC running Linux, just the commands are different (this was not tried yet):
+
+[pre]
+stty -F /dev/ttyUSB0 raw 115200
+cat srec program.rec > /dev/ttyUSB0
+[/pre]
+
+A user doing this should be included in [i]dialout[/i] group.
+
+[b][size=15]4.2.3. [i]mfp_srec_parser_to_ahb_lite_bridge[/i][/size=15][/b]
+
+[i]mfp_srec_parser_to_ahb_lite_bridge[/i] is a glue between [i]srec_parser[/i] and AHB-Lite bus. It also edits the addresses, converting virtual addresses into physical according to the rules of fixed mapping (see MIPS microAptiv UP core software documentation):
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.43.08.png][img]http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.43.08.png[/img][/url]
+
+[b][size=20]4.3. Miscellaneous[/size=20][/b]
+
+The output of [i]srec_parser[/i], a signal called [i]in_progres[/i] is used as a reset for microAptiv UP processor core. It means that while the serial loader fills the memory with S-record file data, the processor is not accessing the memory. Once [i]srec_parser[/i] gets the termination record (S7), the core wakes up and starts to fetch the program from the newly filled memory.
+
+The serial loader mechanism does not disable interfacing with regular Bus Blaster / Open OCD. Both ways of loading programs, serial loader and Bus Blaster, can be used without re-synthesizing the system.
+
+A major disadvantage of loading the program through serial loader is that you cannot debug the software this way. To use a debugger like gdb, you still need BusBlaster.
+
+[b][size=25]5. Switchable clock down to less than one cycle a second[/size=25][/b]
+
+Switchable clock is a feature of MIPSfpga+ that enables the whole new category of student labs. A student can run the processor with its usual multi megahertz frequency and then switch it to a few clocks per second and observe how it works live. A typical usage is to connect to external LEDs the CPU signals that control cache evictions or pipeline forwarding and observe the LED patterns when running different sequence of code.
+
+[url=http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr__narrow_write_support__light_sensor__serial_loader__switchable_clock.html][img]http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr__narrow_write_support__light_sensor__serial_loader__switchable_clock.png[/img][/url]
+
+[b][size=20]5.1. Switchable clock implementation[/size=20][/b]
+
+A few words about MIPS microAptiv UP frequencies.
+
+When implemented in ASIC using 28 nm technology, MIPS microAptiv UP can run up to 500 MHz; when implemented using 65 nm - more than 300 MHz.
+
+When MIPS microAptiv UP is synthesized for FPGA, the frequency is much lower - around 50-60 MHz, both for Xilinx and Altera.
+
+The introductory student boards tested for MIPSfpga all have clock generators able to generate a clock signal with the frequency of 50-100 MHz. This frequency can be increased or decreased using phase-locked loop (PLL). Unfortunately, PLL cannot be used to lower the frequency below approximately 100 KHz. In order to lower the frequency even further, other methods have to be used.
+
+Altera has a special macro for such situation called [i]ALTCLKCTLR[/i], but for some reason it did not work. As a result, the switchable clock got implemented using a combination of a counter and a global buffer (Xilinx macro [i]BUFG[/i] and Altera macro [i]global[/i]).
+
+The frequency is controlled by two switches. Switches also have to be debounced.
+
+This is how switchable clock is instantiated for Xilinx:
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-23.10.58.png][img]http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-23.10.58.png[/img][/url]
+
+This is how switchable clock is instantiated for Xilinx:
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-23.11.35.png][img]http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-23.11.35.png[/img][/url]
+
+The modules with a counter:
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-23.13.22.png][img]http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-23.13.22.png[/img][/url]
+
+The whole thing also requires adding appropriate constrains. It is possible these constraints are not perfect right now and require more work. Incomplete constraints may be the reason switchable clock works well on Nexys 4 DDR and Terasic DE0-CV, but fails on some systems with Terasic DE0-Nano.
+
+[b][size=20]5.2. An example of student experiment: switchable clock enables to directly observe CPU cache in action[/size=20][/b]
+
+Switchable clock allows to show the internals of the processor to the students live. Here is an example: a signal that indicates cache eviction is connected to an external LED. Now it is possible to observe cache misses when a program fills a two-dimensional array. This example can be run twice: when the array is filled by columns and when the array is filled by rows. These runs generate different patters of LED blinking.
+
+Specifically, since cache line of MIPS microAptiv UP has size of four words, the following pattern appear when filling the array column after column: miss hit hit hit miss hit hit hit ... When the array is filled row by row, the observed pattern is different: miss miss miss ... 8 times ... miss hit hit hit ... 24 times ...  
+
+To run the demonstration program below, a user has to start with fast clock, go through the initialization sequence with switch 2 off, then switch the clock from 25 MHz to 12 Hz, turn switch 2 on and observe the pattern. After that a user has to modify the program, compile and load it to the board, and run the whole thing again.
+
+Note that such demos are very sensitive to compiler optimizations, so the code should be kept simple and straightforward, otherwise the compiler moves actions around and the pattern becomes unclear. Also note that the first ~3 cache misses likely result from instruction fetches filling L1 instruction cache, not L1 data cache:
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/11/Screenshot-2015-11-24-21.39.48.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/11/Screenshot-2015-11-24-21.39.48.png[/img][/url]
+
+[b][size=25]6. Contributors to MIPSfpga+[/size=25][/b]
+
+MIPSfpga+ is based on MIPSfpga Getting Started. The contributors to MIPSfpga Getting Started are listed in MIPSfpga Getting Started presentation inside the package. The contributors to MIPSfpga+ itself include:
+
+[ul]
+[li]Yuri Panchul (most of coding)[/li]
+[li]Alex Belits (board bringup, UART debug)[/li]
+[li]Anonymous (board and Bus Blaster bringup)[/li]
+[li]Ilya Neganov (clocking)[/li]
+[li]Christos Sakellariou (clocking)[/li]
+[li]Serge Vakulenko (boot / reset sequence)[/li]
+[li]Alexey Frunze (the idea of cache lab)[/li]
+[li]Members of [url=https://groups.google.com/forum/#!forum/mipsfpga]MIPSfpga[/url] and [url=https://groups.google.com/forum/#!forum/silicon-russia]Silicon Russia[/url] Google groups[/li]
+[/ul]
+
+[b][size=25]7. Useful links:[/size=25][/b]
+
+[url=http://blog.imgtec.com/mips-processors/mipsfpga-opens-up-the-mips-architecture-to-universities-worldwide]MIPSfpga programme opens up the MIPS architecture to universities worldwide[/url]
+
+[url=http://github.com/MIPSfpga/mipsfpga-plus/wiki/Connecting-the-parts-and-running-the-synthesis-for-Digilent-Nexys-4-DDR-board-with-Xilinx-Artix-7-FPGA]Connecting the parts and running the synthesis for Digilent Nexys 4 DDR board with Xilinx Artix 7 FPGA[/url]
+
+[url=http://github.com/MIPSfpga/mipsfpga-plus/wiki/Connecting-the-parts-and-running-the-synthesis-for-Terasic-DE0-CV-board-with-Altera-Cyclone-V-FPGA]Connecting the parts and running the synthesis for Terasic DE0 CV board with Altera Cyclone V FPGA[/url]
+
+[url=http://github.com/MIPSfpga/mipsfpga-plus/wiki/Connecting-the-parts-for-Terasic-DE0-Nano-board-with-Altera-Cyclone-IV-FPGA]Connecting the parts for Terasic DE0 Nano board with Altera Cyclone IV FPGA[/url]
+
+[url=http://github.com/MIPSfpga/mipsfpga-plus/wiki/Peripherals-from-Digilent-useful-in-creating-student-labs-using-MIPSfpga]Peripherals from Digilent useful in creating student labs using MIPSfpga[/url]
+
+[url=http://community.imgtec.com/forums/cat/mips-insider/mipsfpga]MIPSfpga forum on MIPS Insider[/url]

@@ -1,0 +1,86 @@
+[b][size=25]Connecting the parts and running the synthesis for Digilent Nexys 4 DDR board with Xilinx Artix 7 FPGA[/size=25][/b]
+
+An appendix to the main article [url=http://community.imgtec.com/forums/topic/test-to-find-the-topic-restrictions]MIPSfpga+ allows loading programs via UART and has switchable clock[/url]
+
+Copy at [url=http://github.com/MIPSfpga/mipsfpga-plus/wiki]http://github.com/MIPSfpga/mipsfpga-plus/wiki[/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010837.jpg][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010837.jpg[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010905.jpg][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010905.jpg[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010927.jpg][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010927.jpg[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010936.jpg][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010936.jpg[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010949.jpg][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010949.jpg[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_011009.jpg][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_011009.jpg[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_011050.jpg][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_011050.jpg[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.32.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.32.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.41.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.41.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.48.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.48.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.53.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.53.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.58.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.58.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.39.54.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.39.54.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.08.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.08.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.23.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.23.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.30.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.30.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.39.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.39.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.46.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.46.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.21.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.21-1024x496.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.34.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.34.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.47.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.47.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.42.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.42.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.50.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.50.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.52.33.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.52.33.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.48.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.48.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.57.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.57.png[/img][/url]
+
+Information about GPIO pin assignment:
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/08/pmod_connector_for_digilent_boards.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/08/pmod_connector_for_digilent_boards.png[/img][/url]
+
+[url=http://www.silicon-russia.com/wp-content/uploads/2015/08/MIPSfpga-EJTAG-pin-connections.png][img]http://www.silicon-russia.com/wp-content/uploads/2015/08/MIPSfpga-EJTAG-pin-connections.png[/img][/url]
+
+How to load a software example into mipsfpga-plus using BusBlaster and OpenOCD:
+
+[pre]
+cd C:\github\mipsfpga-plus\programs\00_counter
+02_compile_and_link.bat
+10_upload_to_xilinx_board_using_bus_blaster.bat
+[/pre]
+
+How to load a software example into mipsfpga-plus using USB-to-UART-based serial loader:
+
+[pre]
+cd C:\github\mipsfpga-plus\programs\00_counter
+02_compile_and_link.bat
+08_generate_motorola_s_record_file.bat
+11_check_which_com_port_is_used.bat
+[/pre]
+
+Modify [i]12_upload_to_the_board_using_uart.bat[/i].
+
+[pre]
+12_upload_to_the_board_using_uart.bat
+[/pre]
