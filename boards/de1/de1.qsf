@@ -1,7 +1,9 @@
-# Copyright (C) 1991-2006 Altera Corporation
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2013 Altera Corporation
 # Your use of Altera Corporation's design tools, logic functions 
 # and other software and tools, and its AMPP partner logic 
-# functions, and any output files any of the foregoing 
+# functions, and any output files from any of the foregoing 
 # (including device programming or simulation files), and any 
 # associated documentation or information are expressly subject 
 # to the terms and conditions of the Altera Program License 
@@ -11,25 +13,42 @@
 # programming logic devices manufactured by Altera and sold by 
 # Altera or its authorized distributors.  Please refer to the 
 # applicable agreement for further details.
-
-# The default values for assignments are stored in the file
-#		DE1_Default_assignment_defaults.qdf
-# If this file doesn't exist, and for assignments not listed, see file
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus II 64-Bit
+# Version 13.0.1 Build 232 06/12/2013 Service Pack 1 SJ Web Edition
+# Date created = 20:30:43  January 18, 2016
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		de1_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
 #		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus II software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
 
-# Altera recommends that you do not modify this file. This
-# file is updated automatically by the Quartus II software
-# and any changes you make may be lost or overwritten.
 
 set_global_assignment -name FAMILY "Cyclone II"
 set_global_assignment -name DEVICE EP2C20F484C7
 set_global_assignment -name TOP_LEVEL_ENTITY de1
-set_global_assignment -name ORIGINAL_QUARTUS_VERSION "5.1 SP2"
-set_global_assignment -name PROJECT_CREATION_TIME_DATE "14:25:28  APRIL 24, 2006"
-set_global_assignment -name LAST_QUARTUS_VERSION "12.1 SP1"
-set_global_assignment -name DEVICE_FILTER_SPEED_GRADE 7
-set_global_assignment -name DEVICE_FILTER_PACKAGE FBGA
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION "13.0 SP1"
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "20:30:43  JANUARY 18, 2016"
+set_global_assignment -name LAST_QUARTUS_VERSION "13.0 SP1"
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name DEVICE_FILTER_PIN_COUNT 484
+set_global_assignment -name DEVICE_FILTER_SPEED_GRADE 7
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
+
 set_location_assignment PIN_A13 -to GPIO_0[0]
 set_location_assignment PIN_B13 -to GPIO_0[1]
 set_location_assignment PIN_A14 -to GPIO_0[2]
@@ -475,13 +494,6 @@ set_location_assignment PIN_Y7 -to SRAM_LB_N
 set_location_assignment PIN_T8 -to SRAM_OE_N
 set_location_assignment PIN_W7 -to SRAM_UB_N
 set_location_assignment PIN_AA10 -to SRAM_WE_N
-set_global_assignment -name STRATIX_CONFIGURATION_DEVICE EPCS4
-set_global_assignment -name RESERVE_ASDO_AFTER_CONFIGURATION "AS INPUT TRI-STATED"
-set_location_assignment PIN_AB15 -to FL_CE_N
-set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 
 set_global_assignment -name VERILOG_FILE ../de1.v
 
@@ -639,6 +651,10 @@ set_global_assignment -name VERILOG_FILE ../../../../../MIPSfpga/rtl_up/RAMB4K_S
 set_global_assignment -name VERILOG_FILE ../../../../../MIPSfpga/rtl_up/RAMB4K_S2.v
 set_global_assignment -name VERILOG_FILE ../../../../../MIPSfpga/rtl_up/RAMB4K_S8.v
 set_global_assignment -name VERILOG_FILE ../../../../../MIPSfpga/rtl_up/tagram_2k2way_xilinx.v
+
+set_global_assignment -name SEARCH_PATH ..
+set_global_assignment -name SEARCH_PATH ../../..
+set_global_assignment -name SEARCH_PATH ../../../../../MIPSfpga/rtl_up
 
 #set_global_assignment -name CDF_FILE de1.cdf
 set_global_assignment -name SDC_FILE de1.sdc

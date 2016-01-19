@@ -130,7 +130,7 @@ module de1
     mfp_system mfp_system
     (
         .SI_ClkIn         (   clk           ),
-        .SI_Reset         ( ~ RESET_N       ),
+        .SI_Reset         ( ~ KEY [0]       ),
                           
         .HADDR            ( HADDR           ),
         .HRDATA           ( HRDATA          ),
@@ -165,16 +165,12 @@ module de1
 
     assign GPIO_1 [26] = 1'b0;
 
-    mfp_single_digit_seven_segment_display digit_3
-        (         IO_RedLEDs [15:12]   , HEX3 );
-
-    mfp_single_digit_seven_segment_display digit_2
-        (         IO_RedLEDs [11: 8]   , HEX2 );
-
-    mfp_single_digit_seven_segment_display digit_1
-        (         IO_RedLEDs [ 7: 4]   , HEX1 );
-
-    mfp_single_digit_seven_segment_display digit_0
-        (         IO_RedLEDs [ 3: 0]   , HEX0 );
+    /*
+    FIXME
+    mfp_single_digit_seven_segment_display digit_3 ( IO_RedLEDs [15:12], HEX3 );
+    mfp_single_digit_seven_segment_display digit_2 ( IO_RedLEDs [11: 8], HEX2 );
+    mfp_single_digit_seven_segment_display digit_1 ( IO_RedLEDs [ 7: 4], HEX1 );
+    mfp_single_digit_seven_segment_display digit_0 ( IO_RedLEDs [ 3: 0], HEX0 );
+    */
 
 endmodule
