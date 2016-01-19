@@ -124,12 +124,12 @@ module mfp_testbench;
 
     //----------------------------------------------------------------
 
-    `ifdef MFP_USE_WORD_MEMORY
-
     reg [7:0] reset_ram [0 : (1 << `MFP_RESET_RAM_ADDR_WIDTH ) - 1];
     reg [7:0] ram       [0 : (1 << `MFP_RAM_ADDR_WIDTH       ) - 1];
 
     integer i;
+
+    `ifdef MFP_USE_WORD_MEMORY
 
     initial
     begin
@@ -155,6 +155,29 @@ module mfp_testbench;
                     ram [i + 0] };
         end
     end
+
+    `else
+
+    generate
+        genvar j;
+    
+        for (j = 0; j <= 3; j = j + 1)
+        begin : u
+            initial
+            begin
+                $readmemh ("program_1fc00000.hex", reset_ram);
+                $readmemh ("program_00000000.hex", ram);
+                    
+                for (i = 0; i < (1 << `MFP_RESET_RAM_ADDR_WIDTH); i = i + 4)
+                    system.ahb_lite_matrix.ahb_lite_matrix.reset_ram.u [j].ram.ram [i / 4]
+                        = reset_ram [i + j];
+                
+                for (i = 0; i < (1 << `MFP_RAM_ADDR_WIDTH); i = i + 4)
+                    system.ahb_lite_matrix.ahb_lite_matrix.ram.u [j].ram.ram [i / 4]
+                        = ram [i + j];
+            end
+        end
+    endgenerate
 
     `endif
 

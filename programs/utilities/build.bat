@@ -1,0 +1,2 @@
+gcc -static ad_hoc_program_hex_splitter.c -o ad_hoc_program_hex_splitter
+ad_hoc_program_hex_splitter

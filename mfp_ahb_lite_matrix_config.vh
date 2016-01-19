@@ -2,9 +2,9 @@
 //  Configuration parameters
 //
 
+// `define MFP_USE_WORD_MEMORY
 `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 `define MFP_USE_UART_PROGRAM_LOADER
-// `define MFP_USE_WORD_MEMORY
 `define DEMO_LIGHT_SENSOR
 `define DEMO_CACHE_MISSES
 

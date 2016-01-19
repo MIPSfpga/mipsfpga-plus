@@ -120,7 +120,7 @@ module nexys4_ddr
         .IO_RedLEDs       ( IO_RedLEDs      ),
         .IO_GreenLEDs     ( IO_GreenLEDs    ),
                           
-        .UART_RX          ( /* UART_TXD_IN */ JA [10] ),
+        .UART_RX          ( UART_TXD_IN /* Alternative: JA [10] */ ),
         .UART_TX          ( /* TODO */      ),
 
         .SPI_CS           (   JA [ 1]       ),
