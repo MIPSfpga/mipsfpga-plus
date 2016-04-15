@@ -1,21 +1,3 @@
-//
-//  General-purpose I/O module for Altera's DE2-115 and 
-//  Digilent's (Xilinx) Nexys4-DDR board
-//
-//  Altera's DE2-115 board:
-//  Outputs:
-//  18 red LEDs (IO_LEDR), 9 green LEDs (IO_LEDG) 
-//  Inputs:
-//  18 slide switches (IO_Switch), 4 pushbutton switches (IO_PB[3:0])
-//
-//  Digilent's (Xilinx) Nexys4-DDR board:
-//  Outputs:
-//  15 LEDs (IO_LEDR[14:0]) 
-//  Inputs:
-//  15 slide switches (IO_Switch[14:0]), 
-//  5 pushbutton switches (IO_PB)
-//
-
 `include "mfp_ahb_lite.vh"
 `include "mfp_ahb_lite_matrix_config.vh"
 
@@ -37,12 +19,13 @@ module mfp_ahb_gpio_slave
     output            HRESP,
     input             SI_Endian,
                
-    input      [17:0] IO_Switches,
-    input      [ 4:0] IO_Buttons,
-    output reg [17:0] IO_RedLEDs,
-    output reg [ 8:0] IO_GreenLEDs
+    input      [`MFP_N_SWITCHES          - 1:0] IO_Switches,
+    input      [`MFP_N_BUTTONS           - 1:0] IO_Buttons,
+    output reg [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs,
+    output reg [`MFP_N_GREEN_LEDS        - 1:0] IO_GreenLEDs,
+    output reg [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX
 
-    `ifdef DEMO_LIGHT_SENSOR
+    `ifdef MFP_DEMO_LIGHT_SENSOR
     ,
     input      [15:0] IO_LightSensor
     `endif
@@ -75,14 +58,16 @@ module mfp_ahb_gpio_slave
     begin
         if (! HRESETn)
         begin
-            IO_RedLEDs    <= 18'b0;
-            IO_GreenLEDs  <= 9'b0;
+            IO_RedLEDs      <= `MFP_N_RED_LEDS'b0;
+            IO_GreenLEDs    <= `MFP_N_GREEN_LEDS'b0;
+            IO_7_SegmentHEX <= `MFP_7_SEGMENT_HEX_WIDTH'b0;
         end
         else if (write_enable)
         begin
             case (write_ionum)
-            `MFP_RED_LEDS_IONUM   : IO_RedLEDs   <= HWDATA [17:0];
-            `MFP_GREEN_LEDS_IONUM : IO_GreenLEDs <= HWDATA [ 8:0];
+            `MFP_RED_LEDS_IONUM      : IO_RedLEDs      <= HWDATA [`MFP_N_RED_LEDS          - 1:0];
+            `MFP_GREEN_LEDS_IONUM    : IO_GreenLEDs    <= HWDATA [`MFP_N_GREEN_LEDS        - 1:0];
+            `MFP_7_SEGMENT_HEX_IONUM : IO_7_SegmentHEX <= HWDATA [`MFP_7_SEGMENT_HEX_WIDTH - 1:0];
             endcase
         end
     end
@@ -90,10 +75,10 @@ module mfp_ahb_gpio_slave
     always @*
     begin
         case (read_ionum)
-        `MFP_SWITCHES_IONUM      : HRDATA = { 14'b0, IO_Switches    };
-        `MFP_BUTTONS_IONUM       : HRDATA = { 27'b0, IO_Buttons     };
+        `MFP_SWITCHES_IONUM      : HRDATA = { { 32 - `MFP_N_SWITCHES { 1'b0 } } , IO_Switches };
+        `MFP_BUTTONS_IONUM       : HRDATA = { { 32 - `MFP_N_BUTTONS  { 1'b0 } } , IO_Buttons  };
 
-        `ifdef DEMO_LIGHT_SENSOR
+        `ifdef MFP_DEMO_LIGHT_SENSOR
         `MFP_LIGHT_SENSOR_IONUM  : HRDATA = { 16'b0, IO_LightSensor };
         `endif
 

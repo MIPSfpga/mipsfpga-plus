@@ -89,10 +89,16 @@ module de0_cv
 
     `endif
 
-    wire [17:0] IO_RedLEDs;
-    wire [ 8:0] IO_GreenLEDs;
+    wire [`MFP_N_SWITCHES          - 1:0] IO_Switches;
+    wire [`MFP_N_BUTTONS           - 1:0] IO_Buttons;
+    wire [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs;
+    wire [`MFP_N_GREEN_LEDS        - 1:0] IO_GreenLEDs;
+    wire [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX;
 
-    assign LEDR = { 1'b0, IO_GreenLEDs };
+    assign IO_Switches = { { `MFP_N_SWITCHES - 10 { 1'b0 } } ,   SW  [9:0] };
+    assign IO_Buttons  = { { `MFP_N_BUTTONS  -  4 { 1'b0 } } , ~ KEY [3:0] };
+
+    assign LEDR = IO_GreenLEDs [9:0];
 
     wire [31:0] HADDR, HRDATA, HWDATA;
     wire        HWRITE;
@@ -115,11 +121,12 @@ module de0_cv
         .SI_ColdReset     ( ~ GPIO_1 [20]   ),
         .EJ_DINT          (   1'b0          ),
 
-        .IO_Switches      ( { 8'b0,   SW  } ),
-        .IO_Buttons       ( { 1'b0, ~ KEY } ),
-        .IO_RedLEDs       ( IO_RedLEDs      ),
-        .IO_GreenLEDs     ( IO_GreenLEDs    ),
-                          
+        .IO_Switches      ( IO_Switches      ),
+        .IO_Buttons       ( IO_Buttons       ),
+        .IO_RedLEDs       ( IO_RedLEDs       ),
+        .IO_GreenLEDs     ( IO_GreenLEDs     ), 
+        .IO_7_SegmentHEX  ( IO_7_SegmentHEX  ),
+                                               
         .UART_RX          ( GPIO_1 [31]     ),
         .UART_TX          ( /* TODO */      ),
 
@@ -135,22 +142,11 @@ module de0_cv
 
     assign GPIO_1 [26] = 1'b0;
 
-    mfp_single_digit_seven_segment_display digit_5
-        (         HADDR      [31:28]   , HEX5 );
-
-    mfp_single_digit_seven_segment_display digit_4
-        ( { 2'b0, IO_RedLEDs [17:16] } , HEX4 );
-
-    mfp_single_digit_seven_segment_display digit_3
-        (         IO_RedLEDs [15:12]   , HEX3 );
-
-    mfp_single_digit_seven_segment_display digit_2
-        (         IO_RedLEDs [11: 8]   , HEX2 );
-
-    mfp_single_digit_seven_segment_display digit_1
-        (         IO_RedLEDs [ 7: 4]   , HEX1 );
-
-    mfp_single_digit_seven_segment_display digit_0
-        (         IO_RedLEDs [ 3: 0]   , HEX0 );
+    mfp_single_digit_seven_segment_display digit_5 ( IO_7_SegmentHEX [23:20] , HEX5 );
+    mfp_single_digit_seven_segment_display digit_4 ( IO_7_SegmentHEX [19:16] , HEX4 );
+    mfp_single_digit_seven_segment_display digit_3 ( IO_7_SegmentHEX [15:12] , HEX3 );
+    mfp_single_digit_seven_segment_display digit_2 ( IO_7_SegmentHEX [11: 8] , HEX2 );
+    mfp_single_digit_seven_segment_display digit_1 ( IO_7_SegmentHEX [ 7: 4] , HEX1 );
+    mfp_single_digit_seven_segment_display digit_0 ( IO_7_SegmentHEX [ 3: 0] , HEX0 );
 
 endmodule

@@ -1,3 +1,4 @@
+`include "mfp_ahb_lite_matrix_config.vh"
 `include "mfp_ahb_lite.vh"
 
 module mfp_ahb_lite_matrix_with_loader
@@ -17,12 +18,13 @@ module mfp_ahb_lite_matrix_with_loader
     output        HRESP,
     input         SI_Endian,
 
-    input  [17:0] IO_Switches,
-    input  [ 4:0] IO_Buttons,
-    output [17:0] IO_RedLEDs,
-    output [ 8:0] IO_GreenLEDs,
+    input  [`MFP_N_SWITCHES          - 1:0] IO_Switches,
+    input  [`MFP_N_BUTTONS           - 1:0] IO_Buttons,
+    output [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs,
+    output [`MFP_N_GREEN_LEDS        - 1:0] IO_GreenLEDs,
+    output [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX,
 
-    `ifdef DEMO_LIGHT_SENSOR
+    `ifdef MFP_DEMO_LIGHT_SENSOR
     input  [15:0] IO_LightSensor,
     `endif
 
@@ -106,34 +108,35 @@ module mfp_ahb_lite_matrix_with_loader
 
     mfp_ahb_lite_matrix ahb_lite_matrix
     (
-        .HCLK            ( HCLK            ),
-        .HRESETn         ( HRESETn         ),
+        .HCLK             ( HCLK            ),
+        .HRESETn          ( HRESETn         ),
                          
-        .HADDR           ( in_progress ? loader_HADDR     : HADDR     ),
-        .HBURST          ( in_progress ? loader_HBURST    : HBURST    ),
-        .HMASTLOCK       ( in_progress ? loader_HMASTLOCK : HMASTLOCK ),
-        .HPROT           ( in_progress ? loader_HPROT     : HPROT     ),
-        .HSIZE           ( in_progress ? loader_HSIZE     : HSIZE     ),
-        .HTRANS          ( in_progress ? loader_HTRANS    : HTRANS    ),
-        .HWDATA          ( in_progress ? loader_HWDATA    : HWDATA    ),
-        .HWRITE          ( in_progress ? loader_HWRITE    : HWRITE    ),
+        .HADDR            ( in_progress ? loader_HADDR     : HADDR     ),
+        .HBURST           ( in_progress ? loader_HBURST    : HBURST    ),
+        .HMASTLOCK        ( in_progress ? loader_HMASTLOCK : HMASTLOCK ),
+        .HPROT            ( in_progress ? loader_HPROT     : HPROT     ),
+        .HSIZE            ( in_progress ? loader_HSIZE     : HSIZE     ),
+        .HTRANS           ( in_progress ? loader_HTRANS    : HTRANS    ),
+        .HWDATA           ( in_progress ? loader_HWDATA    : HWDATA    ),
+        .HWRITE           ( in_progress ? loader_HWRITE    : HWRITE    ),
                          
-        .HRDATA          ( HRDATA          ),
-        .HREADY          ( HREADY          ),
-        .HRESP           ( HRESP           ),
-        .SI_Endian       ( SI_Endian       ),
+        .HRDATA           ( HRDATA          ),
+        .HREADY           ( HREADY          ),
+        .HRESP            ( HRESP           ),
+        .SI_Endian        ( SI_Endian       ),
                                              
-        .IO_Switches     ( IO_Switches     ),
-        .IO_Buttons      ( IO_Buttons      ),
-        .IO_RedLEDs      ( IO_RedLEDs      ),
-        .IO_GreenLEDs    ( IO_GreenLEDs    ), 
+        .IO_Switches      ( IO_Switches     ),
+        .IO_Buttons       ( IO_Buttons      ),
+        .IO_RedLEDs       ( IO_RedLEDs      ),
+        .IO_GreenLEDs     ( IO_GreenLEDs    ), 
+        .IO_7_SegmentHEX  ( IO_7_SegmentHEX ),
 
-        `ifdef DEMO_LIGHT_SENSOR
-        .IO_LightSensor  ( IO_LightSensor  ), 
+        `ifdef MFP_DEMO_LIGHT_SENSOR
+        .IO_LightSensor   ( IO_LightSensor  ), 
         `endif
                                        
-        .UART_RX         ( UART_RX         ), 
-        .UART_TX         ( UART_TX         ) 
+        .UART_RX          ( UART_RX         ), 
+        .UART_TX          ( UART_TX         ) 
     );
 
 endmodule

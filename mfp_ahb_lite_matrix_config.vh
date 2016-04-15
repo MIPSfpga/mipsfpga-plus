@@ -3,31 +3,40 @@
 //
 
 // `define MFP_USE_WORD_MEMORY
+// `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
 `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 `define MFP_USE_UART_PROGRAM_LOADER
-`define DEMO_LIGHT_SENSOR
-`define DEMO_CACHE_MISSES
+`define MFP_DEMO_LIGHT_SENSOR
+`define MFP_DEMO_CACHE_MISSES
 
 //
 //  Memory-mapped I/O addresses
 //
 
-`define MFP_RED_LEDS_ADDR       32'h1f800000
-`define MFP_GREEN_LEDS_ADDR     32'h1f800004
-`define MFP_SWITCHES_ADDR       32'h1f800008
-`define MFP_BUTTONS_ADDR        32'h1f80000C
+`define MFP_N_RED_LEDS              18
+`define MFP_N_GREEN_LEDS            16
+`define MFP_N_SWITCHES              18
+`define MFP_N_BUTTONS               5
+`define MFP_7_SEGMENT_HEX_WIDTH     32
 
-`ifdef DEMO_LIGHT_SENSOR
-`define MFP_LIGHT_SENSOR_ADDR   32'h1f800010
+`define MFP_RED_LEDS_ADDR           32'h1f800000
+`define MFP_GREEN_LEDS_ADDR         32'h1f800004
+`define MFP_SWITCHES_ADDR           32'h1f800008
+`define MFP_BUTTONS_ADDR            32'h1f80000C
+`define MFP_7_SEGMENT_HEX_ADDR      32'h1f800010
+
+`ifdef MFP_DEMO_LIGHT_SENSOR
+`define MFP_LIGHT_SENSOR_ADDR       32'h1f800014
 `endif
 
-`define MFP_RED_LEDS_IONUM      4'h0
-`define MFP_GREEN_LEDS_IONUM    4'h1
-`define MFP_SWITCHES_IONUM      4'h2
-`define MFP_BUTTONS_IONUM       4'h3
-
-`ifdef DEMO_LIGHT_SENSOR
-`define MFP_LIGHT_SENSOR_IONUM  4'h4
+`define MFP_RED_LEDS_IONUM          4'h0
+`define MFP_GREEN_LEDS_IONUM        4'h1
+`define MFP_SWITCHES_IONUM          4'h2
+`define MFP_BUTTONS_IONUM           4'h3
+`define MFP_7_SEGMENT_HEX_IONUM     4'h4
+                                    
+`ifdef MFP_DEMO_LIGHT_SENSOR            
+`define MFP_LIGHT_SENSOR_IONUM      4'h5
 `endif
 
 //

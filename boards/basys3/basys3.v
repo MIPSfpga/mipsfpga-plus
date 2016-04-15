@@ -1,45 +1,31 @@
 `include "mfp_ahb_lite_matrix_config.vh"
 
-module nexys4_ddr
+module basys3
 (
-    input         CLK100MHZ,
-    input         CPU_RESETN,
+    input         clk,
 
-    input         BTNC,
-    input         BTNU,
-    input         BTNL,
-    input         BTNR,
-    input         BTND,
+    input         btnC,
+    input         btnU,
+    input         btnL,
+    input         btnR,
+    input         btnD,
 
-    input  [15:0] SW, 
+    input  [15:0] sw,
 
-    output [15:0] LED,
+    output [15:0] led,
 
-    output        LED16_B,
-    output        LED16_G,
-    output        LED16_R,
-    output        LED17_B,
-    output        LED17_G,
-    output        LED17_R,
-
-    output        CA,
-    output        CB,
-    output        CC,
-    output        CD,
-    output        CE,
-    output        CF,
-    output        CG,
-    output        DP,
-
-    output [ 7:0] AN,
+    output [ 6:0] seg,
+    output        dp,
+    output [ 3:0] an,
 
     inout  [12:1] JA,
     inout  [12:1] JB,
 
-    input         UART_TXD_IN
+    input         RsTx
 );
 
-    wire clk;
+    wire clock;
+    wire reset = btnU;
 
     `ifdef MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 
@@ -50,25 +36,25 @@ module nexys4_ddr
     # (.WIDTH (2))
     mfp_multi_switch_or_button_sync_and_debouncer
     (   
-        .clk    ( CLK100MHZ ),
-        .sw_in  ( SW [1:0]  ),
-        .sw_out ( sw_db     )
+        .clk    ( clk      ),
+        .sw_in  ( sw [1:0] ),
+        .sw_out ( sw_db    )
     );
 
     mfp_clock_divider_100_MHz_to_25_MHz_12_Hz_0_75_Hz 
     mfp_clock_divider_100_MHz_to_25_MHz_12_Hz_0_75_Hz
     (
-        .clki    ( CLK100MHZ ),
+        .clki    ( clk       ),
         .sel_lo  ( sw_db [0] ),
         .sel_mid ( sw_db [1] ),
         .clko    ( muxed_clk )
     );
 
-    BUFG BUFG_slow_clk (.O ( clk ), .I ( muxed_clk ));
+    BUFG BUFG_slow_clk (.O ( clock ), .I ( muxed_clk ));
 
     `else
 
-    clk_wiz_0 clk_wiz_0 (.clk_in1 (CLK100MHZ), .clk_out1 (clk));
+    clk_wiz_0 clk_wiz_0 (.clk_in1 (clk), .clk_out1 (clock));
 
     `endif
 
@@ -78,19 +64,12 @@ module nexys4_ddr
     wire [`MFP_N_GREEN_LEDS        - 1:0] IO_GreenLEDs;
     wire [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX;
 
-    assign IO_Switches = { { `MFP_N_SWITCHES - 16 { 1'b0 } } , SW  [15:0] };
+    assign IO_Switches = { { `MFP_N_SWITCHES - 16 { 1'b0 } } , sw  [15:0] };
 
     assign IO_Buttons  = { { `MFP_N_BUTTONS  -  5 { 1'b0 } } ,
-                           BTNU, BTND, BTNL, BTNC, BTNR };
+                           btnU, btnD, btnL, btnC, btnR };
 
-    assign LED = IO_GreenLEDs [15:0];
-
-    assign LED16_B = clk;
-    assign LED16_G = clk;
-    assign LED16_R = 1'b0;
-    assign LED17_B = 1'b0;
-    assign LED17_G = 1'b0;
-    assign LED17_R = 1'b0;
+    assign led = IO_GreenLEDs [15:0];
 
     wire [31:0] HADDR, HRDATA, HWDATA;
     wire        HWRITE;
@@ -102,8 +81,8 @@ module nexys4_ddr
 
     mfp_system mfp_system
     (
-        .SI_ClkIn         (   clk           ),
-        .SI_Reset         ( ~ CPU_RESETN    ),
+        .SI_ClkIn         ( clock           ),
+        .SI_Reset         ( reset           ),
                           
         .HADDR            ( HADDR           ),
         .HRDATA           ( HRDATA          ),
@@ -124,12 +103,12 @@ module nexys4_ddr
         .IO_GreenLEDs     ( IO_GreenLEDs     ), 
         .IO_7_SegmentHEX  ( IO_7_SegmentHEX  ),
 
-        .UART_RX          ( UART_TXD_IN /* Alternative: JA [10] */ ),
-        .UART_TX          ( /* TODO */      ),
+        .UART_RX          ( RsTx /* Alternative: JA [10] */ ),
+        .UART_TX          ( /* TODO */       ),
 
-        .SPI_CS           (   JA [ 1]       ),
-        .SPI_SCK          (   JA [ 4]       ),
-        .SPI_SDO          (   JA [ 3]       )
+        .SPI_CS           (   JA [ 1]        ),
+        .SPI_SCK          (   JA [ 4]        ),
+        .SPI_SDO          (   JA [ 3]        )
     );
 
     assign JA [7] = 1'b0;
@@ -137,17 +116,20 @@ module nexys4_ddr
     wire display_clock;
 
     mfp_clock_divider_100_MHz_to_763_Hz mfp_clock_divider_100_MHz_to_763_Hz
-        (CLK100MHZ, display_clock);
+        (clock, display_clock);
+
+    wire [7:0] anodes;
+    assign an = anodes [3:0];
 
     mfp_multi_digit_display multi_digit_display
     (
-        .clock          ( display_clock                  ),
-        .resetn         ( CPU_RESETN                     ),
-        .number         ( IO_7_SegmentHEX                ),
+        .clock          (   display_clock   ),
+        .resetn         ( ~ reset           ),
+        .number         (   IO_7_SegmentHEX ),
 
-        .seven_segments ( { CG, CF, CE, CD, CC, CB, CA } ),
-        .dot            ( DP                             ),
-        .anodes         ( AN                             )
+        .seven_segments (   seg             ),
+        .dot            (   dp              ),
+        .anodes         (   anodes          )
     );
 
 endmodule

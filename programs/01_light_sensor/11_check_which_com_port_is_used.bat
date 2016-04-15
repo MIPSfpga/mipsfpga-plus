@@ -41,3 +41,14 @@ mode com36
 mode com37
 mode com38
 mode com39
+pause
+mode com40
+mode com41
+mode com42
+mode com43
+mode com44
+mode com45
+mode com46
+mode com47
+mode com48
+mode com49

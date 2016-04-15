@@ -14,6 +14,12 @@ module mfp_dual_port_ram
 
     reg [DATA_WIDTH - 1:0] ram [(1 << ADDR_WIDTH) - 1:0];
 
+    `ifdef MFP_USE_WORD_MEMORY
+    `ifdef MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
+        initial $readmemh ("ram_reset_init.txt", ram);
+    `endif
+    `endif
+
     always @ (posedge clk)
     begin
         if (write_enable)

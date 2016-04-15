@@ -19,10 +19,11 @@ module mfp_system
     input         EJ_TCK,
     input         EJ_DINT,
 
-    input  [17:0] IO_Switches,
-    input  [ 4:0] IO_Buttons,
-    output [17:0] IO_RedLEDs,
-    output [ 8:0] IO_GreenLEDs,
+    input  [`MFP_N_SWITCHES          - 1:0] IO_Switches,
+    input  [`MFP_N_BUTTONS           - 1:0] IO_Buttons,
+    output [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs,
+    output [`MFP_N_GREEN_LEDS        - 1:0] IO_GreenLEDs,
+    output [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX,
 
     input         UART_RX,
     output        UART_TX,
@@ -304,43 +305,44 @@ module mfp_system
 
     assign UART_TX         = 1'b0;
 
-    `ifdef DEMO_LIGHT_SENSOR
+    `ifdef MFP_DEMO_LIGHT_SENSOR
     wire [15:0] IO_LightSensor;
     `endif
 
     mfp_ahb_lite_matrix_with_loader ahb_lite_matrix
     (
-        .HCLK            (   HCLK            ),
-        .HRESETn         ( ~ SI_Reset        ),  // Not HRESETn - this is necessary for serial loader
-        .HADDR           (   HADDR           ),
-        .HBURST          (   HBURST          ),
-        .HMASTLOCK       (   HMASTLOCK       ),
-        .HPROT           (   HPROT           ),
-        .HSIZE           (   HSIZE           ),
-        .HTRANS          (   HTRANS          ),
-        .HWDATA          (   HWDATA          ),
-        .HWRITE          (   HWRITE          ),
-        .HRDATA          (   HRDATA          ),
-        .HREADY          (   HREADY          ),
-        .HRESP           (   HRESP           ),
-        .SI_Endian       (   SI_Endian       ),
+        .HCLK             (   HCLK             ),
+        .HRESETn          ( ~ SI_Reset         ),  // Not HRESETn - this is necessary for serial loader
+        .HADDR            (   HADDR            ),
+        .HBURST           (   HBURST           ),
+        .HMASTLOCK        (   HMASTLOCK        ),
+        .HPROT            (   HPROT            ),
+        .HSIZE            (   HSIZE            ),
+        .HTRANS           (   HTRANS           ),
+        .HWDATA           (   HWDATA           ),
+        .HWRITE           (   HWRITE           ),
+        .HRDATA           (   HRDATA           ),
+        .HREADY           (   HREADY           ),
+        .HRESP            (   HRESP            ),
+        .SI_Endian        (   SI_Endian        ),
+                                                
+        .IO_Switches      (   IO_Switches      ),
+        .IO_Buttons       (   IO_Buttons       ),
+        .IO_RedLEDs       (   IO_RedLEDs       ),
+        .IO_GreenLEDs     (   IO_GreenLEDs     ), 
+        .IO_7_SegmentHEX  (   IO_7_SegmentHEX  ),
                                                
-        .IO_Switches     (   IO_Switches     ),
-        .IO_Buttons      (   IO_Buttons      ),
-        .IO_RedLEDs      (   IO_RedLEDs      ),
-        .IO_GreenLEDs    (   IO_GreenLEDs    ), 
-
-        `ifdef DEMO_LIGHT_SENSOR
-        .IO_LightSensor  (   IO_LightSensor  ), 
-        `endif
-                           
-        .UART_RX         (   UART_RX         ), 
-        .UART_TX         (   /* UART_TX */   ),
-                           
-        .MFP_Reset       (   MFP_Reset       )
+        `ifdef MFP_DEMO_LIGHT_SENSOR           
+        .IO_LightSensor   (   IO_LightSensor   ), 
+        `endif                                 
+                                               
+        .UART_RX          (   UART_RX          ), 
+        .UART_TX          (   /* UART_TX */    ),
+                                               
+        .MFP_Reset        (   MFP_Reset        )
     );
 
-    `ifdef DEMO_LIGHT_SENSOR
+    `ifdef MFP_DEMO_LIGHT_SENSOR
 
     mfp_pmod_als_spi_receiver mfp_pmod_als_spi_receiver
     (

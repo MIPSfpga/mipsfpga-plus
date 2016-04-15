@@ -18,12 +18,13 @@ module mfp_ahb_lite_matrix
     output        HRESP,
     input         SI_Endian,
 
-    input  [17:0] IO_Switches,
-    input  [ 4:0] IO_Buttons,
-    output [17:0] IO_RedLEDs,
-    output [ 8:0] IO_GreenLEDs,
+    input  [`MFP_N_SWITCHES          - 1:0] IO_Switches,
+    input  [`MFP_N_BUTTONS           - 1:0] IO_Buttons,
+    output [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs,
+    output [`MFP_N_GREEN_LEDS        - 1:0] IO_GreenLEDs,
+    output [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX,
 
-    `ifdef DEMO_LIGHT_SENSOR
+    `ifdef MFP_DEMO_LIGHT_SENSOR
     input  [15:0] IO_LightSensor,
     `endif
 
@@ -94,45 +95,48 @@ module mfp_ahb_lite_matrix
         .SI_Endian  ( SI_Endian  )
     );
 
-    `ifdef DEMO_CACHE_MISSES
+    `ifdef MFP_DEMO_CACHE_MISSES
 
     wire burst = HTRANS == `HTRANS_NONSEQ && HBURST == `HBURST_WRAP4;
-    assign IO_GreenLEDs = { 1'b0, HCLK, burst, HADDR [7:2] };
+    assign IO_GreenLEDs = { { `MFP_N_GREEN_LEDS - (1 + 1 + 6) { 1'b0 } }, HCLK, burst, HADDR [7:2] };
 
     `endif
 
     mfp_ahb_gpio_slave gpio
     (
-        .HCLK            ( HCLK            ),
-        .HRESETn         ( HRESETn         ),
-        .HADDR           ( HADDR           ),
-        .HBURST          ( HBURST          ),
-        .HMASTLOCK       ( HMASTLOCK       ),
-        .HPROT           ( HPROT           ),
-        .HSEL            ( HSEL [2]        ),
-        .HSIZE           ( HSIZE           ),
-        .HTRANS          ( HTRANS          ),
-        .HWDATA          ( HWDATA          ),
-        .HWRITE          ( HWRITE          ),
-        .HRDATA          ( HRDATA_2        ),
-        .HREADY          ( HREADY_2        ),
-        .HRESP           ( HRESP_2         ),
-        .SI_Endian       ( SI_Endian       ),
+        .HCLK             ( HCLK            ),
+        .HRESETn          ( HRESETn         ),
+        .HADDR            ( HADDR           ),
+        .HBURST           ( HBURST          ),
+        .HMASTLOCK        ( HMASTLOCK       ),
+        .HPROT            ( HPROT           ),
+        .HSEL             ( HSEL [2]        ),
+        .HSIZE            ( HSIZE           ),
+        .HTRANS           ( HTRANS          ),
+        .HWDATA           ( HWDATA          ),
+        .HWRITE           ( HWRITE          ),
+        .HRDATA           ( HRDATA_2        ),
+        .HREADY           ( HREADY_2        ),
+        .HRESP            ( HRESP_2         ),
+        .SI_Endian        ( SI_Endian       ),
                                            
-        .IO_Switches     ( IO_Switches     ),
-        .IO_Buttons      ( IO_Buttons      ),
+        .IO_Switches      ( IO_Switches     ),
+        .IO_Buttons       ( IO_Buttons      ),
 
-        .IO_RedLEDs      ( IO_RedLEDs      ),
+        .IO_RedLEDs       ( IO_RedLEDs      ),
 
-        `ifdef DEMO_CACHE_MISSES
-        .IO_GreenLEDs    (                 )
+        `ifdef MFP_DEMO_CACHE_MISSES
+        .IO_GreenLEDs     (                 ),
         `else
-        .IO_GreenLEDs    ( IO_GreenLEDs    )
+        .IO_GreenLEDs     ( IO_GreenLEDs    ),
         `endif
 
-        `ifdef DEMO_LIGHT_SENSOR
+        .IO_7_SegmentHEX  ( IO_7_SegmentHEX )
+
+
+        `ifdef MFP_DEMO_LIGHT_SENSOR
         ,
-        .IO_LightSensor  ( IO_LightSensor  )
+        .IO_LightSensor   ( IO_LightSensor  )
         `endif
     );
 

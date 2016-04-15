@@ -20,12 +20,13 @@ module mfp_testbench;
     reg         EJ_TCK;
     reg         EJ_DINT;
 
-    reg  [17:0] IO_Switches;
-    reg  [ 4:0] IO_Buttons;
-    wire [17:0] IO_RedLEDs;
-    wire [ 8:0] IO_GreenLEDs;
+    reg  [`MFP_N_SWITCHES          - 1:0] IO_Switches;
+    reg  [`MFP_N_BUTTONS           - 1:0] IO_Buttons;
+    wire [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs;
+    wire [`MFP_N_GREEN_LEDS        - 1:0] IO_GreenLEDs;
+    wire [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX;
 
-    `ifdef DEMO_LIGHT_SENSOR
+    `ifdef MFP_DEMO_LIGHT_SENSOR
     wire [15:0] IO_LightSensor;
     `endif
 
@@ -59,8 +60,9 @@ module mfp_testbench;
         .IO_Switches      ( IO_Switches      ),
         .IO_Buttons       ( IO_Buttons       ),
         .IO_RedLEDs       ( IO_RedLEDs       ),
-        .IO_GreenLEDs     ( IO_GreenLEDs     ),
-                                              
+        .IO_GreenLEDs     ( IO_GreenLEDs     ), 
+        .IO_7_SegmentHEX  ( IO_7_SegmentHEX  ),
+                                               
         .UART_RX          ( UART_RX          ),
         .UART_TX          ( UART_TX          ), 
 
@@ -205,8 +207,8 @@ module mfp_testbench;
 
     always @ (posedge SI_ClkIn)
     begin
-        $display ("%5d HCLK %b HADDR %h HRDATA %h HWDATA %h HWRITE %b LEDR %b LEDG %b",
-            cycle, system.HCLK, HADDR, HRDATA, HWDATA, HWRITE, IO_RedLEDs, IO_GreenLEDs);
+        $display ("%5d HCLK %b HADDR %h HRDATA %h HWDATA %h HWRITE %b LEDR %b LEDG %b 7SEG %b",
+            cycle, system.HCLK, HADDR, HRDATA, HWDATA, HWRITE, IO_RedLEDs, IO_GreenLEDs, IO_7_SegmentHEX);
 
         cycle = cycle + 1;
 
