@@ -18,10 +18,10 @@ module basys3
     output        dp,
     output [ 3:0] an,
 
-    inout  [12:1] JA,
-    inout  [12:1] JB,
+    inout  [ 7:0] JA,
+    inout  [ 7:0] JB,
 
-    input         RsTx
+    input         RsRx
 );
 
     wire clock;
@@ -76,7 +76,7 @@ module basys3
 
     wire ejtag_tck_in, ejtag_tck;
 
-    IBUF IBUF           (.O ( ejtag_tck_in ), .I ( JB [4]       ));
+    IBUF IBUF           (.O ( ejtag_tck_in ), .I ( JB [3]       ));
     BUFG BUFG_ejtag_tck (.O ( ejtag_tck    ), .I ( ejtag_tck_in ));
 
     mfp_system mfp_system
@@ -89,12 +89,12 @@ module basys3
         .HWDATA           ( HWDATA          ),
         .HWRITE           ( HWRITE          ),
 
-        .EJ_TRST_N_probe  (   JB [7]        ),
-        .EJ_TDI           (   JB [2]        ),
-        .EJ_TDO           (   JB [3]        ),
-        .EJ_TMS           (   JB [1]        ),
+        .EJ_TRST_N_probe  (   JB [4]        ),
+        .EJ_TDI           (   JB [1]        ),
+        .EJ_TDO           (   JB [2]        ),
+        .EJ_TMS           (   JB [0]        ),
         .EJ_TCK           (   ejtag_tck_in  ),
-        .SI_ColdReset     ( ~ JB [8]        ),
+        .SI_ColdReset     ( ~ JB [5]        ),
         .EJ_DINT          (   1'b0          ),
 
         .IO_Switches      ( IO_Switches      ),
@@ -103,20 +103,20 @@ module basys3
         .IO_GreenLEDs     ( IO_GreenLEDs     ), 
         .IO_7_SegmentHEX  ( IO_7_SegmentHEX  ),
 
-        .UART_RX          ( RsTx /* Alternative: JA [10] */ ),
+        .UART_RX          ( RsRx /* Alternative: JA [7] */ ),
         .UART_TX          ( /* TODO */       ),
 
-        .SPI_CS           (   JA [ 1]        ),
-        .SPI_SCK          (   JA [ 4]        ),
-        .SPI_SDO          (   JA [ 3]        )
+        .SPI_CS           (   JA [0]         ),
+        .SPI_SCK          (   JA [3]         ),
+        .SPI_SDO          (   JA [2]         )
     );
 
-    assign JA [7] = 1'b0;
+    assign JA [4] = 1'b0;
 
     wire display_clock;
 
     mfp_clock_divider_100_MHz_to_763_Hz mfp_clock_divider_100_MHz_to_763_Hz
-        (clock, display_clock);
+        (clk, display_clock);
 
     wire [7:0] anodes;
     assign an = anodes [3:0];
