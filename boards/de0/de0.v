@@ -134,13 +134,13 @@ module de0
         .HRDATA           ( HRDATA           ),
         .HWDATA           ( HWDATA           ),
         .HWRITE           ( HWRITE           ),
-                          
-        .EJ_TRST_N_probe  (   GPIO1_D [22]   ),
-        .EJ_TDI           (   GPIO1_D [21]   ),
-        .EJ_TDO           (   GPIO1_D [19]   ),
-        .EJ_TMS           (   GPIO1_D [23]   ),
-        .EJ_TCK           (   GPIO1_D [17]   ),
-        .SI_ColdReset     ( ~ GPIO1_D [20]   ),
+
+        .EJ_TRST_N_probe  (   GPIO1_D [18]   ),
+        .EJ_TDI           (   GPIO1_D [17]   ),
+        .EJ_TDO           (   GPIO1_D [15]   ),
+        .EJ_TMS           (   GPIO1_D [19]   ),
+        .EJ_TCK           (   GPIO1_D [14]   ),
+        .SI_ColdReset     ( ~ GPIO1_D [16]   ),
         .EJ_DINT          (   1'b0           ),
 
         .IO_Switches      ( IO_Switches      ),
@@ -148,26 +148,26 @@ module de0
         .IO_RedLEDs       ( IO_RedLEDs       ),
         .IO_GreenLEDs     ( IO_GreenLEDs     ), 
         .IO_7_SegmentHEX  ( IO_7_SegmentHEX  ),
-                                               
-        .UART_RX          ( GPIO1_D [31]     ),
-        .UART_TX          ( /* TODO */       ),
 
-        .SPI_CS           ( /* TODO GPIO1_D [34] */     ),
-        .SPI_SCK          ( /* TODO GPIO1_D [28] */    ),
-        .SPI_SDO          ( /* TODO GPIO1_D [30] */    )
+        .UART_RX          ( GPIO1_D [27]    ),
+        .UART_TX          ( /* TODO */      ),
+
+        .SPI_CS           ( GPIO1_D [30]    ),
+        .SPI_SCK          ( GPIO1_D [24]    ),
+        .SPI_SDO          ( GPIO1_D [26]    )
     );
 
-    assign GPIO1_D [15] = 1'b0;
-    assign GPIO1_D [14] = 1'b0;
-    assign GPIO1_D [13] = 1'b1;
-    assign GPIO1_D [12] = 1'b1;
+    assign GPIO1_D [13] = 1'b0;
+    assign GPIO1_D [12] = 1'b0;
+    assign GPIO1_D [11] = 1'b1;
+    assign GPIO1_D [10] = 1'b1;
 
-    assign GPIO1_D [26] = 1'b0;
+    assign GPIO1_D [22] = 1'b0;
 
-    assign HEX0_DP = 1'b0;
-    assign HEX1_DP = 1'b0;
-    assign HEX2_DP = 1'b0;
-    assign HEX3_DP = 1'b0;
+    assign HEX0_DP = 1'b1;
+    assign HEX1_DP = 1'b1;
+    assign HEX2_DP = 1'b1;
+    assign HEX3_DP = 1'b1;
 
     mfp_single_digit_seven_segment_display digit_3 ( IO_7_SegmentHEX [15:12] , HEX3_D );
     mfp_single_digit_seven_segment_display digit_2 ( IO_7_SegmentHEX [11: 8] , HEX2_D );
