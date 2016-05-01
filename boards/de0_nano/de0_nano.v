@@ -99,7 +99,7 @@ module de0_nano
     assign IO_Switches = { { `MFP_N_SWITCHES - 4 { 1'b0 } } ,   SW  [3:0] };
     assign IO_Buttons  = { { `MFP_N_BUTTONS  - 2 { 1'b0 } } , ~ KEY [1:0] };
 
-    assign LED = IO_GreenLEDs [7:0];
+    assign LED = SW [3] ? IO_GreenLEDs [7:0] : IO_RedLEDs [7:0];
                           
     wire [31:0] HADDR, HRDATA, HWDATA;
     wire        HWRITE;
@@ -128,7 +128,7 @@ module de0_nano
         .IO_GreenLEDs     ( IO_GreenLEDs     ), 
         .IO_7_SegmentHEX  ( IO_7_SegmentHEX  ),
                                                
-        .UART_RX          ( GPIO_0_IN [0] /* GPIO_0_D [29] */ ),
+        .UART_RX          ( /* GPIO_0_IN [0] */ GPIO_0_D [29] ),
         .UART_TX          ( /* TODO */      ),
 
         .SPI_CS           ( GPIO_0_D [32]   ),
