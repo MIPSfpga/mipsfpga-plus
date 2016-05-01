@@ -1,0 +1,49 @@
+Comparing files de0_nano.v and ..\DE0_NANO.V
+***** de0_nano.v
+    input         G_SENSOR_INT,
+
+    output        I2C_SCLK,
+***** ..\DE0_NANO.V
+    input         G_SENSOR_INT,
+    output        I2C_SCLK,
+*****
+
+***** de0_nano.v
+
+    wire [`MFP_N_SWITCHES          - 1:0] IO_Switches;
+    wire [`MFP_N_BUTTONS           - 1:0] IO_Buttons;
+    wire [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs;
+    wire [`MFP_N_GREEN_LEDS        - 1:0] IO_GreenLEDs;
+    wire [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX;
+
+    assign IO_Switches = { { `MFP_N_SWITCHES - 4 { 1'b0 } } ,   SW  [3:0] };
+    assign IO_Buttons  = { { `MFP_N_BUTTONS  - 2 { 1'b0 } } , ~ KEY [1:0] };
+
+***** ..\DE0_NANO.V
+
+    wire [17:0] IO_RedLEDs;
+    wire [ 8:0] IO_GreenLEDs;
+    wire [17:0] IO_Switches   = { 14'b0, SW  [3:0] };
+    wire [ 4:0] IO_Buttons    = {  3'b0, KEY [1:0] };
+
+*****
+
+***** de0_nano.v
+
+        .IO_Switches      ( IO_Switches      ),
+        .IO_Buttons       ( IO_Buttons       ),
+        .IO_RedLEDs       ( IO_RedLEDs       ),
+        .IO_GreenLEDs     ( IO_GreenLEDs     ), 
+        .IO_7_SegmentHEX  ( IO_7_SegmentHEX  ),
+                                               
+        .UART_RX          ( GPIO_0_IN [0] /* GPIO_0_D [29] */ ),
+***** ..\DE0_NANO.V
+
+        .IO_Switches      ( IO_Switches     ),
+        .IO_Buttons       ( IO_Buttons      ),
+        .IO_RedLEDs       ( IO_RedLEDs      ),
+        .IO_GreenLEDs     ( IO_GreenLEDs    ),
+                          
+        .UART_RX          ( GPIO_0_IN [0] /* GPIO_0_D [29] */ ),
+*****
+
