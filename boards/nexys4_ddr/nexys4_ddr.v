@@ -85,8 +85,8 @@ module nexys4_ddr
 
     assign LED = IO_GreenLEDs [15:0];
 
-    assign LED16_B = clk;
-    assign LED16_G = clk;
+    assign LED16_B = 1'b0;
+    assign LED16_G = 1'b0;
     assign LED16_R = 1'b0;
     assign LED17_B = 1'b0;
     assign LED17_G = 1'b0;

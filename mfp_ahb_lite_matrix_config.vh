@@ -47,7 +47,12 @@
 `define MFP_RAM_ADDR                32'h0???????
 
 `define MFP_RESET_RAM_ADDR_WIDTH    10  // The boot sequence is the same for everything
+
+`ifdef SYNTHESIS
 `define MFP_RAM_ADDR_WIDTH          10  // DE1: 10, DE0-Nano: 13, DE0-CV or Basys3: 14, Nexys 4 or DE2-115: 16
+`else
+`define MFP_RAM_ADDR_WIDTH          16
+`endif
 
 `define MFP_RESET_RAM_ADDR_MATCH    7'h7f
 `define MFP_RAM_ADDR_MATCH          1'b0

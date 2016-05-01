@@ -280,34 +280,48 @@ module de2_115
 
     mfp_system mfp_system
     (
-        .SI_ClkIn         (   clk            ),
-        .SI_Reset         ( ~ KEY [0]        ),
+        .SI_ClkIn         (   clk              ),
+        .SI_Reset         ( ~ KEY [0]          ),
                           
-        .HADDR            ( HADDR            ),
-        .HRDATA           ( HRDATA           ),
-        .HWDATA           ( HWDATA           ),
-        .HWRITE           ( HWRITE           ),
-                          
-        .EJ_TRST_N_probe  (   GPIO [22]      ),
-        .EJ_TDI           (   GPIO [21]      ),
-        .EJ_TDO           (   GPIO [19]      ),
-        .EJ_TMS           (   GPIO [23]      ),
-        .EJ_TCK           (   GPIO [17]      ),
-        .SI_ColdReset     ( ~ GPIO [20]      ),
-        .EJ_DINT          (   1'b0           ),
+        .HADDR            (   HADDR            ),
+        .HRDATA           (   HRDATA           ),
+        .HWDATA           (   HWDATA           ),
+        .HWRITE           (   HWRITE           ),
 
-        .IO_Switches      ( IO_Switches      ),
-        .IO_Buttons       ( IO_Buttons       ),
-        .IO_RedLEDs       ( IO_RedLEDs       ),
-        .IO_GreenLEDs     ( IO_GreenLEDs     ), 
-        .IO_7_SegmentHEX  ( IO_7_SegmentHEX  ),
+        `ifdef MFP_USE_GPIO_FOR_EJTAG
+                          
+        .EJ_TRST_N_probe  (   GPIO [22]        ),
+        .EJ_TDI           (   GPIO [21]        ),
+        .EJ_TDO           (   GPIO [19]        ),
+        .EJ_TMS           (   GPIO [23]        ),
+        .EJ_TCK           (   GPIO [17]        ),
+        .SI_ColdReset     ( ~ GPIO [20]        ),
+        .EJ_DINT          (   1'b0             ),
+
+        `else                                  
                                                
-        .UART_RX          ( GPIO [31]        ),
-        .UART_TX          ( /* TODO */       ),
+        .EJ_TRST_N_probe  (   EX_IO [6]        ),
+        .EJ_TDI           (   EX_IO [5]        ),
+        .EJ_TDO           (   EX_IO [4]        ),
+        .EJ_TMS           (   EX_IO [3]        ),
+        .EJ_TCK           (   EX_IO [2]        ),
+        .SI_ColdReset     ( ~ EX_IO [1]        ),
+        .EJ_DINT          (   EX_IO [0]        ),
+                                               
+        `endif
 
-        .SPI_CS           ( GPIO [34]        ),
-        .SPI_SCK          ( GPIO [28]        ),
-        .SPI_SDO          ( GPIO [30]        )
+        .IO_Switches      (   IO_Switches      ),
+        .IO_Buttons       (   IO_Buttons       ),
+        .IO_RedLEDs       (   IO_RedLEDs       ),
+        .IO_GreenLEDs     (   IO_GreenLEDs     ), 
+        .IO_7_SegmentHEX  (   IO_7_SegmentHEX  ),
+                                               
+        .UART_RX          (   GPIO [31]        ),
+        .UART_TX          (   /* TODO */       ),
+
+        .SPI_CS           (   GPIO [34]        ),
+        .SPI_SCK          (   GPIO [28]        ),
+        .SPI_SDO          (   GPIO [30]        )
     );
 
     assign GPIO [15] = 1'b0;
