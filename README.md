@@ -12,21 +12,25 @@ The hierarchy of synthesizable modules for Digilent Nexys 4 DDR with Xilinx Arti
 
 <a href="http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr_full.html"><img src="http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr_full.png"></a>
 
-MIPSfpga+ currently works on two FPGA boards:
+MIPSfpga+ currently works on eight FPGA boards:
 
 <ol>
 <li><a href="http://store.digilentinc.com/nexys-4-ddr-artix-7-fpga-trainer-board-recommended-for-ece-curriculum/">Digilent Nexys 4 DDR</a> board with Xilinx Artix-7 FPGA. See the Appendix A about how the board is connected with the applicable peripherals.</li>
+<li><a href="http://store.digilentinc.com/nexys-4-artix-7-fpga-trainer-board-limited-time-see-nexys4-ddr/">Digilent Nexys 4</a> board with Xilinx Artix-7 FPGA (no DDR, soon to be discontinued).</li>
+<li><a href="http://store.digilentinc.com/basys-3-artix-7-fpga-trainer-board-recommended-for-introductory-users/">Digilent Basys 3</a> with Xilinx Artix-7.</li>
 <li><a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V. See the Appendix B about how the board is connected with the applicable peripherals.</li>
+<li><a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV</li>
+<li><a href="http://de0-nano.terasic.com.tw">Terasic DE0-Nano</a> board with Altera Cyclone IV FPGA.</li>
+<li><a href="http://de0.terasic.com">Terasic DE0</a> with Altera Cyclone III</li>
+<li><a href="http://de1.terasic.com">Terasic DE1</a> with Altera Cyclone II</li>
 </ol>
 
-There is also one unfinisned port and four planned ports:
+There are three planned ports:
 
 <ol>
-<li><a href="http://de0-nano.terasic.com.tw">Terasic DE0-Nano</a> board with Altera Cyclone IV FPGA. This port is implemented but it has some issues with clocking and interfacing to be investigated and fixed. See the Appendix C about how the board is connected with the applicable peripherals.</li>
 <li><a href="http://marsohod.org/plata-marsokhod3">Marsohod 3</a> board with Altera MAX10 FPGA</li>
-<li><a href="http://store.digilentinc.com/basys-3-artix-7-fpga-trainer-board-recommended-for-introductory-users/">Digilent Basys 3</a> with Xilinx Artix-7. MIPSfpga+ is likely to work on this board with no modification except adding Basys 3 wrapper (top-level Verilog and pin constraints).</li>
 <li><a href="http://store.digilentinc.com/arty-board-artix-7-fpga-development-board-for-makers-and-hobbyists/">Digilent Arty</a> with Xilinx Artix-7. MIPSfpga+ is likely to work on this board with no modification except adding the board wrapper (top-level Verilog and pin constraints).</li>
-<li><a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV</li>
+<li><a href="http://de2.terasic.com">Terasic DE2</a> with Altera Cyclone II</li>
 </ol>
 
 The source code for MIPSfpga+ is located at <a href="http://github.com/MIPSfpga/mipsfpga-plus">http://github.com/MIPSfpga/mipsfpga-plus</a>; this code does not include any source code of MIPS microAptiv UP CPU core from MIPSfpga Getting Started package. A user of MIPSfpga+ is supposed to download Getting Started package version 1.2 from Imagination Technologies web site <a href="http://community.imgtec.com/downloads/mipsfpga-getting-started-version-1-2">http://community.imgtec.com/downloads/mipsfpga-getting-started-version-1-2</a>.
