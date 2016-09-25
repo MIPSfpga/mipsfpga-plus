@@ -52,3 +52,14 @@ mode com46
 mode com47
 mode com48
 mode com49
+pause
+mode com50
+mode com51
+mode com52
+mode com53
+mode com54
+mode com55
+mode com56
+mode com57
+mode com58
+mode com59

@@ -12,12 +12,14 @@ struct board_descriptor
 }
 boards [] =
 {
-    { "mfp_testbench" , 1 ,   0 , 0 , 0 , 0 , "Testbench for RTL simulation"                                    },
-    { "nexys4_ddr"    , 0 , 100 , 0 , 0 , 1 , "Wrapper for Digilent Nexys 4 DDR board with Xilinx Artix-7 FPGA" },
-    { "de0_cv"        , 0 ,  50 , 1 , 1 , 0 , "Wrapper for Terasic DE0-CV board with Altera Cyclone V FPGA"     }, 
-    { "de0_nano"      , 0 ,  50 , 1 , 0 , 0 , "Wrapper for Terasic DE0-Nano board with Altera Cyclone IV FPGA"  },
-    { "basys3"        , 0 , 100 , 0 , 0 , 1 , "Wrapper for Digilent Basys 3 board with Xilinx Artix-7 FPGA"     },
-    { "marsohod3"     , 0 ,  50 , 1 , 0 , 0 , "Wrapper for Marsohod 3 board with Altera MAX10 FPGA"             }
+    { "mfp_testbench" , 1 ,   0 , 0 , 0 , 0 , "Testbench for RTL simulation"                                                                       },
+    { "nexys4_ddr"    , 0 , 100 , 0 , 0 , 1 , "Wrapper for Digilent Nexys 4 DDR board with Xilinx Artix-7 FPGA"                                    },
+    { "de0_cv"        , 0 ,  50 , 1 , 1 , 0 , "Wrapper for Terasic DE0-CV board with Altera Cyclone V FPGA"                                        }, 
+    { "nexys4_ddr"    , 0 , 100 , 0 , 0 , 1 , "Wrapper for Digilent Nexys 4 DDR board with Xilinx Artix-7 FPGA (without 7-segment display module)" },
+    { "de0_cv"        , 0 ,  50 , 1 , 1 , 0 , "Wrapper for Terasic DE0-CV board with Altera Cyclone V FPGA (without 7-segment display module)"     }, 
+    { "de0_nano"      , 0 ,  50 , 1 , 0 , 0 , "Wrapper for Terasic DE0-Nano board with Altera Cyclone IV FPGA"                                     },
+    { "basys3"        , 0 , 100 , 0 , 0 , 1 , "Wrapper for Digilent Basys 3 board with Xilinx Artix-7 FPGA"                                        },
+    { "marsohod3"     , 0 ,  50 , 1 , 0 , 0 , "Wrapper for Marsohod 3 board with Altera MAX10 FPGA"                                                }
 };
 
 int i_board;
@@ -25,6 +27,7 @@ int narrow_write_support;
 int switchable_clock;
 int light_sensor;
 int serial_loader;
+int without_7_segment_display;
 
 void print_hierarchy ()
 {
@@ -43,6 +46,7 @@ void print_hierarchy ()
         light_sensor                ? "__light_sensor"         : "", 
         serial_loader               ? "__serial_loader"        : "",
         switchable_clock            ? "__switchable_clock"     : "", 
+        without_7_segment_display   ? "__wo_7_segment_display" : "", 
         current_module_name != NULL ? "__"                     : "",  
         current_module_name != NULL ? current_module_name      : ""
     );
@@ -70,7 +74,10 @@ void print_hierarchy ()
         b -> description
     );
 
-        if (switchable_clock | b -> static_7_segment_display | b -> dynamic_7_segment_display)
+        if (   switchable_clock
+            || 
+                  ! without_7_segment_display
+               && (b -> static_7_segment_display || b -> dynamic_7_segment_display))
         {
             group
             
@@ -104,28 +111,32 @@ void print_hierarchy ()
                 _group
             }
             
-            hbreak
-            
-            if (b -> static_7_segment_display)
+            if (   ! without_7_segment_display
+                && (b -> static_7_segment_display || b -> dynamic_7_segment_display))
             {
-                group
-                leaf ("mfp_seven_segment_displays.v", "mfp_single_digit_seven_segment_display", "digit_0");
-                vbreak
-                leaf ("mfp_seven_segment_displays.v", "mfp_single_digit_seven_segment_display", "digit_1");
-                vbreak
-                leaf ("mfp_seven_segment_displays.v", "mfp_single_digit_seven_segment_display", "digit_2");
-                vbreak
-                ellipsis
-                _group
-            }
-            
-            if (b -> dynamic_7_segment_display)
-            {
-                group
-                leaf ("mfp_clock_dividers.v", "mfp_clock_divider_100_MHz_to_763_Hz", NULL, "Clock for 7-segment display");
-                vbreak
-                leaf ("mfp_seven_segment_displays.v", "mfp_multi_digit_display");
-                _group
+                hbreak
+
+                if (b -> static_7_segment_display)
+                {
+                    group
+                    leaf ("mfp_seven_segment_displays.v", "mfp_single_digit_seven_segment_display", "digit_0");
+                    vbreak
+                    leaf ("mfp_seven_segment_displays.v", "mfp_single_digit_seven_segment_display", "digit_1");
+                    vbreak
+                    leaf ("mfp_seven_segment_displays.v", "mfp_single_digit_seven_segment_display", "digit_2");
+                    vbreak
+                    ellipsis
+                    _group
+                }
+                
+                if (b -> dynamic_7_segment_display)
+                {
+                    group
+                    leaf ("mfp_clock_dividers.v", "mfp_clock_divider_100_MHz_to_763_Hz", NULL, "Clock for 7-segment display");
+                    vbreak
+                    leaf ("mfp_seven_segment_displays.v", "mfp_multi_digit_display");
+                    _group
+                }
             }
             
             _group
@@ -257,6 +268,8 @@ int main ()
     }
     }
 
+    if (0)
+    {
     // Special cases
 
     current_module_name = NULL;
@@ -297,6 +310,25 @@ int main ()
         print_hierarchy ();
 
         switchable_clock = 1;
+        print_hierarchy ();
+    }
+    }
+
+    // Support for Lab YP1. Serial Loader Flow
+
+    current_module_name = NULL;
+
+    for (i_board = 3; i_board <= 4; i_board ++)
+    {
+        narrow_write_support      = 1;
+        switchable_clock          = 0;
+        light_sensor              = 0;
+        without_7_segment_display = 1;
+
+        serial_loader = 0;
+        print_hierarchy ();
+
+        serial_loader = 1;
         print_hierarchy ();
     }
 

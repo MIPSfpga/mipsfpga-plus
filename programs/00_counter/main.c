@@ -17,6 +17,9 @@ int main ()
         MFP_7_SEGMENT_HEX = ((n >> 8) & 0xffffff00) | (n & 0xff);
 
         n ++;
+
+        // asm ("mfc0 $8, $15, 0");
+        // MFP_7_SEGMENT_HEX = 1;
     }
 
     return 0;
