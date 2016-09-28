@@ -1,0 +1,304 @@
+<html>
+<body>
+<font size=2 face="Lucida Sans Unicode,Lucida Grande,sans-serif">
+<p><big><big><b>MIPSfpga 2.0. Lab YP1. Using MIPSfpga with Serial Loader Flow that does not require BusBlaster board and OpenOCD software</b></big></big></p>
+
+<p><big><b>1. Introduction</b></big></p>
+
+<p>This lab walks through the alternative usage flow of MIPSfpga, called "Serial Loader Flow". This alternative flow does not require using <a href="http://blog.imgtec.com/mips-processors/bus-blaster-v3c-is-an-affordable-debug-probe-for-mips-cpus">BusBlaster debugger board and OpenOCD software</a>. While BusBlaster / OpenOCD combination is a flexible and inexpensive way to debug the software uploaded into a synthesized MIPSfpga system, the flow with BusBlaster/OpenOCD has two drawbacks:</p>
+
+<ol>
+<li>A user is required to buy an additional hardware (BusBlaster) which may not be readily available for some users</li>
+<li>The drivers for OpenOCD depend on third-party software that may not be compatible with some versions of Windows and Linux</li>
+</ol>
+
+<p>The alternative Serial Loader Flow uses USB-to-UART connection already present in Digilent boards with Xilinx Artix-7 FPGA, including Basys3, Nexys4 and Nexys 4 DDR boards. For Altera-based boards that do not have integrated USB-to-UART connections it is still possible to use Serial Loader Flow. This can be accomplished by connecting the board with one of the ubiquitous $5 FTDI-based USB-to-UART connectors readily available in many stores and websites for Arduino hobbyists. Such connectors are easier to get than $50 Bus Blasters available on a smaller number of websites.</p>
+
+<p>In addition to offering the alternative way of uploading software programs into the synthesized MIPSfpga system on FPGA board, this lab illustrates several ideas useful for a digital design student, including:</p>
+
+<ol>
+<li>The implementation of serial UART protocol</li>
+<li>An example of using a finite state machine (FSM) to parse a text, with FSM coded in Verilog and syntesized in digital hardware rather than parsing the text using an FSM implemented in software</li>
+</ol>
+
+<p>The Serial Loader Flow is also not without drawbacks:</p>
+
+<ol>
+<li>The Serial Loader Flow does not allow debugging the software on the board using a debugger like Codescape working on a computer,</li>
+<li>Under this flow the hardware has to be aware of virtual-to-physical address mapping. If a user wants to change such mapping, he has to update both software linker script for his programs and Verilog code for the hardware component, specifically the code that translates virtual addresses into physical addresses during uploading the user's program into a sythesized MIPSfpga system.</li>
+</ol>
+
+<p>Despite those drawbacks, the Serial Loader Flow is a useful option for many users, and it can be used alongside with Bus Blaster / OpenOCD Flow.</p>
+
+<p><big><b>2. The theory of operation</b></big></p>
+
+<p><big><b>2.1. MIPSfpga 2.0 hardware module hierarchy without Serial Loader Flow support</b></big></p>
+
+<p><b><font color=blue>Figure 1</font></b> shows the basic hierarchy of synthesizable modules of MIPSfpga 2.0 for Digilent Nexys 4 DDR board with Xilinx Artix-7 FPGA and without Serial Loader hardware:</p>
+
+<p><center><b><font color=blue>Figure 1.</font></b></center></p>
+
+<img width=600 src="http://silicon-russia.com/pages/2015_12_28/hierarchy_de0_cv__narrow_write_support__wo_7_segment_display.png">
+
+<p>The contents and functionality of each module:</p>
+
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/boards/nexys4_ddr/nexys4_ddr.v">de0_cv</a> - an external wrapper module, specific for each FPGA board type. The ports of this module correspond to physical ports on FPGA chip itself. The specific module <i>nexys4_ddr</i> is written for Digilent Nexys 4 DDR board with Xilinx Artix-7 FPGA.</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_system.v">mfp_system</a> - system module, common for all FPGA boards that support MIPSfpga 2.0.
+<ul>
+<li><a href="http://www.silicon-russia.com/2015/12/11/mipsfpga-download-instructions">m14k_top</a> - top-level module of the microprocessor core <a href="http://imgtec.com/mips/aptiv/microaptiv/">MIPS microAptiv UP (also referenced in some documentation as MIPS microAptiv MPU)</a>. The name <i>m14k</i> is left from the earlier variant of the processor core - MIPS M14Kc.</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_system.v">mfp_ejtag_reset</a> - a utility module to reset EJTAG debug interface used in Bus Blaster / OpenOCD Flow<a href="http://www.linux-mips.org/wiki/JTAG">EJTAG</a></li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_matrix</a> - a module that combines memory blocks, the controller for <a href="http://www.eecs.umich.edu/courses/eecs373/readings/ARM_IHI0033A_AMBA_AHB-Lite_SPEC.pdf">AHB-Lite</a> bus and I/O logic. The I/O logic links the addresses coming from the software running on CPU core via AHB-Lite bus, with the signals that control hardware peripherals: buttons, LED indicators etc.
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_decoder</a> - a module that decode an address on AHB-Lite bus and determines which hardware slave (a memory of an input/output device is going to process the corresponding transaction on the bus</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_ram_slave.v">mfp_ahb_ram_slave</a> <i>reset_ram</i> - an AHB-Lite wrapper for memory blocks. This particular group of memory blocks (<i>reset_ram</i>) is intended for the part of software that starts immediately after the processor exits the reset. This part of software is called "the bootloader".
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_dual_port_ram.v">mfp_dual_port_ram</a> <i>i0-i3</i> - modules that infer FPGA block memory during the synthesize. In order for the synthesizer to interpret the code for the module in appropriate way, The code in these modules was written according to <a href="http://quartushelp.altera.com/14.1/mergedProjects/hdl/vlog/vlog_pro_ram_inferred.htm">special guidelines</a> from EDA (Electronic Design Automation) tool vendors, including Xilinx and Altera, so that the synthesizer interprets the code in appropriate way and infers FPGA-specific block memory. There are four 8-bit wide memory blocks in order to implement 32-bit wide random access memory (RAM). Such design is needed in order to support a single byte-wide AHBLite transfer. The alternative idea with 32-bit wide memory would be not sufficient since neither Xilinx nor Altera support writing 32-bit date in memory with a mask.</li>
+</ul></li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_ram_slave.v">mfp_ahb_ram_slave</a> <i>ram</i> - another AHB-Lite memory wrapper. This group of memory blocks (<i>ram</i>) is intended for the main part of the software program, that is fetched from the cacheable region of the virtual memory map.
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_dual_port_ram.v">mfp_dual_port_ram</a> <i>i0-i3</i> - same as above</li>
+</ul></li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_gpio_slave.v">mfp_ahb_gpio_slave</a> - AHB-Lite slave implementing GPIO - General Purpose Input / Output. The logic in this module maps bus addresses to the signals used for the peripheral devices: buttons, LED indicators etc.</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_response_mux</a> - one of submodules used for implementing AHB-Lite bus protocol. Contains a multiplexor that produces correct read data for the CPU based on read data from all memories and I/O slaves. This multiplexor uses the id of a slave stored during the address phase of the corresponding bus transaction in flight</li>
+</ul></li>
+</ul></li></ul>
+
+<p><big><b>2.2. Serial Loader Flow support in MIPSfpga 2.0 hardware module hierarchy</b></big></p>
+
+<p>To support the Serial Loader Flow, for extra modules are added to this structure:</p>
+
+<p><center><b><font color=blue>Figure 2.</font></b></center></p>
+
+<img width=600 src="http://silicon-russia.com/pages/2015_12_28/hierarchy_de0_cv__narrow_write_support__serial_loader__wo_7_segment_display.png">
+
+<p>The contents and functionality of the added modules:</p>
+
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_with_loader.v">mfp_ahb_lite_matrix_with_loader</a> - this module replaces <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_matrix</a> from the previous hierarchy. <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_with_loader.v">mfp_ahb_lite_matrix_with_loader</a> contains both <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_matrix</a>, as well as three modules with new functionality:
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_uart_receiver.v">mfp_uart_receiver</a> - this module receives data from PC through UART and converts this data into a stream of bytes / ASCII characters</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_srec_parser.v">mfp_srec_parser</a> - parses the stream of ASCII characters received from <i>mfp_uart_receiver</i>, interprets these characters as text in Motorola S-Record format, and generates as sequence of transactions (address / data) to fill the memory of a synthesized system with the data described in Motorola S-Record text</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_srec_parser_to_ahb_lite_bridge.v">mfp_srec_parser_to_ahb_lite_bridge</a> - converts the transactions, obtained from <i>mfp_srec_parser</i> into transactions that confirm AHB-Lite protocol. This module also converts the virtual addresses used by the software, into physical addresses used by hardware. The conversion is done using simple fixed mapping (nothing complicated like TLB MMU is involved).</li>
+</ul>
+</li>
+</ul>
+
+<p><b><font color=blue>Figure 3.</font></b> shows the schematics of <i>mfp_ahb_lite_matrix_with_loader</i> created after Verilog synthesis but before FPGA technology-specific mapping, placement and routing. Note the multiplexor between <i>mfp_srec_parser_to_ahb_lite_bridge</i> and <i>mfp_ahb_lite_matrix</i>. This multiplexor directs to the memory subsystem either the transactions from the CPU core, or the transactions from the Serial Loader:</p>
+
+<p><center><b><font color=blue>Figure 3.</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/02/mfp_ahb_lite_matrix_with_loader.png" rel="attachment wp-att-861"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2016/02/mfp_ahb_lite_matrix_with_loader-1024x277.png" alt="mfp_ahb_lite_matrix_with_loader"  class="alignnone size-large wp-image-861" /></a>
+
+<p><big><b>2.3. More details about module <i>mfp_uart_receiver</i></b></big></p>
+
+<p><i>mfp_uart_receiver</i> receives data serially from UART RX pin and outputs 8-bit bytes when data is ready. It assumes a simple version of <a href="https://reference.digilentinc.com/pmod:communication_protocols:uart">UART protocol</a>, without control signals, and with one start bit. The baud rate and the expected main clock rate is hardcoded. The module contains a state machine that waits for a negative edge (detecting a start bit) and samples data bits by counting clock cycles. Since the width of each symbol is quite big 50,000,000 Hz / 115,200 baud = 434 clock cycles (or 217 for 25 MHz), this method of getting the data is quite reliable:</p>
+
+<p><center><b><font color=blue>Figure 4.</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.41.49.png" rel="attachment wp-att-673"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.41.49.png" class="alignnone size-full wp-image-673" /></a>
+
+<p><big><b>2.4. More details about module <i>mfp_srec_parser</i></b></big></p>
+
+<p><i>mfp_srec_parser</i> received data from <i>mfp_uart_receiver</i> and parses them as text in Motorola S-record file format. During parsing the state machine inside <i>mfp_srec_parser</i> forms the transactions to the memory of MIPSfpga+ synthesized system, filling the memory with specified bytes at specified locations. The module header is shown below:</p>
+
+<p><center><b><font color=blue>Figure 5.</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.42.17.png" rel="attachment wp-att-674"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.42.17.png" class="alignnone size-large wp-image-674" /></a>
+
+<p>See <a href="https://en.wikipedia.org/wiki/SREC_(file_format)">the description of Motorola S-record format from Wikipedia</a>:</p>
+
+<p><center><b><font color=blue>Figure 6.</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/11/Motorola_SREC_Chart.png" rel="attachment wp-att-366"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/11/Motorola_SREC_Chart-1024x705.png" class="alignnone size-large wp-image-366" /></a>
+
+<p><big><b>2.5. More details about module <i>mfp_srec_parser_to_ahb_lite_bridge</i></b></big></p>
+
+<p><i>mfp_srec_parser_to_ahb_lite_bridge</i> is a glue between <i>mfp_srec_parser</i> and AHB-Lite bus. It also edits the addresses, converting virtual addresses into physical according to the rules of fixed mapping (see MIPS microAptiv UP core software documentation):</p>
+
+<p><center><b><font color=blue>Figure 7.</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.43.08.png" rel="attachment wp-att-675"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.43.08.png" class="alignnone size-large wp-image-675" /></a>
+
+<p><big><b>2.6. Miscellaneous</b></big></p>
+
+<p>The output of <i>mfp_srec_parser</i>, a signal called <i>in_progres</i> is used as a reset for microAptiv UP processor core. It means that while the serial loader fills the memory with S-record file data, the processor is not accessing the memory. Once <i>mfp_srec_parser</i> gets the termination record (S7), the core wakes up and starts to fetch the program from the newly filled memory.</p>
+
+<p>The serial loader mechanism does not disable interfacing with regular Bus Blaster / Open OCD. Both ways of loading programs, serial loader and Bus Blaster, can be used without re-synthesizing the system.</p>
+
+<big><b>3. Setting up the board and connectors</b></big>
+
+<big><b>3.1. Setting up Digilent boards with Artix-7 FPGA</b></big>
+
+<p>The following Digilent boards do no require adding any connectors because they already have USB-to-UART connection embedded in the board:
+
+<ol>
+<li><a href="http://store.digilentinc.com/nexys-4-ddr-artix-7-fpga-trainer-board-recommended-for-ece-curriculum/">Digilent Nexys 4 DDR</a> board with Xilinx Artix-7 FPGA. See the Appendix A about how the board is connected with the applicable peripherals.</li>
+<li><a href="http://store.digilentinc.com/nexys-4-artix-7-fpga-trainer-board-limited-time-see-nexys4-ddr/">Digilent Nexys 4</a> board with Xilinx Artix-7 FPGA (no DDR, soon to be discontinued).</li>
+<li><a href="http://store.digilentinc.com/basys-3-artix-7-fpga-trainer-board-recommended-for-introductory-users/">Digilent Basys 3</a> with Xilinx Artix-7.</li>
+</ol>
+
+<p>Here is an exempt from Digilent documentation about USB-to-UART:</p>
+
+<p><center><b><font color=blue>Figure 8.</font></b></center></p>
+
+<a href="https://reference.digilentinc.com/_media/nexys4-ddr:nexys4ddr_rm.pdf"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-27-21.22.12.png" alt="screenshot-2016-09-27-21-22-12" /></a>
+
+<big><b>3.2. Setting up Terasic boards with Altera Cyclone II, III, IV and V FPGA</b></big>
+
+<p>Some Altera boards have USB-to-UART connector, for some other boards it is possible to use other interfaces, but for simplicity this lab uses external USB-to-UART connectors attached to general purpose I/O pins.</p>
+
+<p>A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip connected to GPIO pins of <a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA. UART TX is connected to the pin 3 from bottom and the ground is connected to pin 6 from the bottom. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</p>
+
+<p><center><b><font color=blue>Figure 9.</font></b></center></p>
+
+<a href="http://de0-cv.terasic.com.tw"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_160527-1024x683.jpg" /></a>
+
+<p><center><b><font color=blue>Figure 10.</font></b></center></p>
+
+<a href="http://de0-cv.terasic.com.tw"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_171948-1024x1024.jpg" /></a>
+
+<p>Serial Loader is also compatible with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a>. There is another, alternative cable, based on <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182718&SearchText=PL2303HX">PL2303HX chip</a> however this cable has more compatibility problems with Windows 8.x and we recommend to use cables based on PL2303TA instead:</p>
+
+<p><center><b><font color=blue>Figure 11.</font></b></center></p>
+
+<a href="http://de0-cv.terasic.com.tw"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_pl2303ta_160926_163515-1024x767.jpg" /></a>
+
+<p><center><b><font color=blue>Figure 12.</font></b></center></p>
+
+<a href="http://de0-cv.terasic.com.tw"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_pl2303ta_160926_163235-1024x683.jpg" /></a>
+
+<p>Same connections can be used with many popular Terasic boards that support MIPSfpga:</p>
+
+<ol>
+<li><a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V</li>
+<li><a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV</li>
+<li><a href="http://de0-nano.terasic.com.tw">Terasic DE0-Nano</a> board with Altera Cyclone IV FPGA</li>
+<li><a href="http://de0.terasic.com">Terasic DE0</a> with Altera Cyclone III</li>
+<li><a href="http://de1.terasic.com">Terasic DE1</a> with Altera Cyclone II</li>
+</ol>
+
+<p>See Appendix A for the pictures of all Terasic Cyclone board connections.</p>
+
+<blockquote><p>File <i>00_clean_all.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                                  
+rd /s /q sim
+
+del *.o
+del main.s
+del program.elf
+del program.map
+del program.dis
+del program*.hex
+del program.rec
+del FPGA_Ram.elf
+
+</pre></font></blockquote><blockquote><p>File <i>01_compile_c_to_assembly.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                      
+rem -EL           - Little-endian
+rem -march=m14kc  - MIPSfpga = MIPS microAptiv UP based on MIPS M14Kc
+rem -msoft-float  - should not use floating-point processor instructions
+rem -O2           - optimization level
+rem -S            - compile to assembly
+
+mips-mti-elf-gcc -EL -march=m14kc -msoft-float -O2 -S main.c
+
+</pre></font></blockquote><blockquote><p>File <i>02_compile_and_link.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                           
+rem -EL             - Little-endian
+rem -march=m14kc    - MIPSfpga = MIPS microAptiv UP based on MIPS M14Kc
+rem -msoft-float    - should not use floating-point processor instructions
+rem -o program.elf  - output file name
+rem -O2             - optimization level
+rem -T, -Wl         - linked options
+
+mips-mti-elf-gcc -EL -march=m14kc -msoft-float -O2
+    -Wl,-Map=program.map -T program.ld
+    -Wl,--defsym,__flash_start=0xbfc00000
+    -Wl,--defsym,__flash_app_start=0x80000000
+    -Wl,--defsym,__app_start=0x80000000
+    -Wl,--defsym,__stack=0x80040000
+    -Wl,--defsym,__memory_size=0x1f800
+    -Wl,-e,0xbfc00000
+    boot.S main.c -o program.elf
+
+</pre></font></blockquote><blockquote><p>File <i>03_check_program_size.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                         
+mips-mti-elf-size program.elf
+
+</pre></font></blockquote><blockquote><p>File <i>04_disassemble.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                                
+mips-mti-elf-objdump -D program.elf &gt; program.dis
+
+</pre></font></blockquote><blockquote><p>File <i>05_generate_verilog_readmemh_file.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>             
+mips-mti-elf-objcopy program.elf -O verilog program.hex
+..\utilities\ad_hoc_program_hex_splitter
+
+</pre></font></blockquote><blockquote><p>File <i>06_simulate_with_modelsim.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                     
+rd /s /q sim
+md sim
+cd sim
+
+copy ..\*.hex .
+
+vsim -do ../modelsim_script.tcl
+
+</pre></font></blockquote><blockquote><p>File <i>07_simulate_with_icarus.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                       
+rd /s /q sim
+md sim
+cd sim
+
+copy ..\*.hex .
+
+\iverilog\bin\iverilog -D SIMULATION -g2005
+    -I ../../..
+    -I ../../../../../MIPSfpga/rtl_up
+    ../../../../../MIPSfpga/rtl_up/mvp*.v
+    ../../../../../MIPSfpga/rtl_up/RAM*.v
+    ../../../../../MIPSfpga/rtl_up/*xilinx.v
+    ../../../../../MIPSfpga/rtl_up/m14k*.v
+    ../../../*.v
+
+\iverilog\bin\vvp a.out &gt; a.lst
+\iverilog\gtkwave\bin\gtkwave.exe dump.vcd
+
+</pre></font></blockquote><blockquote><p>File <i>08_generate_motorola_s_record_file.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>            
+mips-mti-elf-objcopy program.elf -O srec program.rec
+
+</pre></font></blockquote><blockquote><p>File <i>09_upload_to_xilinx_board_using_bus_blaster.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>   
+copy program.elf FPGA_Ram.elf
+rem Yes, it is working with DE2_115 script
+cd C:\MIPSfpga\Codescape\ExamplePrograms\Scripts\DE2_115
+loadMIPSfpga.bat C:\github\mipsfpga-plus\programs\00_counter
+cd C:\github\mipsfpga-plus\programs\00_counter
+del FPGA_Ram.elf
+
+</pre></font></blockquote><blockquote><p>File <i>10_upload_to_altera_board_using_bus_blaster.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>   
+copy program.elf FPGA_Ram.elf
+cd C:\MIPSfpga\Codescape\ExamplePrograms\Scripts\DE2_115
+loadMIPSfpga.bat C:\github\mipsfpga-plus\programs\00_counter
+cd C:\github\mipsfpga-plus\programs\00_counter
+del FPGA_Ram.elf
+
+</pre></font></blockquote><blockquote><p>File <i>11_check_which_com_port_is_used.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>               
+mode com0
+mode com1
+mode com2
+mode com3
+mode com4
+mode com5
+mode com6
+mode com7
+mode com8
+mode com9
+pause
+mode com10
+mode com11
+. . . . . . . . .
+
+</pre></font></blockquote><blockquote><p>File <i>12_upload_to_the_board_using_uart.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>             
+set a=16
+set a=39
+mode com%a% baud=115200 parity=n data=8 stop=1 to=off xon=off odsr=off octs=off dtr=off rts=off idsr=off
+type program.rec &gt;\\.\COM%a%
+
+</pre></font></blockquote>
+
+</font>
+</body>
+</html>
