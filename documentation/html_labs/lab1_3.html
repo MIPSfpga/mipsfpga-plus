@@ -1,0 +1,54 @@
+
+<p><big><b>3. Setting up the board and connectors</b></big></p>
+
+<p><big><b>3.1. Setting up Digilent boards with Artix-7 FPGA</b></big></p>
+
+<p>The following Digilent boards do no require adding any connectors because they already have USB-to-UART connection embedded in the board:
+
+<ol>
+<li><a href="http://store.digilentinc.com/nexys-4-ddr-artix-7-fpga-trainer-board-recommended-for-ece-curriculum/">Digilent Nexys 4 DDR</a> board with Xilinx Artix-7 FPGA. See the Appendix A about how the board is connected with the applicable peripherals.</li>
+<li><a href="http://store.digilentinc.com/nexys-4-artix-7-fpga-trainer-board-limited-time-see-nexys4-ddr/">Digilent Nexys 4</a> board with Xilinx Artix-7 FPGA (no DDR, soon to be discontinued).</li>
+<li><a href="http://store.digilentinc.com/basys-3-artix-7-fpga-trainer-board-recommended-for-introductory-users/">Digilent Basys 3</a> with Xilinx Artix-7.</li>
+</ol>
+
+<p>Here is an exempt from Digilent documentation about USB-to-UART:</p>
+
+<p><center><b><font color=blue>Figure 8.</font></b></center></p>
+
+<a href="https://reference.digilentinc.com/_media/nexys4-ddr:nexys4ddr_rm.pdf"><img border=1 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-27-21.22.12.png" alt="screenshot-2016-09-27-21-22-12" /></a>
+
+<p><big><b>3.2. Setting up Terasic boards with Altera Cyclone II, III, IV and V FPGA</b></big></p>
+
+<p>Some Terasic boards have USB-to-UART connector, for some other boards it is possible to use other interfaces, but for simplicity this lab uses external USB-to-UART connectors attached to general purpose I/O pins.</p>
+
+<p>A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip connected to GPIO pins of <a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA. UART TX is connected to the pin 3 from bottom and the ground is connected to pin 6 from the bottom. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</p>
+
+<p><center><b><font color=blue>Figure 9.</font></b></center></p>
+
+<a href="http://de0-cv.terasic.com.tw"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_160527-1024x683.jpg" /></a>
+
+<p><center><b><font color=blue>Figure 10.</font></b></center></p>
+
+<a href="http://de0-cv.terasic.com.tw"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_171948-1024x1024.jpg" /></a>
+
+<p>Serial Loader is also compatible with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a>. There is another, alternative cable, based on <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182718&SearchText=PL2303HX">PL2303HX chip</a> however this cable has more compatibility problems with Windows 8.x and we recommend to use cables based on PL2303TA instead:</p>
+
+<p><center><b><font color=blue>Figure 11.</font></b></center></p>
+
+<a href="http://de0-cv.terasic.com.tw"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_pl2303ta_160926_163515-1024x767.jpg" /></a>
+
+<p><center><b><font color=blue>Figure 12.</font></b></center></p>
+
+<a href="http://de0-cv.terasic.com.tw"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_pl2303ta_160926_163235-1024x683.jpg" /></a>
+
+<p>Same connections can be used with many popular Terasic boards that support MIPSfpga:</p>
+
+<ol>
+<li><a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V</li>
+<li><a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV</li>
+<li><a href="http://de0-nano.terasic.com.tw">Terasic DE0-Nano</a> board with Altera Cyclone IV FPGA</li>
+<li><a href="http://de0.terasic.com">Terasic DE0</a> with Altera Cyclone III</li>
+<li><a href="http://de1.terasic.com">Terasic DE1</a> with Altera Cyclone II</li>
+</ol>
+
+<p>See Appendix A for the pictures of all Terasic Cyclone board connections.</p>
