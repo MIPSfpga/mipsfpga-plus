@@ -1,3 +1,97 @@
+<h2>5. Compiling the software and uploading it into the synthesized system using Serial Loader</h2>
+
+<h3>5.1. The first lab program</h3>
+
+<h3>5.2. The steps overview</h3>
+
+<h4>5.2.1. Batch files and Bourne Shell scripts for going through the steps</h4>
+
+<h4>5.2.2. The essential and optional steps</h4>
+
+<h4>5.2.3. Cleaning all</h4>
+
+This step is optional.
+
+<h3>5.3. Compiling the software</h3>
+
+<h4>5.3.1. Compiling C program into assembly to examine the generated code</h4>
+
+This step is optional.
+
+<h4>5.3.2. Compiling C and assembly programs and linking them into ELF file</h4>
+
+This step is required.
+
+<h4>5.3.3. Checking program size</h4>
+
+This step is optional.
+
+<h4>5.3.4. Using disassembly program</h4>
+
+This step is optional.
+
+<h3>5.4. Using Verilog simulation to model and debug both hardware and software </h3>
+
+These steps are optional.
+
+<h4>5.4.1. Preparing Verilog $readmemh file with memory image for the software</h4>
+
+This step is optional.
+
+<h4>5.4.2. Simulating the system using Mentor Graphics ModelSim</h4>
+
+This step is optional.
+
+<h4>5.4.3. Simulating the system using Icarus Verilog</h4>
+
+This step is optional.
+
+<h3>5.5. Uploading software program to the board</h3>
+
+<h4>5.5.1. Generating the file in Motorola S-Record format/h4>
+
+<h4>5.5.2. Uploading ELF file into Xilinx FPGA board using Bus Blaster and OpenOCD software/h4>
+
+This step is optional.
+
+<h4>5.5.3. Uploading ELF file into Altera FPGA boards using Bus Blaster and OpenOCD software/h4>
+
+This step is optional.
+
+<h4>5.5.4. Checking which virtual COM port is used by USB-to-UART connector/h4>
+
+This step is required.
+
+<h4>5.5.5. Checking which virtual COM port is used by USB-to-UART connector/h4>
+
+This step is required.
+
+<font face="Courier">
+<pre>
+</pre>
+</font>
+
+<li><i>01_compile_c_to_assembly.bat</i></li>
+<li><i>02_compile_and_link.bat</i></li>
+<li><i>03_check_program_size.bat</i></li>
+<li><i>04_disassemble.bat</i></li>
+<li><i>05_generate_verilog_readmemh_file.bat</i></li>
+<li><i>06_simulate_with_modelsim.bat</i></li>
+<li><i>07_simulate_with_icarus.bat</i></li>
+<li><i>08_generate_motorola_s_record_file.bat</i></li>
+<li><i>09_upload_to_xilinx_board_using_bus_blaster.bat</i></li>
+<li><i>10_upload_to_altera_board_using_bus_blaster.bat</i></li>
+<li><i>11_check_which_com_port_is_used.bat</i></li>
+<li><i>12_upload_to_the_board_using_uart.bat</i></li>
+</ul>
+
+
+
+
+
+
+
+
 <blockquote><p>File <i>00_clean_all.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                                  
 rd /s /q sim
 
