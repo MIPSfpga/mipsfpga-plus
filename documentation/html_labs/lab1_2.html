@@ -2,9 +2,9 @@
 
 <p><big><b>2.1. MIPSfpga 2.0 hardware module hierarchy without Serial Loader Flow support</b></big></p>
 
-<p><b><font color=blue>Figure 1</font></b> shows the basic hierarchy of synthesizable modules of MIPSfpga 2.0 for Digilent Nexys 4 DDR board with Xilinx Artix-7 FPGA and without Serial Loader hardware:</p>
+<p><b><font color=blue>Figure 2.1</font></b> shows the basic hierarchy of synthesizable modules of MIPSfpga 2.0 for Digilent Nexys 4 DDR board with Xilinx Artix-7 FPGA and without Serial Loader hardware:</p>
 
-<p><center><b><font color=blue>Figure 1.</font></b></center></p>
+<p><center><b><font color=blue>Figure 2.1</font></b></center></p>
 
 <img width=600 src="http://silicon-russia.com/pages/2015_12_28/hierarchy_de0_cv__narrow_write_support__wo_7_segment_display.png">
 
@@ -36,7 +36,7 @@
 
 <p>To support the Serial Loader Flow, for extra modules are added to this structure:</p>
 
-<p><center><b><font color=blue>Figure 2.</font></b></center></p>
+<p><center><b><font color=blue>Figure 2.2</font></b></center></p>
 
 <img width=600 src="http://silicon-russia.com/pages/2015_12_28/hierarchy_de0_cv__narrow_write_support__serial_loader__wo_7_segment_display.png">
 
@@ -52,9 +52,9 @@
 </li>
 </ul>
 
-<p><b><font color=blue>Figure 3.</font></b> shows the schematics of <i>mfp_ahb_lite_matrix_with_loader</i> created after Verilog synthesis but before FPGA technology-specific mapping, placement and routing. Note the multiplexor between <i>mfp_srec_parser_to_ahb_lite_bridge</i> and <i>mfp_ahb_lite_matrix</i>. This multiplexor directs to the memory subsystem either the transactions from the CPU core, or the transactions from the Serial Loader:</p>
+<p><b><font color=blue>Figure 2.3</font></b> shows the schematics of <i>mfp_ahb_lite_matrix_with_loader</i> created after Verilog synthesis but before FPGA technology-specific mapping, placement and routing. Note the multiplexor between <i>mfp_srec_parser_to_ahb_lite_bridge</i> and <i>mfp_ahb_lite_matrix</i>. This multiplexor directs to the memory subsystem either the transactions from the CPU core, or the transactions from the Serial Loader:</p>
 
-<p><center><b><font color=blue>Figure 3.</font></b></center></p>
+<p><center><b><font color=blue>Figure 2.3</font></b></center></p>
 
 <a href="http://www.silicon-russia.com/wp-content/uploads/2016/02/mfp_ahb_lite_matrix_with_loader.png" rel="attachment wp-att-861"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2016/02/mfp_ahb_lite_matrix_with_loader-1024x277.png" alt="mfp_ahb_lite_matrix_with_loader"  class="alignnone size-large wp-image-861" /></a>
 
@@ -62,7 +62,7 @@
 
 <p><i>mfp_uart_receiver</i> receives data serially from UART RX pin and outputs 8-bit bytes when data is ready. It assumes a simple version of <a href="https://reference.digilentinc.com/pmod:communication_protocols:uart">UART protocol</a>, without control signals, and with one start bit. The baud rate and the expected main clock rate is hardcoded. The module contains a state machine that waits for a negative edge (detecting a start bit) and samples data bits by counting clock cycles. Since the width of each symbol is quite big 50,000,000 Hz / 115,200 baud = 434 clock cycles (or 217 for 25 MHz), this method of getting the data is quite reliable:</p>
 
-<p><center><b><font color=blue>Figure 4.</font></b></center></p>
+<p><center><b><font color=blue>Figure 2.4</font></b></center></p>
 
 <a href="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.41.49.png" rel="attachment wp-att-673"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.41.49.png" class="alignnone size-full wp-image-673" /></a>
 
@@ -70,13 +70,13 @@
 
 <p><i>mfp_srec_parser</i> received data from <i>mfp_uart_receiver</i> and parses them as text in Motorola S-record file format. During parsing the state machine inside <i>mfp_srec_parser</i> forms the transactions to the memory of MIPSfpga+ synthesized system, filling the memory with specified bytes at specified locations. The module header is shown below:</p>
 
-<p><center><b><font color=blue>Figure 5.</font></b></center></p>
+<p><center><b><font color=blue>Figure 2.5</font></b></center></p>
 
 <a href="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.42.17.png" rel="attachment wp-att-674"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.42.17.png" class="alignnone size-large wp-image-674" /></a>
 
 <p>See <a href="https://en.wikipedia.org/wiki/SREC_(file_format)">the description of Motorola S-record format from Wikipedia</a>:</p>
 
-<p><center><b><font color=blue>Figure 6.</font></b></center></p>
+<p><center><b><font color=blue>Figure 2.6</font></b></center></p>
 
 <a href="http://www.silicon-russia.com/wp-content/uploads/2015/11/Motorola_SREC_Chart.png" rel="attachment wp-att-366"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/11/Motorola_SREC_Chart-1024x705.png" class="alignnone size-large wp-image-366" /></a>
 
@@ -84,7 +84,7 @@
 
 <p><i>mfp_srec_parser_to_ahb_lite_bridge</i> is a glue between <i>mfp_srec_parser</i> and AHB-Lite bus. It also edits the addresses, converting virtual addresses into physical according to the rules of fixed mapping (see MIPS microAptiv UP core software documentation):</p>
 
-<p><center><b><font color=blue>Figure 7.</font></b></center></p>
+<p><center><b><font color=blue>Figure 2.7</font></b></center></p>
 
 <a href="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.43.08.png" rel="attachment wp-att-675"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.43.08.png" class="alignnone size-large wp-image-675" /></a>
 

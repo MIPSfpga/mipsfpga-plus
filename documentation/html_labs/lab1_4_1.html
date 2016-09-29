@@ -1,8 +1,27 @@
 
-<h2>4. Running the synthesis and configuring the FPGA with the synthesized MIPSfpga system</h2>
+<p><big><b>4. Running the synthesis and configuring the FPGA with the synthesized MIPSfpga system</b></big></p>
 
-<h3>4.1. Selecting the appropriate hardware configuration for the lab</h3>
+<p><big><b>4.1. Selecting the appropriate hardware configuration for the lab</b></big></p>
 
-<h3>4.2. Xilinx Vivado flow</h3>
+<p>Before running synthesis it is necessary to review and possibly modify the file
+<a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a>
+that includes a set of Verilog  <i>`define</i> statements that determine the functionality
+of the synthesized MIPSfpga system. Make sure that <i>`define MFP_USE_UART_PROGRAM_LOADER</i>
+is not commented out:</p>
 
-<h3>4.3. Altera Quartus II flow</h3>
+<blockquote><p>File <i><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a></i></p>
+<font size=3 face="Lucida Console,Monaco,monospace"><pre>                           
+
+//
+//  Configuration parameters
+//
+
+// `define MFP_USE_WORD_MEMORY
+// `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
+// `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+`define MFP_USE_UART_PROGRAM_LOADER
+// `define MFP_DEMO_LIGHT_SENSOR
+// `define MFP_DEMO_CACHE_MISSES
+// `define MFP_DEMO_PIPE_BYPASS
+
+</pre></font></blockquote>

@@ -1,59 +1,89 @@
 <h3>4.2. Xilinx Vivado flow</h3>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010837.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010837.jpg" class="alignnone size-full wp-image-187" /></a>
+<p>The sequence of steps necessary to synthesize a system based MIPSfpga 2.0 using Xilinx Vivado software and upload it into the board, such as
+<a href="http://store.digilentinc.com/nexys-4-ddr-artix-7-fpga-trainer-board-recommended-for-ece-curriculum/">
+Digilent Nexys 4 DDR</a> board with Xilinx Artix-7 FPGA on <b><font color=blue>Picture 4.2.1</font></b>.
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010905.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010905.jpg" class="alignnone size-large wp-image-188" /></a>
+<p><center><b><font color=blue>Picture 4.2.1. <a href="http://store.digilentinc.com/nexys-4-ddr-artix-7-fpga-trainer-board-recommended-for-ece-curriculum/">
+Digilent Nexys 4 DDR</a> board with Xilinx Artix-7 FPGA, with optional interfaces and peripherals.
+The extra parts are not required for this lab.</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010927.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010927.jpg" class="alignnone size-large wp-image-189" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010837.jpg"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010837.jpg" /></a>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010936.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010936.jpg" class="alignnone size-large wp-image-190" /></a>
+<p><center><b><font color=blue>Picture 4.2.2. Start Xilinx Vivado software</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010949.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010949.jpg" class="alignnone size-large wp-image-191" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.32.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.32.png" /></a>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_011009.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_011009.jpg" class="alignnone size-large wp-image-192" /></a>
+<p><center><b><font color=blue>Picture 4.2.3. Create a new project</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_011050.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_011050.jpg" class="alignnone size-large wp-image-193" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.41.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.41.png" /></a>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.32.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.32.png" class="alignnone size-full wp-image-201" /></a>
+<p><center><b><font color=blue>Picture 4.2.4. Specify the project name</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.41.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.41.png" class="alignnone size-large wp-image-202" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.48.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.48.png" /></a>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.48.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.48.png" class="alignnone size-large wp-image-203" /></a>
+<p><center><b><font color=blue>Picture 4.2.5. Specify RTL project type</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.53.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.53.png" class="alignnone size-large wp-image-204" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.53.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.53.png" /></a>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.58.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.58.png" class="alignnone size-large wp-image-205" /></a>
+<p><center><b><font color=blue>Picture 4.2.6. Add directories with the source files</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.39.54.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.39.54.png" class="alignnone size-large wp-image-206" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.58.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.58.png" /></a>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.08.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.08.png" class="alignnone size-large wp-image-207" /></a>
+<p><center><b><font color=blue>Picture 4.2.7. Add the directory with Verilog files for the board top-level wrapper</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.23.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.23.png" class="alignnone size-large wp-image-208" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.39.54.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.39.54.png" /></a>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.30.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.30.png" class="alignnone size-large wp-image-209" /></a>
+<p><center><b><font color=blue>Picture 4.2.8. Add the directory with Verilog files for the board-independent system that includes logic for AHB-Lite bus and the Serial Loader</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.39.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.39.png" class="alignnone size-large wp-image-210" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.08.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.08.png" /></a>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.46.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.46.png" class="alignnone size-large wp-image-211" /></a>
+<p><center><b><font color=blue>Picture 4.2.9. Add the directory with Verilog files for MIPS microAptiv UP core</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.21.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.21-1024x496.png" class="alignnone size-large wp-image-212" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.23.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.23.png" /></a>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.34.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.34.png" class="alignnone size-large wp-image-213" /></a>
+<p><center><b><font color=blue>Picture 4.2.10. All the necessary directories are added</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.47.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.47.png" class="alignnone size-large wp-image-214" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.30.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.30.png" /></a>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.42.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.42.png" class="alignnone size-large wp-image-215" /></a>
+<p><center><b><font color=blue>Picture 4.2.11. No extra IP is necessary</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.50.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.50.png" class="alignnone size-large wp-image-216" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.39.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.39.png" /></a>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.52.33.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.52.33.png" class="alignnone size-large wp-image-217" /></a>
+<p><center><b><font color=blue>Picture 4.2.12. Need to add the constraints</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.48.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.48.png" class="alignnone size-large wp-image-218" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.46.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.46.png" /></a>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.57.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.57.png" class="alignnone size-large wp-image-219" /></a>
+<p><center><b><font color=blue>Picture 4.2.13. Add constraints file that maps I/O pins and defines the clocks</font></b></center></p>
 
-Information about GPIO pin assignment:
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.21.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.21-1024x496.png" /></a>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/08/pmod_connector_for_digilent_boards.png" rel="attachment wp-att-94"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/08/pmod_connector_for_digilent_boards.png" alt="PMOD connector for Digilent boards" class="alignnone size-full wp-image-94" /></a>
+<p><center><b><font color=blue>Picture 4.2.14. Constraints are added</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/08/MIPSfpga-EJTAG-pin-connections.png" rel="attachment wp-att-93"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/08/MIPSfpga-EJTAG-pin-connections.png" alt="MIPSfpga EJTAG pin connections" class="alignnone size-full wp-image-93" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.34.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.34.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.15. Choose the appropriate FPGA parts using filers by family (Artix-7) and package</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.47.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.47.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.16. Select among filtered FPGA parts</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.42.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.42.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.17. The summary when finishing project wizard</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.50.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.50.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.18. Run synthesis, mapping, placement, routing and bitfile generation</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.52.33.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.52.33.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.19. Run device programming</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.48.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.48.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.20. Specify the appropriate bitfile</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.57.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.57.png" /></a>
+
+<p>After finishing this step the board should be configured with the synthesized design and ready to receive the software.</p>
