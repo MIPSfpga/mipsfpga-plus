@@ -1,51 +1,110 @@
-<h3>4.3. Altera Quartus II flow</h3>
+<p><big><b>4.3. Altera Quartus II flow</b></big></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_114528.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_114528.jpg" class="alignnone size-full wp-image-164" /></a>
+<p>This chapter shows the sequence of steps necessary to synthesize a system based MIPSfpga 2.0
+using Altera Quartus II software and upload it into the board, such as
+<a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA shown on <b><font color=blue>Picture 4.3.1</font></b>.</p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_114617.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_114617.jpg" class="alignnone size-full wp-image-165" /></a>
+<p><font color=blue><b>Picture 4.3.1.</b> A picture of
+<a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA, with interfaces and peripherals.
+The extra parts (except FT232RL USB-to-UART) are not required for this lab.</font></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_115610.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_115610.jpg" class="alignnone size-full wp-image-166" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_114528.jpg"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_114528.jpg" /></a>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121318.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121318.jpg" class="alignnone size-full wp-image-167" /></a>
+<p><big><b>4.3.1. Before installing Altera Quartus II</b></big></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121450.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121450.jpg" class="alignnone size-full wp-image-168" /></a>
+<p>Note that different Terasic boards and different versions of Windows and Linux require different versions of Quartus II:</p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121503.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121503.jpg" class="alignnone size-full wp-image-169" /></a>
+<ul>
+<li>In order to run Altera Quartus II on a computer with 32-bit Windows <i>or</i> 32-Linux,
+it is necessary to use <a href="http://dl.altera.com/13.1/?edition=web">Altera Quartus II Web Edition version 13.1</a>
+or earlier instead of the later versions.</li>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121521.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121521.jpg" class="alignnone size-full wp-image-170" /></a>
+<li>For older boards (Terasic DE0, DE1, DE2) with Altera Cyclone II/III FPGA, it is necessary to use
+<a href="http://dl.altera.com/13.0sp1/?edition=web">Altera Quartus II Web Edition version 13.0 Service Pack 1</a>
+or earlier version.</li>
+</ul>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121534.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121534.jpg" class="alignnone size-full wp-image-171" /></a>
+<p><big><b>4.3.2. Before running Altera Quartus II</b></big></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121602.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121602.jpg" class="alignnone size-full wp-image-172" /></a>
+<p>The fastest way to create MIPSfpga project for Quartus II is to use the existing project files located
+in board-related directory, such as <i>boards/de0_cv</i>. The contents of such directory include:</p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121639.jpg"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121639.jpg" class="alignnone size-full wp-image-173" /></a>
+<blockquote><p>The contents of <i>boards/de0_cv</i> directory</p><font size=3 face="Lucida Console,Monaco,monospace"><pre>               
+de0_cv.qpf
+de0_cv.qsf
+de0_cv.sdc
+de0_cv.v
+make_project.bat
+make_project.sh
+</pre></font></blockquote>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.02.18.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.02.18.png" class="alignnone size-full wp-image-222" /></a>
+<p>Windows batch file <i>make_project.bat</i> and its Linux equivalent,
+Bourne shell script <i>make_project.sh</i>,
+create a copy of projects files in a temporary directory named <i>project</i>. The reason for it is:
+Quartus II creates a lot of temporary files in the directory where project files are located.
+Creating such copy of project files allows to remove those temporary files without removing
+project files.</p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.03.16.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.03.16.png" class="alignnone size-large wp-image-223" /></a>
+<blockquote><p>The contents of <i>boards/de0_cv/make_project.bat</i> Windows batch file</p><font size=3 face="Lucida Console,Monaco,monospace"><pre>               
+rd /s /q project
+mkdir project
+copy *.qpf project
+copy *.qsf project
+copy *.sdc project
+</pre></font></blockquote>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.04.04.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.04.04.png" class="alignnone size-large wp-image-224" /></a>
+<p><big><b>4.3.3. The sequence of steps</b></big></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.13.58.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.13.58.png" class="alignnone size-large wp-image-225" /></a>
+<p><center><b><font color=blue>Picture 4.3.2. Start Altera Quartus II software</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.15.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.15.png" class="alignnone size-large wp-image-226" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.02.18.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.02.18.png" /></a>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.31.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.31.png" class="alignnone size-large wp-image-227" /></a>
+<p><center><b><font color=blue>Picture 4.3.3. Open the project in <i>project</i> directory</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.40.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.40.png" class="alignnone size-large wp-image-228" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.03.16.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.03.16.png" /></a>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.45.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.45.png" class="alignnone size-large wp-image-229" /></a>
+<p><center><b><font color=blue>Picture 4.3.4. Compile the design</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.52.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.52.png" class="alignnone size-large wp-image-230" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.04.04.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.04.04.png" /></a>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.06.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.06.png" class="alignnone size-large wp-image-231" /></a>
+<p><center><b><font color=blue>Picture 4.3.5. The design is compiled. Review the synthesis report</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.14.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.14.png" class="alignnone size-large wp-image-232" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.13.58.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.13.58.png" /></a>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.24.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.24.png" class="alignnone size-large wp-image-233" /></a>
+<p><center><b><font color=blue>Picture 4.3.6. Run "Program Device"</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.33.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.33.png" class="alignnone size-large wp-image-234" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.15.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.15.png" /></a>
 
-Information about GPIO pin assignment:
+<p><center><b><font color=blue>Picture 4.3.7. Opens "Programmer"</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2015/08/MIPSfpga-EJTAG-pin-connections.png" rel="attachment wp-att-93"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/08/MIPSfpga-EJTAG-pin-connections.png" alt="MIPSfpga EJTAG pin connections" class="alignnone size-full wp-image-93" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.31.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.31.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.8. Run "Hardware Setup"</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.40.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.40.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.9. Select "USB Blaster"</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.45.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.45.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.10. USB Blaster is selected</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.52.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.52.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.11. Run "Select Programming File"</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.06.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.06.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.12. Programming file is selected</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.14.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.14.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.13. Click "Start"</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.24.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.24.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.14. The device is programmed</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.33.png"><img width=600 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.33.png" /></a>
+
+<p>After finishing this step the board should be configured with the synthesized design and ready to receive the software.</p>
