@@ -1,11 +1,43 @@
 
 <p><big><b>5. Compiling the software and uploading it into the synthesized system using Serial Loader</b></big></p>
 
-<p><big><b>5.1. The first lab program</b></big></p>
+<p><big><b>5.1. Files in the first lab directory</b></big></p>
 
-<p><big><b>5.2. The steps overview</b></big></p>
 
-<p><big><b>5.2.1. Batch files and Bourne Shell scripts for going through the steps</b></big></p>
+
+<p><big><b>5.2. The first lab program</b></big></p>
+
+#include "mfp_memory_mapped_registers.h"
+
+int main ()
+{
+    long long int n = 0;
+
+    for (;;)
+    {
+        /*
+        MFP_RED_LEDS      = n;
+        MFP_GREEN_LEDS    = n;
+        MFP_7_SEGMENT_HEX = n;
+        */
+
+        MFP_RED_LEDS   = n >> 16;
+        MFP_GREEN_LEDS = n >> 16;
+        MFP_7_SEGMENT_HEX = ((n >> 8) & 0xffffff00) | (n & 0xff);
+
+        n ++;
+
+        // asm ("mfc0 $8, $15, 0");
+        // MFP_7_SEGMENT_HEX = 1;
+    }
+
+    return 0;
+}
+
+
+<p><big><b>5.3. The steps overview</b></big></p>
+
+<p><big><b>5.3.1. Batch files and Bourne Shell scripts for going through the steps</b></big></p>
 
 <ul>
 <li><i>01_compile_c_to_assembly.bat</i></li>
@@ -22,9 +54,9 @@
 <li><i>12_upload_to_the_board_using_uart.bat</i></li>
 </ul>
 
-<p><big><b>5.2.2. The essential and optional steps</b></big></p>
+<p><big><b>5.3.2. The essential and optional steps</b></big></p>
 
-<p><big><b>5.2.3. Cleaning all</b></big></p>
+<p><big><b>5.3.3. Cleaning all</b></big></p>
 
 <p>This step is optional.</p>
 
@@ -42,9 +74,9 @@ del FPGA_Ram.elf
 
 </pre></font></blockquote>
 
-<p><big><b>5.3. Compiling the software</b></big></p>
+<p><big><b>5.4. Compiling the software</b></big></p>
 
-<p><big><b>5.3.1. Compiling C program into assembly to examine the generated code</b></big></p>
+<p><big><b>5.4.1. Compiling C program into assembly to examine the generated code</b></big></p>
 
 <p>This step is optional.</p>
 
@@ -59,7 +91,7 @@ mips-mti-elf-gcc -EL -march=m14kc -msoft-float -O2 -S main.c
 
 </pre></font></blockquote>
 
-<p><big><b>5.3.2. Compiling C and assembly programs and linking them into ELF file</b></big></p>
+<p><big><b>5.4.2. Compiling C and assembly programs and linking them into ELF file</b></big></p>
 
 <p>This step is required.</p>
 
@@ -83,7 +115,7 @@ mips-mti-elf-gcc -EL -march=m14kc -msoft-float -O2
 
 </pre></font></blockquote>
 
-<p><big><b>5.3.3. Checking program size</b></big></p>
+<p><big><b>5.4.3. Checking program size</b></big></p>
 
 <p>This step is optional.</p>
 
@@ -92,7 +124,7 @@ mips-mti-elf-size program.elf
 
 </pre></font></blockquote>
 
-<p><big><b>5.3.4. Using disassembly program</b></big></p>
+<p><big><b>5.4.4. Using disassembly program</b></big></p>
 
 <p>This step is optional.</p>
 
@@ -101,11 +133,11 @@ mips-mti-elf-objdump -D program.elf &gt; program.dis
 
 </pre></font></blockquote>
 
-<p><big><b>5.4. Using Verilog simulation to model and debug both hardware and software </b></big></p>
+<p><big><b>5.5. Using Verilog simulation to model and debug both hardware and software </b></big></p>
 
 <p>This step is optional.</p>
 
-<p><big><b>5.4.1. Preparing Verilog $readmemh file with memory image for the software</b></big></p>
+<p><big><b>5.5.1. Preparing Verilog $readmemh file with memory image for the software</b></big></p>
 
 <p>This step is optional.</p>
 
@@ -115,7 +147,7 @@ mips-mti-elf-objcopy program.elf -O verilog program.hex
 
 </pre></font></blockquote>
 
-<p><big><b>5.4.2. Simulating the system using Mentor Graphics ModelSim</b></big></p>
+<p><big><b>5.5.2. Simulating the system using Mentor Graphics ModelSim</b></big></p>
 
 <p>This step is optional.</p>
 
@@ -130,7 +162,7 @@ vsim -do ../modelsim_script.tcl
 
 </pre></font></blockquote>
 
-<p><big><b>5.4.3. Simulating the system using Icarus Verilog</b></big></p>
+<p><big><b>5.5.3. Simulating the system using Icarus Verilog</b></big></p>
 
 <p>This step is optional.</p>
 
@@ -155,16 +187,16 @@ copy ..\*.hex .
 
 </pre></font></blockquote>
 
-<p><big><b>5.5. Uploading software program to the board</b></big></p>
+<p><big><b>5.6. Uploading software program to the board</b></big></p>
 
-<p><big><b>5.5.1. Generating the file in Motorola S-Record format</b></big></p>
+<p><big><b>5.6.1. Generating the file in Motorola S-Record format</b></big></p>
 
 <blockquote><p>File <i>08_generate_motorola_s_record_file.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>            
 mips-mti-elf-objcopy program.elf -O srec program.rec
 
 </pre></font></blockquote>
 
-<p><big><b>5.5.2. Uploading ELF file into Xilinx FPGA board using Bus Blaster and OpenOCD software</b></big></p>
+<p><big><b>5.6.2. Uploading ELF file into Xilinx FPGA board using Bus Blaster and OpenOCD software</b></big></p>
 
 <p>This step is optional.</p>
 
@@ -178,7 +210,7 @@ del FPGA_Ram.elf
 
 </pre></font></blockquote>
 
-<p><big><b>5.5.3. Uploading ELF file into Altera FPGA boards using Bus Blaster and OpenOCD software</b></big></p>
+<p><big><b>5.6.3. Uploading ELF file into Altera FPGA boards using Bus Blaster and OpenOCD software</b></big></p>
 
 <p>This step is optional.</p>
 
@@ -191,7 +223,7 @@ del FPGA_Ram.elf
 
 </pre></font></blockquote>
 
-<p><big><b>5.5.4. Checking which virtual COM port is used by USB-to-UART connector</b></big></p>
+<p><big><b>5.6.4. Checking which virtual COM port is used by USB-to-UART connector</b></big></p>
 
 <p>This step is required.</p>
 
@@ -213,7 +245,7 @@ mode com11
 
 </pre></font></blockquote>
 
-<p><big><b>5.5.5. Checking which virtual COM port is used by USB-to-UART connector</b></big></p>
+<p><big><b>5.6.5. Checking which virtual COM port is used by USB-to-UART connector</b></big></p>
 
 <p>This step is required.</p>
 
