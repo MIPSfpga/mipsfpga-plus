@@ -7,71 +7,7 @@
 
 <p><big><b>5.2.1. Batch files and Bourne Shell scripts for going through the steps</b></big></p>
 
-<p><big><b>5.2.2. The essential and optional steps</b></big></p>
-
-<p><big><b>5.2.3. Cleaning all</b></big></p>
-
-This step is optional.
-
-<p><big><b>5.3. Compiling the software</b></big></p>
-
-<p><big><b>5.3.1. Compiling C program into assembly to examine the generated code</b></big></p>
-
-This step is optional.
-
-<p><big><b>5.3.2. Compiling C and assembly programs and linking them into ELF file</b></big></p>
-
-This step is required.
-
-<p><big><b>5.3.3. Checking program size</b></big></p>
-
-This step is optional.
-
-<p><big><b>5.3.4. Using disassembly program</b></big></p>
-
-This step is optional.
-
-<p><big><b>5.4. Using Verilog simulation to model and debug both hardware and software </b></big></p>
-
-These steps are optional.
-
-<p><big><b>5.4.1. Preparing Verilog $readmemh file with memory image for the software</b></big></p>
-
-This step is optional.
-
-<p><big><b>5.4.2. Simulating the system using Mentor Graphics ModelSim</b></big></p>
-
-This step is optional.
-
-<p><big><b>5.4.3. Simulating the system using Icarus Verilog</b></big></p>
-
-This step is optional.
-
-<p><big><b>5.5. Uploading software program to the board</b></big></p>
-
-<p><big><b>5.5.1. Generating the file in Motorola S-Record format</b></big></p>
-
-<p><big><b>5.5.2. Uploading ELF file into Xilinx FPGA board using Bus Blaster and OpenOCD software</b></big></p>
-
-This step is optional.
-
-<p><big><b>5.5.3. Uploading ELF file into Altera FPGA boards using Bus Blaster and OpenOCD software</b></big></p>
-
-This step is optional.
-
-<p><big><b>5.5.4. Checking which virtual COM port is used by USB-to-UART connector</b></big></p>
-
-This step is required.
-
-<p><big><b>5.5.5. Checking which virtual COM port is used by USB-to-UART connector</b></big></p>
-
-This step is required.
-
-<font face="Courier">
-<pre>
-</pre>
-</font>
-
+<ul>
 <li><i>01_compile_c_to_assembly.bat</i></li>
 <li><i>02_compile_and_link.bat</i></li>
 <li><i>03_check_program_size.bat</i></li>
@@ -86,12 +22,11 @@ This step is required.
 <li><i>12_upload_to_the_board_using_uart.bat</i></li>
 </ul>
 
+<p><big><b>5.2.2. The essential and optional steps</b></big></p>
 
+<p><big><b>5.2.3. Cleaning all</b></big></p>
 
-
-
-
-
+<p>This step is optional.</p>
 
 <blockquote><p>File <i>00_clean_all.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                                  
 rd /s /q sim
@@ -105,7 +40,15 @@ del program*.hex
 del program.rec
 del FPGA_Ram.elf
 
-</pre></font></blockquote><blockquote><p>File <i>01_compile_c_to_assembly.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                      
+</pre></font></blockquote>
+
+<p><big><b>5.3. Compiling the software</b></big></p>
+
+<p><big><b>5.3.1. Compiling C program into assembly to examine the generated code</b></big></p>
+
+<p>This step is optional.</p>
+
+<blockquote><p>File <i>01_compile_c_to_assembly.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                      
 rem -EL           - Little-endian
 rem -march=m14kc  - MIPSfpga = MIPS microAptiv UP based on MIPS M14Kc
 rem -msoft-float  - should not use floating-point processor instructions
@@ -114,7 +57,13 @@ rem -S            - compile to assembly
 
 mips-mti-elf-gcc -EL -march=m14kc -msoft-float -O2 -S main.c
 
-</pre></font></blockquote><blockquote><p>File <i>02_compile_and_link.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                           
+</pre></font></blockquote>
+
+<p><big><b>5.3.2. Compiling C and assembly programs and linking them into ELF file</b></big></p>
+
+<p>This step is required.</p>
+
+<blockquote><p>File <i>02_compile_and_link.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                           
 rem -EL             - Little-endian
 rem -march=m14kc    - MIPSfpga = MIPS microAptiv UP based on MIPS M14Kc
 rem -msoft-float    - should not use floating-point processor instructions
@@ -132,17 +81,45 @@ mips-mti-elf-gcc -EL -march=m14kc -msoft-float -O2
     -Wl,-e,0xbfc00000
     boot.S main.c -o program.elf
 
-</pre></font></blockquote><blockquote><p>File <i>03_check_program_size.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                         
+</pre></font></blockquote>
+
+<p><big><b>5.3.3. Checking program size</b></big></p>
+
+<p>This step is optional.</p>
+
+<blockquote><p>File <i>03_check_program_size.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                         
 mips-mti-elf-size program.elf
 
-</pre></font></blockquote><blockquote><p>File <i>04_disassemble.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                                
+</pre></font></blockquote>
+
+<p><big><b>5.3.4. Using disassembly program</b></big></p>
+
+<p>This step is optional.</p>
+
+<blockquote><p>File <i>04_disassemble.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                                
 mips-mti-elf-objdump -D program.elf &gt; program.dis
 
-</pre></font></blockquote><blockquote><p>File <i>05_generate_verilog_readmemh_file.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>             
+</pre></font></blockquote>
+
+<p><big><b>5.4. Using Verilog simulation to model and debug both hardware and software </b></big></p>
+
+<p>This step is optional.</p>
+
+<p><big><b>5.4.1. Preparing Verilog $readmemh file with memory image for the software</b></big></p>
+
+<p>This step is optional.</p>
+
+<blockquote><p>File <i>05_generate_verilog_readmemh_file.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>             
 mips-mti-elf-objcopy program.elf -O verilog program.hex
 ..\utilities\ad_hoc_program_hex_splitter
 
-</pre></font></blockquote><blockquote><p>File <i>06_simulate_with_modelsim.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                     
+</pre></font></blockquote>
+
+<p><big><b>5.4.2. Simulating the system using Mentor Graphics ModelSim</b></big></p>
+
+<p>This step is optional.</p>
+
+<blockquote><p>File <i>06_simulate_with_modelsim.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                     
 rd /s /q sim
 md sim
 cd sim
@@ -151,7 +128,13 @@ copy ..\*.hex .
 
 vsim -do ../modelsim_script.tcl
 
-</pre></font></blockquote><blockquote><p>File <i>07_simulate_with_icarus.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                       
+</pre></font></blockquote>
+
+<p><big><b>5.4.3. Simulating the system using Icarus Verilog</b></big></p>
+
+<p>This step is optional.</p>
+
+<blockquote><p>File <i>07_simulate_with_icarus.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                       
 rd /s /q sim
 md sim
 cd sim
@@ -170,10 +153,22 @@ copy ..\*.hex .
 \iverilog\bin\vvp a.out &gt; a.lst
 \iverilog\gtkwave\bin\gtkwave.exe dump.vcd
 
-</pre></font></blockquote><blockquote><p>File <i>08_generate_motorola_s_record_file.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>            
+</pre></font></blockquote>
+
+<p><big><b>5.5. Uploading software program to the board</b></big></p>
+
+<p><big><b>5.5.1. Generating the file in Motorola S-Record format</b></big></p>
+
+<blockquote><p>File <i>08_generate_motorola_s_record_file.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>            
 mips-mti-elf-objcopy program.elf -O srec program.rec
 
-</pre></font></blockquote><blockquote><p>File <i>09_upload_to_xilinx_board_using_bus_blaster.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>   
+</pre></font></blockquote>
+
+<p><big><b>5.5.2. Uploading ELF file into Xilinx FPGA board using Bus Blaster and OpenOCD software</b></big></p>
+
+<p>This step is optional.</p>
+
+<blockquote><p>File <i>09_upload_to_xilinx_board_using_bus_blaster.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>   
 copy program.elf FPGA_Ram.elf
 rem Yes, it is working with DE2_115 script
 cd C:\MIPSfpga\Codescape\ExamplePrograms\Scripts\DE2_115
@@ -181,14 +176,26 @@ loadMIPSfpga.bat C:\github\mipsfpga-plus\programs\00_counter
 cd C:\github\mipsfpga-plus\programs\00_counter
 del FPGA_Ram.elf
 
-</pre></font></blockquote><blockquote><p>File <i>10_upload_to_altera_board_using_bus_blaster.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>   
+</pre></font></blockquote>
+
+<p><big><b>5.5.3. Uploading ELF file into Altera FPGA boards using Bus Blaster and OpenOCD software</b></big></p>
+
+<p>This step is optional.</p>
+
+<blockquote><p>File <i>10_upload_to_altera_board_using_bus_blaster.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>   
 copy program.elf FPGA_Ram.elf
 cd C:\MIPSfpga\Codescape\ExamplePrograms\Scripts\DE2_115
 loadMIPSfpga.bat C:\github\mipsfpga-plus\programs\00_counter
 cd C:\github\mipsfpga-plus\programs\00_counter
 del FPGA_Ram.elf
 
-</pre></font></blockquote><blockquote><p>File <i>11_check_which_com_port_is_used.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>               
+</pre></font></blockquote>
+
+<p><big><b>5.5.4. Checking which virtual COM port is used by USB-to-UART connector</b></big></p>
+
+<p>This step is required.</p>
+
+<blockquote><p>File <i>11_check_which_com_port_is_used.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>               
 mode com0
 mode com1
 mode com2
@@ -204,7 +211,13 @@ mode com10
 mode com11
 . . . . . . . . .
 
-</pre></font></blockquote><blockquote><p>File <i>12_upload_to_the_board_using_uart.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>             
+</pre></font></blockquote>
+
+<p><big><b>5.5.5. Checking which virtual COM port is used by USB-to-UART connector</b></big></p>
+
+<p>This step is required.</p>
+
+<blockquote><p>File <i>12_upload_to_the_board_using_uart.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>             
 set a=16
 set a=39
 mode com%a% baud=115200 parity=n data=8 stop=1 to=off xon=off odsr=off octs=off dtr=off rts=off idsr=off
