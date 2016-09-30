@@ -1,6 +1,15 @@
 <p><big><b>5.5.3. Simulating the system using Icarus Verilog</b></big></p>
 
-<p>This step is optional.</p>
+<p>This step is optional.
+Verilog simulation is the mainstream way of debugging Verilog RTL code.
+Icarus Verilog is the easiest to use Verilog simulator available for the students.
+It is free but quite slow, for large designs it is order of magnitude slower
+on long runs that expensive commercial simulators like Synopsys VCS and even
+commercial version of ModelSim.</p>
+
+<p>Icarus Verilog is frequently used together with another free tool, GTKWave waveform viever.
+The script below compiles Verilog files for MIPSfpga using Icarus Verilog,
+runs the simulation and invokes GTKWave viewer with its simple intuitive GUI interface.</p>
 
 <blockquote><p>File <i>07_simulate_with_icarus.bat</i></p><pre>                       
 rd /s /q sim
@@ -23,7 +32,8 @@ copy ..\*.hex .
 
 </pre></blockquote>
 
-<p><center><b><font color=blue>Figure 5.10</font></b></center></p>
+<p><center><b><font color=blue>Figure 5.10. GTKWave viewer shows thye waveforms generated
+during simulation of MIPSfpga using Icarus Verilog simulator</font></b></center></p>
 
 <a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.12.40.png">
 <img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.12.40.png" /></a>
