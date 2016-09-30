@@ -13,38 +13,47 @@ vsim -do ../modelsim_script.tcl
 
 </pre></blockquote>
 
+<blockquote><p>File <i>modelsim_script.tcl</i></p><pre>                     
+vlib work
+vlog -vlog01compat +define+SIMULATION +incdir+../../../../../MIPSfpga/rtl_up +incdir+../../.. ../../../../../MIPSfpga/rtl_up/*.v ../../../*.v
+vsim work.mfp_testbench
+add wave sim:/mfp_testbench/*
+run -all
+</pre></blockquote>
+
+
 <p><center><b><font color=blue>Figure 5.1</font></b></center></p>
 
 <a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.33.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.33.png" /></a>
 
 <p><center><b><font color=blue>Figure 5.2</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.38.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.38.png" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.38.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.38.png" /></a>
 
 <p><center><b><font color=blue>Figure 5.3</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.42.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.42.png" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.42.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.42.png" /></a>
 
 <p><center><b><font color=blue>Figure 5.4</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.01.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.01.png" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.01.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.01.png" /></a>
 
 <p><center><b><font color=blue>Figure 5.5</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.15.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.15.png" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.15.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.15.png" /></a>
 
 <p><center><b><font color=blue>Figure 5.6</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.19.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.19.png" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.19.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.19.png" /></a>
 
 <p><center><b><font color=blue>Figure 5.7</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.36.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.36.png" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.36.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.36.png" /></a>
 
 <p><center><b><font color=blue>Figure 5.8</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.31.51.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.31.51.png" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.31.51.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.31.51.png" /></a>
 
 <p><center><b><font color=blue>Figure 5.9</font></b></center></p>
 
-<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.33.05.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.33.05.png" /></a>
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.33.05.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.33.05.png" /></a>
