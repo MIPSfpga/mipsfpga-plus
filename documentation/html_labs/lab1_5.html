@@ -3,7 +3,104 @@
 
 <p><big><b>5.1. Files in the first lab directory</b></big></p>
 
+<p><table border=1 cellpadding=10 cellspacing=0 rules=all>
+<col width=250>
+<col width=450>
+<tr>
+<th>File</th>
+<th>Description</th>
+</tr><tr><td>
 
+<i>00_clean_all.bat<br>
+01_compile_c_to_assembly.bat<br>
+02_compile_and_link.bat<br>
+03_check_program_size.bat<br>
+04_disassemble.bat<br>
+05_generate_verilog_readmemh_file.bat<br>
+06_simulate_with_modelsim.bat<br>
+07_simulate_with_icarus.bat<br>
+08_generate_motorola_s_record_file.bat<br>
+09_upload_to_xilinx_board_using_bus_blaster.bat<br>
+10_upload_to_altera_board_using_bus_blaster.bat<br>
+11_check_which_com_port_is_used.bat<br>
+12_upload_to_the_board_using_uart.bat<br></i>
+
+</td><td>
+
+A set of Windows batch files with self-descriptive names to guide a user through the lab step-by-step.
+Some of these steps duplicate actions in the <i>makefile</i>. We found using these batch files
+during the first experience with MIPSfpga makes lab more digestible and less confusing
+for a number of people since they can just click on batch files in Windows explorer
+or other file manager instead of typing "make action" to go through the steps.
+These files are discussed in more details in subsequent subchapters.
+
+</td></tr><tr><td>
+
+<i>00_clean_all.sh<br>
+01_compile_c_to_assembly.sh<br>
+02_compile_and_link.sh<br>
+03_check_program_size.sh<br>
+04_disassemble.sh<br>
+05_generate_verilog_readmemh_file.sh<br>
+06_simulate_with_modelsim.sh<br>
+07_simulate_with_icarus.sh<br>
+08_generate_motorola_s_record_file.sh<br>
+09_upload_to_xilinx_board_using_bus_blaster.sh<br>
+10_upload_to_altera_board_using_bus_blaster.sh<br>
+11_check_which_com_port_is_used.sh<br>
+12_upload_to_the_board_using_uart.sh<br></i>
+
+</td><td>
+
+A set of Linux Bourne shell scripts with self-descriptive names to guide a user through the lab step-by-step.
+See the description of Windows batch files above. Linux shell scripts and Windows batch files
+generally match each other except for <i>12_upload_to_the_board_using_uart.sh</i> that uses different
+Linux-specific commands comparing to Windows-specific <i>12_upload_to_the_board_using_uart.bat</i>.
+
+</td></tr><tr><td>
+<i>boot.S</i>
+</td><td>
+
+Boot sequence, a program in assemply that starts after the processor reset,
+initializes system coprocessor registers, caches and TLB MMU, then jumps into the user's program.
+
+</td></tr><tr><td>
+<i>main.c</i>
+</td><td>
+
+User's program written in C.
+
+</td></tr><tr><td>
+<i>makefile</i>
+</td><td>
+
+Makefile that contans basic tasks for compiling and linking the program.
+Can be used instead of supplied Windows batch files and Linux scripts.
+
+</td></tr><tr><td>
+<i>mfp_memory_mapped_registers.h</i>
+</td><td>
+
+Header file that contains definitions for the memory-mapped I/O registers
+used to communicate the software with I/O devices on the board - buttons, LEDs,
+as well as external devices connected through general-purpose I/O ports. 
+
+</td></tr><tr><td>
+<i>modelsim_script.tcl</i>
+</td><td>
+
+A script in Tcl language used by Mentor ModelSim RTL simulator
+to automate Verilog compilation, running the simulation and controlling displaying waveforms.
+
+</td></tr><tr><td>
+<i>program.ld</i>
+</td><td>
+
+A linker script used by GCC toolchain.
+Defines virtual memory locations for boot sequence, user program and data.
+
+</td></tr>
+</table></p>
 
 <p><big><b>5.2. The first lab program</b></big></p>
 
@@ -255,4 +352,9 @@ set a=39
 mode com%a% baud=115200 parity=n data=8 stop=1 to=off xon=off odsr=off octs=off dtr=off rts=off idsr=off
 type program.rec &gt;\\.\COM%a%
 
+
+
 </pre></font></blockquote>
+
+stty -F /dev/ttyUSB0 raw speed 115200 -crtscts cs8 -parenb -cstopb
+cat program.rec > /dev/ttyUSB0
