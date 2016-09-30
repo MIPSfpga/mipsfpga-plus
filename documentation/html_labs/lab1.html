@@ -167,6 +167,8 @@ td
 
 <p><big><b>3.2. Setting up Terasic boards with Altera Cyclone II, III, IV and V FPGA</b></big></p>
 
+<p>Warning! Make sure to avoid applying voltage to any GPIO pin of FPGA board when the board is not powered. This can damage the pin connection or in severe case FPGA itself.</p>
+
 <p>Some Terasic boards have USB-to-UART connector, for some other boards it is possible to use other interfaces, but for simplicity this lab uses external USB-to-UART connectors attached to general purpose I/O pins.</p>
 
 <p>A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip connected to GPIO pins of <a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA. UART TX is connected to the pin 3 from bottom and the ground is connected to pin 6 from the bottom. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</p>
@@ -453,8 +455,8 @@ copy *.sdc project
 <p><big><b>5.1. Files in the first lab directory</b></big></p>
 
 <p><table border=1 cellpadding=10 cellspacing=0 rules=all>
-<col width=250>
-<col width=450>
+<col width=50%>
+<col width=50%>
 <tr>
 <th>File</th>
 <th>Description</th>
@@ -842,7 +844,15 @@ byte-wide memories necessary for the proper support od byte-wide uncached writes
 caused by MIPS instructions <i>SB</i> targeting uncached virtual addresses.</p>
 <p><big><b>5.5.2. Simulating the system using Mentor Graphics ModelSim</b></big></p>
 
-<p>This step is optional.</p>
+<p>This step is optional. Verilog simulation is the mainstream way of debugging Verilog RTL code.
+Mentor ModelSim is a popular low-cost simulator with free version.
+This lab is not intended to teach how to use ModelSim, which has a complex GUI
+and scripting language to control it by power user. This lab uses a simple Tcl script
+that runs the simulation and shows the results on waveforms.
+Tcl, or Tool Control Language is a scripting language utilized by many
+Electronic Design Automation (EDA) tools.</p>
+
+<p>Windows batch file that invokes ModelSim with Tcl script:</p>
 
 <blockquote><p>File <i>06_simulate_with_modelsim.bat</i></p><pre>                     
 rd /s /q sim
@@ -854,9 +864,66 @@ copy ..\*.hex .
 vsim -do ../modelsim_script.tcl
 
 </pre></blockquote>
+
+<p>The Tcl script used to compile Verilog source code, setup the waveforms and run the sumulation:</p>
+
+<blockquote><p>File <i>modelsim_script.tcl</i></p><pre>                     
+vlib work
+vlog -vlog01compat +define+SIMULATION +incdir+../../../../../MIPSfpga/rtl_up +incdir+../../.. ../../../../../MIPSfpga/rtl_up/*.v ../../../*.v
+vsim work.mfp_testbench
+add wave sim:/mfp_testbench/*
+run -all
+</pre></blockquote>
+
+<p>The screenshots outline the steps necessary to observe the results:</p>
+
+<p><center><b><font color=blue>Figure 5.1. After the test stops running, the simulator asks whether a user wants to exit. Clock "No":</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.33.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.33.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.2. ModelSim has complicated "busy" GUI. Click on small icon indicating the windows with the waveforms:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.38.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.38.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.3. We can see the windows with the waveforms</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.42.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.42.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.4. A little icon, second from top right corner, allows to "undock" the waveform window:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.01.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.01.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.5. Press the rightmost of "zoom" icons to see the whole waveforms:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.15.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.15.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.6. Set the cursor on right side of the waveform, after core executed the boot sequence:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.19.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.19.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.7. Use '+' zoom icon to zoom in:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.36.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.36.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.8. Select the signal you want to change radix from binary to hexadecimal:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.31.51.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.31.51.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.9. Change radix and observe how the value on GPIO outputs is incrementing:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.33.05.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.33.05.png" /></a>
 <p><big><b>5.5.3. Simulating the system using Icarus Verilog</b></big></p>
 
-<p>This step is optional.</p>
+<p>This step is optional.
+Verilog simulation is the mainstream way of debugging Verilog RTL code.
+Icarus Verilog is the easiest to use Verilog simulator available for the students.
+It is free but quite slow, for large designs it is order of magnitude slower
+on long runs that expensive commercial simulators like Synopsys VCS and even
+commercial version of ModelSim.</p>
+
+<p>Icarus Verilog is frequently used together with another free tool, GTKWave waveform viever.
+The script below compiles Verilog files for MIPSfpga using Icarus Verilog,
+runs the simulation and invokes GTKWave viewer with its simple intuitive GUI interface.</p>
 
 <blockquote><p>File <i>07_simulate_with_icarus.bat</i></p><pre>                       
 rd /s /q sim
@@ -878,18 +945,34 @@ copy ..\*.hex .
 \iverilog\gtkwave\bin\gtkwave.exe dump.vcd
 
 </pre></blockquote>
+
+<p><center><b><font color=blue>Figure 5.10. GTKWave viewer shows thye waveforms generated
+during simulation of MIPSfpga using Icarus Verilog simulator</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.12.40.png">
+<img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.12.40.png" /></a>
 <p><big><b>5.6. Uploading software program to the board</b></big></p>
 
 <p><big><b>5.6.1. Generating the file in Motorola S-Record format</b></big></p>
 
+<p>This step is required. Motorola S-Record is a format used by Serial Loader
+to load the software into the sythesized MIPSfpga system on FPGA board.
+The script uses a standard utility in GCC toolchain called <i>mips-mti-elf-objcopy</i>.
+For more information please see <i>Section 2. The theory of operation</i></p>
+
 <blockquote><p>File <i>08_generate_motorola_s_record_file.bat</i></p><pre>            
 mips-mti-elf-objcopy program.elf -O srec program.rec
-
 </pre></blockquote>
 
-<p><big><b>5.6.2. Uploading ELF file into Xilinx FPGA board using Bus Blaster and OpenOCD software</b></big></p>
+<p><big><b>5.6.2. Uploading ELF file into Xilinx FPGA board using BusBlaster and OpenOCD software</b></big></p>
 
-<p>This step is optional.</p>
+<p>This step is optional. Before doing the upload it is necessary to connect BusBlaster to Digilent board as shown on <b><font color=blue>Figure 5.11</font></b>:</p>
+
+<p><center><b><font color=blue>Figure 5.11. Connecting BusBlaster to Digilent Nexys4 DDR board</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010905.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010905.jpg" /></a>
+
+<p>The following script relies on a script for OpenOCD developed for another lab:</p>
 
 <blockquote><p>File <i>09_upload_to_xilinx_board_using_bus_blaster.bat</i></p><pre>   
 copy program.elf FPGA_Ram.elf
@@ -903,7 +986,17 @@ del FPGA_Ram.elf
 
 <p><big><b>5.6.3. Uploading ELF file into Altera FPGA boards using Bus Blaster and OpenOCD software</b></big></p>
 
-<p>This step is optional.</p>
+<p>This step is optional. Before doing the upload it is necessary to connect BusBlaster to Terasic DE0-CV board as shown on <b><font color=blue>Figures 5.12 and 5.13</font></b>:</p>
+
+<p><center><b><font color=blue>Figure 5.12. Connecting BusBlaster to Terasic DE0-CV board</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121639.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121639.jpg" /></a>
+
+<p><center><b><font color=blue>Figure 5.13. Connecting BusBlaster to Terasic DE0-CV board</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121534.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121534.jpg" /></a>
+
+<p>The following script relies on a script for OpenOCD developed for another lab:</p>
 
 <blockquote><p>File <i>10_upload_to_altera_board_using_bus_blaster.bat</i></p><pre>   
 copy program.elf FPGA_Ram.elf
@@ -916,7 +1009,9 @@ del FPGA_Ram.elf
 
 <p><big><b>5.6.4. Checking which virtual COM port is used by USB-to-UART connector</b></big></p>
 
-<p>This step is required.</p>
+<p>This step is necessary if a user does not know which virtual COM port is used by USB-to-UART connector.
+On Windows this information can be obtained from either device manager or from attempting
+to run <i>mode</i> command for a number of virtual COM-ports.</p>
 
 <blockquote><p>File <i>11_check_which_com_port_is_used.bat</i></p><pre>               
 mode com0
@@ -936,22 +1031,40 @@ mode com11
 
 </pre></blockquote>
 
-<p><big><b>5.6.5. Checking which virtual COM port is used by USB-to-UART connector</b></big></p>
+<p><big><b>5.6.5. Finally! Uploading the compiled and linked software program into the synthesized MIPSfpga system on FPGA board via Serial Loader</b></big></p>
 
 <p>This step is required.</p>
+
+<p>For Windows the script simply copies the generated Motorola S-record file into the pseudo-file
+which corresponds to virtual COM-port used by USB-to-UART connector.
+The COM ports existed in Windows from the beginning
+and were present even before Microsoft Windows in Microsoft MS-DOS.
+Both <i>mode</i> and <i>type</i> commands existed in MS-DOS and later Windows
+from the beginning.</p>
+
+<p>Before using this script the user has to modify it by setting the appropriate port number in "a" variable.</p>
+
+<p>The potential problems when using FTDI-based USB-to-UART may be lack of driver
+(it can be found on FTDI website) or access control in virtual machine if virtualization is used
+(trivial for any admin to resolve).</p>
 
 <blockquote><p>File <i>12_upload_to_the_board_using_uart.bat</i></p><pre>             
 set a=16
 set a=39
 mode com%a% baud=115200 parity=n data=8 stop=1 to=off xon=off odsr=off octs=off dtr=off rts=off idsr=off
 type program.rec &gt;\\.\COM%a%
-
-
-
 </pre></blockquote>
 
+<p>For Linux the script is different, but also very simple and uses the standard commands.
+The user who runs this script should be included in Linux <i>dialout</i> group</p>
+
+<blockquote><p>File <i>12_upload_to_the_board_using_uart.sh</i></p><pre>             
 stty -F /dev/ttyUSB0 raw speed 115200 -crtscts cs8 -parenb -cstopb
 cat program.rec > /dev/ttyUSB0
+</pre></blockquote>
+
+<p>After the program is uploaded, the user should be able to see the system working (counting, flashing LEDs).
+If it does not work right away, check the port number, the presence of Motorola S-record file, and repeat again.</p>
 <p><big><b>Appendix A. More pictures for setting up Terasic boards with Altera Cyclone II, III, IV and V FPGA</b></big></p>
 
 <p>Some Terasic boards have USB-to-UART connector, for some other boards it is possible to use other interfaces,
