@@ -25,3 +25,23 @@ is not commented out:</p>
 // `define MFP_DEMO_PIPE_BYPASS
 
 </pre></font></blockquote>
+
+<p>It also may be necessary to configure memory that is built from FPGA block memory cells. By default
+the memory for bootloader is 1 KB and the memory for user program is 1 KB. Small block memory fits many older
+boards and results in high maximum clock frequency of the synthesized system.
+The defines below can be used to increase block memory size. To avoid low max clock frequency
+with larger memories and if a lot of memory is necessary, we recommend implementing the interface
+to memory chip external to FPGA, such as SDRAM memory present on many FPGA boards.</p>
+
+<blockquote><p>File <i><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a></i></p>
+<font size=3 face="Lucida Console,Monaco,monospace"><pre>                           
+
+`define MFP_RESET_RAM_ADDR_WIDTH    10  // The boot sequence is the same for everything
+
+`ifdef SIMULATION
+`define MFP_RAM_ADDR_WIDTH          16
+`else
+`define MFP_RAM_ADDR_WIDTH          10  // DE1: 10, DE0-Nano: 13, DE0-CV or Basys3: 14, Nexys 4 or DE2-115: 16
+`endif
+
+</pre></font></blockquote>
