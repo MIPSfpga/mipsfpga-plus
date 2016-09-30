@@ -7,11 +7,11 @@
 <p>This step is optional and is needed only for simulation using Mentor ModelSim,
 Icarus Verilog, Xilinx Vivado simulator or any other Verilog simulator.</p>
 
-<blockquote><p>File <i>05_generate_verilog_readmemh_file.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>             
+<blockquote><p>File <i>05_generate_verilog_readmemh_file.bat</i></p><pre>             
 mips-mti-elf-objcopy program.elf -O verilog program.hex
 ..\utilities\ad_hoc_program_hex_splitter
 
-</pre></font></blockquote>
+</pre></blockquote>
 
 <p>MIPSfpga 1.0 package prepared the HEX file to load into ModelSim for simulation using <i>objdump</i> utility
 from the standard GCC toolchain, in combination with Windows-only script that was slow. The HEX file in MIPSfpga 2.0

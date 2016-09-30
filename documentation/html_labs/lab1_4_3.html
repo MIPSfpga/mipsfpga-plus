@@ -29,14 +29,14 @@ or earlier version.</li>
 <p>The fastest way to create MIPSfpga project for Quartus II is to use the existing project files located
 in board-related directory, such as <i>boards/de0_cv</i>. The contents of such directory include:</p>
 
-<blockquote><p>The contents of <i>boards/de0_cv</i> directory</p><font size=3 face="Lucida Console,Monaco,monospace"><pre>               
+<blockquote><p>The contents of <i>boards/de0_cv</i> directory</p><pre>               
 de0_cv.qpf
 de0_cv.qsf
 de0_cv.sdc
 de0_cv.v
 make_project.bat
 make_project.sh
-</pre></font></blockquote>
+</pre></blockquote>
 
 <p>Windows batch file <i>make_project.bat</i> and its Linux equivalent,
 Bourne shell script <i>make_project.sh</i>,
@@ -45,13 +45,13 @@ Quartus II creates a lot of temporary files in the directory where project files
 Creating such copy of project files allows to remove those temporary files without removing
 project files.</p>
 
-<blockquote><p>The contents of <i>boards/de0_cv/make_project.bat</i> Windows batch file</p><font size=3 face="Lucida Console,Monaco,monospace"><pre>               
+<blockquote><p>The contents of <i>boards/de0_cv/make_project.bat</i> Windows batch file</p><pre>               
 rd /s /q project
 mkdir project
 copy *.qpf project
 copy *.qsf project
 copy *.sdc project
-</pre></font></blockquote>
+</pre></blockquote>
 
 <p><big><b>4.3.3. The sequence of steps</b></big></p>
 
