@@ -1,0 +1,14 @@
+<p><big><b>5.5.2. Simulating the system using Mentor Graphics ModelSim</b></big></p>
+
+<p>This step is optional.</p>
+
+<blockquote><p>File <i>06_simulate_with_modelsim.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>                     
+rd /s /q sim
+md sim
+cd sim
+
+copy ..\*.hex .
+
+vsim -do ../modelsim_script.tcl
+
+</pre></font></blockquote>

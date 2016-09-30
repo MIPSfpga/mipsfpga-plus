@@ -1,0 +1,13 @@
+<p><big><b>5.5. Using Verilog simulation to model and debug both hardware and software </b></big></p>
+
+<p>This step is optional.</p>
+
+<p><big><b>5.5.1. Preparing Verilog $readmemh file with memory image for the software</b></big></p>
+
+<p>This step is optional.</p>
+
+<blockquote><p>File <i>05_generate_verilog_readmemh_file.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>             
+mips-mti-elf-objcopy program.elf -O verilog program.hex
+..\utilities\ad_hoc_program_hex_splitter
+
+</pre></font></blockquote>

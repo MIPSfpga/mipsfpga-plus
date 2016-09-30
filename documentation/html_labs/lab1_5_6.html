@@ -1,0 +1,74 @@
+<p><big><b>5.6. Uploading software program to the board</b></big></p>
+
+<p><big><b>5.6.1. Generating the file in Motorola S-Record format</b></big></p>
+
+<blockquote><p>File <i>08_generate_motorola_s_record_file.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>            
+mips-mti-elf-objcopy program.elf -O srec program.rec
+
+</pre></font></blockquote>
+
+<p><big><b>5.6.2. Uploading ELF file into Xilinx FPGA board using Bus Blaster and OpenOCD software</b></big></p>
+
+<p>This step is optional.</p>
+
+<blockquote><p>File <i>09_upload_to_xilinx_board_using_bus_blaster.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>   
+copy program.elf FPGA_Ram.elf
+rem Yes, it is working with DE2_115 script
+cd C:\MIPSfpga\Codescape\ExamplePrograms\Scripts\DE2_115
+loadMIPSfpga.bat C:\github\mipsfpga-plus\programs\00_counter
+cd C:\github\mipsfpga-plus\programs\00_counter
+del FPGA_Ram.elf
+
+</pre></font></blockquote>
+
+<p><big><b>5.6.3. Uploading ELF file into Altera FPGA boards using Bus Blaster and OpenOCD software</b></big></p>
+
+<p>This step is optional.</p>
+
+<blockquote><p>File <i>10_upload_to_altera_board_using_bus_blaster.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>   
+copy program.elf FPGA_Ram.elf
+cd C:\MIPSfpga\Codescape\ExamplePrograms\Scripts\DE2_115
+loadMIPSfpga.bat C:\github\mipsfpga-plus\programs\00_counter
+cd C:\github\mipsfpga-plus\programs\00_counter
+del FPGA_Ram.elf
+
+</pre></font></blockquote>
+
+<p><big><b>5.6.4. Checking which virtual COM port is used by USB-to-UART connector</b></big></p>
+
+<p>This step is required.</p>
+
+<blockquote><p>File <i>11_check_which_com_port_is_used.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>               
+mode com0
+mode com1
+mode com2
+mode com3
+mode com4
+mode com5
+mode com6
+mode com7
+mode com8
+mode com9
+pause
+mode com10
+mode com11
+. . . . . . . . .
+
+</pre></font></blockquote>
+
+<p><big><b>5.6.5. Checking which virtual COM port is used by USB-to-UART connector</b></big></p>
+
+<p>This step is required.</p>
+
+<blockquote><p>File <i>12_upload_to_the_board_using_uart.bat</i></p><font size=3 face="Lucida Console,Monaco,monospace"><pre>             
+set a=16
+set a=39
+mode com%a% baud=115200 parity=n data=8 stop=1 to=off xon=off odsr=off octs=off dtr=off rts=off idsr=off
+type program.rec &gt;\\.\COM%a%
+
+
+
+</pre></font></blockquote>
+
+stty -F /dev/ttyUSB0 raw speed 115200 -crtscts cs8 -parenb -cstopb
+cat program.rec > /dev/ttyUSB0
