@@ -1,0 +1,41 @@
+
+<p><big><b>3. Lab steps</b></big></p>
+
+<p>This section outlines the sequence of steps, necessary to complete the
+lab.  Almost all generic steps in this lab are the same as in <i>MIPSfpga
+2.0 Lab YP1.  Using MIPSfpga with Serial Loader Flow that does not require
+BusBlaster board and OpenOCD software</i>.  Such generic steps are not
+described in this section.  Only the steps different from <i>Lab YP1</i> are
+explained in details.</p>
+
+<p><big><b>3.1. Selecting the appropriate hardware configuration for the lab</b></big></p>
+
+<p>Before running synthesis it is necessary to review and possibly modify the file
+<a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a>
+that includes a set of Verilog  <i>`define</i> statements that determine the functionality
+of the synthesized MIPSfpga system. The configuration should be the
+following:</p>
+
+<blockquote><p>File <i><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a></i></p>
+<pre>                           
+
+//
+//  Configuration parameters
+//
+
+// `define MFP_USE_WORD_MEMORY
+// `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
+   `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+   `define MFP_USE_UART_PROGRAM_LOADER
+// `define MFP_DEMO_LIGHT_SENSOR
+   `define MFP_DEMO_CACHE_MISSES
+// `define MFP_DEMO_PIPE_BYPASS
+
+</pre></blockquote>
+
+
+
+<blockquote><p>File <i>04_disassemble.bat</i></p><pre>                                
+</pre></blockquote>
+
+

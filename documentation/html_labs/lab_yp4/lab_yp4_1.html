@@ -1,0 +1,28 @@
+<p><big><b>1.  Introduction</b></big></p>
+
+<p>This lab demonstrates how the work of CPU cache can be observed in the
+most obvious and straigtforward fashion when running MIPSfpga-based system
+on FPGA board.  During this lab a student makes the design clock running
+really slow (a dozen of beats per second), and then the student's program
+fills a two-dimentional memory array in one of two different ways: either
+moving row index first or moving column index first.</p>
+
+<p>Since each cache line in MIPSfpga CPU cache holds four 32-bit words, the
+generated pattern of cache misses is going to be different in those two
+runs.  When the program fills the memory array by moving column index first,
+the pattern is going to be "cache miss - hit - hit - hit - miss - hit - hit
+- hit - miss ...", but when the program fills the array by moving raw index
+first, the pattern is going to be a series of cache misses followed by a
+long series of cache hits, since a large portion of the array is already in
+the cache.</p>
+
+<p>This hit and miss pattern is going to be directly observable using a
+signal that indicates cache line fill request.  This signal is going to be
+connected to an LED on FPGA board.  When running the design with very slow
+clock, the blinking of this signal is directly observed, making the work of
+cache immediately obvious for even the most beginning student.</p>
+
+<p>This lab does not attempts to measure, quatify or analyze cache behaviour
+in details.  It's only goal is to create "A-ha" moment for a person who
+needs to visualize fo himself the role a CPU cache plays in the computer
+system.</p>
