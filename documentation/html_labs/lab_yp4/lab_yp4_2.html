@@ -1,4 +1,4 @@
-<p><big><b>2. The theory of operation</b></big></p>
+<p><big><b>2.  The theory of operation</b></big></p>
 
 <p>Why do we need CPU cache?  It solves the problem of so-called
 "processor-memory performance gap".  The issue is: during the past decades
@@ -16,11 +16,13 @@ operations.</p>
 Computer Architecture: A Quantitative Approach by David A. Patterson and
 John L. Hennessy </font></b> </p>
 
-<img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/KgYa8BM.png" />
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2016/09/KgYa8BM.png"
+/>
 
 <p>One of the best descriptions of cache used in MIPS CPUs is in book <a
 href="https://www.amazon.com/Second-Morgan-Kaufmann-Computer-Architecture/dp/0120884216">See
-MIPS Run, Second Edition by Dominic Sweetman</a>. A fragment of this
+MIPS Run, Second Edition by Dominic Sweetman</a>.  A fragment of this
 description is below:</p>
 
 <blockquote>
@@ -122,9 +124,95 @@ recently filled" to pick the line to discard.</p>
 
 </blockquote>
 
-<img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/10/cache_locality.png" />
+<p>CPU caches exploit so-called principle of locality of memory access
+patterns found in almost all programs.  Below is the explanation for two
+major types of locality from Wikipedia and <b><font color=blue>Figure
+4</font></b> that illustrates the patterns with more specifics.  The
+understanding of this principle is relevant to this lab because it explains,
+for example, why MIPSfpga cache loads four words on cache miss (the cache
+line) rather than just one word.</p>
 
-<img src="http://www.silicon-russia.com/wp-content/uploads/2016/10/mips_microaptiv_up_cache.png" />
+<blockquote>
 
-https://www.coursera.org/learn/comparch
-David Wentzlaff 2011 from Princeton University	
+<p>From <a
+href="https://en.wikipedia.org/wiki/Locality_of_reference">https://en.wikipedia.org/wiki/Locality_of_reference</a>:<p>
+
+<ul>
+
+<li>Temporal locality: If at one point a particular memory location is
+referenced, then it is likely that the same location will be referenced
+again in the near future.</li>
+
+<li>Spatial locality: If a particular storage location is referenced at a
+particular time, then it is likely that nearby memory locations will be
+referenced in the near future.</li>
+
+</ul>
+
+</blockquote>
+
+<center>
+
+<p><b><font color=blue>Figure 4.  Memory access patterns from <a
+href="https://www.coursera.org/learn/comparch">Computer Architecture</a>
+course by David Wentzlaff from Princeton University.  2011.</font></b></p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2016/10/cache_locality.png"
+/>
+
+</center>
+
+<p>Finally, <b><font color=blue>Figure 5</font></b> shows the structures
+associated with each cache line in MIPS microAptiv UP processor core.  The
+particular configuration of this core used in MIPSfpga has 2-way
+set-associativity for both instruction and data caches; each cache way has
+size of 2 KB in both I-cache and D-cache.  The parameters of caches used
+during the synthesis can be found in Verilog header file
+<i>m14k_config.vh</i> located in the directory
+<i>$HOME/mipsfpga_2_0/core_rtl</i>:</p>
+
+<blockquote><p>File <i>$HOME/mipsfpga_2_0/core_rtl/m14k_config.vh</i></p>
+<pre>                           
+
+// *************************************************************************
+// Cache module parameters
+// Not used with scache or cache stub modules
+// *************************************************************************
+// Cache Associativity
+//      1-4 way set associative
+
+`define M14K_ICACHE_ASSOC 2
+`define M14K_DCACHE_ASSOC 2
+
+// Cache Way Size
+//      Size/Way in KB
+//      1,2,4,8,16 KB
+
+`define M14K_ICACHE_WAYSIZE 2
+`define M14K_DCACHE_WAYSIZE 2
+
+
+
+// *************************************************************************
+// Cache Controller parameters
+// *************************************************************************
+// ! If changing manually, remember to change WS Ram Width below to match !
+// Maximum Cache Associativity
+//      1-4 way set associative (including Spram)
+
+`define M14K_MAX_IC_ASSOC 2
+`define M14K_MAX_DC_ASSOC 2
+
+</pre></blockquote>
+
+<center>
+
+<p><b><font color=blue>Figure 5.  The structures associated with each cache
+line in MIPS microAptiv UP processor core processor core.</font></b></p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2016/10/mips_microaptiv_up_cache.png"
+/>
+
+</center>
