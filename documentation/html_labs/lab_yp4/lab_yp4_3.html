@@ -37,6 +37,41 @@ synthesized MIPSfpga system.  The configuration should be the following:</p>
 
 <p>This step is identical to the synthesis step in <i>Lab YP1</i></p>
 
+<p><big><b>3.3.  Go to the lab directory and clean it up</b></big></p>
+
+<p>Under Windows:</p>
+
+<blockquote><pre>
+cd programs\lab_yp4
+00_clean_all.bat
+</pre></blockquote>
+
+<p>Under Linux:</p>
+
+<blockquote><pre>
+cd programs/lab_yp4
+00_clean_all.sh
+</pre></blockquote>
+
+<p><big><b>3.4.  Review the lab program code</b></big></p>
+
+<blockquote><p>File <i>system_rtl/mfp_ahb_lite_matrix_config.vh</i></p>
+<pre>
+
+</pre></blockquote>
+
+
+5.2. An example of student experiment: switchable clock enables to directly observe CPU cache in action
+
+Switchable clock allows to show the internals of the processor to the students live. Here is an example: a signal that indicates cache eviction is connected to an external LED. Now it is possible to observe cache misses when a program fills a two-dimensional array. This example can be run twice: when the array is filled by columns and when the array is filled by rows. These runs generate different patters of LED blinking.
+
+Specifically, since cache line of MIPS microAptiv UP has size of four words, the following pattern appear when filling the array column after column: miss hit hit hit miss hit hit hit ... When the array is filled row by row, the observed pattern is different: miss miss miss ... 8 times ... miss hit hit hit ... 24 times ...
+
+To run the demonstration program below, a user has to start with fast clock, go through the initialization sequence with switch 2 off, then switch the clock from 25 MHz to 12 Hz, turn switch 2 on and observe the pattern. After that a user has to modify the program, compile and load it to the board, and run the whole thing again.
+
+Note that such demos are very sensitive to compiler optimizations, so the code should be kept simple and straightforward, otherwise the compiler moves actions around and the pattern becomes unclear. Also note that the first ~3 cache misses likely result from instruction fetches filling L1 instruction cache, not L1 data cache:
+
+
 
 
 
