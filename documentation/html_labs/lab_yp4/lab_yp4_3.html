@@ -8,16 +8,16 @@ BusBlaster board and OpenOCD software</i>.  Such generic steps are not
 described in this section.  Only the steps different from <i>Lab YP1</i> are
 explained in details.</p>
 
-<p><big><b>3.1. Selecting the appropriate hardware configuration for the lab</b></big></p>
+<p><big><b>3.1.  Selecting the appropriate hardware system configuration for
+the lab</b></big></p>
 
-<p>Before running synthesis it is necessary to review and possibly modify the file
-<a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a>
-that includes a set of Verilog  <i>`define</i> statements that determine the functionality
-of the synthesized MIPSfpga system. The configuration should be the
-following:</p>
+<p>Before running synthesis it is necessary to review and possibly modify
+the file <i>system_rtl/mfp_ahb_lite_matrix_config.vh</i> that includes a set
+of Verilog <i>`define</i> statements that determine the functionality of the
+synthesized MIPSfpga system.  The configuration should be the following:</p>
 
-<blockquote><p>File <i><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a></i></p>
-<pre>                           
+<blockquote><p>File <i>system_rtl/mfp_ahb_lite_matrix_config.vh</i></p>
+<pre>
 
 //
 //  Configuration parameters
@@ -32,6 +32,9 @@ following:</p>
 // `define MFP_DEMO_PIPE_BYPASS
 
 </pre></blockquote>
+
+<p><big><b>3.2.  Run the synthesis and upload Selecting the appropriate hardware system configuration for
+the lab</b></big></p>
 
 
 
