@@ -1,5 +1,5 @@
 
-<p><big><b>3. Lab steps</b></big></p>
+<p><big><b>3.  Lab steps</b></big></p>
 
 <p>This section outlines the sequence of steps, necessary to complete the
 lab.  Almost all generic steps in this lab are the same as in <i>MIPSfpga
@@ -8,7 +8,44 @@ BusBlaster board and OpenOCD software</i>.  Such generic steps are not
 described in this section.  Only the steps different from <i>Lab YP1</i> are
 explained in details.</p>
 
-<p><big><b>3.1.  Select the appropriate hardware system configuration for
+<p><big><b>3.1.  Connect the board to the computer</b></big></p>
+
+<p>For <i>Digilent</i> boards, such as <i>Nexys4</i>, <i>Nexys4 DDR</i> or
+<i>Basys3</i>, this step is obvious.  For <i>Altera/Terasic</i> boards some
+additional steps required:</p>
+
+<ol>
+
+<li>Connect USB-to-UART connector to FPGA board. 
+Either <i>FT232RL</i> or <i>PL2303TA</i> that you can by from AliExpress or
+RadioShack will do the job.  <i>TX</i> output from the connector (green wire
+on <i>PL2303TA</i>) should go to pin 3 from right bottom on Terasic DE0,
+DE0-CV, DE1, DE2-115 (right top on DE0-Nano) and <i>GND</i> output (black
+wire on <i>PL2303TA</i>) should be connected to pin 6 from right bottom on
+Terasic DE0, DE0-CV, DE1, DE2-115 (right top on DE0-Nano).  Please consult
+photo picture in <i>Lab YP1</i> to avoid short-circuit or other connection
+problems.</li> </ol>
+
+<li>For <i>FT232RL</i> connector: make sure to set 3.3V/5V jumper on
+<i>FT232RL</i> part to 3.3V.</li>
+
+<li>For the boards that require external power in addition to the power that
+comes from USB, connect the power supply.  The boards that require the extra
+power supply include <i>Terasic DE2-115</i>.</li>
+
+<li>Connect FPGA board to the computer using main connection cable provided
+by the board manufacturers.  Make sure to put USB cable to the right jack
+when ambiguity exists (such as in <i>Terasic DE2-115</i> board).</li>
+
+<li>Make sure to power the FPGA board (turn on the power switch) before
+connecting the UART cable from USB-to-UART connector to the computer. 
+Failing to do so may result in electric damage to the board.</li>
+
+<li>Connect USB-to-UART connector to FPGA board.</li>
+
+</ol>
+
+<p><big><b>3.2.  Select the appropriate hardware system configuration for
 the lab</b></big></p>
 
 <p>Before running synthesis it is necessary to review and possibly modify
@@ -33,11 +70,11 @@ synthesized MIPSfpga system.  The configuration should be the following:</p>
 
 </pre></blockquote>
 
-<p><big><b>3.2.  Run the synthesis and configure the FPGA with the synthesized MIPSfpga system</b></big></p>
+<p><big><b>3.3.  Run the synthesis and configure the FPGA with the synthesized MIPSfpga system</b></big></p>
 
 <p>This step is identical to the synthesis step in <i>Lab YP1</i></p>
 
-<p><big><b>3.3.  Go to the lab directory and clean it up</b></big></p>
+<p><big><b>3.4.  Go to the lab directory and clean it up</b></big></p>
 
 <p>Under Windows:</p>
 
@@ -53,7 +90,72 @@ cd programs/lab_yp4
 00_clean_all.sh
 </pre></blockquote>
 
-<p><big><b>3.4.  Review the lab program code</b></big></p>
+<p><big><b>3.5.  Review the lab program code</b></big></p>
+
+<p>The main program is located in file <i>programs/lab_yp4/main.c</i>.</p>
+
+<p>The loop at the beginning (<i>"while ((MFP_SWITCHES & 4) == 0) ;"</i>) is
+needed so that the program can start with high clock speed (25 MHz) and the
+switch to very low clock speed (12.5 Hz) happens only after you first switch
+the speed by turning on switch one and then let the program to continue by
+turning on switch two.</p>
+
+<p>The program has two variants - with uncommented <i>"a [i][j] = i +
+j;"</i> and with uncommented <i>"a [j][i] = i + j;"</i>.  For the first run
+make sure <i>"a [i][j] = i + j;"</i> is uncommented and <i>"a [j][i] = i +
+j;"</i> is commendted:</p>
+
+<img
+src="http://www.silicon-russia.com/wp-content/uploads/2016/10/02_cache_misses_main_c_1.png"
+/>
+
+<p><big><b>3.6. The first run</b></big></p>
+
+<p>Following the procedure described in <i>Lab YP1</i>, compile and link the
+program, generate Motorola S-Record file and upload this file into the
+memory of the synthesized MIPSfpga-based system on the board.</p>
+
+<p>Under Windows:</p>
+
+<ol>
+
+<li>cd programs\lab_yp4</li>
+
+<li>run 02_compile_and_link.bat</li>
+
+<li>run 08_generate_motorola_s_record_file.bat</li>
+
+<li>run 11_check_which_com_port_is_used.bat</li>
+
+<li>edit 12_upload_to_the_board_using_uart.bat based on the result from the
+previous step - set the working port in “set a=” assignment</li>
+
+<li>run 12_upload_to_the_board_using_uart.bat</li>
+
+</ol>
+
+<p>Under Linux:</p>
+
+<ol>
+
+<li>cd programs/lab_yp4</li>
+
+<li>run ./02_compile_and_link.sh</li>
+
+<li>run ./08_generate_motorola_s_record_file.sh</li>
+
+<li>run ./11_check_which_com_port_is_used.sh</li>
+
+<li>edit ./12_upload_to_the_board_using_uart.sh based on the result from the
+previous step - set the working port in “set a=” assignment</li>
+
+<li>./run 12_upload_to_the_board_using_uart.sh</li>
+
+</ol>
+
+<img
+src="http://www.silicon-russia.com/wp-content/uploads/2016/10/02_cache_misses_main_c_2.png"
+/>
 
 <blockquote><p>File <i>system_rtl/mfp_ahb_lite_matrix_config.vh</i></p>
 <pre>
@@ -82,7 +184,3 @@ the lab</b></big></p>
 
 <blockquote><p>File <i>04_disassemble.bat</i></p><pre>                                
 </pre></blockquote>
-
-
-<img src="http://www.silicon-russia.com/wp-content/uploads/2015/11/Screenshot-2015-11-24-21.39.48.png" />
-
