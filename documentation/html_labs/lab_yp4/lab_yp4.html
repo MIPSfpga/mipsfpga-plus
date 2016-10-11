@@ -470,8 +470,23 @@ in the table below:</p>
 12.5 Hz.  You should see LED 7 start blinking, it is connected straight to
 the system clock.</li>
 
-<li>Now turn your attention to LED 6, next right from blinking LED 7.  LED 6
-is connected to the signal that signifites cache fill burst.</li>
+<li><p>Now turn your attention to LED 6, next right from blinking LED 7. 
+LED 6 is connected to the signal that signifites cache fill burst.</p>
+
+<blockquote><p>File <i>system_rtl/mfp_ahb_lite_matrix.v</i></p>
+<pre>
+
+    `ifdef MFP_DEMO_CACHE_MISSES
+
+    wire burst = HTRANS == `HTRANS_NONSEQ && HBURST == `HBURST_WRAP4;
+
+    assign IO_GreenLEDs = { { `MFP_N_GREEN_LEDS - (1 + 1 + 6) { 1'b0 } },
+                            HCLK, burst, HADDR [7:2] };
+
+    `endif
+
+</pre></blockquote>
+</li>
 
 <li>Turn the switch 2 on.  It will let the program to proceed to fill the
 array.  Continue watching LED 6.</li>
