@@ -106,9 +106,33 @@ j;"</i> and with uncommented <i>"a [j][i] = i + j;"</i>.  For the first run
 make sure <i>"a [i][j] = i + j;"</i> is uncommented and <i>"a [j][i] = i +
 j;"</i> is commendted:</p>
 
-<img
-src="http://www.silicon-russia.com/wp-content/uploads/2016/10/02_cache_misses_main_c_1.png"
-/>
+<blockquote><p>File <i>programs/lab_yp4/main.c</i></p>
+<pre>
+
+#include "mfp_memory_mapped_registers.h"
+
+int a [8][8];
+
+int main ()
+{
+    int n = 0;
+    int i, j;
+
+    // Wait for switch 2
+
+    while ((MFP_SWITCHES & 4) == 0)
+        ;
+
+
+    for (i = 0; i &lt; 8; i ++)
+        for (j = 0; j &lt; 8; j ++)
+               a [i][j] = i + j;
+            // a [j][i] = i + j;
+
+    return 0;
+}
+
+</pre></blockquote>
 
 <p><big><b>3.6.  Prepare the first software run</b></big></p>
 
@@ -237,9 +261,33 @@ after this you can see blinks with the frequency of cache fills.</li>
 Comment out <i>"a [i][j] = i + j;"</i> and uncomment <i>"a [j][i] = i +
 j;"</i>.  Now we are going to fill the array by rows, not by columns.</p>
 
-<img
-src="http://www.silicon-russia.com/wp-content/uploads/2016/10/02_cache_misses_main_c_2.png"
-/>
+<blockquote><p>File <i>programs/lab_yp4/main.c</i></p>
+<pre>
+
+#include "mfp_memory_mapped_registers.h"
+
+int a [8][8];
+
+int main ()
+{
+    int n = 0;
+    int i, j;
+
+    // Wait for switch 2
+
+    while ((MFP_SWITCHES & 4) == 0)
+        ;
+
+
+    for (i = 0; i &lt; 8; i ++)
+        for (j = 0; j &lt; 8; j ++)
+            // a [i][j] = i + j;
+               a [j][i] = i + j;
+
+    return 0;
+}
+
+</pre></blockquote>
 
 <p>Repeat the compile, link and other steps as described in sections 3.6 and
 3.7.  You should see a different memory access pattern as manifested on LED
