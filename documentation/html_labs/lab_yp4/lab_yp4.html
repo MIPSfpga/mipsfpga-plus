@@ -282,15 +282,15 @@ additional steps required:</p>
 
 <ol>
 
-<li>Connect USB-to-UART connector to FPGA board. 
-Either <i>FT232RL</i> or <i>PL2303TA</i> that you can by from AliExpress or
-RadioShack will do the job.  <i>TX</i> output from the connector (green wire
-on <i>PL2303TA</i>) should go to pin 3 from right bottom on Terasic DE0,
-DE0-CV, DE1, DE2-115 (right top on DE0-Nano) and <i>GND</i> output (black
-wire on <i>PL2303TA</i>) should be connected to pin 6 from right bottom on
-Terasic DE0, DE0-CV, DE1, DE2-115 (right top on DE0-Nano).  Please consult
-photo picture in <i>Lab YP1</i> to avoid short-circuit or other connection
-problems.</li> </ol>
+<li>Connect USB-to-UART connector to FPGA board.  Either <i>FT232RL</i> or
+<i>PL2303TA</i> that you can by from AliExpress or RadioShack will do the
+job.  <i>TX</i> output from the connector (green wire on <i>PL2303TA</i>)
+should go to pin 3 from right bottom on Terasic DE0, DE0-CV, DE1, DE2-115
+(right top on DE0-Nano) and <i>GND</i> output (black wire on
+<i>PL2303TA</i>) should be connected to pin 6 from right bottom on Terasic
+DE0, DE0-CV, DE1, DE2-115 (right top on DE0-Nano).  Please consult photo
+picture in <i>Lab YP1</i> to avoid short-circuit or other connection
+problems.</li>
 
 <li>For <i>FT232RL</i> connector: make sure to set 3.3V/5V jumper on
 <i>FT232RL</i> part to 3.3V.</li>
@@ -336,7 +336,8 @@ synthesized MIPSfpga system.  The configuration should be the following:</p>
 
 </pre></blockquote>
 
-<p><big><b>3.3.  Run the synthesis and configure the FPGA with the synthesized MIPSfpga system</b></big></p>
+<p><big><b>3.3.  Run the synthesis and configure the FPGA with the
+synthesized MIPSfpga system</b></big></p>
 
 <p>This step is identical to the synthesis step in <i>Lab YP1</i></p>
 
@@ -375,7 +376,7 @@ j;"</i> is commendted:</p>
 src="http://www.silicon-russia.com/wp-content/uploads/2016/10/02_cache_misses_main_c_1.png"
 />
 
-<p><big><b>3.6. The first run</b></big></p>
+<p><big><b>3.6.  Prepare the first software run</b></big></p>
 
 <p>Following the procedure described in <i>Lab YP1</i>, compile and link the
 program, generate Motorola S-Record file and upload this file into the
@@ -394,7 +395,14 @@ memory of the synthesized MIPSfpga-based system on the board.</p>
 <li>run 11_check_which_com_port_is_used.bat</li>
 
 <li>edit 12_upload_to_the_board_using_uart.bat based on the result from the
-previous step - set the working port in “set a=” assignment</li>
+previous step - set the working port in “set a=” assignment.</li>
+
+<li>Make sure the switches 0, 1, 2 on FPGA board are turned off.  Switches 0
+and 1 control the speed of the clock, while switch 2 gates the program
+execution - see <i>3.5.  Review the lab program code</i>.  If the switches 0
+and 1 are not off, the loading through UART is not going to work; if the
+switch 2 is not off, the program will execute before you have a chance to
+change the clock speed.</li>
 
 <li>run 12_upload_to_the_board_using_uart.bat</li>
 
@@ -415,40 +423,85 @@ previous step - set the working port in “set a=” assignment</li>
 <li>edit ./12_upload_to_the_board_using_uart.sh based on the result from the
 previous step - set the working port in “set a=” assignment</li>
 
+<li>Make sure the switches 0, 1, 2 on FPGA board are turned off.  Switches 0
+and 1 control the speed of the clock, while switch 2 gates the program
+execution - see <i>3.5.  Review the lab program code</i>.  If the switches 0
+and 1 are not off, the loading through UART is not going to work; if the
+switch 2 is not off, the program will execute before you have a chance to
+change the clock speed.</li>
+
 <li>./run 12_upload_to_the_board_using_uart.sh</li>
 
 </ol>
+
+<p><big><b>3.7.  The first run</b></big></p>
+
+<ol>
+
+<li>Make sure the switches 0, 1, 2 on FPGA board are turned off.  Switches 0
+and 1 control the speed of the clock, while switch 2 gates the program
+execution - see <i>3.5.  Review the lab program code</i>.  If the switches 0
+and 1 are not off, the boot sequence (a sequence of processor instructions
+before <i>main</i> function) will take too long.  If the switch 2 is not
+off, the program will execute before you have a chance to change the clock
+speed.</li>
+
+<li><p>Reset the processor.  The reset buttons for each board are listed
+in the table below:</p>
+
+<p><table border=1 cellpadding=10 cellspacing=0 rules=all>
+<tr>
+<th>Board</th>
+<th>Reset buttonn</th>
+</tr>
+<tr><td>Digilent Basys3</td><td>Up</td></tr>
+<tr><td>Digilent Nexys4</td><td>Dedicated CPU Reset</td></tr>
+<tr><td>Digilent Nexys4 DDR</td><td>Dedicated CPU Reset</td></tr>
+<tr><td>Terasic DE0</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE0-CV</td><td>Dedicated reset button</td></tr>
+<tr><td>Terasic DE0-Nano</td><td>Button/Key 1</td></tr>
+<tr><td>Terasic DE1</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE2-115</td><td>Button/Key 0</td></tr>
+</table></p>
+
+</li>
+
+<li>Turn the switch 1 on. Thos will switch the system clock from 25 MHz to
+12.5 Hz. You should see LED 7 start blinking, it is connected straight to
+the system clock.</li>
+
+<li>Now turn your attention to LED 6, next right from blinking LED 7. LED 6
+is connected to the signal that signifites cache fill burst.</li>
+
+<li>Turn the switch 2 on. It will let the program to proceed to fill the
+array. Continue watching LED 6.</li>
+
+<li>LED 6 starts blinking. The first couple of requests are coming from instruction fetches filling L1 instruction
+cache, not L1 data cache, but after this you can see blinks with the
+frequency of cache fills.</li>
+
+</ol>
+
+<p><big><b>3.8.  The second run</b></big></p>
+
+<p>Turn all switches to off position and go back to the program code.
+Comment out <i>"a [i][j] = i + j;"</i> and uncomment <i>"a [j][i] = i +
+j;"</i>. Now we are going to fill the array by rows, not by columns.</p>
 
 <img
 src="http://www.silicon-russia.com/wp-content/uploads/2016/10/02_cache_misses_main_c_2.png"
 />
 
-<blockquote><p>File <i>system_rtl/mfp_ahb_lite_matrix_config.vh</i></p>
-<pre>
+<p>Repeat the compile, link and other steps as described in sections 3.6 and
+3.7. You should see a different memory access pattern as manifested on LED
+6. Instead of "cache miss - hit - hit - hit - miss - hit - hit - hit - miss ..."
+manifested in the first run, the pattern is going to be a series of eight cache
+misses followed by long period of hits (no LED 6 light) with eight
+back-by-back cache misses followed by silence again.</p>
 
-</pre></blockquote>
+<p><big><b>4. Additional questions for self-study</b></big></p>
 
-
-5.2. An example of student experiment: switchable clock enables to directly observe CPU cache in action
-
-Switchable clock allows to show the internals of the processor to the students live. Here is an example: a signal that indicates cache eviction is connected to an external LED. Now it is possible to observe cache misses when a program fills a two-dimensional array. This example can be run twice: when the array is filled by columns and when the array is filled by rows. These runs generate different patters of LED blinking.
-
-Specifically, since cache line of MIPS microAptiv UP has size of four words, the following pattern appear when filling the array column after column: miss hit hit hit miss hit hit hit ... When the array is filled row by row, the observed pattern is different: miss miss miss ... 8 times ... miss hit hit hit ... 24 times ...
-
-To run the demonstration program below, a user has to start with fast clock, go through the initialization sequence with switch 2 off, then switch the clock from 25 MHz to 12 Hz, turn switch 2 on and observe the pattern. After that a user has to modify the program, compile and load it to the board, and run the whole thing again.
-
-Note that such demos are very sensitive to compiler optimizations, so the code should be kept simple and straightforward, otherwise the compiler moves actions around and the pattern becomes unclear. Also note that the first ~3 cache misses likely result from instruction fetches filling L1 instruction cache, not L1 data cache:
-
-
-
-
-
- and upload Selecting the appropriate hardware system configuration for
-the lab</b></big></p>
-
-
-
-<blockquote><p>File <i>04_disassemble.bat</i></p><pre>                                
-</pre></blockquote>
+<ol>
+</ol>
 </body>
 </html>

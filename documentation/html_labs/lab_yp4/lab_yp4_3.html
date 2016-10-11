@@ -200,34 +200,43 @@ in the table below:</p>
 
 </li>
 
-<li>Turn the switch 1 on. Thos will switch the system clock from 25 MHz to
-12.5 Hz. You should see LED 7 start blinking, it is connected straight to
+<li>Turn the switch 1 on.  Thos will switch the system clock from 25 MHz to
+12.5 Hz.  You should see LED 7 start blinking, it is connected straight to
 the system clock.</li>
 
-<li>Now turn your attention to LED 6, next right from blinking LED 7. LED 6
+<li>Now turn your attention to LED 6, next right from blinking LED 7.  LED 6
 is connected to the signal that signifites cache fill burst.</li>
 
-<li>Turn the switch 2 on. It will let the program to proceed to fill the
-array. Continue watching LED 6.</li>
+<li>Turn the switch 2 on.  It will let the program to proceed to fill the
+array.  Continue watching LED 6.</li>
 
-<li>LED 6 starts blinking. The first couple of requests are coming from instruction fetches filling L1 instruction
-cache, not L1 data cache, but after this you can see blinks with the
-frequency of cache fills.</li>
+<li>LED 6 starts blinking.  The first couple of requests are coming from
+instruction fetches filling L1 instruction cache, not L1 data cache, but
+after this you can see blinks with the frequency of cache fills.</li>
+
+</ol>
 
 <p><big><b>3.8.  The second run</b></big></p>
 
-<p>Turn all switches to off position and go back to the program code.
+<p>Turn all switches to off position and go back to the program code. 
 Comment out <i>"a [i][j] = i + j;"</i> and uncomment <i>"a [j][i] = i +
-j;"</i>. Now we are going to fill the array by rows, not by columns.</p>
+j;"</i>.  Now we are going to fill the array by rows, not by columns.</p>
 
 <img
 src="http://www.silicon-russia.com/wp-content/uploads/2016/10/02_cache_misses_main_c_2.png"
 />
 
 <p>Repeat the compile, link and other steps as described in sections 3.6 and
-3.7. You should see a different memory access pattern as manifested on LED
-6. Instead of "cache miss - hit - hit - hit - miss - hit - hit - hit - miss ..."
-manifested in the first run, the pattern is going to be a series of eight cache
-misses followed by long period of hits (no LED 6 light) with eight
-back-by-back cache misses followed by silence again.</p>
+3.7.  You should see a different memory access pattern as manifested on LED
+6.  Instead of "cache miss - hit - hit - hit - miss - hit - hit - hit - miss
+..." manifested in the first run, the pattern is going to be a series of
+eight cache misses followed by long period of hits (no LED 6 light) with
+eight back-by-back cache misses followed by silence again.</p>
 
+<p><big><b>4.  Additional question for self-study</b></big></p>
+
+<p>Read the article in Wikipedia <a
+href="http://en.wikipedia.org/wiki/Row-major_order">Row-major order</a>.  Is
+C programming language a row-major order language or a column-major order
+language?  How the lab results would change if C uses the opposite method
+for arranging multidimensional arrays in memory?</p>
