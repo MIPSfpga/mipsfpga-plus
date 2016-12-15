@@ -16,3 +16,5 @@ lab_yp1_5_6.html \
 lab_yp1_a.html \
 lab_yp1_z.html \
 > lab_yp1.html
+
+aspell -l < lab_yp1.html | sort -u > zzz_misspelled

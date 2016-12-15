@@ -104,7 +104,7 @@ turning on switch two.</p>
 <p>The program has two variants - with uncommented <i>"a [i][j] = i +
 j;"</i> and with uncommented <i>"a [j][i] = i + j;"</i>.  For the first run
 make sure <i>"a [i][j] = i + j;"</i> is uncommented and <i>"a [j][i] = i +
-j;"</i> is commendted:</p>
+j;"</i> is commented:</p>
 
 <blockquote><p>File <i>programs/lab_yp4/main.c</i></p>
 <pre>
@@ -168,6 +168,17 @@ change the clock speed.</li>
 
 <p>Under Linux:</p>
 
+<p>If uploading program to the board first time during the current Linux
+session, add the current user to <i>dialout</i> Linux group. Enter the
+<i>root</i> password when prompted:</p>
+
+<blockquote><pre>
+sudo adduser $USER dialout
+su - $USER
+</pre></blockquote>
+
+<p>After that:</p>
+
 <ol>
 
 <li>cd programs/lab_yp4</li>
@@ -210,7 +221,7 @@ in the table below:</p>
 <p><table border=1 cellpadding=10 cellspacing=0 rules=all>
 <tr>
 <th>Board</th>
-<th>Reset buttonn</th>
+<th>Reset button</th>
 </tr>
 <tr><td>Digilent Basys3</td><td>Up</td></tr>
 <tr><td>Digilent Nexys4</td><td>Dedicated CPU Reset</td></tr>
@@ -224,12 +235,12 @@ in the table below:</p>
 
 </li>
 
-<li>Turn the switch 1 on.  Thos will switch the system clock from 25 MHz to
+<li>Turn the switch 1 on.  This will switch the system clock from 25 MHz to
 12.5 Hz.  You should see LED 7 start blinking, it is connected straight to
 the system clock.</li>
 
-<li><p>Now turn your attention to LED 6, next right from blinking LED 7. 
-LED 6 is connected to the signal that signifites cache fill burst.</p>
+<li><p>Now turn your attention to LED 6, next right from blinking LED 7. LED
+6 is connected to the signal that signifies cache fill burst.</p>
 
 <blockquote><p>File <i>system_rtl/mfp_ahb_lite_matrix.v</i></p>
 <pre>

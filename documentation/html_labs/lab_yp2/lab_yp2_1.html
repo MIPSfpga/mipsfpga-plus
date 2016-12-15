@@ -1,0 +1,33 @@
+<p><big><b>1.  Introduction</b></big></p>
+
+<p>In this lab a student reviews and synthesizes a configuration of MIPSfpga
+system that contains a peripheral - Digilent Pmod ALS, the Ambient Light
+Sensor. In order to integrate a new peripheral into MIPSfpga system, a
+designer has to do three main steps:</p>
+
+<ol>
+
+<li>Design a Verilog module that handles the external protocol used to
+communicate to the peripheral. The protocol used in this lab is Serial
+Peripheral Interface (SPI).</li>
+
+<li>Create glue logic used to interface the above module with AHB-Lite,
+on-chip bus fabric, used in MIPSfpga system.</li>
+
+<li>Write software support that allows the application program running on
+MIPS microAptiv UP core inside MIPSfpga system to drive the peripheral using
+the memory-mapped input/output registers.</li>
+
+</ol>
+
+<p>By going through this lab, a student also understands the fundamental
+difference between on-chip buses (AHB, AXI, OCP) and inter-chip buses (SPI,
+UART, I<sup>2</sup>C), as well as the difference between serial buses (SPI
+bus used to communicate with the sensor is a kind if serial bus) and
+parallel buses (AHB-Lite used in MIPSfpga SoC is a kind of parallel
+bus).</p>
+
+<p>The result of the light intensity, measured in this lab, is displayed on
+multiple-digit seven-segment display. By combining a sensor, a system
+controller and an output device (the display), the student constructs a
+practically useful gadget, the light meter.</p>

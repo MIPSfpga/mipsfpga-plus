@@ -21,14 +21,14 @@
 <li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_decoder</a> - a module that decode an address on AHB-Lite bus and determines which hardware slave (a memory of an input/output device is going to process the corresponding transaction on the bus</li>
 <li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_ram_slave.v">mfp_ahb_ram_slave</a> <i>reset_ram</i> - an AHB-Lite wrapper for memory blocks. This particular group of memory blocks (<i>reset_ram</i>) is intended for the part of software that starts immediately after the processor exits the reset. This part of software is called "the bootloader".
 <ul>
-<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_dual_port_ram.v">mfp_dual_port_ram</a> <i>i0-i3</i> - modules that infer FPGA block memory during the synthesize. In order for the synthesizer to interpret the code for the module in appropriate way, The code in these modules was written according to <a href="http://quartushelp.altera.com/14.1/mergedProjects/hdl/vlog/vlog_pro_ram_inferred.htm">special guidelines</a> from EDA (Electronic Design Automation) tool vendors, including Xilinx and Altera, so that the synthesizer interprets the code in appropriate way and infers FPGA-specific block memory. There are four 8-bit wide memory blocks in order to implement 32-bit wide random access memory (RAM). Such design is needed in order to support a single byte-wide AHBLite transfer. The alternative idea with 32-bit wide memory would be not sufficient since neither Xilinx nor Altera support writing 32-bit date in memory with a mask.</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_dual_port_ram.v">mfp_dual_port_ram</a> <i>i0-i3</i> - modules that infer FPGA block memory during the synthesize. In order for the synthesizer to interpret the code for the module in appropriate way, The code in these modules was written according to <a href="http://quartushelp.altera.com/14.1/mergedProjects/hdl/vlog/vlog_pro_ram_inferred.htm">special guidelines</a> from EDA (Electronic Design Automation) tool vendors, including Xilinx and Altera, so that the synthesizer interprets the code in appropriate way and infers FPGA-specific block memory. There are four 8-bit wide memory blocks in order to implement 32-bit wide random access memory (RAM). Such design is needed in order to support a single byte-wide AHB-Lite transfer. The alternative idea with 32-bit wide memory would be not sufficient since neither Xilinx nor Altera support writing 32-bit date in memory with a mask.</li>
 </ul></li>
 <li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_ram_slave.v">mfp_ahb_ram_slave</a> <i>ram</i> - another AHB-Lite memory wrapper. This group of memory blocks (<i>ram</i>) is intended for the main part of the software program, that is fetched from the cacheable region of the virtual memory map.
 <ul>
 <li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_dual_port_ram.v">mfp_dual_port_ram</a> <i>i0-i3</i> - same as above</li>
 </ul></li>
 <li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_gpio_slave.v">mfp_ahb_gpio_slave</a> - AHB-Lite slave implementing GPIO - General Purpose Input / Output. The logic in this module maps bus addresses to the signals used for the peripheral devices: buttons, LED indicators etc.</li>
-<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_response_mux</a> - one of submodules used for implementing AHB-Lite bus protocol. Contains a multiplexor that produces correct read data for the CPU based on read data from all memories and I/O slaves. This multiplexor uses the id of a slave stored during the address phase of the corresponding bus transaction in flight</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_response_mux</a> - one of submodules used for implementing AHB-Lite bus protocol. Contains a multiplexer that produces correct read data for the CPU based on read data from all memories and I/O slaves. This multiplexer uses the id of a slave stored during the address phase of the corresponding bus transaction in flight</li>
 </ul></li>
 </ul></li></ul>
 
@@ -52,7 +52,7 @@
 </li>
 </ul>
 
-<p><b><font color=blue>Figure 2.3</font></b> shows the schematics of <i>mfp_ahb_lite_matrix_with_loader</i> created after Verilog synthesis but before FPGA technology-specific mapping, placement and routing. Note the multiplexor between <i>mfp_srec_parser_to_ahb_lite_bridge</i> and <i>mfp_ahb_lite_matrix</i>. This multiplexor directs to the memory subsystem either the transactions from the CPU core, or the transactions from the Serial Loader:</p>
+<p><b><font color=blue>Figure 2.3</font></b> shows the schematics of <i>mfp_ahb_lite_matrix_with_loader</i> created after Verilog synthesis but before FPGA technology-specific mapping, placement and routing. Note the multiplexer between <i>mfp_srec_parser_to_ahb_lite_bridge</i> and <i>mfp_ahb_lite_matrix</i>. This multiplexer directs to the memory subsystem either the transactions from the CPU core, or the transactions from the Serial Loader:</p>
 
 <p><center><b><font color=blue>Figure 2.3</font></b></center></p>
 
@@ -90,6 +90,6 @@
 
 <p><big><b>2.6. Miscellaneous</b></big></p>
 
-<p>The output of <i>mfp_srec_parser</i>, a signal called <i>in_progres</i> is used as a reset for microAptiv UP processor core. It means that while the serial loader fills the memory with S-record file data, the processor is not accessing the memory. Once <i>mfp_srec_parser</i> gets the termination record (S7), the core wakes up and starts to fetch the program from the newly filled memory.</p>
+<p>The output of <i>mfp_srec_parser</i>, a signal called <i>in_progress</i> is used as a reset for microAptiv UP processor core. It means that while the serial loader fills the memory with S-record file data, the processor is not accessing the memory. Once <i>mfp_srec_parser</i> gets the termination record (S7), the core wakes up and starts to fetch the program from the newly filled memory.</p>
 
 <p>The serial loader mechanism does not disable interfacing with regular Bus Blaster / Open OCD. Both ways of loading programs, serial loader and Bus Blaster, can be used without re-synthesizing the system.</p>

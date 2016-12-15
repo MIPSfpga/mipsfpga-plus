@@ -2,10 +2,11 @@
 
 <p><big><b>5.6.1. Generating the file in Motorola S-Record format</b></big></p>
 
-<p>This step is required. Motorola S-Record is a format used by Serial Loader
-to load the software into the sythesized MIPSfpga system on FPGA board.
-The script uses a standard utility in GCC toolchain called <i>mips-mti-elf-objcopy</i>.
-For more information please see <i>Section 2. The theory of operation</i></p>
+<p>This step is required. Motorola S-Record is a format used by Serial
+Loader to load the software into the synthesized MIPSfpga system on FPGA
+board. The script uses a standard utility in GCC toolchain called
+<i>mips-mti-elf-objcopy</i>. For more information please see <i>Section 2.
+The theory of operation</i></p>
 
 <blockquote><p>File <i>08_generate_motorola_s_record_file.bat</i></p><pre>            
 mips-mti-elf-objcopy program.elf -O srec program.rec

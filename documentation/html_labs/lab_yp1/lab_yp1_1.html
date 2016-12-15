@@ -13,14 +13,14 @@
 
 <ol>
 <li>The implementation of serial UART protocol</li>
-<li>An example of using a finite state machine (FSM) to parse a text, with FSM coded in Verilog and syntesized in digital hardware rather than parsing the text using an FSM implemented in software</li>
+<li>An example of using a finite state machine (FSM) to parse a text, with FSM coded in Verilog and synthesized in digital hardware rather than parsing the text using an FSM implemented in software</li>
 </ol>
 
 <p>The Serial Loader Flow is also not without drawbacks:</p>
 
 <ol>
 <li>The Serial Loader Flow does not allow debugging the software on the board using a debugger like Codescape working on a computer,</li>
-<li>Under this flow the hardware has to be aware of virtual-to-physical address mapping. If a user wants to change such mapping, he has to update both software linker script for his programs and Verilog code for the hardware component, specifically the code that translates virtual addresses into physical addresses during uploading the user's program into a sythesized MIPSfpga system.</li>
+<li>Under this flow the hardware has to be aware of virtual-to-physical address mapping. If a user wants to change such mapping, he has to update both software linker script for his programs and Verilog code for the hardware component, specifically the code that translates virtual addresses into physical addresses during uploading the user's program into a synthesized MIPSfpga system.</li>
 </ol>
 
 <p>Despite those drawbacks, the Serial Loader Flow is a useful option for many users, and it can be used alongside with Bus Blaster / OpenOCD Flow.</p>
