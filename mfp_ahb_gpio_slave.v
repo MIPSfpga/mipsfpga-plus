@@ -72,18 +72,25 @@ module mfp_ahb_gpio_slave
         end
     end
 
-    always @*
+    always @ (posedge HCLK or negedge HRESETn)
     begin
-        case (read_ionum)
-        `MFP_SWITCHES_IONUM      : HRDATA = { { 32 - `MFP_N_SWITCHES { 1'b0 } } , IO_Switches };
-        `MFP_BUTTONS_IONUM       : HRDATA = { { 32 - `MFP_N_BUTTONS  { 1'b0 } } , IO_Buttons  };
-
-        `ifdef MFP_DEMO_LIGHT_SENSOR
-        `MFP_LIGHT_SENSOR_IONUM  : HRDATA = { 16'b0, IO_LightSensor };
-        `endif
-
-        default:                   HRDATA = 32'h00000000;
-        endcase
+        if (! HRESETn)
+        begin
+            HRDATA <= 32'h00000000;
+        end
+        else
+        begin
+            case (read_ionum)
+            `MFP_SWITCHES_IONUM      : HRDATA <= { { 32 - `MFP_N_SWITCHES { 1'b0 } } , IO_Switches };
+            `MFP_BUTTONS_IONUM       : HRDATA <= { { 32 - `MFP_N_BUTTONS  { 1'b0 } } , IO_Buttons  };
+            
+            `ifdef MFP_DEMO_LIGHT_SENSOR
+            `MFP_LIGHT_SENSOR_IONUM  : HRDATA <= { 16'b0, IO_LightSensor };
+            `endif
+            
+            default:                   HRDATA <= 32'h00000000;
+            endcase
+        end
     end
 
 endmodule

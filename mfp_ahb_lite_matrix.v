@@ -140,7 +140,7 @@ module mfp_ahb_lite_matrix
         `endif
     );
 
-    assign HREADY = HREADY_0 | HREADY_1 | HREADY_2;
+    assign HREADY = HREADY_0 & HREADY_1 & HREADY_2;
 
     mfp_ahb_lite_response_mux response_mux
     (
