@@ -35,108 +35,115 @@ module mfp_system
 
     wire MFP_Reset;
 
-    wire [ 0:0] BistIn;
-    wire [ 0:0] BistOut;
-    wire [ 0:0] CP2_fromcp2;
-    wire [ 0:0] CP2_tocp2;
-    wire [ 0:0] DSP_fromdsp;
-    wire [ 0:0] DSP_todsp;
-    wire        EJ_DebugM;
-//  wire        EJ_DINT;
-    wire        EJ_DINTsup;
-    wire        EJ_DisableProbeDebug;
-    wire        EJ_ECREjtagBrk;
-    wire [10:0] EJ_ManufID;
-    wire [15:0] EJ_PartNumber;
-    wire        EJ_PerRst;
-    wire        EJ_PrRst;
-    wire        EJ_SRstE;
-//  wire        EJ_TCK;
-//  wire        EJ_TDI;
-//  wire        EJ_TDO;
-    wire        EJ_TDOzstate;
-//  wire        EJ_TMS;
-    wire        EJ_TRST_N;
-    wire [ 3:0] EJ_Version;
-    wire [ 7:0] gmb_dc_algorithm;
-    wire        gmbddfail;
-    wire        gmbdifail;
-    wire        gmbdone;
-    wire [ 7:0] gmb_ic_algorithm;
-    wire        gmbinvoke;
-    wire [ 7:0] gmb_isp_algorithm;
-    wire        gmbispfail;
-    wire [ 7:0] gmb_sp_algorithm;
-    wire        gmbspfail;
-    wire        gmbtdfail;
-    wire        gmbtifail;
-    wire        gmbwdfail;
-    wire        gmbwifail;
-    wire        gscanenable;
-    wire [ 0:0] gscanin;
-    wire        gscanmode;
-    wire [ 0:0] gscanout;
-    wire        gscanramwr;
-//  wire [31:0] HADDR;
-    wire [ 2:0] HBURST;
-    wire        HCLK;
-    wire        HMASTLOCK;
-    wire [ 3:0] HPROT;
-//  wire [31:0] HRDATA;
-    wire        HREADY;
-    wire        HRESETn;
-    wire        HRESP;
-    wire [ 2:0] HSIZE;
-    wire [ 1:0] HTRANS;
-//  wire [31:0] HWDATA;
-//  wire        HWRITE;
-    wire [ 0:0] ISP_fromisp;
-    wire [ 0:0] ISP_toisp;
-    wire        PM_InstnComplete;
-    wire        SI_AHBStb;
-    wire        SI_BootExcISAMode;
-//  wire        SI_ClkIn;
-    wire        SI_ClkOut;
-//  wire        SI_ColdReset;
-    wire [ 9:0] SI_CPUNum;
-    wire [ 3:0] SI_Dbs;
-    wire        SI_EICPresent;
-    wire [ 5:0] SI_EICVector;
-    wire [ 3:0] SI_EISS;
-    wire        SI_Endian;
-    wire        SI_ERL;
-    wire        SI_EXL;
-    wire        SI_FDCInt;
-    wire        SI_IAck;
-    wire [ 7:0] SI_Ibs;
-    wire [ 7:0] SI_Int;
-    wire [17:1] SI_ION;
-    wire [ 2:0] SI_IPFDCI;
-    wire [ 7:0] SI_IPL;
-    wire [ 2:0] SI_IPPCI;
-    wire [ 2:0] SI_IPTI;
-    wire [ 5:0] SI_IVN;
-    wire [ 1:0] SI_MergeMode;
-    wire        SI_NESTERL;
-    wire        SI_NESTEXL;
-    wire        SI_NMI;
-    wire        SI_NMITaken;
-    wire [17:1] SI_Offset;
-    wire        SI_PCInt;
-//  wire        SI_Reset;
-    wire        SI_RP;
-    wire        SI_Sleep;
-    wire [ 3:0] SI_SRSDisable;
-    wire [ 1:0] SI_SWInt;
-    wire        SI_TimerInt;
-    wire        SI_TraceDisable;
-    wire [ 2:0] TC_ClockRatio;
-    wire [63:0] TC_Data;
-    wire        TC_PibPresent;
-    wire        TC_Stall;
-    wire        TC_Valid;
-    wire [ 0:0] UDI_fromudi;
-    wire [ 0:0] UDI_toudi;
+    wire [  0:0] BistIn;
+    wire [  0:0] BistOut;
+    wire [  0:0] CP2_fromcp2;
+    wire [  0:0] CP2_tocp2;
+    wire [  0:0] DSP_fromdsp;
+    wire [  0:0] DSP_todsp;
+    wire         EJ_DebugM;
+//  wire         EJ_DINT;
+    wire         EJ_DINTsup;
+    wire         EJ_DisableProbeDebug;
+    wire         EJ_ECREjtagBrk;
+    wire [ 10:0] EJ_ManufID;
+    wire [ 15:0] EJ_PartNumber;
+    wire         EJ_PerRst;
+    wire         EJ_PrRst;
+    wire         EJ_SRstE;
+//  wire         EJ_TCK;
+//  wire         EJ_TDI;
+//  wire         EJ_TDO;
+    wire         EJ_TDOzstate;
+//  wire         EJ_TMS;
+    wire         EJ_TRST_N;
+    wire [  3:0] EJ_Version;
+    wire [  7:0] gmb_dc_algorithm;
+    wire         gmbddfail;
+    wire         gmbdifail;
+    wire         gmbdone;
+    wire [  7:0] gmb_ic_algorithm;
+    wire         gmbinvoke;
+    wire [  7:0] gmb_isp_algorithm;
+    wire         gmbispfail;
+    wire [  7:0] gmb_sp_algorithm;
+    wire         gmbspfail;
+    wire         gmbtdfail;
+    wire         gmbtifail;
+    wire         gmbwdfail;
+    wire         gmbwifail;
+    wire         gscanenable;
+    wire [  0:0] gscanin;
+    wire         gscanmode;
+    wire [  0:0] gscanout;
+    wire         gscanramwr;
+//  wire [ 31:0] HADDR;
+    wire [  2:0] HBURST;
+    wire         HCLK;
+    wire         HMASTLOCK;
+    wire [  3:0] HPROT;
+//  wire [ 31:0] HRDATA;
+    wire         HREADY;
+    wire         HRESETn;
+    wire         HRESP;
+    wire [  2:0] HSIZE;
+    wire [  1:0] HTRANS;
+//  wire [ 31:0] HWDATA;
+//  wire         HWRITE;
+    wire [  0:0] ISP_fromisp;
+    wire [  0:0] ISP_toisp;
+    wire         PM_InstnComplete;
+    wire         SI_AHBStb;
+    wire         SI_BootExcISAMode;
+//  wire         SI_ClkIn;
+    wire         SI_ClkOut;
+//  wire         SI_ColdReset;
+    wire [  9:0] SI_CPUNum;
+    wire [  3:0] SI_Dbs;
+    wire         SI_EICPresent;
+    wire [  5:0] SI_EICVector;
+    wire [  3:0] SI_EISS;
+    wire         SI_Endian;
+    wire         SI_ERL;
+    wire         SI_EXL;
+    wire         SI_FDCInt;
+    wire         SI_IAck;
+    wire [  7:0] SI_Ibs;
+    wire [  7:0] SI_Int;
+    wire [ 17:1] SI_ION;
+    wire [  2:0] SI_IPFDCI;
+    wire [  7:0] SI_IPL;
+    wire [  2:0] SI_IPPCI;
+    wire [  2:0] SI_IPTI;
+    wire [  5:0] SI_IVN;
+    wire [  1:0] SI_MergeMode;
+    wire         SI_NESTERL;
+    wire         SI_NESTEXL;
+    wire         SI_NMI;
+    wire         SI_NMITaken;
+    wire [ 17:1] SI_Offset;
+    wire         SI_PCInt;
+//  wire         SI_Reset;
+    wire         SI_RP;
+    wire         SI_Sleep;
+    wire [  3:0] SI_SRSDisable;
+    wire [  1:0] SI_SWInt;
+    wire         SI_TimerInt;
+    wire         SI_TraceDisable;
+    wire [  2:0] TC_ClockRatio;
+    wire [ 63:0] TC_Data;
+    wire         TC_PibPresent;
+    wire         TC_Stall;
+    wire         TC_Valid;
+    wire [127:0] UDI_fromudi;
+    wire [127:0] UDI_toudi;
+
+`ifdef MFP_DEMO_PIPE_BYPASS
+    wire         mpc_aselres_e;
+    wire         mpc_aselwr_e;
+    wire         mpc_bselall_e;
+    wire         mpc_bselres_e;
+`endif
 
     m14k_top m14k_top
     (
@@ -242,56 +249,65 @@ module mfp_system
         .TC_Valid              ( TC_Valid              ),
         .UDI_fromudi           ( UDI_fromudi           ),
         .UDI_toudi             ( UDI_toudi             )
+
+`ifdef MFP_DEMO_PIPE_BYPASS
+        ,
+        .mpc_aselres_e         ( mpc_aselres_e         ),     
+        .mpc_aselwr_e          ( mpc_aselwr_e          ),     
+        .mpc_bselall_e         ( mpc_bselall_e         ),     
+        .mpc_bselres_e         ( mpc_bselres_e         )      
+`endif
+
     );
 
-        assign BistIn                =  1'b0;
-        assign CP2_tocp2             =  1'b0;
-        assign DSP_todsp             =  1'b0;
-    //  assign EJ_DINT               =  1'b0;
-        assign EJ_DINTsup            =  1'b0;
-        assign EJ_DisableProbeDebug  =  1'b0;
-        assign EJ_ManufID            = 11'b0;
-        assign EJ_PartNumber         = 16'b0;
-    //  assign EJ_TCK                =  1'b0;
-    //  assign EJ_TDI                =  1'b0;
-    //  assign EJ_TMS                =  1'b0;
-    //  assign EJ_TRST_N             =  1'b0;
-        assign EJ_Version            =  4'b0;
-        assign gmb_dc_algorithm      =  8'b0;
-        assign gmb_ic_algorithm      =  8'b0;
-        assign gmbinvoke             =  1'b0;
-        assign gmb_isp_algorithm     =  8'b0;
-        assign gmb_sp_algorithm      =  8'b0;
-        assign gscanenable           =  1'b0;
-        assign gscanin               =  1'b0;
-        assign gscanmode             =  1'b0;
-        assign gscanramwr            =  1'b0;
-    //  assign HRDATA                = 32'b0;
-    //  assign HREADY                =  1'b0;
-    //  assign HRESP                 =  1'b0;
-        assign ISP_toisp             =  1'b0;
-    //  assign SI_AHBStb             =  1'b0;
-        assign SI_BootExcISAMode     =  1'b0;
-    //  assign SI_ClkIn              =  1'b0;
-    //  assign SI_ColdReset          =  1'b0;
-        assign SI_CPUNum             = 10'b0;
-        assign SI_EICPresent         =  1'b0;
-        assign SI_EICVector          =  6'b0;
-        assign SI_EISS               =  4'b0;
-        assign SI_Endian             =  1'b0;
-        assign SI_Int                =  8'b0;
-        assign SI_IPFDCI             =  3'b0;
-        assign SI_IPPCI              =  3'b0;
-        assign SI_IPTI               =  3'b0;
-        assign SI_MergeMode          =  2'b0;
-        assign SI_NMI                =  1'b0;
-        assign SI_Offset             = 17'b0;
-    //  assign SI_Reset              =  1'b0;
-    //  assign SI_SRSDisable         =  4'b0;
-    //  assign SI_TraceDisable       =  1'b0;
-        assign TC_PibPresent         =  1'b0;
-        assign TC_Stall              =  1'b0;
-        assign UDI_toudi             =  1'b0;
+        assign BistIn                =   1'b0;
+        assign CP2_tocp2             =   1'b0;
+        assign DSP_todsp             =   1'b0;
+    //  assign EJ_DINT               =   1'b0;
+        assign EJ_DINTsup            =   1'b0;
+        assign EJ_DisableProbeDebug  =   1'b0;
+        assign EJ_ManufID            =  11'b0;
+        assign EJ_PartNumber         =  16'b0;
+    //  assign EJ_TCK                =   1'b0;
+    //  assign EJ_TDI                =   1'b0;
+    //  assign EJ_TMS                =   1'b0;
+    //  assign EJ_TRST_N             =   1'b0;
+        assign EJ_Version            =   4'b0;
+        assign gmb_dc_algorithm      =   8'b0;
+        assign gmb_ic_algorithm      =   8'b0;
+        assign gmbinvoke             =   1'b0;
+        assign gmb_isp_algorithm     =   8'b0;
+        assign gmb_sp_algorithm      =   8'b0;
+        assign gscanenable           =   1'b0;
+        assign gscanin               =   1'b0;
+        assign gscanmode             =   1'b0;
+        assign gscanramwr            =   1'b0;
+    //  assign HRDATA                =  32'b0;
+    //  assign HREADY                =   1'b0;
+    //  assign HRESP                 =   1'b0;
+        assign ISP_toisp             =   1'b0;
+    //  assign SI_AHBStb             =   1'b0;
+        assign SI_BootExcISAMode     =   1'b0;
+    //  assign SI_ClkIn              =   1'b0;
+    //  assign SI_ColdReset          =   1'b0;
+        assign SI_CPUNum             =  10'b0;
+        assign SI_EICPresent         =   1'b0;
+        assign SI_EICVector          =   6'b0;
+        assign SI_EISS               =   4'b0;
+        assign SI_Endian             =   1'b0;
+        assign SI_Int                =   8'b0;
+        assign SI_IPFDCI             =   3'b0;
+        assign SI_IPPCI              =   3'b0;
+        assign SI_IPTI               =   3'b0;
+        assign SI_MergeMode          =   2'b0;
+        assign SI_NMI                =   1'b0;
+        assign SI_Offset             =  17'b0;
+    //  assign SI_Reset              =   1'b0;
+    //  assign SI_SRSDisable         =   4'b0;
+    //  assign SI_TraceDisable       =   1'b0;
+        assign TC_PibPresent         =   1'b0;
+        assign TC_Stall              =   1'b0;
+        assign UDI_toudi             = 128'b0;
 
     // Module for hardware reset of EJTAG just after FPGA configuration
     // It pulses EJ_TRST_N low for 16 clock cycles.
@@ -305,6 +321,24 @@ module mfp_system
 
     assign UART_TX         = 1'b0;
 
+    `ifdef MFP_DEMO_CACHE_MISSES
+
+    wire burst = HTRANS == `HTRANS_NONSEQ && HBURST == `HBURST_WRAP4;
+    assign IO_GreenLEDs = { { `MFP_N_GREEN_LEDS - (1 + 1 + 6) { 1'b0 } }, HCLK, burst, HADDR [7:2] };
+
+    `elsif MFP_DEMO_PIPE_BYPASS
+
+    assign IO_GreenLEDs = { { `MFP_N_GREEN_LEDS - 5 { 1'b0 } },
+
+        HCLK,
+        mpc_aselwr_e,   // Bypass res_w as src A
+        mpc_bselall_e,  // Bypass res_w as src B
+        mpc_aselres_e,  // Bypass res_m as src A
+        mpc_bselres_e   // Bypass res_m as src B
+    };
+
+    `endif
+ 
     `ifdef MFP_DEMO_LIGHT_SENSOR
     wire [15:0] IO_LightSensor;
     `endif
@@ -329,7 +363,15 @@ module mfp_system
         .IO_Switches      (   IO_Switches      ),
         .IO_Buttons       (   IO_Buttons       ),
         .IO_RedLEDs       (   IO_RedLEDs       ),
-        .IO_GreenLEDs     (   IO_GreenLEDs     ), 
+
+        `ifdef MFP_DEMO_CACHE_MISSES
+        .IO_GreenLEDs     (                    ),
+        `elsif MFP_DEMO_PIPE_BYPASS
+        .IO_GreenLEDs     (                    ),
+        `else
+        .IO_GreenLEDs     (   IO_GreenLEDs     ),
+        `endif
+
         .IO_7_SegmentHEX  (   IO_7_SegmentHEX  ),
                                                
         `ifdef MFP_DEMO_LIGHT_SENSOR           
