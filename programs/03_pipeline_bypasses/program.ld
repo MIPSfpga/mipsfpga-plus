@@ -46,7 +46,7 @@
 
 OUTPUT_ARCH(mips)
 
-/**** memory map for Nexys4, BE2-115  ****/
+/**** memory map for Nexys4, DE2-115  ****/
 /*
 128KB: 0xBFC00000-0xBFC1FFFF
 256KB: 0x80000000-0x8003FFFF
