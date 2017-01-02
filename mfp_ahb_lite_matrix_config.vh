@@ -24,7 +24,7 @@
 `define MFP_USE_UART_PROGRAM_LOADER
 // `define MFP_DEMO_LIGHT_SENSOR
 // `define MFP_DEMO_CACHE_MISSES
-`define MFP_DEMO_PIPE_BYPASS
+// `define MFP_DEMO_PIPE_BYPASS
 
 //
 //  Memory-mapped I/O addresses
