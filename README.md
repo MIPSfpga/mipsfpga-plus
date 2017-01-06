@@ -23,6 +23,7 @@ MIPSfpga+ currently works on eight FPGA boards:
 <li><a href="http://de0-nano.terasic.com.tw">Terasic DE0-Nano</a> board with Altera Cyclone IV FPGA.</li>
 <li><a href="http://de0.terasic.com">Terasic DE0</a> with Altera Cyclone III</li>
 <li><a href="http://de1.terasic.com">Terasic DE1</a> with Altera Cyclone II</li>
+<li><a href="http://de10-lite.terasic.com">Terasic DE10-Lite</a> with Altera MAX10</li>
 </ol>
 
 There are three planned ports:
