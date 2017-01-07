@@ -107,7 +107,7 @@ module de0_nano
     mfp_system mfp_system
     (
         .SI_ClkIn         (   clk           ),
-        .SI_Reset         ( ~ KEY [1]       ),
+        .SI_Reset         ( ~ KEY [0]       ),
                           
         .HADDR            ( HADDR           ),
         .HRDATA           ( HRDATA          ),
