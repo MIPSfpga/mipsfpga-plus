@@ -159,6 +159,7 @@ module mfp_testbench;
     end
 
     `else
+    `ifdef MFP_USE_BLOCK_MEMORY
 
     generate
         genvar j;
@@ -181,7 +182,8 @@ module mfp_testbench;
         end
     endgenerate
 
-    `endif
+    `endif //MFP_USE_BLOCK_MEMORY
+    `endif //MFP_USE_WORD_MEMORY
 
     //----------------------------------------------------------------
 

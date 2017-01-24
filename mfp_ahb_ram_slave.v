@@ -71,6 +71,7 @@ module mfp_ahb_ram_slave
     );
 
     `else
+    `ifdef MFP_USE_BLOCK_MEMORY
 
     reg [3:0] mask;
 
@@ -108,6 +109,7 @@ module mfp_ahb_ram_slave
         end
     endgenerate
 
-    `endif
+    `endif //MFP_USE_BLOCK_MEMORY
+    `endif //MFP_USE_WORD_MEMORY
 
 endmodule

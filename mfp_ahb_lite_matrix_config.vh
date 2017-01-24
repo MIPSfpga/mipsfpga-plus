@@ -18,13 +18,21 @@
 //  Configuration parameters
 //
 
-// `define MFP_USE_WORD_MEMORY
 // `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
 `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 `define MFP_USE_UART_PROGRAM_LOADER
 // `define MFP_DEMO_LIGHT_SENSOR
 // `define MFP_DEMO_CACHE_MISSES
 // `define MFP_DEMO_PIPE_BYPASS
+
+//
+//  Memory type (choose one)
+//
+
+`define MFP_USE_WORD_MEMORY
+//`define MFP_USE_BLOCK_MEMORY
+//`define MFP_USE_BUSY_MEMORY
+//`define MFP_USE_SDRAM_MEMORY
 
 //
 //  Memory-mapped I/O addresses
