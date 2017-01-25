@@ -106,7 +106,11 @@ module mfp_ahb_lite_matrix_with_loader
         .HWRITE         ( loader_HWRITE    )
     );
 
+`ifdef MFP_USE_BUSY_MEMORY
+    mfp_ahb_lite2_matrix ahb_lite_matrix
+`else
     mfp_ahb_lite_matrix ahb_lite_matrix
+`endif
     (
         .HCLK             ( HCLK            ),
         .HRESETn          ( HRESETn         ),
