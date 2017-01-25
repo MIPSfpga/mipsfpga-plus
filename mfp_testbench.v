@@ -136,26 +136,15 @@ module mfp_testbench;
     initial
     begin
         $readmemh ("program_1fc00000.hex", reset_ram);
-
-        for (i = 0; i < (1 << `MFP_RESET_RAM_ADDR_WIDTH); i = i + 4)
-        begin
-            system.ahb_lite_matrix.ahb_lite_matrix.reset_ram.ram.ram [i / 4]
-                = { reset_ram [i + 3],
-                    reset_ram [i + 2],
-                    reset_ram [i + 1],
-                    reset_ram [i + 0] };
-        end
-
         $readmemh ("program_00000000.hex", ram);
 
+        for (i = 0; i < (1 << `MFP_RESET_RAM_ADDR_WIDTH); i = i + 4)
+            system.ahb_lite_matrix.ahb_lite_matrix.reset_ram.ram.ram [i / 4]
+                = { reset_ram [i + 3], reset_ram [i + 2], reset_ram [i + 1], reset_ram [i + 0] };
+
         for (i = 0; i < (1 << `MFP_RAM_ADDR_WIDTH); i = i + 4)
-        begin
             system.ahb_lite_matrix.ahb_lite_matrix.ram.ram.ram [i / 4]
-                = { ram [i + 3],
-                    ram [i + 2],
-                    ram [i + 1],
-                    ram [i + 0] };
-        end
+                = { ram [i + 3], ram [i + 2], ram [i + 1], ram [i + 0] };
     end
 
     `else
@@ -185,43 +174,18 @@ module mfp_testbench;
     `else
     `ifdef MFP_USE_BUSY_MEMORY
 
-    integer a, b;
-
     initial
     begin
         $readmemh ("program_1fc00000.hex", reset_ram);
-
-        for (i = 0; i < (1 << `MFP_RESET_RAM_ADDR_WIDTH); i = i + 4)
-        begin
-            system.ahb_lite_matrix.ahb_lite_matrix.reset_ram.ram.ram [i / 4]
-                = { reset_ram [i + 3],
-                    reset_ram [i + 2],
-                    reset_ram [i + 1],
-                    reset_ram [i + 0] };
-        end
-
         $readmemh ("program_00000000.hex", ram);
 
+        for (i = 0; i < (1 << `MFP_RESET_RAM_ADDR_WIDTH); i = i + 4)
+            system.ahb_lite_matrix.ahb_lite_matrix.reset_ram.ram.ram [i / 4]
+                = { reset_ram [i + 3], reset_ram [i + 2], reset_ram [i + 1], reset_ram [i + 0] };
+
         for (i = 0; i < (1 << `MFP_RAM_ADDR_WIDTH); i = i + 4)
-        begin
             system.ahb_lite_matrix.ahb_lite_matrix.ram.ram [i / 4]
-                = { ram [i + 3],
-                    ram [i + 2],
-                    ram [i + 1],
-                    ram [i + 0] };
-
-            if(i >= 4096) begin
-                
-                a = { ram [i + 3],
-                    ram [i + 2],
-                    ram [i + 1],
-                    ram [i + 0] };
-                    
-                b = system.ahb_lite_matrix.ahb_lite_matrix.ram.ram [i / 4];
-
-                //$stop;
-            end
-        end
+                = { ram [i + 3], ram [i + 2], ram [i + 1], ram [i + 0] };
     end
 
     `endif //MFP_USE_BUSY_MEMORY

@@ -19,6 +19,16 @@ module mfp_system
     input         EJ_TCK,
     input         EJ_DINT,
 
+    output                                  SDRAM_CKE,
+    output                                  SDRAM_CSn,
+    output                                  SDRAM_RASn,
+    output                                  SDRAM_CASn,
+    output                                  SDRAM_WEn,
+    output [`SDRAM_ADDR_BITS - 1 : 0 ]      SDRAM_ADDR,
+    output [`SDRAM_BA_BITS   - 1 : 0 ]      SDRAM_BA,
+    inout  [`SDRAM_DQ_BITS   - 1 : 0 ]      SDRAM_DQ,
+    output [`SDRAM_DM_BITS   - 1 : 0 ]      SDRAM_DQM,
+
     input  [`MFP_N_SWITCHES          - 1:0] IO_Switches,
     input  [`MFP_N_BUTTONS           - 1:0] IO_Buttons,
     output [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs,
@@ -359,6 +369,16 @@ module mfp_system
         .HREADY           (   HREADY           ),
         .HRESP            (   HRESP            ),
         .SI_Endian        (   SI_Endian        ),
+
+        .SDRAM_CKE        (   SDRAM_CKE        ),
+        .SDRAM_CSn        (   SDRAM_CSn        ),
+        .SDRAM_RASn       (   SDRAM_RASn       ),
+        .SDRAM_CASn       (   SDRAM_CASn       ),
+        .SDRAM_WEn        (   SDRAM_WEn        ),
+        .SDRAM_ADDR       (   SDRAM_ADDR       ),
+        .SDRAM_BA         (   SDRAM_BA         ),
+        .SDRAM_DQ         (   SDRAM_DQ         ),
+        .SDRAM_DQM        (   SDRAM_DQM        ),
                                                 
         .IO_Switches      (   IO_Switches      ),
         .IO_Buttons       (   IO_Buttons       ),
