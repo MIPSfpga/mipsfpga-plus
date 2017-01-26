@@ -30,9 +30,38 @@
 //
 
 //`define MFP_USE_WORD_MEMORY
-//`define MFP_USE_BLOCK_MEMORY
-`define MFP_USE_BUSY_MEMORY
-//`define MFP_USE_SDRAM_MEMORY
+//`define MFP_USE_BYTE_MEMORY
+//`define MFP_USE_BUSY_MEMORY
+`define MFP_USE_SDRAM_MEMORY
+
+//
+// global SDRAM bus params
+//
+`ifdef MFP_USE_SDRAM_MEMORY
+`ifdef SIMULATION
+    //should be identical to +define+den**Mb in .tcl file
+    // `define SDRAM_ADDR_BITS     12
+    // `define SDRAM_ROW_BITS      12
+    // `define SDRAM_COL_BITS      10
+    // `define SDRAM_DQ_BITS       16
+    // `define SDRAM_BA_BITS       2
+    // `define SDRAM_DM_BITS       2
+    // `define SDRAM_DELAY_nCKE    20
+
+    `define SDRAM_ADDR_BITS     13
+    `define SDRAM_ROW_BITS      13
+    `define SDRAM_COL_BITS      10
+    `define SDRAM_DQ_BITS       16
+    `define SDRAM_BA_BITS       2
+    `define SDRAM_DM_BITS       2
+    `define SDRAM_DELAY_nCKE    20
+`else
+    `define SDRAM_ADDR_BITS     13
+    `define SDRAM_DQ_BITS       16
+    `define SDRAM_BA_BITS       2
+    `define SDRAM_DM_BITS       2
+`endif
+`endif
 
 //
 //  Memory-mapped I/O addresses

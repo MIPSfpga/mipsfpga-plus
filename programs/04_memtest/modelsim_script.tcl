@@ -1,8 +1,27 @@
 
-
-
 vlib work
-vlog -vlog01compat +define+SIMULATION +incdir+../../../../../MIPSfpga/rtl_up +incdir+../../.. ../../../../../MIPSfpga/rtl_up/*.v ../../../*.v
+
+# vlog -vlog01compat +define+SIMULATION +incdir+../../../../../MIPSfpga/rtl_up +incdir+../../.. ../../../../../MIPSfpga/rtl_up/*.v ../../../*.v
+
+set p0 -vlog01compat
+
+set p1 +define+den512Mb
+# set p1 +define+den64Mb
+
+set p2 +define+sg75
+set p3 +define+x16
+set p4 +define+SIMULATION
+
+set i0 +incdir+../../../../../MIPSfpga/rtl_up
+set i1 +incdir+../../..
+set i2 +incdir+../../../sdr_sdram
+
+set s0 ../../../../../MIPSfpga/rtl_up/*.v
+set s1 ../../../*.v
+set s2 ../../../sdr_sdram/*.v
+
+vlog $p0 $p1 $p2 $p3 $p4  $i0 $i1 $i2  $s0 $s1 $s2
+
 vsim work.mfp_testbench
 
 add wave -radix hex sim:/mfp_testbench/*

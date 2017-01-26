@@ -1,8 +1,13 @@
 `include "mfp_ahb_lite_matrix_config.vh"
 
-`timescale 1 ns / 100 ps
+//`timescale 1 ns / 100 ps
+`timescale 1ns / 1ps
 
 module mfp_testbench;
+
+    `ifdef MFP_USE_SDRAM_MEMORY
+    `include "sdr_parameters.vh"
+    `endif
 
     reg         SI_ClkIn;
     reg         SI_ColdReset;
@@ -28,6 +33,19 @@ module mfp_testbench;
 
     `ifdef MFP_DEMO_LIGHT_SENSOR
     wire [15:0] IO_LightSensor;
+    `endif
+
+    `ifdef MFP_USE_SDRAM_MEMORY
+    reg                                 SDRAM_CLK;
+    wire                                SDRAM_CKE;
+    wire                                SDRAM_CSn;
+    wire                                SDRAM_RASn;
+    wire                                SDRAM_CASn;
+    wire                                SDRAM_WEn;
+    wire  [`SDRAM_ADDR_BITS   - 1 : 0]  SDRAM_ADDR;
+    wire  [`SDRAM_BA_BITS     - 1 : 0]  SDRAM_BA;
+    wire  [`SDRAM_DQ_BITS     - 1 : 0]  SDRAM_DQ;
+    wire  [`SDRAM_DM_BITS     - 1 : 0]  SDRAM_DQM;
     `endif
 
     reg         UART_RX;
@@ -56,6 +74,18 @@ module mfp_testbench;
         .EJ_TMS           ( EJ_TMS           ),
         .EJ_TCK           ( EJ_TCK           ),
         .EJ_DINT          ( EJ_DINT          ),
+
+        `ifdef MFP_USE_SDRAM_MEMORY
+        .SDRAM_CKE        ( SDRAM_CKE        ),
+        .SDRAM_CSn        ( SDRAM_CSn        ),
+        .SDRAM_RASn       ( SDRAM_RASn       ),
+        .SDRAM_CASn       ( SDRAM_CASn       ),
+        .SDRAM_WEn        ( SDRAM_WEn        ),
+        .SDRAM_ADDR       ( SDRAM_ADDR       ),
+        .SDRAM_BA         ( SDRAM_BA         ),
+        .SDRAM_DQ         ( SDRAM_DQ         ),
+        .SDRAM_DQM        ( SDRAM_DQM        ),
+        `endif
                                               
         .IO_Switches      ( IO_Switches      ),
         .IO_Buttons       ( IO_Buttons       ),
@@ -73,12 +103,29 @@ module mfp_testbench;
 
     //----------------------------------------------------------------
 
+    `ifdef MFP_USE_SDRAM_MEMORY
+
+    initial begin
+        SDRAM_CLK = 0; 
+        @(posedge SI_ClkIn);
+        #2 //phase shift from main clock
+        forever SDRAM_CLK = #(tCK/2) ~SDRAM_CLK;
+        //forever MCLK = #(tCK/2) ~MCLK;
+    end
+
+    sdr sdram0 (SDRAM_DQ, SDRAM_ADDR, SDRAM_BA, SDRAM_CLK, SDRAM_CKE, 
+                SDRAM_CSn, SDRAM_RASn, SDRAM_CASn, SDRAM_WEn, SDRAM_DQM);
+    `endif
+
+    //----------------------------------------------------------------
+
     initial
     begin
         SI_ClkIn = 0;
 
         forever
-            # 50 SI_ClkIn = ~ SI_ClkIn;
+            //# 50 SI_ClkIn = ~ SI_ClkIn;
+            #(tCK/2) SI_ClkIn = ~SI_ClkIn;
     end
 
     initial
@@ -148,7 +195,7 @@ module mfp_testbench;
     end
 
     `else
-    `ifdef MFP_USE_BLOCK_MEMORY
+    `ifdef MFP_USE_BYTE_MEMORY
 
     generate
         genvar j;
@@ -188,8 +235,40 @@ module mfp_testbench;
                 = { ram [i + 3], ram [i + 2], ram [i + 1], ram [i + 0] };
     end
 
+    `else
+    `ifdef MFP_USE_SDRAM_MEMORY
+
+    reg  [COL_BITS - 1 : 0]  AddrColumn ;// = i [ COL_BITS : 1 ];
+    reg  [ROW_BITS - 1 : 0]  AddrRow    ;//= i [ ROW_BITS + COL_BITS : COL_BITS + 1];
+    reg  [BA_BITS  - 1 : 0]  AddrBank   ;// = i [ BA_BITS + ROW_BITS + COL_BITS : ROW_BITS + COL_BITS + 1];
+
+    initial
+    begin
+        $readmemh ("program_1fc00000.hex", reset_ram);
+        $readmemh ("program_00000000.hex", ram);
+
+        for (i = 0; i < (1 << `MFP_RESET_RAM_ADDR_WIDTH); i = i + 4)
+            system.ahb_lite_matrix.ahb_lite_matrix.reset_ram.ram.ram [i / 4]
+                = { reset_ram [i + 3], reset_ram [i + 2], reset_ram [i + 1], reset_ram [i + 0] };
+        
+        for (i = 0; i < (1 << `MFP_RAM_ADDR_WIDTH); i = i + 2) begin
+
+            AddrColumn  = i [ COL_BITS : 1 ];
+            AddrRow     = i [ ROW_BITS + COL_BITS : COL_BITS + 1];
+            AddrBank    = i [ BA_BITS + ROW_BITS + COL_BITS : ROW_BITS + COL_BITS + 1];
+
+            case (AddrBank)
+                2'b00 : sdram0.Bank0 [{AddrRow, AddrColumn}] = { ram [i + 1], ram [i + 0] };
+                2'b01 : sdram0.Bank1 [{AddrRow, AddrColumn}] = { ram [i + 1], ram [i + 0] };
+                2'b10 : sdram0.Bank2 [{AddrRow, AddrColumn}] = { ram [i + 1], ram [i + 0] };
+                2'b11 : sdram0.Bank3 [{AddrRow, AddrColumn}] = { ram [i + 1], ram [i + 0] };
+            endcase
+        end
+    end
+
+    `endif //MFP_USE_SDRAM_MEMORY
     `endif //MFP_USE_BUSY_MEMORY
-    `endif //MFP_USE_BLOCK_MEMORY
+    `endif //MFP_USE_BYTE_MEMORY
     `endif //MFP_USE_WORD_MEMORY
 
     //----------------------------------------------------------------
