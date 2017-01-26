@@ -105,34 +105,34 @@ module de0_cv
 
     mfp_system mfp_system
     (
-        .SI_ClkIn         (   clk           ),
-        .SI_Reset         ( ~ RESET_N       ),
+        .SI_ClkIn         (   clk             ),
+        .SI_Reset         ( ~ RESET_N         ),
                           
-        .HADDR            ( HADDR           ),
-        .HRDATA           ( HRDATA          ),
-        .HWDATA           ( HWDATA          ),
-        .HWRITE           ( HWRITE          ),
+        .HADDR            (   HADDR           ),
+        .HRDATA           (   HRDATA          ),
+        .HWDATA           (   HWDATA          ),
+        .HWRITE           (   HWRITE          ),
                           
-        .EJ_TRST_N_probe  (   GPIO_1 [22]   ),
-        .EJ_TDI           (   GPIO_1 [21]   ),
-        .EJ_TDO           (   GPIO_1 [19]   ),
-        .EJ_TMS           (   GPIO_1 [23]   ),
-        .EJ_TCK           (   GPIO_1 [17]   ),
-        .SI_ColdReset     ( ~ GPIO_1 [20]   ),
-        .EJ_DINT          (   1'b0          ),
+        .EJ_TRST_N_probe  (   GPIO_1 [22]     ),
+        .EJ_TDI           (   GPIO_1 [21]     ),
+        .EJ_TDO           (   GPIO_1 [19]     ),
+        .EJ_TMS           (   GPIO_1 [23]     ),
+        .EJ_TCK           (   GPIO_1 [17]     ),
+        .SI_ColdReset     ( ~ GPIO_1 [20]     ),
+        .EJ_DINT          (   1'b0            ),
 
-        .IO_Switches      ( IO_Switches      ),
-        .IO_Buttons       ( IO_Buttons       ),
-        .IO_RedLEDs       ( IO_RedLEDs       ),
-        .IO_GreenLEDs     ( IO_GreenLEDs     ), 
-        .IO_7_SegmentHEX  ( IO_7_SegmentHEX  ),
-                                               
-        .UART_RX          ( GPIO_1 [31]     ),
-        .UART_TX          ( /* TODO */      ),
+        .IO_Switches      (   IO_Switches     ),
+        .IO_Buttons       (   IO_Buttons      ),
+        .IO_RedLEDs       (   IO_RedLEDs      ),
+        .IO_GreenLEDs     (   IO_GreenLEDs    ), 
+        .IO_7_SegmentHEX  (   IO_7_SegmentHEX ),
+                                              
+        .UART_RX          (   GPIO_1 [31]     ),
+        .UART_TX          (   /* TODO */      ),
 
-        .SPI_CS           ( GPIO_1 [34]     ),
-        .SPI_SCK          ( GPIO_1 [28]     ),
-        .SPI_SDO          ( GPIO_1 [30]     )
+        .SPI_CS           (   GPIO_1 [34]     ),
+        .SPI_SCK          (   GPIO_1 [28]     ),
+        .SPI_SDO          (   GPIO_1 [30]     )
     );
 
     assign GPIO_1 [15] = 1'b0;
