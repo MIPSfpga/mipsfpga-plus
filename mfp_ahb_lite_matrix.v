@@ -18,6 +18,18 @@ module mfp_ahb_lite_matrix
     output        HRESP,
     input         SI_Endian,
 
+    `ifdef MFP_USE_SDRAM_MEMORY
+    output                                  SDRAM_CKE,
+    output                                  SDRAM_CSn,
+    output                                  SDRAM_RASn,
+    output                                  SDRAM_CASn,
+    output                                  SDRAM_WEn,
+    output [`SDRAM_ADDR_BITS - 1 : 0 ]      SDRAM_ADDR,
+    output [`SDRAM_BA_BITS   - 1 : 0 ]      SDRAM_BA,
+    inout  [`SDRAM_DQ_BITS   - 1 : 0 ]      SDRAM_DQ,
+    output [`SDRAM_DM_BITS   - 1 : 0 ]      SDRAM_DQM,
+    `endif
+
     input  [`MFP_N_SWITCHES          - 1:0] IO_Switches,
     input  [`MFP_N_BUTTONS           - 1:0] IO_Buttons,
     output [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs,
@@ -43,12 +55,14 @@ module mfp_ahb_lite_matrix
     reg  [ 2:0] HSEL_dly;
 
     always @ (posedge HCLK)
-        HSEL_dly <= HSEL;
+        if(HREADY)
+            HSEL_dly <= HSEL;
 
     wire        HREADY_0 , HREADY_1 , HREADY_2 ;
     wire [31:0] HRDATA_0 , HRDATA_1 , HRDATA_2 ;
     wire        HRESP_0  , HRESP_1  , HRESP_2  ;
 
+    //RESET
     mfp_ahb_ram_slave
     # (
         .ADDR_WIDTH ( `MFP_RESET_RAM_ADDR_WIDTH )
@@ -72,29 +86,62 @@ module mfp_ahb_lite_matrix
         .SI_Endian  ( SI_Endian  )
     );
 
-    mfp_ahb_ram_slave
-    # (
-        .ADDR_WIDTH ( `MFP_RAM_ADDR_WIDTH )
-    )
+    //RAM
+    `ifdef MFP_USE_SDRAM_MEMORY
+        mfp_ahb_ram_sdram
+        #(
+            .DELAY_nCKE ( `SDRAM_DELAY_nCKE ),
+            .ADDR_BITS  ( `SDRAM_ADDR_BITS  ),
+            .ROW_BITS   ( `SDRAM_ROW_BITS   ),
+            .COL_BITS   ( `SDRAM_COL_BITS   ),
+            .DQ_BITS    ( `SDRAM_DQ_BITS    ),
+            .DM_BITS    ( `SDRAM_DM_BITS    ),
+            .BA_BITS    ( `SDRAM_BA_BITS    )
+        )
+    `elsif MFP_USE_BUSY_MEMORY
+        mfp_ahb_ram_busy
+        #(
+            .ADDR_WIDTH ( `MFP_RAM_ADDR_WIDTH )
+        )
+    `else
+        mfp_ahb_ram_slave
+        #(
+            .ADDR_WIDTH ( `MFP_RAM_ADDR_WIDTH )
+        )
+    `endif
     ram
     (
-        .HCLK       ( HCLK       ),
-        .HRESETn    ( HRESETn    ),
-        .HADDR      ( HADDR      ),
-        .HBURST     ( HBURST     ),
-        .HMASTLOCK  ( HMASTLOCK  ),
-        .HPROT      ( HPROT      ),
-        .HSEL       ( HSEL [1]   ),
-        .HSIZE      ( HSIZE      ),
-        .HTRANS     ( HTRANS     ),
-        .HWDATA     ( HWDATA     ),
-        .HWRITE     ( HWRITE     ),
-        .HRDATA     ( HRDATA_1   ),
-        .HREADY     ( HREADY_1   ),
-        .HRESP      ( HRESP_1    ),
-        .SI_Endian  ( SI_Endian  )
+        .HCLK       ( HCLK          ),
+        .HRESETn    ( HRESETn       ),
+        .HADDR      ( HADDR         ),
+        .HBURST     ( HBURST        ),
+        .HMASTLOCK  ( HMASTLOCK     ),
+        .HPROT      ( HPROT         ),
+        .HSEL       ( HSEL [1]      ),
+        .HSIZE      ( HSIZE         ),
+        .HTRANS     ( HTRANS        ),
+        .HWDATA     ( HWDATA        ),
+        .HWRITE     ( HWRITE        ),
+        .HRDATA     ( HRDATA_1      ),
+        .HREADY     ( HREADY_1      ),
+        .HRESP      ( HRESP_1       ),
+        .SI_Endian  ( SI_Endian     )
+
+        `ifdef MFP_USE_SDRAM_MEMORY
+        ,
+        .CKE        (   SDRAM_CKE   ),
+        .CSn        (   SDRAM_CSn   ),
+        .RASn       (   SDRAM_RASn  ),
+        .CASn       (   SDRAM_CASn  ),
+        .WEn        (   SDRAM_WEn   ),
+        .ADDR       (   SDRAM_ADDR  ),
+        .BA         (   SDRAM_BA    ),
+        .DQ         (   SDRAM_DQ    ),
+        .DQM        (   SDRAM_DQM   )
+        `endif
     );
 
+    //GPIO
     mfp_ahb_gpio_slave gpio
     (
         .HCLK             ( HCLK            ),
@@ -189,10 +236,10 @@ module mfp_ahb_lite_response_mux
 
     always @*
         casez (HSEL)
-	3'b??1:   begin HRDATA = HRDATA_0; HRESP = HRESP_0; end
-	3'b?10:   begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
-	3'b100:   begin HRDATA = HRDATA_2; HRESP = HRESP_2; end
-	default:  begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
+            3'b??1:   begin HRDATA = HRDATA_0; HRESP = HRESP_0; end
+            3'b?10:   begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
+            3'b100:   begin HRDATA = HRDATA_2; HRESP = HRESP_2; end
+            default:  begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
         endcase
 
 endmodule

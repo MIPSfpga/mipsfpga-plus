@@ -4,7 +4,7 @@
  */
 
 // simply ram with HREADY support
-module mfp_ahb_lite2_mem
+module mfp_ahb_ram_busy
 #(
     parameter ADDR_WIDTH = 6
 )

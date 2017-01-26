@@ -3,7 +3,7 @@
  * https://github.com/zhelnio/ahb_lite_sdram
  */
 
-module mfp_ahb_lite2_sdram
+module mfp_ahb_ram_sdram
 #(
     parameter   ADDR_BITS           = 13,       /* SDRAM Address input size */
                 ROW_BITS            = 13,       /* SDRAM Row address size */

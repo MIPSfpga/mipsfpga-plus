@@ -37,3 +37,4 @@ add wave -radix hex -label HRESP    sim:/mfp_testbench/system/ahb_lite_matrix/ah
 
 run -all
 
+wave zoom full
