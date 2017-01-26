@@ -1,3 +1,8 @@
+
+ABI ?= 32
+
+include ${MIPS_ELF_ROOT}/share/mips/rules/mipshal.mk
+
 # microAptiv_UP makefile for MIPSfpga
 
 CC = mips-mti-elf-gcc

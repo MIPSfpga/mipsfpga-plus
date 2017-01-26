@@ -310,7 +310,7 @@ module mfp_testbench;
 
         cycle = cycle + 1;
 
-        if (cycle > 10000)
+        if (cycle > 50000)
         begin
             $display ("Timeout");
             $finish;
