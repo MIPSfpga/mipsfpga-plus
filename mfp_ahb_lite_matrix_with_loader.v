@@ -118,15 +118,15 @@ module mfp_ahb_lite_matrix_with_loader
         .HWRITE         ( loader_HWRITE    )
     );
 
-`ifdef MFP_USE_BUSY_MEMORY
+// `ifdef MFP_USE_BUSY_MEMORY
+//     mfp_ahb_lite2_matrix ahb_lite_matrix
+// `else
+// `ifdef MFP_USE_SDRAM_MEMORY
     mfp_ahb_lite2_matrix ahb_lite_matrix
-`else
-`ifdef MFP_USE_SDRAM_MEMORY
-    mfp_ahb_lite2_matrix ahb_lite_matrix
-`else
-    mfp_ahb_lite_matrix ahb_lite_matrix
-`endif  // MFP_USE_SDRAM_MEMORY
-`endif  // MFP_USE_BUSY_MEMORY
+// `else
+//     mfp_ahb_lite_matrix ahb_lite_matrix
+// `endif  // MFP_USE_SDRAM_MEMORY
+// `endif  // MFP_USE_BUSY_MEMORY
     (
         .HCLK             ( HCLK            ),
         .HRESETn          ( HRESETn         ),

@@ -5,10 +5,6 @@
 
 module mfp_testbench;
 
-    `ifdef MFP_USE_SDRAM_MEMORY
-    `include "sdr_parameters.vh"
-    `endif
-
     reg         SI_ClkIn;
     reg         SI_ColdReset;
     reg         SI_Reset;
@@ -105,28 +101,33 @@ module mfp_testbench;
 
     `ifdef MFP_USE_SDRAM_MEMORY
 
-    initial begin
-        SDRAM_CLK = 0; 
-        @(posedge SI_ClkIn);
-        #2 //phase shift from main clock
-        forever SDRAM_CLK = #(tCK/2) ~SDRAM_CLK;
-        //forever MCLK = #(tCK/2) ~MCLK;
-    end
+        `include "sdr_parameters.vh"
 
-    sdr sdram0 (SDRAM_DQ, SDRAM_ADDR, SDRAM_BA, SDRAM_CLK, SDRAM_CKE, 
-                SDRAM_CSn, SDRAM_RASn, SDRAM_CASn, SDRAM_WEn, SDRAM_DQM);
-    `endif
+        initial begin
+            SDRAM_CLK = 0; 
+            @(posedge SI_ClkIn);
+            #(`SDRAM_MEM_CLK_PHASE_SHIFT)
+            forever SDRAM_CLK = #(tCK/2) ~SDRAM_CLK;
+        end
+
+        initial
+        begin
+            SI_ClkIn = 0;
+            forever #(tCK/2) SI_ClkIn = ~SI_ClkIn;
+        end
+
+        sdr sdram0 (SDRAM_DQ, SDRAM_ADDR, SDRAM_BA, SDRAM_CLK, SDRAM_CKE, 
+                    SDRAM_CSn, SDRAM_RASn, SDRAM_CASn, SDRAM_WEn, SDRAM_DQM);
+    `else
+        initial
+        begin
+            SI_ClkIn = 0;
+            forever
+                # 50 SI_ClkIn = ~ SI_ClkIn;
+        end
+    `endif //MFP_USE_SDRAM_MEMORY
 
     //----------------------------------------------------------------
-
-    initial
-    begin
-        SI_ClkIn = 0;
-
-        forever
-            //# 50 SI_ClkIn = ~ SI_ClkIn;
-            #(tCK/2) SI_ClkIn = ~SI_ClkIn;
-    end
 
     initial
     begin
@@ -238,9 +239,9 @@ module mfp_testbench;
     `else
     `ifdef MFP_USE_SDRAM_MEMORY
 
-    reg  [COL_BITS - 1 : 0]  AddrColumn ;// = i [ COL_BITS : 1 ];
-    reg  [ROW_BITS - 1 : 0]  AddrRow    ;//= i [ ROW_BITS + COL_BITS : COL_BITS + 1];
-    reg  [BA_BITS  - 1 : 0]  AddrBank   ;// = i [ BA_BITS + ROW_BITS + COL_BITS : ROW_BITS + COL_BITS + 1];
+    reg  [`SDRAM_COL_BITS - 1 : 0]  AddrColumn ;
+    reg  [`SDRAM_ROW_BITS - 1 : 0]  AddrRow    ;
+    reg  [`SDRAM_BA_BITS  - 1 : 0]  AddrBank   ;
 
     initial
     begin
@@ -253,9 +254,9 @@ module mfp_testbench;
         
         for (i = 0; i < (1 << `MFP_RAM_ADDR_WIDTH); i = i + 2) begin
 
-            AddrColumn  = i [ COL_BITS : 1 ];
-            AddrRow     = i [ ROW_BITS + COL_BITS : COL_BITS + 1];
-            AddrBank    = i [ BA_BITS + ROW_BITS + COL_BITS : ROW_BITS + COL_BITS + 1];
+            AddrColumn  = i [ `SDRAM_COL_BITS : 1 ];
+            AddrRow     = i [ `SDRAM_ROW_BITS + `SDRAM_COL_BITS : `SDRAM_COL_BITS + 1];
+            AddrBank    = i [ `SDRAM_BA_BITS  + `SDRAM_ROW_BITS + `SDRAM_COL_BITS : `SDRAM_ROW_BITS + `SDRAM_COL_BITS + 1];
 
             case (AddrBank)
                 2'b00 : sdram0.Bank0 [{AddrRow, AddrColumn}] = { ram [i + 1], ram [i + 0] };

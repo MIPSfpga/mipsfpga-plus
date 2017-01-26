@@ -85,53 +85,74 @@ module mfp_ahb_lite2_matrix
         .SI_Endian  ( SI_Endian  )
     );
 
-`ifdef MFP_USE_BUSY_MEMORY
-    mfp_ahb_lite2_mem
-    #(
-        .ADDR_WIDTH (    `MFP_RAM_ADDR_WIDTH  )
-    )
-    ram
-    (
-        .HCLK       ( HCLK       ),
-        .HRESETn    ( HRESETn    ),
-        .HADDR      ( HADDR      ),
-        .HBURST     ( HBURST     ),
-        .HSEL       ( HSEL [1]   ),
-        .HSIZE      ( HSIZE      ),
-        .HTRANS     ( HTRANS     ),
-        .HWDATA     ( HWDATA     ),
-        .HWRITE     ( HWRITE     ),
-        .HRDATA     ( HRDATA_1   ),
-        .HREADY     ( HREADY_1   ),
-        .HRESP      ( HRESP_1    )
-    );
-`else
-`ifdef MFP_USE_SDRAM_MEMORY
-    mfp_ahb_lite2_sdram
-    #(
-        .DELAY_nCKE ( `SDRAM_DELAY_nCKE ),
-        .ADDR_BITS  ( `SDRAM_ADDR_BITS  ),
-        .ROW_BITS   ( `SDRAM_ROW_BITS   ),
-        .COL_BITS   ( `SDRAM_COL_BITS   ),
-        .DQ_BITS    ( `SDRAM_DQ_BITS    ),
-        .DM_BITS    ( `SDRAM_DM_BITS    ),
-        .BA_BITS    ( `SDRAM_BA_BITS    )
-    )
-    ram
-    (
-        .HCLK       (   HCLK        ),
-        .HRESETn    (   HRESETn     ),
-        .HADDR      (   HADDR       ),
-        .HBURST     (   HBURST      ),
-        .HSEL       (   HSEL [1]    ),
-        .HSIZE      (   HSIZE       ),
-        .HTRANS     (   HTRANS      ),
-        .HWDATA     (   HWDATA      ),
-        .HWRITE     (   HWRITE      ),
-        .HRDATA     (   HRDATA_1    ),
-        .HREADY     (   HREADY_1    ),
-        .HRESP      (   HRESP_1     ),
+// `ifdef MFP_USE_BUSY_MEMORY
+//     mfp_ahb_lite2_mem
+//     #(
+//         .ADDR_WIDTH (    `MFP_RAM_ADDR_WIDTH  )
+//     )
+//     ram
+//     (
+//         .HCLK       ( HCLK       ),
+//         .HRESETn    ( HRESETn    ),
+//         .HADDR      ( HADDR      ),
+//         .HBURST     ( HBURST     ),
+//         .HMASTLOCK  ( HMASTLOCK  ),
+//         .HPROT      ( HPROT      ),
+//         .HSEL       ( HSEL [1]   ),
+//         .HSIZE      ( HSIZE      ),
+//         .HTRANS     ( HTRANS     ),
+//         .HWDATA     ( HWDATA     ),
+//         .HWRITE     ( HWRITE     ),
+//         .HRDATA     ( HRDATA_1   ),
+//         .HREADY     ( HREADY_1   ),
+//         .HRESP      ( HRESP_1    ),
+//         .SI_Endian  ( SI_Endian  )
+//     );
+// `else
 
+    `ifdef MFP_USE_SDRAM_MEMORY
+        mfp_ahb_lite2_sdram
+        #(
+            .DELAY_nCKE ( `SDRAM_DELAY_nCKE ),
+            .ADDR_BITS  ( `SDRAM_ADDR_BITS  ),
+            .ROW_BITS   ( `SDRAM_ROW_BITS   ),
+            .COL_BITS   ( `SDRAM_COL_BITS   ),
+            .DQ_BITS    ( `SDRAM_DQ_BITS    ),
+            .DM_BITS    ( `SDRAM_DM_BITS    ),
+            .BA_BITS    ( `SDRAM_BA_BITS    )
+        )
+    `elsif MFP_USE_BUSY_MEMORY
+        mfp_ahb_lite2_mem
+        #(
+            .ADDR_WIDTH ( `MFP_RAM_ADDR_WIDTH )
+        )
+    `else
+        mfp_ahb_ram_slave
+        #(
+            .ADDR_WIDTH ( `MFP_RAM_ADDR_WIDTH )
+        )
+    `endif
+
+    ram
+    (
+        .HCLK       ( HCLK          ),
+        .HRESETn    ( HRESETn       ),
+        .HADDR      ( HADDR         ),
+        .HBURST     ( HBURST        ),
+        .HMASTLOCK  ( HMASTLOCK     ),
+        .HPROT      ( HPROT         ),
+        .HSEL       ( HSEL [1]      ),
+        .HSIZE      ( HSIZE         ),
+        .HTRANS     ( HTRANS        ),
+        .HWDATA     ( HWDATA        ),
+        .HWRITE     ( HWRITE        ),
+        .HRDATA     ( HRDATA_1      ),
+        .HREADY     ( HREADY_1      ),
+        .HRESP      ( HRESP_1       ),
+        .SI_Endian  ( SI_Endian     )
+
+        `ifdef MFP_USE_SDRAM_MEMORY
+        ,
         .CKE        (   SDRAM_CKE   ),
         .CSn        (   SDRAM_CSn   ),
         .RASn       (   SDRAM_RASn  ),
@@ -141,11 +162,12 @@ module mfp_ahb_lite2_matrix
         .BA         (   SDRAM_BA    ),
         .DQ         (   SDRAM_DQ    ),
         .DQM        (   SDRAM_DQM   )
+        `endif
     );
-`else
+// `else
 
-`endif // MFP_USE_SDRAM_MEMORY
-`endif // MFP_USE_BUSY_MEMORY
+// `endif // MFP_USE_SDRAM_MEMORY
+// `endif // MFP_USE_BUSY_MEMORY
 
     mfp_ahb_gpio_slave gpio
     (

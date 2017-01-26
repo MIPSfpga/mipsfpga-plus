@@ -39,22 +39,36 @@
 //
 `ifdef MFP_USE_SDRAM_MEMORY
 `ifdef SIMULATION
-    //should be identical to +define+den**Mb in .tcl file
-    // `define SDRAM_ADDR_BITS     12
-    // `define SDRAM_ROW_BITS      12
-    // `define SDRAM_COL_BITS      10
-    // `define SDRAM_DQ_BITS       16
-    // `define SDRAM_BA_BITS       2
-    // `define SDRAM_DM_BITS       2
-    // `define SDRAM_DELAY_nCKE    20
+    //only x16 supported
+    `define x16
+    `define den64Mb
+    `define sg75
+    
+    //these values should be relevant to sdr_parameters.vh
+    `ifdef den64Mb
+        `define SDRAM_ADDR_BITS         12
+        `define SDRAM_ROW_BITS          12
+        `define SDRAM_COL_BITS          8
+    `elsif den128Mb
+        `define SDRAM_ADDR_BITS         12
+        `define SDRAM_ROW_BITS          12
+        `define SDRAM_COL_BITS          9
+    `elsif den256Mb
+        `define SDRAM_ADDR_BITS         13
+        `define SDRAM_ROW_BITS          13
+        `define SDRAM_COL_BITS          9
+    `else `define den512Mb
+        `define SDRAM_ADDR_BITS         13
+        `define SDRAM_ROW_BITS          13
+        `define SDRAM_COL_BITS          10
+    `endif
 
-    `define SDRAM_ADDR_BITS     13
-    `define SDRAM_ROW_BITS      13
-    `define SDRAM_COL_BITS      10
-    `define SDRAM_DQ_BITS       16
-    `define SDRAM_BA_BITS       2
-    `define SDRAM_DM_BITS       2
-    `define SDRAM_DELAY_nCKE    20
+    `define SDRAM_DQ_BITS               16
+    `define SDRAM_DM_BITS               2
+    `define SDRAM_BA_BITS               2
+    `define SDRAM_DELAY_nCKE            20
+    `define SDRAM_MEM_CLK_PHASE_SHIFT   2
+    `define MFP_RAM_ADDR_WIDTH          (`SDRAM_ROW_BITS + `SDRAM_COL_BITS + `SDRAM_BA_BITS)
 `else
     `define SDRAM_ADDR_BITS     13
     `define SDRAM_DQ_BITS       16
@@ -102,10 +116,12 @@
 
 `define MFP_RESET_RAM_ADDR_WIDTH    10  // The boot sequence is the same for everything
 
-`ifdef SIMULATION
-`define MFP_RAM_ADDR_WIDTH          16
-`else
-`define MFP_RAM_ADDR_WIDTH          10  // DE1: 10, DE0-Nano: 13, DE0-CV or Basys3: 14, Nexys 4 or DE2-115: 16
+`ifndef MFP_RAM_ADDR_WIDTH
+    `ifdef SIMULATION
+    `define MFP_RAM_ADDR_WIDTH          16
+    `else
+    `define MFP_RAM_ADDR_WIDTH          10  // DE1: 10, DE0-Nano: 13, DE0-CV or Basys3: 14, Nexys 4 or DE2-115: 16
+    `endif
 `endif
 
 `define MFP_RESET_RAM_ADDR_MATCH    7'h7f

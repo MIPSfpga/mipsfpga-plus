@@ -14,6 +14,8 @@ module mfp_ahb_lite2_mem
     input                       HRESETn,
     input       [31:0]          HADDR,
     input       [ 2:0]          HBURST,
+    input                       HMASTLOCK,  // ignored
+    input       [ 3:0]          HPROT,      // ignored
     input                       HSEL,
     input       [ 2:0]          HSIZE,
     input       [ 1:0]          HTRANS,
@@ -21,7 +23,8 @@ module mfp_ahb_lite2_mem
     input                       HWRITE,
     output  reg [31:0]          HRDATA,
     output                      HREADY,
-    output                      HRESP
+    output                      HRESP,
+    input                       SI_Endian   // ignored
 );
     assign HRESP  = 1'b0;
 
@@ -38,7 +41,6 @@ module mfp_ahb_lite2_mem
     reg     [  1 : 0 ]      HTRANS_old;
 
     assign  HREADY = (State == S_IDLE);
-    //wire    NeedAction = HTRANS_old != HTRANS_IDLE;
     wire    NeedAction = HTRANS != HTRANS_IDLE && HSEL;
 
     always @ (posedge HCLK) begin
@@ -75,10 +77,10 @@ module mfp_ahb_lite2_mem
         end
 
         if(State == S_READ)
-            HRDATA <= ram[HADDR_old [31 : 2] ];
+            HRDATA <= ram[HADDR_old [ ADDR_WIDTH - 1 + 2 : 2] ];
             
         if(State == S_WRITE)
-            ram[HADDR_old [31 : 2] ] <= HWDATA;
+            ram[HADDR_old [ ADDR_WIDTH - 1 + 2 : 2] ] <= HWDATA;
     end
 
 endmodule

@@ -41,6 +41,8 @@ module mfp_ahb_lite2_sdram
     input                               HRESETn,
     input       [ 31 : 0 ]              HADDR,
     input       [  2 : 0 ]              HBURST,
+    input                               HMASTLOCK,  // ignored
+    input       [ 3:0]                  HPROT,      // ignored
     input                               HSEL,
     input       [  2 : 0 ]              HSIZE,
     input       [  1 : 0 ]              HTRANS,
@@ -49,6 +51,7 @@ module mfp_ahb_lite2_sdram
     output  reg [ 31 : 0 ]              HRDATA,
     output                              HREADY,
     output                              HRESP,
+    input                               SI_Endian,  // ignored
 
     //SDRAM side
     output                              CKE,
@@ -114,9 +117,7 @@ module mfp_ahb_lite2_sdram
 
     parameter HTRANS_IDLE       = 2'b0;
 
-    //wire    NeedAction          = HTRANS_old != HTRANS_IDLE;
     wire    NeedAction = HTRANS != HTRANS_IDLE && HSEL;
-
     wire    NeedRefresh         = ~|delay_u;
     wire    DelayFinished       = ~|delay_n;
     wire    BigDelayFinished    = ~|delay_u;
