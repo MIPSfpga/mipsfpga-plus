@@ -24,16 +24,21 @@ void cacheFlush(uint32_t *addr)
 {
     __asm__ volatile(
         "cache 0x15, 0(%[ADDR])" "\n\t"
-        :
-        : [ADDR] "r" (addr)
+        : : [ADDR] "r" (addr)
     );
 }
 
 int main ()
 {
-    const uint32_t arrSize = 10;    //1000000;
-    const uint32_t delayCnt = 10;  //100000000;
-    const uint8_t checkCnt = 0x2;
+    //testbench recommended
+    // const uint32_t  arrSize  = 10;
+    // const uint32_t  delayCnt = 10;
+    // const uint8_t   checkCnt = 0x2;
+
+    //hw recommended
+    const uint32_t  arrSize  = 1000000;
+    const uint32_t  delayCnt = 100000000;
+    const uint8_t   checkCnt = 0xff;
     
     uint16_t errCount = 0;
     uint32_t arr[arrSize];

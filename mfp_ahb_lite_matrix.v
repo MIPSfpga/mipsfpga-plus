@@ -55,7 +55,7 @@ module mfp_ahb_lite_matrix
     reg  [ 2:0] HSEL_dly;
 
     always @ (posedge HCLK)
-        if(HREADY)
+        //if(HREADY)
             HSEL_dly <= HSEL;
 
     wire        HREADY_0 , HREADY_1 , HREADY_2 ;

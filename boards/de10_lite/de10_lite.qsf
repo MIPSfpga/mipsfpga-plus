@@ -433,6 +433,8 @@ set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_gpio_slave.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_lite_matrix.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_lite_matrix_with_loader.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_ram_slave.v
+set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_ram_busy.v
+set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_ram_sdram.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_clock_dividers.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_dual_port_ram.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_seven_segment_displays.v
@@ -440,7 +442,7 @@ set_global_assignment -name VERILOG_FILE ../../../mfp_srec_parser.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_srec_parser_to_ahb_lite_bridge.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_switch_and_button_debouncers.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_system.v
-set_global_assignment -name VERILOG_FILE ../../../mfp_testbench.v
+# set_global_assignment -name VERILOG_FILE ../../../mfp_testbench.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_uart_receiver.v
 
 set_global_assignment -name VERILOG_FILE ../../../../../MIPSfpga/rtl_up/d_wsram_2k2way_xilinx.v
@@ -590,5 +592,7 @@ set_global_assignment -name SEARCH_PATH ../../../../../MIPSfpga/rtl_up
 
 #set_global_assignment -name CDF_FILE de10_lite.cdf
 set_global_assignment -name SDC_FILE de10_lite.sdc
+
+set_global_assignment -name QIP_FILE ../pll.qip
 
 

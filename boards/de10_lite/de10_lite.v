@@ -15,74 +15,77 @@ module de10_lite
     output  [ 7:0]  HEX4,
     output  [ 7:0]  HEX5,
     output  [ 9:0]  LEDR,
+
+    `ifdef MFP_USE_SDRAM_MEMORY
+        output  [12:0]  DRAM_ADDR,
+        output  [ 1:0]  DRAM_BA,
+        output          DRAM_CAS_N,
+        output          DRAM_CKE,
+        output          DRAM_CLK,
+        output          DRAM_CS_N,
+        inout   [15:0]  DRAM_DQ,
+        output          DRAM_LDQM,
+        output          DRAM_RAS_N,
+        output          DRAM_UDQM,
+        output          DRAM_WE_N,
+    `endif
     
-`ifdef UNUSED
-
-    output  [12:0]  DRAM_ADDR,
-    output  [ 1:0]  DRAM_BA,
-    output          DRAM_CAS_N,
-    output          DRAM_CKE,
-    output          DRAM_CLK,
-    output          DRAM_CS_N,
-    inout   [15:0]  DRAM_DQ,
-    output          DRAM_LDQM,
-    output          DRAM_RAS_N,
-    output          DRAM_UDQM,
-    output          DRAM_WE_N,
-    output  [ 3:0]  VGA_B,
-    output  [ 3:0]  VGA_G,
-    output          VGA_HS,
-    output  [ 3:0]  VGA_R,
-    output          VGA_VS,
-    output          GSENSOR_CS_N,
-    input   [ 2:1]  GSENSOR_INT,
-    output          GSENSOR_SCLK,
-    inout           GSENSOR_SDI,
-    inout           GSENSOR_SDO,
-    inout   [15:0]  ARDUINO_IO,
-    inout           ARDUINO_RESET_N,
-
-`endif
+    `ifdef UNUSED
+        output  [ 3:0]  VGA_B,
+        output  [ 3:0]  VGA_G,
+        output          VGA_HS,
+        output  [ 3:0]  VGA_R,
+        output          VGA_VS,
+        output          GSENSOR_CS_N,
+        input   [ 2:1]  GSENSOR_INT,
+        output          GSENSOR_SCLK,
+        inout           GSENSOR_SDI,
+        inout           GSENSOR_SDO,
+        inout   [15:0]  ARDUINO_IO,
+        inout           ARDUINO_RESET_N,
+    `endif
 
     inout   [35:0]  GPIO
 );
 
     wire clk;
 
-    `ifdef MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+    // `ifdef MFP_USE_SDRAM_MEMORY
 
-    wire       muxed_clk;
-    wire [1:0] sw_db;
+    //     pll pll(MAX10_CLK1_50, DRAM_CLK, clk);
 
-    mfp_multi_switch_or_button_sync_and_debouncer
-    # (.WIDTH (2))
-    mfp_multi_switch_or_button_sync_and_debouncer
-    (   
-        .clk    ( MAX10_CLK1_50 ),
-        .sw_in  ( SW [1:0] ),
-        .sw_out ( sw_db    )
-    );
+    // `elsif MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 
-    mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz 
-    mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz
-    (
-        .clki    ( MAX10_CLK1_50  ),
-        .sel_lo  ( sw_db [0] ),
-        .sel_mid ( sw_db [1] ),
-        .clko    ( muxed_clk )
-    );
+    //     wire       muxed_clk;
+    //     wire [1:0] sw_db;
 
-    global gclk
-    (
-        .in     ( muxed_clk  ), 
-        .out    ( clk        )
-    );
+    //     mfp_multi_switch_or_button_sync_and_debouncer
+    //     # (.WIDTH (2))
+    //     mfp_multi_switch_or_button_sync_and_debouncer
+    //     (   
+    //         .clk    ( MAX10_CLK1_50 ),
+    //         .sw_in  ( SW [1:0] ),
+    //         .sw_out ( sw_db    )
+    //     );
 
-    `else
+    //     mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz 
+    //     mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz
+    //     (
+    //         .clki    ( MAX10_CLK1_50  ),
+    //         .sel_lo  ( sw_db [0] ),
+    //         .sel_mid ( sw_db [1] ),
+    //         .clko    ( muxed_clk )
+    //     );
 
-    assign clk = MAX10_CLK1_50;
+    //     global gclk
+    //     (
+    //         .in     ( muxed_clk  ), 
+    //         .out    ( clk        )
+    //     );
 
-    `endif
+    // `else
+        assign clk = MAX10_CLK1_50;
+    // `endif
 
     wire [`MFP_N_SWITCHES          - 1:0] IO_Switches;
     wire [`MFP_N_BUTTONS           - 1:0] IO_Buttons;
@@ -108,6 +111,18 @@ module de10_lite
         .HWDATA           (   HWDATA          ),
         .HWRITE           (   HWRITE          ),
 
+        `ifdef MFP_USE_SDRAM_MEMORY
+        .SDRAM_CKE        (   DRAM_CKE        ),
+        .SDRAM_CSn        (   DRAM_CS_N       ),
+        .SDRAM_RASn       (   DRAM_RAS_N      ),
+        .SDRAM_CASn       (   DRAM_CAS_N      ),
+        .SDRAM_WEn        (   DRAM_WE_N       ),
+        .SDRAM_ADDR       (   DRAM_ADDR       ),
+        .SDRAM_BA         (   DRAM_BA         ),
+        .SDRAM_DQ         (   DRAM_DQ         ),
+        .SDRAM_DQM   ( {DRAM_UDQM, DRAM_LDQM} ),
+        `endif
+
         .EJ_TRST_N_probe  (   GPIO [22]       ),
         .EJ_TDI           (   GPIO [21]       ),
         .EJ_TDO           (   GPIO [19]       ),
@@ -129,6 +144,20 @@ module de10_lite
         .SPI_SCK          (   GPIO [28]       ),
         .SPI_SDO          (   GPIO [30]       )
     );
+
+    `ifdef MFP_USE_SDRAM_MEMORY
+        //SDRAM controller delay params (see details in mfp_ahb_ram_sdram.v)
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_nCKE          = 20000;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tREF          = 6300000;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRP           = 0;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRFC          = 4;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tMRD          = 0;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRCD          = 0;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tCAS          = 0;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_afterREAD     = 1;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_afterWRITE    = 3;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.COUNT_initAutoRef   = 8;
+    `endif
 
     assign GPIO [15] = 1'b0;
     assign GPIO [14] = 1'b0;
