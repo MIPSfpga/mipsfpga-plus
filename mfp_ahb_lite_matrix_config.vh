@@ -19,7 +19,7 @@
 //
 
 // `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
-`define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+//`define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 `define MFP_USE_UART_PROGRAM_LOADER
 // `define MFP_DEMO_LIGHT_SENSOR
 // `define MFP_DEMO_CACHE_MISSES
@@ -29,56 +29,57 @@
 //  Memory type (choose one)
 //
 
-`define MFP_USE_WORD_MEMORY
 //`define MFP_USE_BYTE_MEMORY
-//`define MFP_USE_BUSY_MEMORY
+//`define MFP_USE_WORD_MEMORY
+`define MFP_USE_BUSY_MEMORY
 //`define MFP_USE_SDRAM_MEMORY
 
 //
 // global SDRAM bus params
 //
 `ifdef MFP_USE_SDRAM_MEMORY
-`ifdef SIMULATION
-    //only x16 supported
-    `define x16
-    `define den64Mb
-    `define sg75
-    
-    //these values should be relevant to sdr_parameters.vh
-    `ifdef den64Mb
-        `define SDRAM_ADDR_BITS         12
-        `define SDRAM_ROW_BITS          12
-        `define SDRAM_COL_BITS          8
-    `elsif den128Mb
-        `define SDRAM_ADDR_BITS         12
-        `define SDRAM_ROW_BITS          12
-        `define SDRAM_COL_BITS          9
-    `elsif den256Mb
-        `define SDRAM_ADDR_BITS         13
-        `define SDRAM_ROW_BITS          13
-        `define SDRAM_COL_BITS          9
-    `else `define den512Mb
+    `undef MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+    `ifdef SIMULATION
+        //only x16 supported
+        `define x16
+        `define den64Mb
+        `define sg75
+        
+        //these values should be relevant to sdr_parameters.vh
+        `ifdef den64Mb
+            `define SDRAM_ADDR_BITS         12
+            `define SDRAM_ROW_BITS          12
+            `define SDRAM_COL_BITS          8
+        `elsif den128Mb
+            `define SDRAM_ADDR_BITS         12
+            `define SDRAM_ROW_BITS          12
+            `define SDRAM_COL_BITS          9
+        `elsif den256Mb
+            `define SDRAM_ADDR_BITS         13
+            `define SDRAM_ROW_BITS          13
+            `define SDRAM_COL_BITS          9
+        `else `define den512Mb
+            `define SDRAM_ADDR_BITS         13
+            `define SDRAM_ROW_BITS          13
+            `define SDRAM_COL_BITS          10
+        `endif
+
+        `define SDRAM_DQ_BITS               16
+        `define SDRAM_DM_BITS               2
+        `define SDRAM_BA_BITS               2
+        `define SDRAM_DELAY_nCKE            20
+        `define SDRAM_MEM_CLK_PHASE_SHIFT   2
+        `define MFP_RAM_ADDR_WIDTH          (`SDRAM_ROW_BITS + `SDRAM_COL_BITS + `SDRAM_BA_BITS)
+    `else
+        //values for 64MB (Terasic DE10-Lite)
         `define SDRAM_ADDR_BITS         13
         `define SDRAM_ROW_BITS          13
         `define SDRAM_COL_BITS          10
+        `define SDRAM_DQ_BITS           16
+        `define SDRAM_BA_BITS           2
+        `define SDRAM_DM_BITS           2
+        `define MFP_RAM_ADDR_WIDTH      (`SDRAM_ROW_BITS + `SDRAM_COL_BITS + `SDRAM_BA_BITS)
     `endif
-
-    `define SDRAM_DQ_BITS               16
-    `define SDRAM_DM_BITS               2
-    `define SDRAM_BA_BITS               2
-    `define SDRAM_DELAY_nCKE            20
-    `define SDRAM_MEM_CLK_PHASE_SHIFT   2
-    `define MFP_RAM_ADDR_WIDTH          (`SDRAM_ROW_BITS + `SDRAM_COL_BITS + `SDRAM_BA_BITS)
-`else
-    //values for 64MB (Terasic DE10-Lite)
-    `define SDRAM_ADDR_BITS         13
-    `define SDRAM_ROW_BITS          13
-    `define SDRAM_COL_BITS          10
-    `define SDRAM_DQ_BITS           16
-    `define SDRAM_BA_BITS           2
-    `define SDRAM_DM_BITS           2
-    `define MFP_RAM_ADDR_WIDTH      (`SDRAM_ROW_BITS + `SDRAM_COL_BITS + `SDRAM_BA_BITS)
-`endif
 `endif
 
 //

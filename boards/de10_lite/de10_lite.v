@@ -50,42 +50,42 @@ module de10_lite
 
     wire clk;
 
-    // `ifdef MFP_USE_SDRAM_MEMORY
+    `ifdef MFP_USE_SDRAM_MEMORY
 
-    //     pll pll(MAX10_CLK1_50, DRAM_CLK, clk);
+        pll pll(MAX10_CLK1_50, DRAM_CLK, clk);
 
-    // `elsif MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+    `elsif MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 
-    //     wire       muxed_clk;
-    //     wire [1:0] sw_db;
+        wire       muxed_clk;
+        wire [1:0] sw_db;
 
-    //     mfp_multi_switch_or_button_sync_and_debouncer
-    //     # (.WIDTH (2))
-    //     mfp_multi_switch_or_button_sync_and_debouncer
-    //     (   
-    //         .clk    ( MAX10_CLK1_50 ),
-    //         .sw_in  ( SW [1:0] ),
-    //         .sw_out ( sw_db    )
-    //     );
+        mfp_multi_switch_or_button_sync_and_debouncer
+        # (.WIDTH (2))
+        mfp_multi_switch_or_button_sync_and_debouncer
+        (   
+            .clk    ( MAX10_CLK1_50 ),
+            .sw_in  ( SW [1:0] ),
+            .sw_out ( sw_db    )
+        );
 
-    //     mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz 
-    //     mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz
-    //     (
-    //         .clki    ( MAX10_CLK1_50  ),
-    //         .sel_lo  ( sw_db [0] ),
-    //         .sel_mid ( sw_db [1] ),
-    //         .clko    ( muxed_clk )
-    //     );
+        mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz 
+        mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz
+        (
+            .clki    ( MAX10_CLK1_50  ),
+            .sel_lo  ( sw_db [0] ),
+            .sel_mid ( sw_db [1] ),
+            .clko    ( muxed_clk )
+        );
 
-    //     global gclk
-    //     (
-    //         .in     ( muxed_clk  ), 
-    //         .out    ( clk        )
-    //     );
+        global gclk
+        (
+            .in     ( muxed_clk  ), 
+            .out    ( clk        )
+        );
 
-    // `else
+    `else
         assign clk = MAX10_CLK1_50;
-    // `endif
+    `endif
 
     wire [`MFP_N_SWITCHES          - 1:0] IO_Switches;
     wire [`MFP_N_BUTTONS           - 1:0] IO_Buttons;
