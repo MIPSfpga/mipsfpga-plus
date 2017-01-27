@@ -42,7 +42,7 @@ LDFLAGS += -Wl,--defsym,__flash_app_start=0x80000000
 # Place the application code (virtual address)
 LDFLAGS += -Wl,--defsym,__app_start=0x80000000
 # Set the stack to the top of the Code/Data RAM
-LDFLAGS += -Wl,--defsym,__stack=0x80040000
+LDFLAGS += -Wl,--defsym,__stack=0x80400000
 # Cautiously set the size of memory as the 2015.01 toolchain uses
 # this size as the amount of free memory between the end of the
 # program data and the lowest address that the stack will reach.
