@@ -15,12 +15,11 @@
 `endif
 
 //
-//  Configuration parameters
+//  Common configuration parameters
 //
-
-// `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
-//`define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 `define MFP_USE_UART_PROGRAM_LOADER
+// `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
+// `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 // `define MFP_DEMO_LIGHT_SENSOR
 // `define MFP_DEMO_CACHE_MISSES
 // `define MFP_DEMO_PIPE_BYPASS
@@ -28,7 +27,6 @@
 //
 //  Memory type (choose one)
 //
-
 //`define MFP_USE_BYTE_MEMORY
 //`define MFP_USE_WORD_MEMORY
 `define MFP_USE_BUSY_MEMORY
@@ -37,6 +35,7 @@
 //
 // global SDRAM bus params
 //
+
 `ifdef MFP_USE_SDRAM_MEMORY
     `undef MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
     `ifdef SIMULATION
@@ -79,6 +78,13 @@
         `define SDRAM_BA_BITS           2
         `define SDRAM_DM_BITS           2
         `define MFP_RAM_ADDR_WIDTH      (`SDRAM_ROW_BITS + `SDRAM_COL_BITS + `SDRAM_BA_BITS)
+    `endif
+`endif
+
+//not all types of memory can work with HSIZE_1
+`ifdef MFP_USE_UART_PROGRAM_LOADER
+    `ifndef MFP_USE_BYTE_MEMORY
+        `define MFP_USE_UART_PROGRAM_LOADER_WORD_ALIGN
     `endif
 `endif
 

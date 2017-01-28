@@ -62,14 +62,7 @@ module mfp_ahb_ram_busy
 
     parameter MEM_SIZE = ( 2 ** ADDR_WIDTH ) / 4;
 
-    `ifdef MFP_USE_WORD_MEMORY
-        reg [31:0] ram [ MEM_SIZE - 1 : 0 ];
-    `else
-        reg [7:0] ram0 [ MEM_SIZE - 1 : 0 ];
-        reg [7:0] ram1 [ MEM_SIZE - 1 : 0 ];
-        reg [7:0] ram2 [ MEM_SIZE - 1 : 0 ];
-        reg [7:0] ram3 [ MEM_SIZE - 1 : 0 ];
-    `endif
+    reg [31:0] ram [ MEM_SIZE - 1 : 0 ];
 
     always @ (posedge HCLK) begin
         if(State == S_INIT) begin
@@ -84,26 +77,11 @@ module mfp_ahb_ram_busy
             HTRANS_old  <= HTRANS;
         end
 
-        `ifdef MFP_USE_WORD_MEMORY
-            if(State == S_READ)
-                HRDATA <= ram[HADDR_old [ ADDR_WIDTH - 1 + 2 : 2] ];
-                
-            if(State == S_WRITE)
-                ram[HADDR_old [ ADDR_WIDTH - 1 + 2 : 2] ] <= HWDATA;
-        `else
-            if(State == S_READ)
-                HRDATA <= { ram3[HADDR_old [ ADDR_WIDTH - 1 + 2 : 2] ],
-                            ram2[HADDR_old [ ADDR_WIDTH - 1 + 2 : 2] ],
-                            ram1[HADDR_old [ ADDR_WIDTH - 1 + 2 : 2] ],
-                            ram0[HADDR_old [ ADDR_WIDTH - 1 + 2 : 2] ] };
-                
-            if(State == S_WRITE)
-                { ram3[HADDR_old [ ADDR_WIDTH - 1 + 2 : 2] ],
-                  ram2[HADDR_old [ ADDR_WIDTH - 1 + 2 : 2] ],
-                  ram1[HADDR_old [ ADDR_WIDTH - 1 + 2 : 2] ],
-                  ram0[HADDR_old [ ADDR_WIDTH - 1 + 2 : 2] ] } <= HWDATA;
-        `endif
-
+        if(State == S_READ)
+            HRDATA <= ram[HADDR_old [ ADDR_WIDTH - 1 + 2 : 2] ];
+            
+        if(State == S_WRITE)
+            ram[HADDR_old [ ADDR_WIDTH - 1 + 2 : 2] ] <= HWDATA;
     end
 
 endmodule
