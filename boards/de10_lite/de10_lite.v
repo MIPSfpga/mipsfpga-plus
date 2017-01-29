@@ -51,8 +51,11 @@ module de10_lite
     wire clk;
 
     wire clk200;
+    ///wire notUsed;
 
     pll pll(MAX10_CLK1_50, DRAM_CLK, clk, clk200);
+
+    ////assign DRAM_CLK = clk;
 
     // `ifdef MFP_USE_SDRAM_MEMORY
 
@@ -153,16 +156,16 @@ module de10_lite
 
     `ifdef MFP_USE_SDRAM_MEMORY
         //SDRAM controller delay params (see details in mfp_ahb_ram_sdram.v)
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_nCKE          = 10000;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tREF          = 3150000;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRP           = 0;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRFC          = 2;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tMRD          = 0;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRCD          = 0;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tCAS          = 0;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_afterREAD     = 0;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_afterWRITE    = 2;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.COUNT_initAutoRef   = 4;
+        //defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_nCKE          = 20000;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tREF          = 2500000;
+        // defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRP           = 0;
+        // defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRFC          = 2;
+        // defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tMRD          = 0;
+        // defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRCD          = 1;
+        // defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tCAS          = 0;
+        // defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_afterREAD     = 0;
+        // defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_afterWRITE    = 2;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.COUNT_initAutoRef   = 8;
     `endif
 
     assign GPIO [15] = 1'b0;

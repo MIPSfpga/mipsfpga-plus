@@ -155,7 +155,7 @@ module mfp_ahb_ram_sdram
 
             S_READ0_ACT         :   Next = S_READ1_NOP;
             S_READ1_NOP         :   Next = DelayFinished ? S_READ2_READ : S_READ1_NOP;
-            S_READ2_READ        :   Next = S_READ3_NOP;
+            S_READ2_READ        :   Next = S_READ4_RD0; // S_READ3_NOP; //TODO: fix it!!!
             S_READ3_NOP         :   Next = DelayFinished ? S_READ4_RD0 : S_READ3_NOP;
             S_READ4_RD0         :   Next = S_READ5_RD1;
             S_READ5_RD1         :   Next = S_READ6_NOP;
