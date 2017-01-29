@@ -50,9 +50,9 @@ module de10_lite
 
     wire clk;
 
-    wire notUsed;
+    wire clk200;
 
-    pll pll(MAX10_CLK1_50, notUsed, clk);
+    pll pll(MAX10_CLK1_50, DRAM_CLK, clk, clk200);
 
     // `ifdef MFP_USE_SDRAM_MEMORY
 
@@ -100,10 +100,12 @@ module de10_lite
     assign IO_Switches = { { `MFP_N_SWITCHES - 10 { 1'b0 } } ,   SW  [9:0] };
     assign IO_Buttons  = { { `MFP_N_BUTTONS  -  2 { 1'b0 } } , ~ KEY [1:0] };
 
-    assign LEDR = IO_RedLEDs [9:0];
+    assign LEDR[8:0] = IO_RedLEDs [8:0];
 
     wire [31:0] HADDR, HRDATA, HWDATA;
     wire        HWRITE;
+
+    assign LEDR[9] = ~DRAM_CKE;
 
     mfp_system mfp_system
     (
