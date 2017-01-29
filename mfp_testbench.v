@@ -1,7 +1,7 @@
 `include "mfp_ahb_lite_matrix_config.vh"
 
-//`timescale 1 ns / 100 ps
-`timescale 1ns / 1ps
+`timescale 1 ns / 100 ps
+//`timescale 1ns / 1ps
 
 module mfp_testbench;
 

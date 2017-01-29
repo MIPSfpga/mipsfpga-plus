@@ -50,42 +50,46 @@ module de10_lite
 
     wire clk;
 
-    `ifdef MFP_USE_SDRAM_MEMORY
+    wire notUsed;
 
-        pll pll(MAX10_CLK1_50, DRAM_CLK, clk);
+    pll pll(MAX10_CLK1_50, notUsed, clk);
 
-    `elsif MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+    // `ifdef MFP_USE_SDRAM_MEMORY
 
-        wire       muxed_clk;
-        wire [1:0] sw_db;
+    //     pll pll(MAX10_CLK1_50, DRAM_CLK, clk);
 
-        mfp_multi_switch_or_button_sync_and_debouncer
-        # (.WIDTH (2))
-        mfp_multi_switch_or_button_sync_and_debouncer
-        (   
-            .clk    ( MAX10_CLK1_50 ),
-            .sw_in  ( SW [1:0] ),
-            .sw_out ( sw_db    )
-        );
+    // `elsif MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 
-        mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz 
-        mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz
-        (
-            .clki    ( MAX10_CLK1_50  ),
-            .sel_lo  ( sw_db [0] ),
-            .sel_mid ( sw_db [1] ),
-            .clko    ( muxed_clk )
-        );
+    //     wire       muxed_clk;
+    //     wire [1:0] sw_db;
 
-        global gclk
-        (
-            .in     ( muxed_clk  ), 
-            .out    ( clk        )
-        );
+    //     mfp_multi_switch_or_button_sync_and_debouncer
+    //     # (.WIDTH (2))
+    //     mfp_multi_switch_or_button_sync_and_debouncer
+    //     (   
+    //         .clk    ( MAX10_CLK1_50 ),
+    //         .sw_in  ( SW [1:0] ),
+    //         .sw_out ( sw_db    )
+    //     );
 
-    `else
-        assign clk = MAX10_CLK1_50;
-    `endif
+    //     mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz 
+    //     mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz
+    //     (
+    //         .clki    ( MAX10_CLK1_50  ),
+    //         .sel_lo  ( sw_db [0] ),
+    //         .sel_mid ( sw_db [1] ),
+    //         .clko    ( muxed_clk )
+    //     );
+
+    //     global gclk
+    //     (
+    //         .in     ( muxed_clk  ), 
+    //         .out    ( clk        )
+    //     );
+
+    // `else
+    //     assign clk = MAX10_CLK1_50;
+    // `endif
 
     wire [`MFP_N_SWITCHES          - 1:0] IO_Switches;
     wire [`MFP_N_BUTTONS           - 1:0] IO_Buttons;
@@ -147,16 +151,16 @@ module de10_lite
 
     `ifdef MFP_USE_SDRAM_MEMORY
         //SDRAM controller delay params (see details in mfp_ahb_ram_sdram.v)
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_nCKE          = 20000;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tREF          = 6300000;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_nCKE          = 10000;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tREF          = 3150000;
         defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRP           = 0;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRFC          = 4;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRFC          = 2;
         defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tMRD          = 0;
         defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRCD          = 0;
         defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tCAS          = 0;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_afterREAD     = 1;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_afterWRITE    = 3;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.COUNT_initAutoRef   = 8;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_afterREAD     = 0;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_afterWRITE    = 2;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.COUNT_initAutoRef   = 4;
     `endif
 
     assign GPIO [15] = 1'b0;
