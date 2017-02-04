@@ -30,15 +30,24 @@ void cacheFlush(uint32_t *addr)
 
 int main ()
 {
-    //testbench recommended
-    // const uint32_t  arrSize  = 10;
-    // const uint32_t  delayCnt = 10;
-    // const uint8_t   checkCnt = 0x2;
+    //busymem on hw
+    // const uint32_t  arrSize  = 200;
+    // const uint32_t  delayCnt = 1000000;
+    // const uint8_t   checkCnt = 0xff;
+
+    //testmench busymem
+    const uint32_t  arrSize  = 10;
+    const uint32_t  delayCnt = 10;
+    const uint8_t   checkCnt = 0x02;
 
     //hw recommended
-    const uint32_t  arrSize  = 1000000;
-    const uint32_t  delayCnt = 100000000;
-    const uint8_t   checkCnt = 0xff;
+    // const uint32_t  arrSize  = 1000000;
+    // const uint32_t  delayCnt = 100000000;
+    // const uint8_t   checkCnt = 0xff;
+
+    // const uint32_t  arrSize  = 1000000;
+    // const uint32_t  delayCnt = 1000000;
+    // const uint8_t   checkCnt = 0xff;
     
     uint16_t errCount = 0;
     uint32_t arr[arrSize];
@@ -48,15 +57,14 @@ int main ()
     for (uint32_t i = 0; i < arrSize; i++)
         arr[i] = i;
 
-    //flush cache
-     stepOut(1);
-    for (uint32_t i = 0; i < arrSize; i++)
-        cacheFlush(&arr[i]);
-
-    
     //check
     for (uint8_t j = 0; j < checkCnt; j++)
     {
+        //flush cache
+        stepOut(1);
+        for (uint32_t i = 0; i < arrSize; i++)
+            cacheFlush(&arr[i]);
+
         //delay
         stepOut(2);
         _delay(delayCnt);
@@ -66,12 +74,14 @@ int main ()
         for (uint32_t i = 0; i < arrSize; i++) {
             if(arr[i] != i){
                 errCount++;
-                statOut(0, errCount);
+                statOut(j, errCount);
             }
         }
+        statOut(j, errCount);
     }
         
     //end
     stepOut(4);
-    return 0;
+    for(;;);
+    //return 0;
 }

@@ -202,15 +202,15 @@ module mfp_ahb_lite_decoder
 
     // Decode based on most significant bits of the address
 
-    // 128 KB RAM at 0xbfc00000 (physical: 0x1fc00000)
+    // RAM   4 MB max at 0xbfc00000 (physical: 0x1fc00000 - 0x1fffffff)
 
     assign HSEL [0] = ( HADDR [28:22] == `MFP_RESET_RAM_ADDR_MATCH );
 
-    // 256 KB RAM at 0x80000000 (physical: 0x00000000)
+    // RAM  64 MB max at 0x80000000 (physical: 0x00000000 - 0x03FFFFFF)
 
-    assign HSEL [1] = ( HADDR [28]    == `MFP_RAM_ADDR_MATCH       );
+    assign HSEL [1] = ( HADDR [28:26] == `MFP_RAM_ADDR_MATCH       );
 
-    // GPIO       at 0xbf800000 (physical: 0x1f800000)
+    // GPIO  4 MB max at 0xbf800000 (physical: 0x1f800000 - 0x1fbfffff)
 
     assign HSEL [2] = ( HADDR [28:22] == `MFP_GPIO_ADDR_MATCH      );
 

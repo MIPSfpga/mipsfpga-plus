@@ -31,17 +31,22 @@ module mfp_ahb_ram_busy
     parameter   S_INIT          = 0,
                 S_IDLE          = 1,
                 S_READ          = 2,
-                S_WRITE         = 3;
+                S_WRITE         = 3,
+                S_WAIT          = 4;
 
     parameter   HTRANS_IDLE     = 2'b0;
+
+    parameter   DELAY_VAL       = 8;
 
     reg     [  4 : 0 ]      State, Next;
     reg     [ 31 : 0 ]      HADDR_old;
     reg                     HWRITE_old;
     reg     [  1 : 0 ]      HTRANS_old;
+    reg     [  3 : 0 ]      Delay;
 
     assign  HREADY = (State == S_IDLE);
     wire    NeedAction = HTRANS != HTRANS_IDLE && HSEL;
+    wire    DelayFinished = ( ~| Delay );
 
     always @ (posedge HCLK) begin
         if (~HRESETn)
@@ -55,14 +60,13 @@ module mfp_ahb_ram_busy
         case(State)
             S_INIT:         Next = S_IDLE;
             S_IDLE:         Next = ~NeedAction ? S_IDLE : (HWRITE ? S_WRITE : S_READ);
-            S_READ:         Next = S_IDLE;
-            S_WRITE:        Next = S_IDLE;
+            S_READ:         Next = S_WAIT;
+            S_WRITE:        Next = S_WAIT;
+            S_WAIT:         Next = DelayFinished ? S_IDLE : S_WAIT;
         endcase
     end
 
-    parameter MEM_SIZE = ( 2 ** ADDR_WIDTH ) / 4;
-
-    reg [31:0] ram [ MEM_SIZE - 1 : 0 ];
+    reg [31:0] ram [ (1 << ADDR_WIDTH) - 1 : 0 ];
 
     always @ (posedge HCLK) begin
         if(State == S_INIT) begin
@@ -82,6 +86,11 @@ module mfp_ahb_ram_busy
             
         if(State == S_WRITE)
             ram[HADDR_old [ ADDR_WIDTH - 1 + 2 : 2] ] <= HWDATA;
+
+        if(State == S_READ || State == S_WRITE)
+            Delay <= DELAY_VAL;
+        if(~DelayFinished)
+            Delay <= Delay - 1;
     end
 
 endmodule

@@ -103,12 +103,15 @@ module de10_lite
     assign IO_Switches = { { `MFP_N_SWITCHES - 10 { 1'b0 } } ,   SW  [9:0] };
     assign IO_Buttons  = { { `MFP_N_BUTTONS  -  2 { 1'b0 } } , ~ KEY [1:0] };
 
-    assign LEDR[8:0] = IO_RedLEDs [8:0];
-
     wire [31:0] HADDR, HRDATA, HWDATA;
     wire        HWRITE;
 
-    assign LEDR[9] = ~DRAM_CKE;
+    `ifdef MFP_USE_SDRAM_MEMORY
+        assign LEDR[9] = ~DRAM_CKE;
+        assign LEDR[8:0] = IO_RedLEDs [8:0];
+    `else
+        assign LEDR = IO_RedLEDs [9:0];
+    `endif
 
     mfp_system mfp_system
     (
@@ -157,12 +160,12 @@ module de10_lite
     `ifdef MFP_USE_SDRAM_MEMORY
         //SDRAM controller delay params (see details in mfp_ahb_ram_sdram.v)
         //defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_nCKE          = 20000;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tREF          = 2500000;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tREF          = 350;
         // defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRP           = 0;
         // defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRFC          = 2;
         // defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tMRD          = 0;
         // defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRCD          = 1;
-        // defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tCAS          = 0;
+        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tCAS          = 0;
         // defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_afterREAD     = 0;
         // defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_afterWRITE    = 2;
         defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.COUNT_initAutoRef   = 8;

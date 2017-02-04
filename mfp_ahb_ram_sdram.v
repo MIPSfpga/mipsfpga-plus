@@ -17,8 +17,8 @@ module mfp_ahb_ram_sdram
     parameter   DELAY_nCKE          = 14000,    /* Init delay before bringing CKE high 
                                                    >= (T * fclk) where T    - CKE LOW init timeout 
                                                                        fclk - clock frequency  */
-                DELAY_tREF          = 8000000,  /* Refresh period 
-                                                   <= ((tREF - tRC) * fclk)                    */
+                DELAY_tREF          = 700, //8000000,  /* Refresh period 
+                                                   //<= ((tREF - tRC) * fclk)                    */
                 DELAY_tRP           = 1,        /* PRECHARGE command period 
                                                    >= (tRP * fclk - 2)                         */
                 DELAY_tRFC          = 7,        /* AUTO_REFRESH period 
@@ -27,9 +27,9 @@ module mfp_ahb_ram_sdram
                                                    >= (tMRD * fclk - 2)                        */
                 DELAY_tRCD          = 1,        /* ACTIVE-to-READ or WRITE delay 
                                                    >= (tRCD * fclk - 2)                        */
-                DELAY_tCAS          = 0,        /* CAS delay CAS2=0, CAS3=1 
-                                                   =  (CAS - 2)                                */
-                DELAY_afterREAD     = 3,        /* depends on tRC for READ with auto precharge command 
+                DELAY_tCAS          = 1,        /* CAS delay, also depends on clock phase shift 
+                                                   =  (CAS - 1)                                */
+                DELAY_afterREAD     = 4,        /* depends on tRC for READ with auto precharge command 
                                                    >= ((tRC - tRCD) * fclk - 2 - CAS)          */
                 DELAY_afterWRITE    = 5,        /* depends on tRC for WRITE with auto precharge command 
                                                    >= ((tRC - tRCD) * fclk - 2)                */
@@ -155,7 +155,7 @@ module mfp_ahb_ram_sdram
 
             S_READ0_ACT         :   Next = S_READ1_NOP;
             S_READ1_NOP         :   Next = DelayFinished ? S_READ2_READ : S_READ1_NOP;
-            S_READ2_READ        :   Next = S_READ4_RD0; // S_READ3_NOP; //TODO: fix it!!!
+            S_READ2_READ        :   Next = (DELAY_tCAS == 0) ? S_READ4_RD0 : S_READ3_NOP;
             S_READ3_NOP         :   Next = DelayFinished ? S_READ4_RD0 : S_READ3_NOP;
             S_READ4_RD0         :   Next = S_READ5_RD1;
             S_READ5_RD1         :   Next = S_READ6_NOP;
@@ -183,7 +183,7 @@ module mfp_ahb_ram_sdram
             S_INIT7_AUTOREF     :   begin delay_n <= DELAY_tRFC; repeat_cnt <= repeat_cnt - 1; end
             S_INIT9_LMR         :   delay_n <= DELAY_tMRD; 
             S_READ0_ACT         :   delay_n <= DELAY_tRCD;
-            S_READ2_READ        :   delay_n <= DELAY_tCAS;
+            S_READ2_READ        :   delay_n <= DELAY_tCAS - 1;
             S_READ5_RD1         :   delay_n <= DELAY_afterREAD;
             S_WRITE0_ACT        :   delay_n <= DELAY_tRCD;
             S_WRITE3_WR1        :   delay_n <= DELAY_afterWRITE;
