@@ -28,11 +28,11 @@
 //  Memory type (choose one)
 //
 //`define MFP_USE_BYTE_MEMORY
-`define MFP_USE_WORD_MEMORY
+//`define MFP_USE_WORD_MEMORY
 //`define MFP_USE_BUSY_MEMORY
-//`define MFP_USE_SDRAM_MEMORY
+`define MFP_USE_SDRAM_MEMORY
 
-`define MFP_RAM_ADDR_WIDTH  16
+//`define MFP_RAM_ADDR_WIDTH  16
 
 //
 // global SDRAM bus params
@@ -69,7 +69,7 @@
         `define SDRAM_DM_BITS               2
         `define SDRAM_BA_BITS               2
         `define SDRAM_DELAY_nCKE            20
-        `define SDRAM_MEM_CLK_PHASE_SHIFT   2
+        `define SDRAM_MEM_CLK_PHASE_SHIFT   12
         `define MFP_RAM_ADDR_WIDTH          (`SDRAM_ROW_BITS + `SDRAM_COL_BITS + `SDRAM_BA_BITS)
     `else
         //values for 64MB (Terasic DE10-Lite)

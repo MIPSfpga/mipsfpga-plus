@@ -27,7 +27,7 @@ module mfp_ahb_ram_sdram
                                                    >= (tMRD * fclk - 2)                        */
                 DELAY_tRCD          = 1,        /* ACTIVE-to-READ or WRITE delay 
                                                    >= (tRCD * fclk - 2)                        */
-                DELAY_tCAS          = 1,        /* CAS delay, also depends on clock phase shift 
+                DELAY_tCAS          = 0,        /* CAS delay, also depends on clock phase shift 
                                                    =  (CAS - 1)                                */
                 DELAY_afterREAD     = 4,        /* depends on tRC for READ with auto precharge command 
                                                    >= ((tRC - tRCD) * fclk - 2 - CAS)          */
@@ -134,9 +134,8 @@ module mfp_ahb_ram_sdram
 
         //State change decision
         case(State)
-            S_IDLE              :   Next = NeedRefresh  ? S_AREF0_AUTOREF : (
-                                           ~NeedAction  ? S_IDLE : (
-                                           HWRITE       ? S_WRITE0_ACT : S_READ0_ACT));
+            S_IDLE              :   Next = NeedAction ? (HWRITE ? S_WRITE0_ACT : S_READ0_ACT) 
+                                                      : (NeedRefresh ? S_AREF0_AUTOREF : S_IDLE);  
 
             S_INIT0_nCKE        :   Next = S_INIT1_nCKE;
             S_INIT1_nCKE        :   Next = BigDelayFinished ? S_INIT2_CKE : S_INIT1_nCKE;
@@ -159,18 +158,18 @@ module mfp_ahb_ram_sdram
             S_READ3_NOP         :   Next = DelayFinished ? S_READ4_RD0 : S_READ3_NOP;
             S_READ4_RD0         :   Next = S_READ5_RD1;
             S_READ5_RD1         :   Next = S_READ6_NOP;
-            S_READ6_NOP         :   Next = DelayFinished ? S_IDLE : S_READ6_NOP;
+            S_READ6_NOP         :   Next = ~DelayFinished ? S_READ6_NOP : (
+                                           NeedRefresh  ? S_AREF0_AUTOREF : S_IDLE );
 
             S_WRITE0_ACT        :   Next = S_WRITE1_NOP;
             S_WRITE1_NOP        :   Next = DelayFinished ? S_WRITE2_WR0 : S_WRITE1_NOP;
             S_WRITE2_WR0        :   Next = S_WRITE3_WR1;
             S_WRITE3_WR1        :   Next = S_WRITE4_NOP;
-            S_WRITE4_NOP        :   Next = DelayFinished ? S_IDLE : S_WRITE4_NOP;
+            S_WRITE4_NOP        :   Next = ~DelayFinished ? S_WRITE4_NOP : (
+                                           NeedRefresh  ? S_AREF0_AUTOREF : S_IDLE );
 
             S_AREF0_AUTOREF     :   Next = S_AREF1_NOP;
-            S_AREF1_NOP         :   Next = ~DelayFinished ? S_AREF1_NOP : (
-                                           ~NeedAction    ? S_IDLE : (
-                                           HWRITE         ? S_WRITE0_ACT : S_READ0_ACT));
+            S_AREF1_NOP         :   Next = ~DelayFinished ? S_AREF1_NOP : S_IDLE;
         endcase
     end
 

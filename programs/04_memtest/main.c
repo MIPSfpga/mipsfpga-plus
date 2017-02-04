@@ -36,7 +36,7 @@ int main ()
     // const uint8_t   checkCnt = 0xff;
 
     //testmench busymem
-    const uint32_t  arrSize  = 10;
+    const uint32_t  arrSize  = 200;
     const uint32_t  delayCnt = 10;
     const uint8_t   checkCnt = 0x02;
 

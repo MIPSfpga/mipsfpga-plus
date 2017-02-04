@@ -11,6 +11,8 @@ module mfp_system
     output [31:0] HRDATA,
     output [31:0] HWDATA,
     output        HWRITE,
+    output        HREADY,
+    output [ 1:0] HTRANS,
 
     input         EJ_TRST_N_probe,
     input         EJ_TDI,
@@ -95,11 +97,11 @@ module mfp_system
     wire         HMASTLOCK;
     wire [  3:0] HPROT;
 //  wire [ 31:0] HRDATA;
-    wire         HREADY;
+//  wire         HREADY;
     wire         HRESETn;
     wire         HRESP;
     wire [  2:0] HSIZE;
-    wire [  1:0] HTRANS;
+//  wire [  1:0] HTRANS;
 //  wire [ 31:0] HWDATA;
 //  wire         HWRITE;
     wire [  0:0] ISP_fromisp;
