@@ -7,4 +7,8 @@ rem -T, -Wl         - linked options
 
 rem -Wl,--defsym, __memory_size=0x1f800
 
-mips-mti-elf-gcc -std=c99 -EL -march=m14kc -msoft-float -O2 -Wl,-Map=program.map -T program.ld -Wl,--defsym,__flash_start=0xbfc00000 -Wl,--defsym,__flash_app_start=0x80000000 -Wl,--defsym,__app_start=0x80000000 -Wl,--defsym,__stack=0x80040000 -Wl,-e,0xbfc00000 boot.S main.c -o program.elf
+rem SIMULATION
+rem mips-mti-elf-gcc -std=c99 -EL -march=m14kc -msoft-float -O2 -Wl,-Map=program.map -T program.ld -Wl,--defsym,__flash_start=0xbfc00000 -Wl,--defsym,__flash_app_start=0x80000000 -Wl,--defsym,__app_start=0x80000000 -Wl,--defsym,__stack=0x80040000 -Wl,-e,0xbfc00000 boot.S main.c -o program.elf
+
+rem HARDWARE 64 MB 
+mips-mti-elf-gcc -std=c99 -EL -march=m14kc -msoft-float -O2 -Wl,-Map=program.map -T program.ld -Wl,--defsym,__flash_start=0xbfc00000 -Wl,--defsym,__flash_app_start=0x80000000 -Wl,--defsym,__app_start=0x80000000 -Wl,--defsym,__stack=0x84000000 -Wl,-e,0xbfc00000 boot.S main.c -o program.elf

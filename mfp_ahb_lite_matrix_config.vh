@@ -32,8 +32,6 @@
 //`define MFP_USE_BUSY_MEMORY
 `define MFP_USE_SDRAM_MEMORY
 
-//`define MFP_RAM_ADDR_WIDTH  16
-
 //
 // global SDRAM bus params
 //

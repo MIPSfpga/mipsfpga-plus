@@ -30,24 +30,15 @@ void cacheFlush(uint32_t *addr)
 
 int main ()
 {
-    //busymem on hw
+    //testmench 
     // const uint32_t  arrSize  = 200;
-    // const uint32_t  delayCnt = 1000000;
-    // const uint8_t   checkCnt = 0xff;
-
-    //testmench busymem
-    const uint32_t  arrSize  = 200;
-    const uint32_t  delayCnt = 10;
-    const uint8_t   checkCnt = 0x02;
+    // const uint32_t  delayCnt = 10;
+    // const uint8_t   checkCnt = 0x02;
 
     //hw recommended
-    // const uint32_t  arrSize  = 1000000;
-    // const uint32_t  delayCnt = 100000000;
-    // const uint8_t   checkCnt = 0xff;
-
-    // const uint32_t  arrSize  = 1000000;
-    // const uint32_t  delayCnt = 1000000;
-    // const uint8_t   checkCnt = 0xff;
+    const uint32_t  arrSize  = 10*1024*1024; //4*10M
+    const uint32_t  delayCnt = 1000000;
+    const uint8_t   checkCnt = 0xff;
     
     uint16_t errCount = 0;
     uint32_t arr[arrSize];

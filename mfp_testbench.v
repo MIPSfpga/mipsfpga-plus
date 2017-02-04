@@ -13,6 +13,8 @@ module mfp_testbench;
     wire [31:0] HRDATA;
     wire [31:0] HWDATA;
     wire        HWRITE;
+    wire        HREADY;
+    wire [ 1:0] HTRANS;
 
     reg         EJ_TRST_N_probe;
     reg         EJ_TDI;
@@ -63,6 +65,8 @@ module mfp_testbench;
         .HRDATA           ( HRDATA           ),
         .HWDATA           ( HWDATA           ),
         .HWRITE           ( HWRITE           ),
+        .HREADY           ( HREADY           ),
+        .HTRANS           ( HTRANS           ),
                                               
         .EJ_TRST_N_probe  ( EJ_TRST_N_probe  ),
         .EJ_TDI           ( EJ_TDI           ),
@@ -103,17 +107,20 @@ module mfp_testbench;
 
         `include "sdr_parameters.vh"
 
+        parameter tT = 20;
+        //parameter tT = tCK;
+
         initial begin
             SDRAM_CLK = 0; 
             @(posedge SI_ClkIn);
             #(`SDRAM_MEM_CLK_PHASE_SHIFT)
-            forever SDRAM_CLK = #(tCK/2) ~SDRAM_CLK;
+            forever SDRAM_CLK = #(tT/2) ~SDRAM_CLK;
         end
 
         initial
         begin
             SI_ClkIn = 0;
-            forever #(tCK/2) SI_ClkIn = ~SI_ClkIn;
+            forever #(tT/2) SI_ClkIn = ~SI_ClkIn;
         end
 
         sdr sdram0 (SDRAM_DQ, SDRAM_ADDR, SDRAM_BA, SDRAM_CLK, SDRAM_CKE, 
@@ -296,8 +303,8 @@ module mfp_testbench;
 
     always @ (posedge SI_ClkIn)
     begin
-        $display ("%5d HCLK %b HADDR %h HRDATA %h HWDATA %h HWRITE %b LEDR %b LEDG %b 7SEG %h",
-            cycle, system.HCLK, HADDR, HRDATA, HWDATA, HWRITE, IO_RedLEDs, IO_GreenLEDs, IO_7_SegmentHEX);
+        $display ("%5d HCLK %b HADDR %h HRDATA %h HWDATA %h HWRITE %b HREADY %b HTRANS %b LEDR %b LEDG %b 7SEG %h",
+            cycle, system.HCLK, HADDR, HRDATA, HWDATA, HWRITE, HREADY, HTRANS, IO_RedLEDs, IO_GreenLEDs, IO_7_SegmentHEX);
 
         `ifdef MFP_DEMO_PIPE_BYPASS
 
@@ -310,7 +317,8 @@ module mfp_testbench;
 
         cycle = cycle + 1;
 
-        if (cycle > 15000)
+        //if (cycle > 12000)
+        if (cycle > 50000)
         begin
             $display ("Timeout");
             $finish;
