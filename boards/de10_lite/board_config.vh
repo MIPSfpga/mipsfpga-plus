@@ -1,4 +1,4 @@
-
+//board specific settings
 
 //SDRAM parameters for 64MB (Terasic DE10-Lite)
 `ifdef MFP_USE_SDRAM_MEMORY
@@ -10,6 +10,7 @@
     `define SDRAM_DM_BITS           2
     `define MFP_RAM_ADDR_WIDTH      (`SDRAM_ROW_BITS + `SDRAM_COL_BITS + `SDRAM_BA_BITS)
 
+    //values for fclk=50 MHz
     `define SDRAM_DELAY_nCKE        10000
     `define SDRAM_DELAY_tREF        360
     `define SDRAM_DELAY_tRP         0
@@ -21,7 +22,3 @@
     `define SDRAM_DELAY_afterWRITE  2
     `define SDRAM_COUNT_initAutoRef 8
 `endif
-
-
-        
-

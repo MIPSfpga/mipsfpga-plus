@@ -2,8 +2,12 @@
 #include "mfp_memory_mapped_registers.h"
 #include <stdint.h>
 
+//count of HEX segments on board
+#define HEX_SEGMENT_COUNT   6
+
 #define SIMULATION  0
 #define SDRAM_64M   64
+#define SDRAM_8M    8
 
 #define MEMTYPE SDRAM_64M
 
@@ -15,6 +19,10 @@
     #define TEST_ARRSIZE    (10*1024*1024)   /* Size = sizeof(uint32_t)*10M = 40M */
     #define TEST_DELAY      1000000
     #define TEST_COUNT      0xff
+#elif   MEMTYPE == SDRAM_8M
+    #define TEST_ARRSIZE    (1*1024*1024)    /* Size = sizeof(uint32_t)*1M = 4M */
+    #define TEST_DELAY      1000000
+    #define TEST_COUNT      0xff
 #endif
 
 void _delay(uint32_t val)
@@ -23,14 +31,22 @@ void _delay(uint32_t val)
         __asm__ volatile("nop");
 }
 
-//optput statistic to 7segment: CCEEEE 
-//  where CC - check num, EEEE - found errors count
+//optput statistic to 7segment 
 void statOut(uint8_t iterationNum, uint16_t errCount)
 {
-    uint32_t out = (((uint32_t)iterationNum) << 16) + errCount;
+    #if     HEX_SEGMENT_COUNT == 6
+        //HEX = CCEEEE, where CC - check num, EEEE - found errors count
+        uint32_t out = (((uint32_t)iterationNum) << 16) + errCount;
+
+    #elif   HEX_SEGMENT_COUNT == 4
+        //HEX = CCEE, where CC - check num, EE - found errors count
+        uint32_t out = (((uint32_t)iterationNum) << 8) +  (uint8_t)errCount;
+    #endif
+
     MFP_7_SEGMENT_HEX = out;
 }
 
+//current step out
 void stepOut(uint8_t stepNum)
 {
     uint16_t out = (1 << stepNum);

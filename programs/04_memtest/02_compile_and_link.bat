@@ -8,7 +8,7 @@ rem -std=c99        - C99 lang standard features enabled
 
 rem stack depends on available mem size:
 rem     256K -> 0x80040000 (simulation)
-rem       8M -> 0x80800000 (de0)
+rem       8M -> 0x80800000 
 rem      64M -> 0x84000000 (de10-lite)
 set stack=0x84000000
 
