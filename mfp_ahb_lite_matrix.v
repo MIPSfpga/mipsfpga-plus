@@ -90,7 +90,6 @@ module mfp_ahb_lite_matrix
     `ifdef MFP_USE_SDRAM_MEMORY
         mfp_ahb_ram_sdram
         #(
-            .DELAY_nCKE ( `SDRAM_DELAY_nCKE ),
             .ADDR_BITS  ( `SDRAM_ADDR_BITS  ),
             .ROW_BITS   ( `SDRAM_ROW_BITS   ),
             .COL_BITS   ( `SDRAM_COL_BITS   ),

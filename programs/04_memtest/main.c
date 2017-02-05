@@ -5,7 +5,7 @@
 #define SIMULATION  0
 #define SDRAM_64M   64
 
-#define MEMTYPE SIMULATION
+#define MEMTYPE SDRAM_64M
 
 #if     MEMTYPE == SIMULATION
     #define TEST_ARRSIZE    200   
@@ -19,9 +19,12 @@
 
 void _delay(uint32_t val)
 {
-    for (uint32_t i = 0; i < val; i++);
+    for (uint32_t i = 0; i < val; i++)
+        __asm__ volatile("nop");
 }
 
+//optput statistic to 7segment: CCEEEE 
+//  where CC - check num, EEEE - found errors count
 void statOut(uint8_t iterationNum, uint16_t errCount)
 {
     uint32_t out = (((uint32_t)iterationNum) << 16) + errCount;
@@ -81,7 +84,8 @@ int main ()
     }
         
     //end
-    stepOut(4);
+    //4 - no errors, 5 - some errors
+    stepOut(!errCount ? 4 : 5);
+
     for(;;);
-    //return 0;
 }

@@ -11,8 +11,6 @@ module mfp_uart_receiver
 
     `ifdef MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
         parameter  clock_frequency        = 50000000 / 2;
-    // `elsif MFP_USE_SDRAM_MEMORY
-    //     parameter  clock_frequency        = 100000000 / 2;
     `else
         parameter  clock_frequency        = 50000000;
     `endif

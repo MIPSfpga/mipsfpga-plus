@@ -1,6 +1,5 @@
 /* Simple SDRAM controller for MIPSfpga+ system AHB-Lite bus
- * Copyright(c) 2016 Stanislav Zhelnio
- * https://github.com/zhelnio/ahb_lite_sdram
+ * Copyright(c) 2017 Stanislav Zhelnio
  */
 
 module mfp_ahb_ram_sdram
@@ -20,20 +19,20 @@ module mfp_ahb_ram_sdram
                                                                        fclk - clock frequency  */
                 DELAY_tREF          = 390,      /* Refresh period 
                                                    <= ((tREF - tRC) * fclk / RowsInBankCount)  */
-                DELAY_tRP           = 1,        /* PRECHARGE command period 
-                                                   >= (tRP * fclk - 2)                         */
-                DELAY_tRFC          = 7,        /* AUTO_REFRESH period 
+                DELAY_tRP           = 0,        /* PRECHARGE command period 
+                                                   >= (tRP * fclk - 1)                         */
+                DELAY_tRFC          = 2,        /* AUTO_REFRESH period 
                                                    >= (tRFC * fclk - 2)                        */
                 DELAY_tMRD          = 0,        /* LOAD_MODE_REGISTER to ACTIVE or REFRESH command 
                                                    >= (tMRD * fclk - 2)                        */
-                DELAY_tRCD          = 1,        /* ACTIVE-to-READ or WRITE delay 
-                                                   >= (tRCD * fclk - 2)                        */
+                DELAY_tRCD          = 0,        /* ACTIVE-to-READ or WRITE delay 
+                                                   >= (tRCD * fclk - 1)                        */
                 DELAY_tCAS          = 0,        /* CAS delay, also depends on clock phase shift 
                                                    =  (CAS - 1)                                */
-                DELAY_afterREAD     = 4,        /* depends on tRC for READ with auto precharge command 
-                                                   >= ((tRC - tRCD) * fclk - 2 - CAS)          */
-                DELAY_afterWRITE    = 5,        /* depends on tRC for WRITE with auto precharge command 
-                                                   >= ((tRC - tRCD) * fclk - 2)                */
+                DELAY_afterREAD     = 0,        /* depends on tRC for READ with auto precharge command 
+                                                   >= ((tRC - tRCD) * fclk - 1 - CAS)          */
+                DELAY_afterWRITE    = 2,        /* depends on tRC for WRITE with auto precharge command 
+                                                   >= ((tRC - tRCD) * fclk - 1)                */
                 COUNT_initAutoRef   = 2         /* count of AUTO_REFRESH during Init operation */
 )
 (
@@ -142,7 +141,7 @@ module mfp_ahb_ram_sdram
             S_INIT1_nCKE        :   Next = BigDelayFinished ? S_INIT2_CKE : S_INIT1_nCKE;
             S_INIT2_CKE         :   Next = S_INIT3_NOP;
             S_INIT3_NOP         :   Next = S_INIT4_PRECHALL;
-            S_INIT4_PRECHALL    :   Next = S_INIT5_NOP;
+            S_INIT4_PRECHALL    :   Next = (DELAY_tRP == 0) ? S_INIT6_PREREF : S_INIT5_NOP;
             S_INIT5_NOP         :   Next = DelayFinished ? S_INIT6_PREREF : S_INIT5_NOP;
             S_INIT6_PREREF      :   Next = S_INIT7_AUTOREF;
             S_INIT7_AUTOREF     :   Next = S_INIT8_NOP;
@@ -153,19 +152,21 @@ module mfp_ahb_ram_sdram
                                            ~NeedAction    ? S_IDLE : (
                                            HWRITE         ? S_WRITE0_ACT : S_READ0_ACT));
 
-            S_READ0_ACT         :   Next = S_READ1_NOP;
+            S_READ0_ACT         :   Next = (DELAY_tRCD == 0) ? S_READ2_READ : S_READ1_NOP;
             S_READ1_NOP         :   Next = DelayFinished ? S_READ2_READ : S_READ1_NOP;
             S_READ2_READ        :   Next = (DELAY_tCAS == 0) ? S_READ4_RD0 : S_READ3_NOP;
             S_READ3_NOP         :   Next = DelayFinished ? S_READ4_RD0 : S_READ3_NOP;
             S_READ4_RD0         :   Next = S_READ5_RD1;
-            S_READ5_RD1         :   Next = S_READ6_NOP;
+            S_READ5_RD1         :   Next = (DELAY_afterREAD != 0) ? S_READ6_NOP : (
+                                           NeedRefresh  ? S_AREF0_AUTOREF : S_IDLE );
             S_READ6_NOP         :   Next = ~DelayFinished ? S_READ6_NOP : (
                                            NeedRefresh  ? S_AREF0_AUTOREF : S_IDLE );
 
-            S_WRITE0_ACT        :   Next = S_WRITE1_NOP;
+            S_WRITE0_ACT        :   Next = (DELAY_tRCD == 0) ? S_WRITE2_WR0 : S_WRITE1_NOP;
             S_WRITE1_NOP        :   Next = DelayFinished ? S_WRITE2_WR0 : S_WRITE1_NOP;
             S_WRITE2_WR0        :   Next = S_WRITE3_WR1;
-            S_WRITE3_WR1        :   Next = S_WRITE4_NOP;
+            S_WRITE3_WR1        :   Next = (DELAY_afterWRITE != 0) ? S_WRITE4_NOP : (
+                                            NeedRefresh  ? S_AREF0_AUTOREF : S_IDLE );
             S_WRITE4_NOP        :   Next = ~DelayFinished ? S_WRITE4_NOP : (
                                            NeedRefresh  ? S_AREF0_AUTOREF : S_IDLE );
 
@@ -178,15 +179,15 @@ module mfp_ahb_ram_sdram
         
         //short delay and count operations
         case(State)
-            S_INIT4_PRECHALL    :   delay_n <= DELAY_tRP;
+            S_INIT4_PRECHALL    :   delay_n <= DELAY_tRP        - 1;
             S_INIT6_PREREF      :   repeat_cnt <= COUNT_initAutoRef;
             S_INIT7_AUTOREF     :   begin delay_n <= DELAY_tRFC; repeat_cnt <= repeat_cnt - 1; end
             S_INIT9_LMR         :   delay_n <= DELAY_tMRD; 
-            S_READ0_ACT         :   delay_n <= DELAY_tRCD;
-            S_READ2_READ        :   delay_n <= DELAY_tCAS - 1;
-            S_READ5_RD1         :   delay_n <= DELAY_afterREAD;
-            S_WRITE0_ACT        :   delay_n <= DELAY_tRCD;
-            S_WRITE3_WR1        :   delay_n <= DELAY_afterWRITE;
+            S_READ0_ACT         :   delay_n <= DELAY_tRCD       - 1;
+            S_READ2_READ        :   delay_n <= DELAY_tCAS       - 1;
+            S_READ5_RD1         :   delay_n <= DELAY_afterREAD  - 1;
+            S_WRITE0_ACT        :   delay_n <= DELAY_tRCD       - 1;
+            S_WRITE3_WR1        :   delay_n <= DELAY_afterWRITE - 1;
             S_AREF0_AUTOREF     :   delay_n <= DELAY_tRFC;
             default             :   if (|delay_n) delay_n <= delay_n - 1;
         endcase

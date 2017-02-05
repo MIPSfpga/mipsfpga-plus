@@ -426,7 +426,6 @@ set_location_assignment PIN_AA2 -to GPIO[35]
 # End of pin assignments by Terasic System Builder
 #============================================================
 
-
 set_global_assignment -name VERILOG_FILE ../de10_lite.v
 
 set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_gpio_slave.v

@@ -70,17 +70,10 @@
         `define SDRAM_MEM_CLK_PHASE_SHIFT   12
         `define MFP_RAM_ADDR_WIDTH          (`SDRAM_ROW_BITS + `SDRAM_COL_BITS + `SDRAM_BA_BITS)
     `else
-        //values for 64MB (Terasic DE10-Lite)
-        `define SDRAM_ADDR_BITS         13
-        `define SDRAM_ROW_BITS          13
-        `define SDRAM_COL_BITS          10
-        `define SDRAM_DQ_BITS           16
-        `define SDRAM_BA_BITS           2
-        `define SDRAM_DM_BITS           2
-        `define SDRAM_DELAY_nCKE        20000
-        `define MFP_RAM_ADDR_WIDTH      (`SDRAM_ROW_BITS + `SDRAM_COL_BITS + `SDRAM_BA_BITS)
+        `include "board_config.vh"
     `endif
 `endif
+
 
 //not all types of memory can work with HSIZE_1
 `ifdef MFP_USE_UART_PROGRAM_LOADER

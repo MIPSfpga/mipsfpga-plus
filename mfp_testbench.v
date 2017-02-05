@@ -1,7 +1,6 @@
 `include "mfp_ahb_lite_matrix_config.vh"
 
 `timescale 1 ns / 100 ps
-//`timescale 1ns / 1ps
 
 module mfp_testbench;
 
@@ -105,10 +104,7 @@ module mfp_testbench;
 
     `ifdef MFP_USE_SDRAM_MEMORY
 
-        `include "sdr_parameters.vh"
-
         parameter tT = 20;
-        //parameter tT = tCK;
 
         initial begin
             SDRAM_CLK = 0; 
@@ -317,8 +313,7 @@ module mfp_testbench;
 
         cycle = cycle + 1;
 
-        //if (cycle > 12000)
-        if (cycle > 50000)
+        if (cycle > 21000)
         begin
             $display ("Timeout");
             $finish;

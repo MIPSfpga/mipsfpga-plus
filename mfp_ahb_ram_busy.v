@@ -1,12 +1,12 @@
 /* Simple SDRAM controller for MIPSfpga+ system AHB-Lite bus
- * Copyright(c) 2016 Stanislav Zhelnio
- * https://github.com/zhelnio/ahb_lite_sdram
+ * Copyright(c) 2017 Stanislav Zhelnio
  */
 
 // simply ram with HREADY support
 module mfp_ahb_ram_busy
 #(
-    parameter ADDR_WIDTH = 6
+    parameter ADDR_WIDTH = 6,
+    parameter DELAY_VAL  = 2
 )
 (
     //ABB-Lite side
@@ -35,8 +35,6 @@ module mfp_ahb_ram_busy
                 S_WAIT          = 4;
 
     parameter   HTRANS_IDLE     = 2'b0;
-
-    parameter   DELAY_VAL       = 8;
 
     reg     [  4 : 0 ]      State, Next;
     reg     [ 31 : 0 ]      HADDR_old;
