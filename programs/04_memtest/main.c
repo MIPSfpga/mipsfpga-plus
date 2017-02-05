@@ -2,14 +2,17 @@
 #include "mfp_memory_mapped_registers.h"
 #include <stdint.h>
 
-//count of HEX segments on board
-#define HEX_SEGMENT_COUNT   6
-
 #define SIMULATION  0
 #define SDRAM_64M   64
 #define SDRAM_8M    8
 
+// -------- config start ------------
+
+//count of HEX segments on board
+#define HEX_SEGMENT_COUNT   6
 #define MEMTYPE SDRAM_64M
+
+// --------  config end  ------------
 
 #if     MEMTYPE == SIMULATION
     #define TEST_ARRSIZE    200   

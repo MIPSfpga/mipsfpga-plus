@@ -5,5 +5,3 @@ cd sim
 copy ..\*.hex .
 
 vsim -do ../modelsim_script.tcl
-
-cd ..
