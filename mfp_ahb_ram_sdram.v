@@ -14,11 +14,12 @@ module mfp_ahb_ram_sdram
                 SADDR_BITS          = (ROW_BITS + COL_BITS + BA_BITS),
 
     // delay params depends on Datasheet values, frequency and FSM states count
-    parameter   DELAY_nCKE          = 14000,    /* Init delay before bringing CKE high 
+    // default values are calculated for simulation(!): Micron SDRAM Verilog model with fclk=50 MHz and CAS=2 
+    parameter   DELAY_nCKE          = 20,       /* Init delay before bringing CKE high 
                                                    >= (T * fclk) where T    - CKE LOW init timeout 
                                                                        fclk - clock frequency  */
-                DELAY_tREF          = 700, //8000000,  /* Refresh period 
-                                                   //<= ((tREF - tRC) * fclk)                    */
+                DELAY_tREF          = 390,      /* Refresh period 
+                                                   <= ((tREF - tRC) * fclk / RowsInBankCount)  */
                 DELAY_tRP           = 1,        /* PRECHARGE command period 
                                                    >= (tRP * fclk - 2)                         */
                 DELAY_tRFC          = 7,        /* AUTO_REFRESH period 
@@ -214,7 +215,6 @@ module mfp_ahb_ram_sdram
             S_WRITE0_ACT        :   DATA <= HWDATA;
             default             :   ;
         endcase
-
     end
 
     // SADDR = { BANKS, ROWS, COLUMNS }
@@ -234,7 +234,13 @@ module mfp_ahb_ram_sdram
                 CMD_READ            = 5'b10101,
                 CMD_WRITE           = 5'b10100;
 
-    parameter   SDRAM_MODE          = 13'b0000000100001; // CAS=2, BL=2, Seq
+    parameter   SDRAM_CAS           = 3'b010;            // CAS=2
+    parameter   SDRAM_BURST_TYPE    = 1'b0;              // Sequential
+    parameter   SDRAM_BURST_LEN     = 3'b001;            // BL=2
+
+    parameter   SDRAM_MODE_A        = { { ADDR_BITS - 7 { 1'b0 } }, SDRAM_CAS, SDRAM_BURST_TYPE, SDRAM_BURST_LEN };
+    parameter   SDRAM_MODE_B        = { BA_BITS {1'b0} };
+
     parameter   SDRAM_ALL_BANKS     = (1 << 10);         // A[10]=1
     parameter   SDRAM_AUTOPRCH_FLAG = (1 << 10);         // A[10]=1
 
@@ -248,7 +254,7 @@ module mfp_ahb_ram_sdram
             S_INIT1_nCKE        :   cmd = CMD_NOP_NCKE;
             S_INIT4_PRECHALL    :   begin cmd = CMD_PRECHARGEALL;   ADDR = SDRAM_ALL_BANKS; end
             S_INIT7_AUTOREF     :   cmd = CMD_AUTOREFRESH;
-            S_INIT9_LMR         :   begin cmd = CMD_LOADMODEREG;    ADDR = SDRAM_MODE; end
+            S_INIT9_LMR         :   begin cmd = CMD_LOADMODEREG;    ADDR = SDRAM_MODE_A; BA = SDRAM_MODE_B; end
 
             S_READ0_ACT         :   begin cmd = CMD_ACTIVE;         ADDR = AddrRow;     BA = AddrBank; end
             S_READ2_READ        :   begin cmd = CMD_READ;           ADDR = AddrColumn | SDRAM_AUTOPRCH_FLAG;  BA = AddrBank; end
@@ -265,6 +271,5 @@ module mfp_ahb_ram_sdram
             S_WRITE3_WR1        :   DQreg = DATA [ 31:16 ];
         endcase
     end
-
 
 endmodule
