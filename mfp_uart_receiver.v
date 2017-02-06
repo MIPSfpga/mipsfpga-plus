@@ -10,13 +10,13 @@ module mfp_uart_receiver
 );
 
     `ifdef MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
-    parameter  clock_frequency        = 50000000 / 2;
+        parameter  clock_frequency        = 50000000 / 2;
     `else
-    parameter  clock_frequency        = 50000000;
+        parameter  clock_frequency        = 50000000;
     `endif
 
     parameter  baud_rate              = 115200;
-    localparam clock_cycles_in_symbol = clock_frequency / baud_rate;
+    parameter  clock_cycles_in_symbol = clock_frequency / baud_rate;
 
     // Synchronize rx input to clock
 
