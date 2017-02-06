@@ -11,6 +11,8 @@ module mfp_system
     output [31:0] HRDATA,
     output [31:0] HWDATA,
     output        HWRITE,
+    output        HREADY,
+    output [ 1:0] HTRANS,
 
     input         EJ_TRST_N_probe,
     input         EJ_TDI,
@@ -18,6 +20,18 @@ module mfp_system
     input         EJ_TMS,
     input         EJ_TCK,
     input         EJ_DINT,
+
+    `ifdef MFP_USE_SDRAM_MEMORY
+    output                                  SDRAM_CKE,
+    output                                  SDRAM_CSn,
+    output                                  SDRAM_RASn,
+    output                                  SDRAM_CASn,
+    output                                  SDRAM_WEn,
+    output [`SDRAM_ADDR_BITS - 1 : 0 ]      SDRAM_ADDR,
+    output [`SDRAM_BA_BITS   - 1 : 0 ]      SDRAM_BA,
+    inout  [`SDRAM_DQ_BITS   - 1 : 0 ]      SDRAM_DQ,
+    output [`SDRAM_DM_BITS   - 1 : 0 ]      SDRAM_DQM,
+    `endif
 
     input  [`MFP_N_SWITCHES          - 1:0] IO_Switches,
     input  [`MFP_N_BUTTONS           - 1:0] IO_Buttons,
@@ -83,11 +97,11 @@ module mfp_system
     wire         HMASTLOCK;
     wire [  3:0] HPROT;
 //  wire [ 31:0] HRDATA;
-    wire         HREADY;
+//  wire         HREADY;
     wire         HRESETn;
     wire         HRESP;
     wire [  2:0] HSIZE;
-    wire [  1:0] HTRANS;
+//  wire [  1:0] HTRANS;
 //  wire [ 31:0] HWDATA;
 //  wire         HWRITE;
     wire [  0:0] ISP_fromisp;
@@ -359,6 +373,18 @@ module mfp_system
         .HREADY           (   HREADY           ),
         .HRESP            (   HRESP            ),
         .SI_Endian        (   SI_Endian        ),
+        
+        `ifdef MFP_USE_SDRAM_MEMORY
+        .SDRAM_CKE        (   SDRAM_CKE        ),
+        .SDRAM_CSn        (   SDRAM_CSn        ),
+        .SDRAM_RASn       (   SDRAM_RASn       ),
+        .SDRAM_CASn       (   SDRAM_CASn       ),
+        .SDRAM_WEn        (   SDRAM_WEn        ),
+        .SDRAM_ADDR       (   SDRAM_ADDR       ),
+        .SDRAM_BA         (   SDRAM_BA         ),
+        .SDRAM_DQ         (   SDRAM_DQ         ),
+        .SDRAM_DQM        (   SDRAM_DQM        ),
+        `endif
                                                 
         .IO_Switches      (   IO_Switches      ),
         .IO_Buttons       (   IO_Buttons       ),
