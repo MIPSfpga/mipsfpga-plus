@@ -132,3 +132,4 @@
 `define MFP_RESET_RAM_ADDR_MATCH    7'h7f
 `define MFP_RAM_ADDR_MATCH          3'b0
 `define MFP_GPIO_ADDR_MATCH         7'h7e
+`define MFP_UART_ADDR_MATCH         17'h10401

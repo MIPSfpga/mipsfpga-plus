@@ -44,23 +44,19 @@ module mfp_ahb_lite_matrix
     output        UART_TX
 );
 
-    // UART is not supported this implementation of the module
-
-    assign UART_TX = 1'b0;
-
-    wire [ 2:0] HSEL;
+    wire [ 3:0] HSEL;
 
     mfp_ahb_lite_decoder decoder (HADDR, HSEL);
 
-    reg  [ 2:0] HSEL_dly;
+    reg  [ 3:0] HSEL_dly;
 
     always @ (posedge HCLK)
         if(HREADY)
             HSEL_dly <= HSEL;
 
-    wire        HREADY_0 , HREADY_1 , HREADY_2 ;
-    wire [31:0] HRDATA_0 , HRDATA_1 , HRDATA_2 ;
-    wire        HRESP_0  , HRESP_1  , HRESP_2  ;
+    wire        HREADY_0 , HREADY_1 , HREADY_2 , HREADY_3;
+    wire [31:0] HRDATA_0 , HRDATA_1 , HRDATA_2 , HRDATA_3;
+    wire        HRESP_0  , HRESP_1  , HRESP_2  , HRESP_3;
 
     //RESET
     mfp_ahb_ram_slave
@@ -171,7 +167,40 @@ module mfp_ahb_lite_matrix
         `endif
     );
 
-    assign HREADY = HREADY_0 & HREADY_1 & HREADY_2;
+    //UART
+    mfp_ahb_lite_uart16550  uart
+    (
+        .HCLK             ( HCLK            ),
+        .HRESETn          ( HRESETn         ),
+        .HADDR            ( HADDR           ),
+        .HBURST           ( HBURST          ),
+        .HMASTLOCK        ( HMASTLOCK       ),
+        .HPROT            ( HPROT           ),
+        .HSEL             ( HSEL [3]        ),
+        .HSIZE            ( HSIZE           ),
+        .HTRANS           ( HTRANS          ),
+        .HWDATA           ( HWDATA          ),
+        .HWRITE           ( HWRITE          ),
+        .HRDATA           ( HRDATA_3        ),
+        .HREADY           ( HREADY_3        ),
+        .HRESP            ( HRESP_3         ),
+        .SI_Endian        ( SI_Endian       ),
+
+        .UART_SRX         ( UART_RX         ),  // in  UART serial input signal
+        .UART_STX         ( UART_TX         )   // out UART serial output signal
+        /*
+        .UART_RTS         ( UART_RTS        ),  // out UART MODEM Request To Send
+        .UART_CTS         ( UART_CTS        ),  // in  UART MODEM Clear To Send
+        .UART_DTR         ( UART_DTR        ),  // out UART MODEM Data Terminal Ready
+        .UART_DSR         ( UART_DSR        ),  // in  UART MODEM Data Set Ready
+        .UART_RI          ( UART_RI         ),  // in  UART MODEM Ring Indicator
+        .UART_DCD         ( UART_DCD        ),  // in  UART MODEM Data Carrier Detect
+        .UART_BAUD        ( UART_BAUD       ),  // out UART baudrate output
+        .UART_INT         ( UART_INT        )   // out UART interrupt
+        */
+    );
+
+    assign HREADY = HREADY_0 & HREADY_1 & HREADY_2 & HREADY_3;
 
     mfp_ahb_lite_response_mux response_mux
     (
@@ -180,10 +209,12 @@ module mfp_ahb_lite_matrix
         .HRDATA_0 ( HRDATA_0 ),
         .HRDATA_1 ( HRDATA_1 ),
         .HRDATA_2 ( HRDATA_2 ),
+        .HRDATA_3 ( HRDATA_3 ),
 
         .HRESP_0  ( HRESP_0  ),
         .HRESP_1  ( HRESP_1  ),
         .HRESP_2  ( HRESP_2  ),
+        .HRESP_3  ( HRESP_3  ),
 
         .HRDATA   ( HRDATA   ),
         .HRESP    ( HRESP    )
@@ -202,16 +233,16 @@ module mfp_ahb_lite_decoder
     // Decode based on most significant bits of the address
 
     // RAM   4 MB max at 0xbfc00000 (physical: 0x1fc00000 - 0x1fffffff)
-
     assign HSEL [0] = ( HADDR [28:22] == `MFP_RESET_RAM_ADDR_MATCH );
 
     // RAM  64 MB max at 0x80000000 (physical: 0x00000000 - 0x03FFFFFF)
-
     assign HSEL [1] = ( HADDR [28:26] == `MFP_RAM_ADDR_MATCH       );
 
     // GPIO  4 MB max at 0xbf800000 (physical: 0x1f800000 - 0x1fbfffff)
-
     assign HSEL [2] = ( HADDR [28:22] == `MFP_GPIO_ADDR_MATCH      );
+
+    // UART  4 KB max at 0xb0401000 (physical: 0x10401000 - 0x10401fff)
+    assign HSEL [3] = ( HADDR [28:12] == `MFP_UART_ADDR_MATCH      );
 
 endmodule
 
@@ -219,15 +250,17 @@ endmodule
 
 module mfp_ahb_lite_response_mux
 (
-    input      [ 2:0] HSEL,
+    input      [ 3:0] HSEL,
                
     input      [31:0] HRDATA_0,
     input      [31:0] HRDATA_1,
     input      [31:0] HRDATA_2,
+    input      [31:0] HRDATA_3,
                
     input             HRESP_0,
     input             HRESP_1,
     input             HRESP_2,
+    input             HRESP_3,
 
     output reg [31:0] HRDATA,
     output reg        HRESP
@@ -235,10 +268,11 @@ module mfp_ahb_lite_response_mux
 
     always @*
         casez (HSEL)
-            3'b??1:   begin HRDATA = HRDATA_0; HRESP = HRESP_0; end
-            3'b?10:   begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
-            3'b100:   begin HRDATA = HRDATA_2; HRESP = HRESP_2; end
-            default:  begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
+            4'b???1:   begin HRDATA = HRDATA_0; HRESP = HRESP_0; end
+            4'b??10:   begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
+            4'b?100:   begin HRDATA = HRDATA_2; HRESP = HRESP_2; end
+            4'b1000:   begin HRDATA = HRDATA_3; HRESP = HRESP_3; end
+            default:   begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
         endcase
 
 endmodule
