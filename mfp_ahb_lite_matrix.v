@@ -227,7 +227,7 @@ endmodule
 module mfp_ahb_lite_decoder
 (
     input  [31:0] HADDR,
-    output [ 2:0] HSEL
+    output [ 3:0] HSEL
 );
 
     // Decode based on most significant bits of the address
