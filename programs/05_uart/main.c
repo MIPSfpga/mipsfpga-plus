@@ -2,11 +2,24 @@
 #include "mfp_memory_mapped_registers.h"
 #include <stdint.h>
 
+
+// The devisor value set should be equal to 
+// (system clock speed) / (16 x desired baud rate).
+#define DIVISOR_50M     (50*1000*1000 / (16*115200))
+#define DIVISOR_SIM     1
+
+// config start
+
+#define UART_DIVISOR    DIVISOR_50M
+
+// config end
+
 void _delay(uint32_t val)
 {
     for (uint32_t i = 0; i < val; i++)
         __asm__ volatile("nop");
 }
+
 
 void uartInit(uint16_t divisor)
 {
@@ -34,16 +47,13 @@ uint8_t uartReceive(void)
 
 int main ()
 {
-    const uint16_t uartDivisor = 1;
+    const uint16_t uartDivisor = UART_DIVISOR;
 
-    //uart init
     uartInit(uartDivisor);
 
-    //uart transmit
-    uartTransmit(0x11);
+    uartTransmit('A');
 
     //received data output
-    MFP_RED_LEDS = uartReceive();
-
-    for(;;);
+    for(;;)
+        MFP_RED_LEDS = uartReceive();
 }
