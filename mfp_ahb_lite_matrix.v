@@ -186,7 +186,7 @@ module mfp_ahb_lite_matrix
         .HRESP            ( HRESP_3         ),
         .SI_Endian        ( SI_Endian       ),
 
-        .UART_SRX         ( UART_RX         ),  // in  UART serial input signal
+        .UART_SRX         ( /*UART_RX*/  UART_TX       ),  // in  UART serial input signal
         .UART_STX         ( UART_TX         )   // out UART serial output signal
         /*
         .UART_RTS         ( UART_RTS        ),  // out UART MODEM Request To Send

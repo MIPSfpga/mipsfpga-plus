@@ -42,20 +42,14 @@ module mfp_ahb_lite_uart16550(
 );
 
     parameter   S_INIT      = 0,
-                S_HR_READY  = 1,
-                S_WR_WAIT   = 2;
+                S_IDLE      = 1,
+                S_READ      = 2,
+                S_WRITE     = 3;
     
     reg  [ 1:0 ]    State, Next;
 
     assign      HRESP  = 1'b0;
-    assign      HREADY = (State == S_HR_READY);
-
-    reg  [ 2:0 ]    ADDR_old;
-    wire [ 2:0 ]    ADDR = HADDR [ 4:2 ];
-    wire [ 7:0 ]    ReadData;
-
-    parameter       HTRANS_IDLE       = 2'b0;
-    wire            NeedAction = HTRANS != HTRANS_IDLE && HSEL;
+    assign      HREADY = (State ==  S_IDLE);
 
     always @ (posedge HCLK) begin
         if (~HRESETn)
@@ -64,26 +58,47 @@ module mfp_ahb_lite_uart16550(
             State <= Next;
     end
 
-    //State change decision
+    reg  [ 2:0 ]    ADDR_old;
+    wire [ 2:0 ]    ADDR = HADDR [ 4:2 ];
+    wire [ 7:0 ]    ReadData;
+
+    parameter       HTRANS_IDLE       = 2'b0;
+    wire            NeedAction = HTRANS != HTRANS_IDLE && HSEL;
+
     always @ (*) begin
+        //State change decision
         case(State)
-            S_INIT      :   Next = S_HR_READY;
-            S_HR_READY  :   Next = (NeedAction && HWRITE) ? S_WR_WAIT : S_HR_READY;
-            S_WR_WAIT   :   Next = S_HR_READY;
+            default     :   Next = S_IDLE;
+            S_IDLE      :   Next = ~NeedAction  ? S_IDLE : (
+                                    HWRITE      ? S_WRITE : S_READ );
         endcase
     end
 
     always @ (posedge HCLK) begin
-        if(State == S_HR_READY) begin
-            ADDR_old <= ADDR; 
-            if(NeedAction) HRDATA <= ReadData; 
-        end
+        case(State)
+            S_INIT      :   ;
+            S_IDLE      :   if(HSEL) ADDR_old <= ADDR;
+            S_READ      :   HRDATA <= { 24'b0, ReadData};
+            S_WRITE     :   ;
+        endcase
     end
 
-    wire [ 2:0 ]    ActionAddr  = (State == S_WR_WAIT) ? ADDR_old : ADDR;
     wire [ 7:0 ]    WriteData   = HWDATA [ 7:0 ];
-    wire            WriteAction = (State == S_WR_WAIT)  && HSEL;
-    wire            ReadAction  = (State == S_HR_READY) && NeedAction;
+    wire [ 2:0 ]    ActionAddr;
+    wire            WriteAction;
+    wire            ReadAction;
+    reg  [ 10:0 ]   conf;
+
+    assign { ReadAction, WriteAction, ActionAddr } = conf;
+
+    always @ (*) begin
+        //io
+        case(State)
+            default     :   conf = { 2'b00, 8'b0     };
+            S_READ      :   conf = { 2'b10, ADDR     };
+            S_WRITE     :   conf = { 2'b01, ADDR_old };
+        endcase
+    end
 
     // Registers
     uart_regs   regs(

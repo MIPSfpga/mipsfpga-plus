@@ -19,6 +19,12 @@
 #define MFP_UART_DLL_ADDR       0xB0401000      /*  Divisor Latch Low         */
 #define MFP_UART_DLH_ADDR       0xB0401004      /*  Divisor latch High        */
 
+#define MFP_UART_LCR_LATCH      (1 << 7)        /* LCR Divisor Latch Access bit */
+#define MFP_UART_LCR_8N1        3               /* 8N1 UART mode */
+#define MFP_UART_MCR_DTR        (1 << 0)        /* Data Terminal Ready (DTR) signal control */
+#define MFP_UART_MCR_RTS        (1 << 1)        /* Request To Send (RTS) signal control */
+#define MFP_UART_LSR_DR         (1 << 0)        /* Data Ready (DR) indicator */
+
 #define MFP_RED_LEDS            (* (volatile unsigned *) MFP_RED_LEDS_ADDR      )
 #define MFP_GREEN_LEDS          (* (volatile unsigned *) MFP_GREEN_LEDS_ADDR    )
 #define MFP_SWITCHES            (* (volatile unsigned *) MFP_SWITCHES_ADDR      )
