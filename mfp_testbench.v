@@ -48,6 +48,11 @@ module mfp_testbench;
     reg         UART_RX;
     wire        UART_TX;
 
+    `ifdef MFP_USE_COMMUNICATION_UART
+    wire        UART_STX;
+    wire        UART_SRX = UART_STX;
+    `endif
+
     wire        SPI_CS;
     wire        SPI_SCK;
     reg         SPI_SDO;
@@ -94,6 +99,11 @@ module mfp_testbench;
                                                
         .UART_RX          ( UART_RX          ),
         .UART_TX          ( UART_TX          ), 
+
+        `ifdef MFP_USE_COMMUNICATION_UART
+        .UART_SRX         ( UART_SRX         ), 
+        .UART_STX         ( UART_STX         ),
+        `endif
 
         .SPI_CS           ( SPI_CS           ),
         .SPI_SCK          ( SPI_SCK          ),
@@ -299,8 +309,12 @@ module mfp_testbench;
 
     always @ (posedge SI_ClkIn)
     begin
+
+        //uart debug only
+        //if(HADDR [28:12] == `MFP_UART_ADDR_MATCH)
+
         $display ("%5d HCLK %b HADDR %h HRDATA %h HWDATA %h HWRITE %b HREADY %b HTRANS %b LEDR %b LEDG %b 7SEG %h",
-            cycle, system.HCLK, HADDR, HRDATA, HWDATA, HWRITE, HREADY, HTRANS, IO_RedLEDs, IO_GreenLEDs, IO_7_SegmentHEX);
+            cycle, system.HCLK, HADDR, HRDATA, HWDATA,      HWRITE, HREADY, HTRANS, IO_RedLEDs, IO_GreenLEDs, IO_7_SegmentHEX);
 
         `ifdef MFP_DEMO_PIPE_BYPASS
 

@@ -42,6 +42,11 @@ module mfp_system
     input         UART_RX,
     output        UART_TX,
 
+    `ifdef MFP_USE_COMMUNICATION_UART
+    input         UART_SRX,
+    output        UART_STX,
+    `endif
+
     output        SPI_CS,
     output        SPI_SCK,
     input         SPI_SDO
@@ -404,6 +409,11 @@ module mfp_system
                                                
         .UART_RX          (   UART_RX          ), 
         .UART_TX          (   UART_TX          ),
+
+        `ifdef MFP_USE_COMMUNICATION_UART
+        .UART_SRX         (   UART_SRX         ), 
+        .UART_STX         (   UART_STX         ),
+        `endif
                                                
         .MFP_Reset        (   MFP_Reset        )
     );
