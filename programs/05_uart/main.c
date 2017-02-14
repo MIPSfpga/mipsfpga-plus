@@ -34,7 +34,17 @@ void uartInit(uint16_t divisor)
 
 void uartTransmit(uint8_t data)
 {
-    MFP_UART_TXR = data;        // transmitted data
+    // transmitted data
+    MFP_UART_TXR = data;
+    // waiting for transmitter fifo empty
+    while (!(MFP_UART_LSR & MFP_UART_LSR_TFE));
+}
+
+void receivedDataOutput(uint8_t data)
+{
+    MFP_RED_LEDS        = data;
+    MFP_GREEN_LEDS      = data;
+    MFP_7_SEGMENT_HEX   = data;
 }
 
 uint8_t uartReceive(void)
@@ -51,9 +61,19 @@ int main ()
 
     uartInit(uartDivisor);
 
-    uartTransmit('A');
+    //say Hello after reset
+    uartTransmit('H');
+    uartTransmit('e');
+    uartTransmit('l');
+    uartTransmit('l');
+    uartTransmit('o');
+    uartTransmit('!');
 
-    //received data output
+    //received data output and loopback
     for(;;)
-        MFP_RED_LEDS = uartReceive();
+    {
+        uint8_t data = uartReceive();
+        receivedDataOutput(data);
+        uartTransmit(data);
+    }
 }

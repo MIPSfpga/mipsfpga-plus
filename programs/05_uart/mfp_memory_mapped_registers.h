@@ -24,6 +24,7 @@
 #define MFP_UART_MCR_DTR        (1 << 0)        /* Data Terminal Ready (DTR) signal control */
 #define MFP_UART_MCR_RTS        (1 << 1)        /* Request To Send (RTS) signal control */
 #define MFP_UART_LSR_DR         (1 << 0)        /* Data Ready (DR) indicator */
+#define MFP_UART_LSR_TFE        (1 << 5)        /* Transmitter FIFO empty */
 
 #define MFP_RED_LEDS            (* (volatile unsigned *) MFP_RED_LEDS_ADDR      )
 #define MFP_GREEN_LEDS          (* (volatile unsigned *) MFP_GREEN_LEDS_ADDR    )
