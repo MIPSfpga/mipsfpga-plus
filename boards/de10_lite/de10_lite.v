@@ -146,6 +146,11 @@ module de10_lite
         .UART_RX          (   GPIO [31]       ),
         .UART_TX          (   /* TODO */      ),
 
+        `ifdef MFP_USE_COMMUNICATION_UART
+        .UART_SRX         (   GPIO [25]       ), 
+        .UART_STX         (   GPIO [23]       ),
+        `endif
+
         .SPI_CS           (   GPIO [34]       ),
         .SPI_SCK          (   GPIO [28]       ),
         .SPI_SDO          (   GPIO [30]       )

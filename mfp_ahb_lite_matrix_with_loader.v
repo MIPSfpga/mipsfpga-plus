@@ -40,8 +40,15 @@ module mfp_ahb_lite_matrix_with_loader
     input  [15:0] IO_LightSensor,
     `endif
 
+    //reset uart
     input         UART_RX,
     output        UART_TX,
+
+    `ifdef MFP_USE_COMMUNICATION_UART
+    //communication uart
+    input         UART_SRX,
+    output        UART_STX,
+    `endif
 
     output        MFP_Reset
 );
@@ -158,9 +165,14 @@ module mfp_ahb_lite_matrix_with_loader
         `ifdef MFP_DEMO_LIGHT_SENSOR
         .IO_LightSensor   ( IO_LightSensor  ), 
         `endif
-                                       
-        .UART_RX          ( UART_RX         ), 
+
+        `ifdef MFP_USE_COMMUNICATION_UART
+        .UART_RX          ( UART_SRX        ), 
+        .UART_TX          ( UART_STX        ) 
+        `else
+        .UART_RX          ( 1'b0            ), 
         .UART_TX          ( UART_TX         ) 
+        `endif //MFP_USE_COMMUNICATION_UART
     );
 
 endmodule
