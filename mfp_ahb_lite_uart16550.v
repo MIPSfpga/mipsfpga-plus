@@ -6,8 +6,6 @@
  *          https://github.com/olofk/uart16550
  */
 
-`include "uart_defines.v"
-
 module mfp_ahb_lite_uart16550(
     //ABB-Lite side
     input                               HCLK,

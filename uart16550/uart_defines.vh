@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
 ////                                                              ////
-////  uart_defines.v                                              ////
+////  uart_defines.vh                                             ////
 ////                                                              ////
 ////                                                              ////
 ////  This file is part of the "UART 16550 compatible" project    ////

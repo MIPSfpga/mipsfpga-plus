@@ -189,7 +189,7 @@
 //
 //
 
-`include "uart_defines.v"
+`include "uart_defines.vh"
 
 module uart_receiver (clk, wb_rst_i, lcr, rf_pop, srx_pad_i, enable, 
 	counter_t, rf_count, rf_data_out, rf_error_bit, rf_overrun, rx_reset, lsr_mask, rstate, rf_push_pulse);
