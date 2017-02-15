@@ -2,17 +2,25 @@
 #include "mfp_memory_mapped_registers.h"
 #include <stdint.h>
 
+#define SIMULATION  0
+#define HARDWARE    1
+
+// config start
+
+#define RUNTYPE     SIMULATION
+
+// config end
 
 // The devisor value set should be equal to 
 // (system clock speed) / (16 x desired baud rate).
 #define DIVISOR_50M     (50*1000*1000 / (16*115200))
 #define DIVISOR_SIM     1
 
-// config start
-
-#define UART_DIVISOR    DIVISOR_50M
-
-// config end
+#if     RUNTYPE == SIMULATION
+    #define UART_DIVISOR    DIVISOR_SIM
+#elif   RUNTYPE == HARDWARE
+    #define UART_DIVISOR    DIVISOR_50M
+#endif
 
 void _delay(uint32_t val)
 {
@@ -74,6 +82,9 @@ int main ()
     {
         uint8_t data = uartReceive();
         receivedDataOutput(data);
+
+        #if   RUNTYPE == HARDWARE
         uartTransmit(data);
+        #endif
     }
 }

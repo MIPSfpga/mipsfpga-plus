@@ -269,18 +269,11 @@ module mfp_ahb_lite_response_mux
 
     always @*
         casez (HSEL)
-<<<<<<< HEAD
             4'b???1:   begin HRDATA = HRDATA_0; HRESP = HRESP_0; end
             4'b??10:   begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
             4'b?100:   begin HRDATA = HRDATA_2; HRESP = HRESP_2; end
             4'b1000:   begin HRDATA = HRDATA_3; HRESP = HRESP_3; end
             default:   begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
-=======
-            3'b??1:   begin HRDATA = HRDATA_0; HRESP = HRESP_0; end
-            3'b?10:   begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
-            3'b100:   begin HRDATA = HRDATA_2; HRESP = HRESP_2; end
-            default:  begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
->>>>>>> refs/remotes/MIPSfpga/master
         endcase
 
 endmodule
