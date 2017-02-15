@@ -146,7 +146,7 @@ module de10_lite
         .UART_RX          (   GPIO [31]       ),
         .UART_TX          (   /* TODO */      ),
 
-        `ifdef MFP_USE_COMMUNICATION_UART
+        `ifdef MFP_USE_DUPLEX_UART
         .UART_SRX         (   GPIO [25]       ), 
         .UART_STX         (   GPIO [23]       ),
         `endif

@@ -48,7 +48,7 @@ module mfp_testbench;
     reg         UART_RX;
     wire        UART_TX;
 
-    `ifdef MFP_USE_COMMUNICATION_UART
+    `ifdef MFP_USE_DUPLEX_UART
     wire        UART_STX;
     wire        UART_SRX = UART_STX;
     `endif
@@ -100,7 +100,7 @@ module mfp_testbench;
         .UART_RX          ( UART_RX          ),
         .UART_TX          ( UART_TX          ), 
 
-        `ifdef MFP_USE_COMMUNICATION_UART
+        `ifdef MFP_USE_DUPLEX_UART
         .UART_SRX         ( UART_SRX         ), 
         .UART_STX         ( UART_STX         ),
         `endif

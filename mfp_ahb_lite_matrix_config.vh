@@ -18,7 +18,7 @@
 //  Common configuration parameters
 //
 `define MFP_USE_UART_PROGRAM_LOADER
-`define MFP_USE_COMMUNICATION_UART
+`define MFP_USE_DUPLEX_UART
 // `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
 // `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 // `define MFP_DEMO_LIGHT_SENSOR
