@@ -310,9 +310,6 @@ module mfp_testbench;
     always @ (posedge SI_ClkIn)
     begin
 
-        //uart debug only
-        //if(HADDR [28:12] == `MFP_UART_ADDR_MATCH)
-
         $display ("%5d HCLK %b HADDR %h HRDATA %h HWDATA %h HWRITE %b HREADY %b HTRANS %b LEDR %b LEDG %b 7SEG %h",
             cycle, system.HCLK, HADDR, HRDATA, HWDATA,      HWRITE, HREADY, HTRANS, IO_RedLEDs, IO_GreenLEDs, IO_7_SegmentHEX);
 
