@@ -441,8 +441,18 @@ set_global_assignment -name VERILOG_FILE ../../../mfp_srec_parser.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_srec_parser_to_ahb_lite_bridge.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_switch_and_button_debouncers.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_system.v
-# set_global_assignment -name VERILOG_FILE ../../../mfp_testbench.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_uart_receiver.v
+
+
+set_global_assignment -name VERILOG_FILE ../../../uart16550/raminfr.v
+set_global_assignment -name VERILOG_FILE ../../../uart16550/uart_receiver.v
+set_global_assignment -name VERILOG_FILE ../../../uart16550/uart_regs.v
+set_global_assignment -name VERILOG_FILE ../../../uart16550/uart_rfifo.v
+set_global_assignment -name VERILOG_FILE ../../../uart16550/uart_sync_flops.v
+set_global_assignment -name VERILOG_FILE ../../../uart16550/uart_tfifo.v
+set_global_assignment -name VERILOG_FILE ../../../uart16550/uart_transmitter.v
+set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_lite_uart16550.v
+
 
 set_global_assignment -name VERILOG_FILE ../../../../../MIPSfpga/rtl_up/d_wsram_2k2way_xilinx.v
 set_global_assignment -name VERILOG_FILE ../../../../../MIPSfpga/rtl_up/dataram_2k2way_xilinx.v

@@ -18,6 +18,7 @@
 //  Common configuration parameters
 //
 `define MFP_USE_UART_PROGRAM_LOADER
+`define MFP_USE_DUPLEX_UART
 // `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
 // `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 // `define MFP_DEMO_LIGHT_SENSOR
@@ -28,9 +29,9 @@
 //  Memory type (choose one)
 //
 //`define MFP_USE_BYTE_MEMORY
-//`define MFP_USE_WORD_MEMORY
+`define MFP_USE_WORD_MEMORY
 //`define MFP_USE_BUSY_MEMORY
-`define MFP_USE_SDRAM_MEMORY
+//`define MFP_USE_SDRAM_MEMORY
 
 //
 // global SDRAM bus params
@@ -132,3 +133,4 @@
 `define MFP_RESET_RAM_ADDR_MATCH    7'h7f
 `define MFP_RAM_ADDR_MATCH          3'b0
 `define MFP_GPIO_ADDR_MATCH         7'h7e
+`define MFP_UART_ADDR_MATCH         17'h10401
