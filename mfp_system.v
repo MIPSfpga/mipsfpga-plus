@@ -42,7 +42,7 @@ module mfp_system
     input         UART_RX,
     output        UART_TX,
 
-    `ifdef MFP_USE_COMMUNICATION_UART
+    `ifdef MFP_USE_DUPLEX_UART
     input         UART_SRX,
     output        UART_STX,
     `endif
@@ -410,7 +410,7 @@ module mfp_system
         .UART_RX          (   UART_RX          ), 
         .UART_TX          (   UART_TX          ),
 
-        `ifdef MFP_USE_COMMUNICATION_UART
+        `ifdef MFP_USE_DUPLEX_UART
         .UART_SRX         (   UART_SRX         ), 
         .UART_STX         (   UART_STX         ),
         `endif
