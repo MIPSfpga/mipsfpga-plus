@@ -83,6 +83,10 @@ module mfp_ahb_gpio_slave
             case (read_ionum)
             `MFP_SWITCHES_IONUM      : HRDATA <= { { 32 - `MFP_N_SWITCHES { 1'b0 } } , IO_Switches };
             `MFP_BUTTONS_IONUM       : HRDATA <= { { 32 - `MFP_N_BUTTONS  { 1'b0 } } , IO_Buttons  };
+
+            `MFP_RED_LEDS_IONUM      : HRDATA <= { { 32 - `MFP_N_RED_LEDS           { 1'b0 } } ,IO_RedLEDs      };
+            `MFP_GREEN_LEDS_IONUM    : HRDATA <= { { 32 - `MFP_N_GREEN_LEDS         { 1'b0 } } ,IO_GreenLEDs    };
+            `MFP_7_SEGMENT_HEX_IONUM : HRDATA <= { { 32 - `MFP_7_SEGMENT_HEX_WIDTH  { 1'b0 } } ,IO_7_SegmentHEX };
             
             `ifdef MFP_DEMO_LIGHT_SENSOR
             `MFP_LIGHT_SENSOR_IONUM  : HRDATA <= { 16'b0, IO_LightSensor };
