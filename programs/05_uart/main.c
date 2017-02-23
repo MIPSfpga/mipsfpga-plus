@@ -7,7 +7,7 @@
 
 // config start
 
-#define RUNTYPE     SIMULATION
+#define RUNTYPE     HARDWARE
 
 // config end
 
@@ -28,8 +28,7 @@ void _delay(uint32_t val)
         __asm__ volatile("nop");
 }
 
-
-void uartInit(uint16_t divisor)
+void __attribute__((optimize("O0"))) uartInit(uint16_t divisor)
 {
     MFP_UART_LCR = MFP_UART_LCR_8N1;                    // 8n1
     MFP_UART_MCR = MFP_UART_MCR_DTR | MFP_UART_MCR_RTS; // DTR + RTS
@@ -42,10 +41,11 @@ void uartInit(uint16_t divisor)
 
 void uartTransmit(uint8_t data)
 {
-    // transmitted data
-    MFP_UART_TXR = data;
     // waiting for transmitter fifo empty
     while (!(MFP_UART_LSR & MFP_UART_LSR_TFE));
+
+    // transmitted data
+    MFP_UART_TXR = data;
 }
 
 void receivedDataOutput(uint8_t data)
