@@ -44,15 +44,17 @@ module mfp_ahb_lite_matrix
     output        UART_TX
 );
 
-    wire [ 3:0] HSEL;
-
-    mfp_ahb_lite_decoder decoder (HADDR, HSEL);
-
+    wire [ 3:0] HSEL_req;   
     reg  [ 3:0] HSEL_dly;
+    wire [ 3:0] HSEL = HREADY ? HSEL_req : HSEL_dly;
+
+    mfp_ahb_lite_decoder decoder (HADDR, HSEL_req);
 
     always @ (posedge HCLK)
-        if(HREADY)
-            HSEL_dly <= HSEL;
+        if(~HRESETn)
+            HSEL_dly <= 4'b1;
+        else 
+            if(HREADY) HSEL_dly <= HSEL;
 
     wire        HREADY_0 , HREADY_1 , HREADY_2 , HREADY_3;
     wire [31:0] HRDATA_0 , HRDATA_1 , HRDATA_2 , HRDATA_3;
