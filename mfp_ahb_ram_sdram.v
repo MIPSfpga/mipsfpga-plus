@@ -102,7 +102,7 @@ module mfp_ahb_ram_sdram
     reg     [  4 : 0 ]              delay_n;
     reg     [  3 : 0 ]              repeat_cnt;
 
-    wire    [ SADDR_BITS - 1 : 0 ]  SADDR = HADDR [ SADDR_BITS - 1 + 1 : 1 ];
+    wire    [ SADDR_BITS - 1 : 0 ]  SADDR = { HADDR [ SADDR_BITS - 1 + 1 : 2 ], 1'b0 };
 
     reg     [ SADDR_BITS - 1 : 0 ]  SADDR_old;
     reg                             HWRITE_old;
