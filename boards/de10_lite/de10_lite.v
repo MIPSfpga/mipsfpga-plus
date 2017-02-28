@@ -110,7 +110,7 @@ module de10_lite
     mfp_system mfp_system
     (
         .SI_ClkIn         (   clk             ),
-        .SI_Reset         ( ~ KEY [0]         ),
+        .SI_Reset         ( ~KEY [0] | ~GPIO [20] ),
                           
         .HADDR            (   HADDR           ),
         .HRDATA           (   HRDATA          ),
@@ -144,11 +144,11 @@ module de10_lite
         .IO_7_SegmentHEX  (   IO_7_SegmentHEX ),
 
         .UART_RX          (   GPIO [31]       ),
-        .UART_TX          (   /* TODO */      ),
+        .UART_TX          (   GPIO [32]       ),
 
         `ifdef MFP_USE_DUPLEX_UART
-        .UART_SRX         (   GPIO [25]       ), 
-        .UART_STX         (   GPIO [23]       ),
+        .UART_SRX         (   GPIO [33]       ), 
+        .UART_STX         (   GPIO [35]       ),
         `endif
 
         .SPI_CS           (   GPIO [34]       ),

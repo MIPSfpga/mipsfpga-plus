@@ -29,9 +29,9 @@
 //  Memory type (choose one)
 //
 //`define MFP_USE_BYTE_MEMORY
-`define MFP_USE_WORD_MEMORY
+//`define MFP_USE_WORD_MEMORY
 //`define MFP_USE_BUSY_MEMORY
-//`define MFP_USE_SDRAM_MEMORY
+`define MFP_USE_SDRAM_MEMORY
 
 //
 // global SDRAM bus params
@@ -42,7 +42,7 @@
     `ifdef SIMULATION
         //only x16 supported
         `define x16
-        `define den128Mb
+        `define den64Mb
         `define sg75
         
         //these values should be relevant to sdr_parameters.vh
@@ -58,7 +58,8 @@
             `define SDRAM_ADDR_BITS         13
             `define SDRAM_ROW_BITS          13
             `define SDRAM_COL_BITS          9
-        `else `define den512Mb
+        `else 
+            `define den512Mb
             `define SDRAM_ADDR_BITS         13
             `define SDRAM_ROW_BITS          13
             `define SDRAM_COL_BITS          10

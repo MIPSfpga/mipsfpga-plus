@@ -285,8 +285,8 @@ module mfp_system
     //  assign EJ_DINT               =   1'b0;
         assign EJ_DINTsup            =   1'b0;
         assign EJ_DisableProbeDebug  =   1'b0;
-        assign EJ_ManufID            =  11'b0;
-        assign EJ_PartNumber         =  16'b0;
+        assign EJ_ManufID            =  11'h02;
+        assign EJ_PartNumber         =  16'hF1;
     //  assign EJ_TCK                =   1'b0;
     //  assign EJ_TDI                =   1'b0;
     //  assign EJ_TMS                =   1'b0;
@@ -334,6 +334,7 @@ module mfp_system
     mfp_ejtag_reset ejtag_reset (.clk (SI_ClkIn), .trst_n (trst_n));
 
     assign EJ_TRST_N       = trst_n & EJ_TRST_N_probe;
+    //assign EJ_TRST_N       = 1'b1; //EJ_TRST_N_probe;
     assign SI_SRSDisable   = 4'b1111;  // Disable banks of shadow sets
     assign SI_TraceDisable = 1'b1;     // Disables trace hardware
     assign SI_AHBStb       = 1'b1;     // AHB: Signal indicating phase and frequency relationship between clk and hclk.
