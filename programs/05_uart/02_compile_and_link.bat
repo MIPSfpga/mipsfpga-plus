@@ -4,6 +4,7 @@ rem -msoft-float    - should not use floating-point processor instructions
 rem -o program.elf  - output file name
 rem -O2             - optimization level
 rem -T, -Wl         - linked options
+rem -g -gdwarf-2    - debug symbols to use with gdb
 rem -std=c99        - C99 lang standard features enabled
 
 rem stack depends on available mem size:
