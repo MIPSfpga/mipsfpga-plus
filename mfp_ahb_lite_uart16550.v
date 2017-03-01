@@ -4,7 +4,7 @@
  * 
  * based on https://github.com/freecores/uart16550 
  *          https://github.com/olofk/uart16550
- * 
+ *
  * these projects source code is placed in 'uart16550' folder
  */
 
