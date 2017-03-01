@@ -110,6 +110,9 @@ module de10_lite
     mfp_system mfp_system
     (
         .SI_ClkIn         (   clk             ),
+
+        //This is a workaround to make EJTAG working
+        //TODO: add complex reset signals handling module
         .SI_Reset         ( ~KEY [0] | ~GPIO [20] ),
                           
         .HADDR            (   HADDR           ),

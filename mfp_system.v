@@ -285,8 +285,8 @@ module mfp_system
     //  assign EJ_DINT               =   1'b0;
         assign EJ_DINTsup            =   1'b0;
         assign EJ_DisableProbeDebug  =   1'b0;
-        assign EJ_ManufID            =  11'h02;
-        assign EJ_PartNumber         =  16'hF1;
+        assign EJ_ManufID            =  11'h0; //02;
+        assign EJ_PartNumber         =  16'h0; //F1;
     //  assign EJ_TCK                =   1'b0;
     //  assign EJ_TDI                =   1'b0;
     //  assign EJ_TMS                =   1'b0;

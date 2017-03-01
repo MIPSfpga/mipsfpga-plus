@@ -50,6 +50,7 @@ module mfp_ahb_lite_matrix
 
     mfp_ahb_lite_decoder decoder (HADDR, HSEL_req);
 
+    //TODO: move all HSEL logic to selector module
     always @ (posedge HCLK)
         if(~HRESETn)
             HSEL_dly <= 4'b1;
