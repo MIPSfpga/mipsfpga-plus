@@ -8,7 +8,7 @@ module mfp_ahb_ram_sdram
                 ROW_BITS            = 13,       /* SDRAM Row address size */
                 COL_BITS            = 10,       /* SDRAM Column address size */
                 DQ_BITS             = 16,       /* SDRAM Data i/o size, only x16 supported */
-                DM_BITS             = 2,        /* SDRAM Data i/o mask size */
+                DM_BITS             = 2,        /* SDRAM Data i/o mask size, only x2 supported */
                 BA_BITS             = 2,        /* SDRAM Bank address size */
                 SADDR_BITS          = (ROW_BITS + COL_BITS + BA_BITS),
 
@@ -62,7 +62,7 @@ module mfp_ahb_ram_sdram
     output  reg [ ADDR_BITS - 1 : 0 ]   ADDR,
     output  reg [ BA_BITS   - 1 : 0 ]   BA,
     inout       [ DQ_BITS   - 1 : 0 ]   DQ,
-    output      [ DM_BITS   - 1 : 0 ]   DQM
+    output  reg [ DM_BITS   - 1 : 0 ]   DQM
 );
 
     //FSM states
@@ -102,20 +102,23 @@ module mfp_ahb_ram_sdram
     reg     [  4 : 0 ]              delay_n;
     reg     [  3 : 0 ]              repeat_cnt;
 
-    wire    [ SADDR_BITS - 1 : 0 ]  SADDR = { HADDR [ SADDR_BITS - 1 + 1 : 2 ], 1'b0 };
-
-    reg     [ SADDR_BITS - 1 : 0 ]  SADDR_old;
+    reg     [  2 : 0 ]              HSIZE_old;
+    reg     [ 31 : 0 ]              HADDR_old;
     reg                             HWRITE_old;
     reg     [  1 : 0 ]              HTRANS_old;
+
     reg     [ 31 : 0 ]              DATA;
     reg     [ DQ_BITS - 1 : 0    ]  DQreg;
 
     assign  DQ = DQreg;
     
+    parameter   HTRANS_IDLE = 2'b0;
+    parameter   HSIZE_X8    = 3'b000,
+                HSIZE_X16   = 3'b001,
+                HSIZE_X32   = 3'b010;
+
     assign  HRESP  = 1'b0;   
     assign  HREADY = (State == S_IDLE);
-
-    parameter HTRANS_IDLE       = 2'b0;
 
     wire    NeedAction = HTRANS != HTRANS_IDLE && HSEL;
     wire    NeedRefresh         = ~|delay_u;
@@ -202,14 +205,13 @@ module mfp_ahb_ram_sdram
 
         //data and addr operations
         case(State)
+            S_INIT10_NOP,
             S_IDLE              :   if (HSEL) begin 
-                                        SADDR_old <= SADDR; HWRITE_old <= HWRITE; HTRANS_old <= HTRANS;
-                                    end
-            S_INIT10_NOP        :   if (HSEL) begin 
-                                        SADDR_old <= SADDR; HWRITE_old <= HWRITE; HTRANS_old <= HTRANS;
+                                        HADDR_old   <= HADDR;   HWRITE_old  <= HWRITE; 
+                                        HSIZE_old   <= HSIZE;   HTRANS_old  <= HTRANS;  
                                     end
 
-            S_INIT0_nCKE        :   { SADDR_old, HWRITE_old, HTRANS_old } <= { 35 {1'b0}};
+            S_INIT0_nCKE        :   { HADDR_old, HWRITE_old, HSIZE_old, HTRANS_old } <= { 38 {1'b0}};
 
             S_READ4_RD0         :   DATA [15:0] <= DQ;
             S_READ5_RD1         :   HRDATA <= { DQ, DATA [15:0] };
@@ -218,12 +220,23 @@ module mfp_ahb_ram_sdram
         endcase
     end
 
-    // SADDR = { BANKS, ROWS, COLUMNS }
-    wire  [COL_BITS - 1 : 0]  AddrColumn  = SADDR_old [ COL_BITS - 1 : 0 ];
-    wire  [ROW_BITS - 1 : 0]  AddrRow     = SADDR_old [ ROW_BITS + COL_BITS - 1 : COL_BITS ];
-    wire  [BA_BITS  - 1 : 0]  AddrBank    = SADDR_old [ SADDR_BITS - 1 : ROW_BITS + COL_BITS ];
 
-    reg    [ 4 : 0 ]    cmd;
+
+    // address structure (example):
+    // HADDR_old    (x32)   bbbb bbbb bbbb bbbb  bbbb bbbb bbbb bbbb
+    // ByteNum      (x2 )   ---- ---- ---- ----  ---- ---- ---- --bb
+    // AddrColumn   (x10)   ---- ---- ---- ----  ---- -bbb bbbb bb0-
+    // AddrRow      (x13)   ---- ---- bbbb bbbb  bbbb b--- ---- ----
+    // AddrBank     (x2 )   ---- --bb ---- ----  ---- ---- ---- ----
+    //                    BA_BITS==^^ <====ROW_BITS===><=COL_BITS=>x
+
+    wire    [              1 : 0 ]  ByteNum     =   HADDR_old [ 1 : 0 ];
+    wire    [  COL_BITS  - 1 : 0 ]  AddrColumn  = { HADDR_old [ COL_BITS : 2 ] , 1'b0 };
+    wire    [  ROW_BITS  - 1 : 0 ]  AddrRow     =   HADDR_old [ ROW_BITS + COL_BITS : COL_BITS + 1 ];
+    wire    [  BA_BITS   - 1 : 0 ]  AddrBank    =   HADDR_old [ SADDR_BITS : ROW_BITS + COL_BITS + 1 ];
+
+    // SDRAM command data
+    reg     [ 4 : 0 ]    cmd;
     assign  { CKE, CSn, RASn, CASn, WEn } = cmd;
 
     parameter   CMD_NOP_NCKE        = 5'b00111,
@@ -246,9 +259,8 @@ module mfp_ahb_ram_sdram
     parameter   SDRAM_AUTOPRCH_FLAG = (1 << 10);         // A[10]=1
 
     // set SDRAM i/o
-    assign DQM = { DM_BITS { 1'b0 }};
-
     always @ (*) begin
+        // command and addr
         case(State)
             default             :   cmd = CMD_NOP;
             S_INIT0_nCKE        :   cmd = CMD_NOP_NCKE;
@@ -266,10 +278,27 @@ module mfp_ahb_ram_sdram
             S_AREF0_AUTOREF     :   cmd = CMD_AUTOREFRESH;
         endcase
 
+        //data
         case(State)
             default             :   DQreg = { DQ_BITS { 1'bz }};
             S_WRITE2_WR0        :   DQreg = DATA [ 15:0  ];
             S_WRITE3_WR1        :   DQreg = DATA [ 31:16 ];
+        endcase
+
+        //data mask
+        casez( { State, HSIZE_old, ByteNum } )
+            default:                                DQM = 2'b00;
+            { S_WRITE2_WR0, HSIZE_X8,   2'b00 } :   DQM = 2'b10;
+            { S_WRITE2_WR0, HSIZE_X8,   2'b01 } :   DQM = 2'b01;
+            { S_WRITE2_WR0, HSIZE_X8,   2'b1? } :   DQM = 2'b11;
+            { S_WRITE3_WR1, HSIZE_X8,   2'b0? } :   DQM = 2'b11;
+            { S_WRITE3_WR1, HSIZE_X8,   2'b10 } :   DQM = 2'b10;
+            { S_WRITE3_WR1, HSIZE_X8,   2'b11 } :   DQM = 2'b01;
+
+            { S_WRITE2_WR0, HSIZE_X16,  2'b0? } :   DQM = 2'b00;
+            { S_WRITE2_WR0, HSIZE_X16,  2'b1? } :   DQM = 2'b11;
+            { S_WRITE3_WR1, HSIZE_X16,  2'b0? } :   DQM = 2'b11;
+            { S_WRITE3_WR1, HSIZE_X16,  2'b1? } :   DQM = 2'b00;
         endcase
     end
 
