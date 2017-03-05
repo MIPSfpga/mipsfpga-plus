@@ -317,7 +317,7 @@ module mfp_system
         assign SI_Int                =   8'b0;
         assign SI_IPFDCI             =   3'b0;
         assign SI_IPPCI              =   3'b0;
-        assign SI_IPTI               =   3'b0;
+    //  assign SI_IPTI               =   3'b0;
         assign SI_MergeMode          =   2'b0;
         assign SI_NMI                =   1'b0;
         assign SI_Offset             =  17'b0;
@@ -335,6 +335,8 @@ module mfp_system
 
     assign EJ_ManufID            =  11'h02;
     assign EJ_PartNumber         =  16'hF1;
+    assign SI_IPTI               =  3'h7;
+
     //assign EJ_TRST_N       = trst_n & EJ_TRST_N_probe;
     assign EJ_TRST_N       = 1'b1; //EJ_TRST_N_probe;
     assign SI_SRSDisable   = 4'b1111;  // Disable banks of shadow sets
