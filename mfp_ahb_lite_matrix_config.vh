@@ -19,6 +19,8 @@
 //
 `define MFP_USE_UART_PROGRAM_LOADER
 `define MFP_USE_DUPLEX_UART
+`define MFP_USE_MPSSE_DEBUGGER
+`define MPF_USE_TIMER_IRQ5
 // `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
 // `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 // `define MFP_DEMO_LIGHT_SENSOR
@@ -29,9 +31,9 @@
 //  Memory type (choose one)
 //
 //`define MFP_USE_BYTE_MEMORY
-//`define MFP_USE_WORD_MEMORY
+`define MFP_USE_WORD_MEMORY
 //`define MFP_USE_BUSY_MEMORY
-`define MFP_USE_SDRAM_MEMORY
+//`define MFP_USE_SDRAM_MEMORY
 
 //
 // global SDRAM bus params
@@ -82,6 +84,11 @@
     `ifndef MFP_USE_BYTE_MEMORY
         `define MFP_USE_UART_PROGRAM_LOADER_WORD_ALIGN
     `endif
+`endif
+
+// mpsse debug cant be enabled on Simulation
+`ifdef SIMULATION
+    `undef MFP_USE_MPSSE_DEBUGGER
 `endif
 
 //

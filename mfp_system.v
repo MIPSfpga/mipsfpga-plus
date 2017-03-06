@@ -328,17 +328,33 @@ module mfp_system
         assign TC_Stall              =   1'b0;
         assign UDI_toudi             = 128'b0;
 
-    // Module for hardware reset of EJTAG just after FPGA configuration
-    // It pulses EJ_TRST_N low for 16 clock cycles.
-    
-    mfp_ejtag_reset ejtag_reset (.clk (SI_ClkIn), .trst_n (trst_n));
 
-    assign EJ_ManufID            =  11'h02;
-    assign EJ_PartNumber         =  16'hF1;
-    assign SI_IPTI               =  3'h7;
+    `ifdef MFP_USE_MPSSE_DEBUGGER
+        // reset module is not used because mfp_ejtag_reset interferes
+        // with work of debugger. This is not good: this configutation faults
+        // inside the simulator but works on hardware (Altera MAX10)
+        //
+        // TODO: create universal reset module (power/cold/hot/ejtag)
+        assign EJ_TRST_N        = 1'b1;
+        assign EJ_ManufID       = 11'h02;
+        assign EJ_PartNumber    = 16'hF1;
+    `else
+        // Module for hardware reset of EJTAG just after FPGA configuration
+        // It pulses EJ_TRST_N low for 16 clock cycles.
+        mfp_ejtag_reset ejtag_reset (.clk (SI_ClkIn), .trst_n (trst_n));
 
-    //assign EJ_TRST_N       = trst_n & EJ_TRST_N_probe;
-    assign EJ_TRST_N       = 1'b1; //EJ_TRST_N_probe;
+        assign EJ_TRST_N        = trst_n & EJ_TRST_N_probe;
+        assign EJ_ManufID       = 11'b0;
+        assign EJ_PartNumber    = 16'b0;
+    `endif //MFP_USE_MPSSE_DEBUGGER
+
+
+    `ifdef MPF_USE_TIMER_IRQ5
+        assign SI_IPTI          = 3'h7; //enable MIPS timer interrupt on HW5
+    `else
+        assign SI_IPTI          = 3'h0; //disable MIPS timer interrupt on HW5
+    `endif //MPF_USE_TIMER_IRQ5
+
     assign SI_SRSDisable   = 4'b1111;  // Disable banks of shadow sets
     assign SI_TraceDisable = 1'b1;     // Disables trace hardware
     assign SI_AHBStb       = 1'b1;     // AHB: Signal indicating phase and frequency relationship between clk and hclk.
