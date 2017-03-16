@@ -1,7 +1,6 @@
 /* Simple external interrupt controller for MIPSfpga+ system 
  * managed using AHB-Lite bus
  * Copyright(c) 2017 Stanislav Zhelnio
- * https://github.com/zhelnio/ahb_lite_eic
  */  
 
 module priority_encoder255
