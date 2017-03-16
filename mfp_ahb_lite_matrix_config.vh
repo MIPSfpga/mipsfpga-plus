@@ -36,6 +36,13 @@
 //`define MFP_USE_SDRAM_MEMORY
 
 //
+// Interrupt type (choose one)
+//
+//`define MFP_USE_IRQ_NONE
+//`define MFP_USE_IRQ_INTERNAL
+`define MFP_USE_IRQ_EIC
+
+//
 // global SDRAM bus params
 //
 
@@ -142,3 +149,4 @@
 `define MFP_RAM_ADDR_MATCH          3'b0
 `define MFP_GPIO_ADDR_MATCH         7'h7e
 `define MFP_UART_ADDR_MATCH         17'h10401
+`define MFP_EIC_ADDR_MATCH          17'h10402

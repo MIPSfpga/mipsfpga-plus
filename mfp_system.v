@@ -1,5 +1,6 @@
 `include "m14k_const.vh"
 `include "mfp_ahb_lite_matrix_config.vh"
+`include "mfp_eic_core.vh"
 
 module mfp_system
 (
@@ -310,17 +311,17 @@ module mfp_system
     //  assign SI_ClkIn              =   1'b0;
     //  assign SI_ColdReset          =   1'b0;
         assign SI_CPUNum             =  10'b0;
-        assign SI_EICPresent         =   1'b0;
-        assign SI_EICVector          =   6'b0;
-        assign SI_EISS               =   4'b0;
+    //  assign SI_EICPresent         =   1'b0;
+    //  assign SI_EICVector          =   6'b0;
+    //  assign SI_EISS               =   4'b0;
         assign SI_Endian             =   1'b0;
-        assign SI_Int                =   8'b0;
+    //  assign SI_Int                =   8'b0;
         assign SI_IPFDCI             =   3'b0;
         assign SI_IPPCI              =   3'b0;
     //  assign SI_IPTI               =   3'b0;
         assign SI_MergeMode          =   2'b0;
         assign SI_NMI                =   1'b0;
-        assign SI_Offset             =  17'b0;
+    //  assign SI_Offset             =  17'b0;
     //  assign SI_Reset              =   1'b0;
     //  assign SI_SRSDisable         =   4'b0;
     //  assign SI_TraceDisable       =   1'b0;
@@ -354,6 +355,13 @@ module mfp_system
     `else
         assign SI_IPTI          = 3'h0; //disable MIPS timer interrupt on HW5
     `endif //MPF_USE_TIMER_IRQ5
+
+    `ifdef MFP_USE_IRQ_EIC
+        wire  [ `EIC_CHANNELS - 1 : 0 ] EIC_input;
+        assign EIC_input[5] = SI_TimerInt;
+        assign EIC_input[4] = SI_SWInt[1];
+        assign EIC_input[3] = SI_SWInt[0];
+    `endif
 
     assign SI_SRSDisable   = 4'b1111;  // Disable banks of shadow sets
     assign SI_TraceDisable = 1'b1;     // Disables trace hardware
@@ -435,6 +443,13 @@ module mfp_system
         .UART_SRX         (   UART_SRX         ), 
         .UART_STX         (   UART_STX         ),
         `endif
+
+        .EIC_input        (   EIC_input        ),
+        .EIC_Offset       (   SI_Offset        ),
+        .EIC_ShadowSet    (   SI_EISS          ),
+        .EIC_Interrupt    (   SI_Int           ),
+        .EIC_Vector       (   SI_EICVector     ),
+        .EIC_Present      (   SI_EICPresent    ),
                                                
         .MFP_Reset        (   MFP_Reset        )
     );

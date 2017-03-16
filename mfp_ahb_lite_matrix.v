@@ -1,5 +1,6 @@
 `include "mfp_ahb_lite.vh"
 `include "mfp_ahb_lite_matrix_config.vh"
+`include "mfp_eic_core.vh"
 
 module mfp_ahb_lite_matrix
 (
@@ -37,29 +38,37 @@ module mfp_ahb_lite_matrix
     output [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX,
 
     `ifdef MFP_DEMO_LIGHT_SENSOR
-    input  [15:0] IO_LightSensor,
+    input  [                       15 : 0 ] IO_LightSensor,
     `endif
 
-    input         UART_RX,
-    output        UART_TX
+    input                                   UART_RX,
+    output                                  UART_TX,
+
+    input  [ `EIC_CHANNELS        - 1 : 0 ] EIC_input,
+    output [                       17 : 1 ] EIC_Offset,
+    output [                        3 : 0 ] EIC_ShadowSet,
+    output [                        7 : 0 ] EIC_Interrupt,
+    output [                        5 : 0 ] EIC_Vector,
+    output                                  EIC_Present
 );
 
-    wire [ 3:0] HSEL_req;   
-    reg  [ 3:0] HSEL_dly;
-    wire [ 3:0] HSEL = HREADY ? HSEL_req : HSEL_dly;
+    wire [ 4:0] HSEL_req;   
+    reg  [ 4:0] HSEL_dly;
+    wire [ 4:0] HSEL = HREADY ? HSEL_req : HSEL_dly;
 
     mfp_ahb_lite_decoder decoder (HADDR, HSEL_req);
 
     //TODO: move all HSEL logic to selector module
     always @ (posedge HCLK)
         if(~HRESETn)
-            HSEL_dly <= 4'b1;
+            HSEL_dly <= 5'b1;
         else 
             if(HREADY) HSEL_dly <= HSEL;
 
-    wire        HREADY_0 , HREADY_1 , HREADY_2 , HREADY_3;
-    wire [31:0] HRDATA_0 , HRDATA_1 , HRDATA_2 , HRDATA_3;
-    wire        HRESP_0  , HRESP_1  , HRESP_2  , HRESP_3;
+    //TODO: change to arrays
+    wire        HREADY_0 , HREADY_1 , HREADY_2 , HREADY_3 , HREADY_4;
+    wire [31:0] HRDATA_0 , HRDATA_1 , HRDATA_2 , HRDATA_3 , HRDATA_4;
+    wire        HRESP_0  , HRESP_1  , HRESP_2  , HRESP_3  , HRESP_4;
 
     //RESET
     mfp_ahb_ram_slave
@@ -204,7 +213,35 @@ module mfp_ahb_lite_matrix
         */
     );
 
-    assign HREADY = HREADY_0 & HREADY_1 & HREADY_2 & HREADY_3;
+    // EIC
+    mfp_ahb_lite_eic eic
+    (
+        .HCLK             ( HCLK            ),
+        .HRESETn          ( HRESETn         ),
+        .HADDR            ( HADDR           ),
+        .HBURST           ( HBURST          ),
+        .HMASTLOCK        ( HMASTLOCK       ),
+        .HPROT            ( HPROT           ),
+        .HSEL             ( HSEL [4]        ),
+        .HSIZE            ( HSIZE           ),
+        .HTRANS           ( HTRANS          ),
+        .HWDATA           ( HWDATA          ),
+        .HWRITE           ( HWRITE          ),
+        .HRDATA           ( HRDATA_4        ),
+        .HREADY           ( HREADY_4        ),
+        .HRESP            ( HRESP_4         ),
+        .SI_Endian        ( SI_Endian       ),
+
+        .signal           ( EIC_input       ),
+
+        .EIC_Offset       ( EIC_Offset      ),
+        .EIC_ShadowSet    ( EIC_ShadowSet   ),
+        .EIC_Interrupt    ( EIC_Interrupt   ),
+        .EIC_Vector       ( EIC_Vector      ),
+        .EIC_Present      ( EIC_Present     )
+    );
+
+    assign HREADY = HREADY_0 & HREADY_1 & HREADY_2 & HREADY_3 & HREADY_4;
 
     mfp_ahb_lite_response_mux response_mux
     (
@@ -214,11 +251,13 @@ module mfp_ahb_lite_matrix
         .HRDATA_1 ( HRDATA_1 ),
         .HRDATA_2 ( HRDATA_2 ),
         .HRDATA_3 ( HRDATA_3 ),
+        .HRDATA_4 ( HRDATA_4 ),
 
         .HRESP_0  ( HRESP_0  ),
         .HRESP_1  ( HRESP_1  ),
         .HRESP_2  ( HRESP_2  ),
         .HRESP_3  ( HRESP_3  ),
+        .HRESP_4  ( HRESP_4  ),
 
         .HRDATA   ( HRDATA   ),
         .HRESP    ( HRESP    )
@@ -231,7 +270,7 @@ endmodule
 module mfp_ahb_lite_decoder
 (
     input  [31:0] HADDR,
-    output [ 3:0] HSEL
+    output [ 4:0] HSEL
 );
 
     // Decode based on most significant bits of the address
@@ -248,23 +287,28 @@ module mfp_ahb_lite_decoder
     // UART  4 KB max at 0xb0401000 (physical: 0x10401000 - 0x10401fff)
     assign HSEL [3] = ( HADDR [28:12] == `MFP_UART_ADDR_MATCH      );
 
+    // EIC   4 KB max at 0xb0402000 (physical: 0x10402000 - 0x10402fff)
+    assign HSEL [4] = ( HADDR [28:12] == `MFP_EIC_ADDR_MATCH       );
+
 endmodule
 
 //--------------------------------------------------------------------
 
 module mfp_ahb_lite_response_mux
 (
-    input      [ 3:0] HSEL,
+    input      [ 4:0] HSEL,
                
     input      [31:0] HRDATA_0,
     input      [31:0] HRDATA_1,
     input      [31:0] HRDATA_2,
     input      [31:0] HRDATA_3,
+    input      [31:0] HRDATA_4,
                
     input             HRESP_0,
     input             HRESP_1,
     input             HRESP_2,
     input             HRESP_3,
+    input             HRESP_4,
 
     output reg [31:0] HRDATA,
     output reg        HRESP
@@ -272,11 +316,12 @@ module mfp_ahb_lite_response_mux
 
     always @*
         casez (HSEL)
-            4'b???1:   begin HRDATA = HRDATA_0; HRESP = HRESP_0; end
-            4'b??10:   begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
-            4'b?100:   begin HRDATA = HRDATA_2; HRESP = HRESP_2; end
-            4'b1000:   begin HRDATA = HRDATA_3; HRESP = HRESP_3; end
-            default:   begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
+            5'b????1:   begin HRDATA = HRDATA_0; HRESP = HRESP_0; end
+            5'b???10:   begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
+            5'b??100:   begin HRDATA = HRDATA_2; HRESP = HRESP_2; end
+            5'b?1000:   begin HRDATA = HRDATA_3; HRESP = HRESP_3; end
+            5'b10000:   begin HRDATA = HRDATA_4; HRESP = HRESP_4; end
+            default:    begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
         endcase
 
 endmodule
