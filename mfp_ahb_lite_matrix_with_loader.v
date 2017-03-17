@@ -57,6 +57,10 @@ module mfp_ahb_lite_matrix_with_loader
     output [                        7 : 0 ] EIC_Interrupt,
     output [                        5 : 0 ] EIC_Vector,
     output                                  EIC_Present,
+    input                                   EIC_IAck,
+    input  [                        7 : 0 ] EIC_IPL,
+    input  [                        5 : 0 ] EIC_IVN,
+    input  [                       17 : 1 ] EIC_ION,
 
     output        MFP_Reset
 );
@@ -187,6 +191,10 @@ module mfp_ahb_lite_matrix_with_loader
         .EIC_ShadowSet    ( EIC_ShadowSet   ),
         .EIC_Interrupt    ( EIC_Interrupt   ),
         .EIC_Vector       ( EIC_Vector      ),
-        .EIC_Present      ( EIC_Present     )
+        .EIC_Present      ( EIC_Present     ),
+        .EIC_IAck         ( EIC_IAck        ),
+        .EIC_IPL          ( EIC_IPL         ),
+        .EIC_IVN          ( EIC_IVN         ),
+        .EIC_ION          ( EIC_ION         )
     );
 endmodule

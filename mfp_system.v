@@ -452,6 +452,10 @@ module mfp_system
         .EIC_Interrupt    (   SI_Int           ),
         .EIC_Vector       (   SI_EICVector     ),
         .EIC_Present      (   SI_EICPresent    ),
+        .EIC_IAck         (   SI_IAck          ),
+        .EIC_IPL          (   SI_IPL           ),
+        .EIC_IVN          (   SI_IVN           ),
+        .EIC_ION          (   SI_ION           ),
                                                
         .MFP_Reset        (   MFP_Reset        )
     );

@@ -41,7 +41,11 @@ module mfp_eic_core
     output     [  3 : 0 ] EIC_ShadowSet,
     output     [  7 : 0 ] EIC_Interrupt,
     output     [  5 : 0 ] EIC_Vector,
-    output                EIC_Present
+    output                EIC_Present,
+    input                 EIC_IAck,
+    input      [  7 : 0 ] EIC_IPL,
+    input      [  5 : 0 ] EIC_IVN,
+    input      [ 17 : 1 ] EIC_ION
 );
     //registers interface part
     wire       [                        31 : 0  ]  EICR;
