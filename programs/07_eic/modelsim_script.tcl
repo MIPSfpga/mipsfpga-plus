@@ -24,6 +24,16 @@ add wave -radix hex sim:/mfp_testbench/system/SI_TimerInt
 add wave -radix hex sim:/mfp_testbench/system/m14k_top/cpu/core/cpz/compare
 add wave -height 74 -radix hex -format analog-step -scale 0.015 sim:/mfp_testbench/system/m14k_top/cpu/core/cpz/count
 
+add wave -radix hex sim:/mfp_testbench/system/ahb_lite_matrix/ahb_lite_matrix/eic/EIC_Interrupt
+add wave -radix hex sim:/mfp_testbench/system/ahb_lite_matrix/ahb_lite_matrix/eic/EIC_Offset
+add wave -radix hex sim:/mfp_testbench/system/ahb_lite_matrix/ahb_lite_matrix/eic/EIC_Present
+add wave -radix hex sim:/mfp_testbench/system/ahb_lite_matrix/ahb_lite_matrix/eic/EIC_ShadowSet
+add wave -radix hex sim:/mfp_testbench/system/ahb_lite_matrix/ahb_lite_matrix/eic/EIC_Vector
+add wave -radix hex sim:/mfp_testbench/system/ahb_lite_matrix/ahb_lite_matrix/eic/EIC_IAck
+add wave -radix hex sim:/mfp_testbench/system/ahb_lite_matrix/ahb_lite_matrix/eic/EIC_IPL
+add wave -radix hex sim:/mfp_testbench/system/ahb_lite_matrix/ahb_lite_matrix/eic/EIC_IVN
+add wave -radix hex sim:/mfp_testbench/system/ahb_lite_matrix/ahb_lite_matrix/eic/EIC_ION
+
 run -all
 
 wave zoom full
