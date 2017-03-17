@@ -44,17 +44,17 @@ module mfp_eic_core
     output                EIC_Present
 );
     //registers interface part
-    wire       [                     31 : 0  ]  EICR;
-    wire       [ `EIC_ALIGNED_WIDTH - 1 : 0  ]  EIMSK;
-    wire       [ `EIC_ALIGNED_WIDTH - 1 : 0  ]  EIFR;
-    wire       [ `EIC_ALIGNED_WIDTH - 1 : 0  ]  EISMSK;
-    wire       [ `EIC_ALIGNED_WIDTH - 1 : 0  ]  EIIPR;
+    wire       [                        31 : 0  ]  EICR;
+    wire       [ `EIC_ALIGNED_WIDTH    - 1 : 0  ]  EIMSK;
+    wire       [ `EIC_ALIGNED_WIDTH    - 1 : 0  ]  EIFR;
+    wire       [ `EIC_ALIGNED_WIDTH    - 1 : 0  ]  EISMSK;
+    wire       [ `EIC_ALIGNED_WIDTH    - 1 : 0  ]  EIIPR;
 
     //register involved part
-    reg        [ `EIC_EICR_WIDTH - 1 : 0 ]  EICR_inv;
-    reg        [ `EIC_CHANNELS   - 1 : 0 ]  EIMSK_inv;
-    reg        [ `EIC_CHANNELS   - 1 : 0 ]  EISMSK_inv;
-    wire       [ `EIC_CHANNELS   - 1 : 0 ]  EIFR_inv;
+    reg        [ `EIC_EICR_WIDTH       - 1 : 0 ]  EICR_inv;
+    reg        [ `EIC_CHANNELS         - 1 : 0 ]  EIMSK_inv;
+    reg        [ 2*`EIC_SENSE_CHANNELS - 1 : 0 ]  EISMSK_inv;
+    wire       [ `EIC_CHANNELS         - 1 : 0 ]  EIFR_inv;
 
     //register align and combination
     assign EIMSK  = { { `EIC_ALIGNED_WIDTH - `EIC_CHANNELS { 1'b0 } }, EIMSK_inv };
@@ -139,7 +139,7 @@ module mfp_eic_core
     wire [ `EIC_CHANNELS       - 1 : 0  ] mask = EICR_inv[`EICR_EE] ? EIMSK_inv 
                                                                     : { `EIC_CHANNELS {1'b0}};
     generate 
-        genvar i;
+        genvar i, j;
 
         for (i = 0; i < `EIC_SENSE_CHANNELS; i = i + 1)
         begin : sirq
@@ -164,17 +164,17 @@ module mfp_eic_core
             );
         end
 
-        for (i = `EIC_SENSE_CHANNELS; i < `EIC_CHANNELS; i = i + 1)
+        for (j = `EIC_SENSE_CHANNELS; j < `EIC_CHANNELS; j = j + 1)
         begin : irq
             interrupt_channel channel 
             (
                 .CLK        ( CLK                ),
                 .RESETn     ( RESETn             ),
-                .signalMask ( mask           [i] ),
-                .signalIn   ( signal         [i] ),
-                .requestWR  ( EIFR_wr_enable [i] ),
-                .requestIn  ( EIFR_wr_data   [i] ),
-                .requestOut ( EIFR_inv       [i] )
+                .signalMask ( mask           [j] ),
+                .signalIn   ( signal         [j] ),
+                .requestWR  ( EIFR_wr_enable [j] ),
+                .requestIn  ( EIFR_wr_data   [j] ),
+                .requestOut ( EIFR_inv       [j] )
             );
         end
     endgenerate 

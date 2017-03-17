@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <mips/cpu.h>
 
+#include "eic.h"
 #include "mfp_memory_mapped_registers.h"
 
 // run types
@@ -10,7 +11,7 @@
 
 // config start
 
-#define RUNTYPE             MULTIPLE_IRQ_HANDLERS
+#define RUNTYPE             EIC
 #define MIPS_TIMER_PERIOD   0x200
 
 // config end
@@ -32,23 +33,19 @@ void mipsTimerReset(void)
 
 void mipsInterruptInit(void)
 {
-    #if     RUNTYPE == SHARED_IRQ_HANDLER
-        //vector mode, one common handler
-        mips32_bicsr (SR_BEV);              // Status.BEV  0 - vector interrupt mode
-        mips32_biccr (CR_IV);               // Cause.IV,   0 - general exception handler (offset 0x180)
-        mips32_bissr (SR_IE | SR_HINT5);    // interrupt enable, HW5 - unmasked
+    //eic mode
+    MFP_EIC_EIMSK_0     = 0b111000;
+    MFP_EIC_EISMSK_0    = 0b111111000000;
 
-    #elif   RUNTYPE == MULTIPLE_IRQ_HANDLERS
-        //vector mode multiple handlers
-        mips32_bicsr (SR_BEV);              // Status.BEV  0 - vector interrupt mode
-        mips32_biscr (CR_IV);               // Cause.IV,   1 - special int vector (0x200), where 0x200 - base when Status.BEV = 0;
+    mips32_bicsr (SR_BEV);              // Status.BEV  0 - vector interrupt mode
+    mips32_biscr (CR_IV);               // Cause.IV,   1 - special int vector (0x200), where 0x200 - base when Status.BEV = 0;
 
-        uint32_t intCtl = mips32_getintctl();       // get IntCtl reg value
-        mips32_setintctl(intCtl | INTCTL_VS_32);    // set interrupt table vector spacing (0x20 in our case)
-                                                    // see exceptions.S for details
+    uint32_t intCtl = mips32_getintctl();       // get IntCtl reg value
+    mips32_setintctl(intCtl | INTCTL_VS_32);    // set interrupt table vector spacing (0x20 in our case)
+                                                // see exceptions.S for details
 
-        mips32_bissr (SR_IE | SR_HINT5 | SR_SINT0 | SR_SINT1); // interrupt enable, HW5 and SW0,SW1 - unmasked
-    #endif
+    MFP_EIC_EICR        = 0b1;
+    mips32_bissr (SR_IE);
 }
 
 volatile long long int n;
@@ -57,44 +54,12 @@ void __attribute__ ((interrupt, keep_interrupts_masked)) __mips_interrupt ()
 {
     MFP_RED_LEDS = MFP_RED_LEDS | 0x1;
 
-    uint32_t cause = mips32_getcr();
-
-    //check for timer interrupt
-    if(cause & CR_HINT5)
-    {
-        n++;
-        mipsTimerReset();
-    }
-    //check for software interrupt 1
-    else if (cause & CR_SINT1)
-    {
-        mips32_biccr(CR_SINT1);     //clear software interrupt 1 flag
-    }
-
-    MFP_RED_LEDS = MFP_RED_LEDS & ~0x1;
-}
-
-void __attribute__ ((interrupt("vector=sw0"), keep_interrupts_masked)) __mips_isr_sw0 ()
-{
-    MFP_RED_LEDS = MFP_RED_LEDS | 0x2;
-
-    n++;
-    mips32_biccr(CR_SINT0);     //clear software interrupt 0 flag
-    mips32_biscr(CR_SINT1);     //request for software interrupt 1
-
-    MFP_RED_LEDS = MFP_RED_LEDS & ~0x2;
-}
-
-void __attribute__ ((interrupt("vector=hw5"), keep_interrupts_masked)) __mips_isr_hw5 ()
-{
-    MFP_RED_LEDS = MFP_RED_LEDS | 0x4;
-
     n++;
     mipsTimerReset();
 
-    mips32_biscr(CR_SINT0);     //request for software interrupt 0
+    MFP_EIC_EIFRC_0 = 0b100000;
 
-    MFP_RED_LEDS = MFP_RED_LEDS & ~0x4;
+    MFP_RED_LEDS = MFP_RED_LEDS & ~0x1;
 }
 
 int main ()

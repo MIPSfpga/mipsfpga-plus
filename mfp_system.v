@@ -358,9 +358,11 @@ module mfp_system
 
     `ifdef MFP_USE_IRQ_EIC
         wire  [ `EIC_CHANNELS - 1 : 0 ] EIC_input;
+        assign EIC_input[`EIC_CHANNELS - 1:6] = {`EIC_CHANNELS - 6 {1'b0}};
         assign EIC_input[5] = SI_TimerInt;
         assign EIC_input[4] = SI_SWInt[1];
         assign EIC_input[3] = SI_SWInt[0];
+        assign EIC_input[2:0] = 3'b0;
     `endif
 
     assign SI_SRSDisable   = 4'b1111;  // Disable banks of shadow sets
