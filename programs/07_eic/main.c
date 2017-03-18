@@ -57,9 +57,33 @@ void __attribute__ ((interrupt, keep_interrupts_masked)) __mips_interrupt ()
     n++;
     mipsTimerReset();
 
-    MFP_EIC_EIFRC_0 = 0b100000;
+    //MFP_EIC_EIFRC_0 = 0b100000;
 
     MFP_RED_LEDS = MFP_RED_LEDS & ~0x1;
+}
+
+void __attribute__ ((interrupt, keep_interrupts_masked)) __mips_isr_hw3()
+{
+    MFP_RED_LEDS = MFP_RED_LEDS | 0x2;
+
+    n++;
+    mipsTimerReset();
+
+    //MFP_EIC_EIFRC_0 = 0b100000;
+
+    MFP_RED_LEDS = MFP_RED_LEDS & ~0x2;
+}
+
+void __attribute__ ((interrupt, keep_interrupts_masked)) __mips_isr_hw4()
+{
+    MFP_RED_LEDS = MFP_RED_LEDS | 0x4;
+
+    n++;
+    mipsTimerReset();
+
+    //MFP_EIC_EIFRC_0 = 0b100000;
+
+    MFP_RED_LEDS = MFP_RED_LEDS & ~0x4;
 }
 
 int main ()

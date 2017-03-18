@@ -137,6 +137,20 @@ module mfp_eic_core
                 `EIC_REG_EISMSK_1 :  EISMSK_inv <= EISMSK_new;
             endcase
 
+    //current interrupt processing by CPU (EIC_IVN, EIC_ION -> irqNumberCur, irqFlagCur)
+    wire [                 7 : 0 ] irqNumberCur;
+    wire [ `EIC_CHANNELS - 1 : 0 ] irqFlagCur     = (1 << irqNumberCur);
+    wire [ `EIC_CHANNELS - 1 : 0 ] allowAutoReset = { `EIC_CHANNELS { 1'b1 }};
+
+    wire [ `EIC_CHANNELS - 1 : 0 ] requestWR = EIC_IAck ? (allowAutoReset & irqFlagCur) : EIFR_wr_enable;
+    wire [ `EIC_CHANNELS - 1 : 0 ] requestIn = EIC_IAck ? { `EIC_CHANNELS { 1'b0 }}     : EIFR_wr_data;
+
+    handler_params_decoder handler_params_decoder
+    (
+        .irqVector ( EIC_IVN      ),
+        .irqOffset ( EIC_ION      ),
+        .irqNumber ( irqNumberCur )
+    );
 
     //interrupt input logic (signal -> request)
     wire [ `EIC_SENSE_CHANNELS - 1 : 0  ] sensed;
@@ -162,8 +176,8 @@ module mfp_eic_core
                 .RESETn     ( RESETn             ),
                 .signalMask ( mask           [i] ),
                 .signalIn   ( sensed         [i] ),
-                .requestWR  ( EIFR_wr_enable [i] ),
-                .requestIn  ( EIFR_wr_data   [i] ),
+                .requestWR  ( requestWR      [i] ),
+                .requestIn  ( requestIn      [i] ),
                 .requestOut ( EIFR_inv       [i] )
             );
         end
@@ -176,8 +190,8 @@ module mfp_eic_core
                 .RESETn     ( RESETn             ),
                 .signalMask ( mask           [j] ),
                 .signalIn   ( signal         [j] ),
-                .requestWR  ( EIFR_wr_enable [j] ),
-                .requestIn  ( EIFR_wr_data   [j] ),
+                .requestWR  ( requestWR      [j] ),
+                .requestIn  ( requestIn      [j] ),
                 .requestOut ( EIFR_inv       [j] )
             );
         end
@@ -195,8 +209,8 @@ module mfp_eic_core
         .out    ( irqNumberL  )
     );
 
-    //interrupt priority decode (irqNumber -> handler_params)
-    handler_params_decoder handler_params_decoder
+    //interrupt priority encode (irqNumber -> handler_params)
+    handler_params_encoder handler_params_encoder
     (
         .irqNumber      ( irqNumber     ),
         .irqDetected    ( irqDetected   ),
@@ -205,6 +219,8 @@ module mfp_eic_core
         .EIC_Interrupt  ( EIC_Interrupt ),
         .EIC_Vector     ( EIC_Vector    )
     );
+
+    
 
 endmodule
 
@@ -249,9 +265,8 @@ module new_reg_value
         end
 endmodule
 
-
 //determines the software handler params send to CPU from irqNumber
-module handler_params_decoder
+module handler_params_encoder
 (
     input      [  7 : 0 ] irqNumber,
     input                 irqDetected,
@@ -294,6 +309,25 @@ module handler_params_decoder
 
 endmodule
 
+
+module handler_params_decoder
+(
+    input      [  5 : 0 ] irqVector,  //current interrupt vector number
+    input      [ 17 : 1 ] irqOffset,  //current interrupt offset number
+    output     [  7 : 0 ] irqNumber //current interrupt number
+);
+    `ifdef EIC_USE_EXPLICIT_VECTOR_OFFSET
+        
+        parameter HANDLER_BASE  = 17'h100;
+        parameter HANDLER_SHIFT = 4;
+
+        assign irqNumber = ((irqOffset - HANDLER_BASE) >> HANDLER_SHIFT);
+    `else
+
+        assign irqNumber = {2'b0, irqVector };
+    `endif
+
+endmodule
 
 //single interrupt channel
 module interrupt_channel
