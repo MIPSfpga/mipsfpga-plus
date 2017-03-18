@@ -4,14 +4,8 @@
 #include "eic.h"
 #include "mfp_memory_mapped_registers.h"
 
-// run types
-#define SHARED_IRQ_HANDLER      0
-#define MULTIPLE_IRQ_HANDLERS   1
-#define EIC                     2
-
 // config start
 
-#define RUNTYPE             EIC
 #define MIPS_TIMER_PERIOD   0x200
 
 // config end
@@ -34,9 +28,12 @@ void mipsTimerReset(void)
 void mipsInterruptInit(void)
 {
     //eic mode
-    MFP_EIC_EIMSK_0     = 0b111000;
-    MFP_EIC_EISMSK_0    = 0b111111000000;
-    MFP_EIC_EIACM_0     = 0b111000;
+    //unmask interrupt
+    MFP_EIC_EIMSK_0     = (1 << IRQSW0) | (1 << IRQSW1) | (1 << IRQTIMER);
+    //enable auto clear  
+    MFP_EIC_EIACM_0     = (1 << IRQSW0) | (1 << IRQSW1) | (1 << IRQTIMER);
+    //set interrupt on rising edge of the signal
+    MFP_EIC_EISMSK_0    = (SMSK_RIZE << SMSKSW0) | (SMSK_RIZE << SMSKSW1) | (SMSK_RIZE << SMSKTIMER);
 
     mips32_bicsr (SR_BEV);              // Status.BEV  0 - vector interrupt mode
     mips32_biscr (CR_IV);               // Cause.IV,   1 - special int vector (0x200), where 0x200 - base when Status.BEV = 0;
@@ -51,38 +48,32 @@ void mipsInterruptInit(void)
 
 volatile long long int n;
 
-void __attribute__ ((interrupt, keep_interrupts_masked)) __mips_interrupt ()
+ISR(IH_MIPS)
 {
     MFP_RED_LEDS = MFP_RED_LEDS | 0x1;
 
     n++;
     mipsTimerReset();
 
-    //MFP_EIC_EIFRC_0 = 0b100000;
-
     MFP_RED_LEDS = MFP_RED_LEDS & ~0x1;
 }
 
-void __attribute__ ((interrupt, keep_interrupts_masked)) __mips_isr_hw3()
+ISR(IH_SW0)
 {
     MFP_RED_LEDS = MFP_RED_LEDS | 0x2;
 
     n++;
     mipsTimerReset();
 
-    //MFP_EIC_EIFRC_0 = 0b100000;
-
     MFP_RED_LEDS = MFP_RED_LEDS & ~0x2;
 }
 
-void __attribute__ ((interrupt, keep_interrupts_masked)) __mips_isr_hw4()
+ISR(IH_TIMER)
 {
     MFP_RED_LEDS = MFP_RED_LEDS | 0x4;
 
     n++;
     mipsTimerReset();
-
-    //MFP_EIC_EIFRC_0 = 0b100000;
 
     MFP_RED_LEDS = MFP_RED_LEDS & ~0x4;
 }

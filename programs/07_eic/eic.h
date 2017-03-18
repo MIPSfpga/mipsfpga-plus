@@ -21,20 +21,42 @@
 
 #define _MEM_ADDR(x)            (* (volatile unsigned *)(x))
 
-#define MFP_EIC_EICR            _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EICR)
-#define MFP_EIC_EIMSK_0         _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIMSK_0)
-#define MFP_EIC_EIMSK_1         _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIMSK_1)
-#define MFP_EIC_EIFR_0          _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIFR_0)
-#define MFP_EIC_EIFR_1          _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIFR_1)
-#define MFP_EIC_EIFRS_0         _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIFRS_0)
-#define MFP_EIC_EIFRS_1         _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIFRS_1)
-#define MFP_EIC_EIFRC_0         _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIFRC_0)
-#define MFP_EIC_EIFRC_1         _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIFRC_1)
-#define MFP_EIC_EISMSK_0        _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EISMSK_0)
-#define MFP_EIC_EISMSK_1        _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EISMSK_1)
-#define MFP_EIC_EIIPR_0         _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIIPR_0)
-#define MFP_EIC_EIIPR_1         _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIIPR_1)
-#define MFP_EIC_EIACM_0         _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIACM_0)
-#define MFP_EIC_EIACM_1         _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIACM_1)
+//EIC registers
+#define MFP_EIC_EICR            _MEM_ADDR( MFP_EIC_BASE_ADDR + MFP_EIC_RN_EICR     )
+#define MFP_EIC_EIMSK_0         _MEM_ADDR( MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIMSK_0  )
+#define MFP_EIC_EIMSK_1         _MEM_ADDR( MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIMSK_1  )
+#define MFP_EIC_EIFR_0          _MEM_ADDR( MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIFR_0   )
+#define MFP_EIC_EIFR_1          _MEM_ADDR( MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIFR_1   )
+#define MFP_EIC_EIFRS_0         _MEM_ADDR( MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIFRS_0  )
+#define MFP_EIC_EIFRS_1         _MEM_ADDR( MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIFRS_1  )
+#define MFP_EIC_EIFRC_0         _MEM_ADDR( MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIFRC_0  )
+#define MFP_EIC_EIFRC_1         _MEM_ADDR( MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIFRC_1  )
+#define MFP_EIC_EISMSK_0        _MEM_ADDR( MFP_EIC_BASE_ADDR + MFP_EIC_RN_EISMSK_0 )
+#define MFP_EIC_EISMSK_1        _MEM_ADDR( MFP_EIC_BASE_ADDR + MFP_EIC_RN_EISMSK_1 )
+#define MFP_EIC_EIIPR_0         _MEM_ADDR( MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIIPR_0  )
+#define MFP_EIC_EIIPR_1         _MEM_ADDR( MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIIPR_1  )
+#define MFP_EIC_EIACM_0         _MEM_ADDR( MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIACM_0  )
+#define MFP_EIC_EIACM_1         _MEM_ADDR( MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIACM_1  )
+
+//interrupt flags
+#define IRQSW0      3
+#define IRQSW1      4
+#define IRQTIMER    5
+
+#define SMSKSW0     (2*IRQSW0)
+#define SMSKSW1     (2*IRQSW1)
+#define SMSKTIMER   (2*IRQTIMER)
+
+#define SMSK_LOW    0       // The low level of signalIn generates an interrupt request
+#define SMSK_ANY    1       // Any logical change on signalIn generates an interrupt request
+#define SMSK_FALL   2       // The falling edge of signalIn generates an interrupt request
+#define SMSK_RIZE   3       // The rising edge of signalIn generates an interrupt request
+
+#define IH_MIPS     __mips_interrupt()
+#define IH_SW0      __mips_isr_eic3()
+#define IH_SW1      __mips_isr_eic4()
+#define IH_TIMER    __mips_isr_eic5()
+
+#define ISR(x)     void __attribute__ ((interrupt, keep_interrupts_masked)) x
 
 #endif

@@ -11,7 +11,7 @@
 	.weak   __mips_interrupt		# if the symbol does not already exist, it will be created
 __isr_vec:
 	la		$k1, __mips_interrupt	# load interrupt handler (__mips_interrupt) addr
-	jr		$k1						# jump to irq_sw0
+	jr		$k1						# jump to __mips_interrupt
 									# we can use 'j __mips_interrupt' but it works only with 1st 28 bits of addr
 	nop
 
