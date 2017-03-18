@@ -16,6 +16,8 @@
 #define MFP_EIC_RN_EISMSK_1     (11 << 2)  // external interrupt sense mask register (63 - 32)
 #define MFP_EIC_RN_EIIPR_0      (12 << 2)  // external interrupt input pin register (31 - 0 )
 #define MFP_EIC_RN_EIIPR_1      (13 << 2)  // external interrupt input pin register (63 - 32)
+#define MFP_EIC_RN_EIACM_0      (14 << 2)  // external interrupt input pin register (31 - 0 )
+#define MFP_EIC_RN_EIACM_1      (15 << 2)  // external interrupt input pin register (63 - 32)
 
 #define _MEM_ADDR(x)            (* (volatile unsigned *)(x))
 
@@ -32,27 +34,7 @@
 #define MFP_EIC_EISMSK_1        _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EISMSK_1)
 #define MFP_EIC_EIIPR_0         _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIIPR_0)
 #define MFP_EIC_EIIPR_1         _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIIPR_1)
+#define MFP_EIC_EIACM_0         _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIACM_0)
+#define MFP_EIC_EIACM_1         _MEM_ADDR(MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIACM_1)
 
 #endif
-
-
-// #ifndef MFP_MEMORY_MAPPED_REGISTERS_H
-// #define MFP_MEMORY_MAPPED_REGISTERS_H
-
-// #define MFP_RED_LEDS_ADDR       0xBF800000
-// #define MFP_GREEN_LEDS_ADDR     0xBF800004
-// #define MFP_SWITCHES_ADDR       0xBF800008
-// #define MFP_BUTTONS_ADDR        0xBF80000C
-// #define MFP_7_SEGMENT_HEX_ADDR  0xBF800010
-
-// #define MFP_RED_LEDS            (* (volatile unsigned *) MFP_RED_LEDS_ADDR      )
-// #define MFP_GREEN_LEDS          (* (volatile unsigned *) MFP_GREEN_LEDS_ADDR    )
-// #define MFP_SWITCHES            (* (volatile unsigned *) MFP_SWITCHES_ADDR      )
-// #define MFP_BUTTONS             (* (volatile unsigned *) MFP_BUTTONS_ADDR       )
-// #define MFP_7_SEGMENT_HEX       (* (volatile unsigned *) MFP_7_SEGMENT_HEX_ADDR )
-
-// // This define is used in boot.S code
-
-// #define BOARD_16_LEDS_ADDR      MFP_RED_LEDS_ADDR
-
-// #endif

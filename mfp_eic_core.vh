@@ -18,6 +18,9 @@
 `define EIC_REG_EISMSK_1    11  // external interrupt sense mask register (63 - 32)
 `define EIC_REG_EIIPR_0     12  // external interrupt input pin register (31 - 0 )
 `define EIC_REG_EIIPR_1     13  // external interrupt input pin register (63 - 32)
+`define EIC_REG_EIACM_0     14  // external interrupt auto clear mask register (31 - 0 )
+`define EIC_REG_EIACM_1     15  // external interrupt auto clear mask register (63 - 32)
+
 
 `define EIC_ADDR_WIDTH      4   // register addr width
 

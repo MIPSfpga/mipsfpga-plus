@@ -17,6 +17,8 @@
 `define EIC_C_SET1  3'b100   //set all in word1
 `define EIC_C_VAL0  3'b101   //set word0
 `define EIC_C_VAL1  3'b110   //set word1
+`define EIC_C_CLRA  3'b111   //clear all
+
 
 // reg bits
 `define EICR_EE     1'b0     //EIC enabled
@@ -53,18 +55,21 @@ module mfp_eic_core
     wire       [ `EIC_ALIGNED_WIDTH    - 1 : 0  ]  EIFR;
     wire       [ `EIC_ALIGNED_WIDTH    - 1 : 0  ]  EISMSK;
     wire       [ `EIC_ALIGNED_WIDTH    - 1 : 0  ]  EIIPR;
+    wire       [ `EIC_ALIGNED_WIDTH    - 1 : 0  ]  EIACM;
 
     //register involved part
     reg        [ `EIC_EICR_WIDTH       - 1 : 0 ]  EICR_inv;
     reg        [ `EIC_CHANNELS         - 1 : 0 ]  EIMSK_inv;
     reg        [ 2*`EIC_SENSE_CHANNELS - 1 : 0 ]  EISMSK_inv;
     wire       [ `EIC_CHANNELS         - 1 : 0 ]  EIFR_inv;
+    reg        [ `EIC_CHANNELS         - 1 : 0 ]  EIACM_inv;
 
     //register align and combination
     assign EIMSK  = { { `EIC_ALIGNED_WIDTH - `EIC_CHANNELS { 1'b0 } }, EIMSK_inv };
     assign EISMSK = { { `EIC_ALIGNED_WIDTH - 2*`EIC_SENSE_CHANNELS { 1'b0 } }, EISMSK_inv};
     assign EIFR   = { 1'b0, { `EIC_ALIGNED_WIDTH - `EIC_CHANNELS - 1 { 1'b0 } }, EIFR_inv };
     assign EIIPR  = { { `EIC_ALIGNED_WIDTH - `EIC_CHANNELS { 1'b0 } }, signal };
+    assign EIACM  = { { `EIC_ALIGNED_WIDTH - `EIC_CHANNELS { 1'b0 } }, EIACM_inv };
 
     assign EICR         = { { 32 - `EIC_EICR_WIDTH { 1'b0 } }, EICR_inv };
     assign EIC_Present  = EICR_inv[`EICR_EE];
@@ -85,7 +90,9 @@ module mfp_eic_core
             `EIC_REG_EISMSK_0 :  read_data = EISMSK [ 31:0  ];
             `EIC_REG_EISMSK_1 :  read_data = EISMSK [ 63:32 ];
             `EIC_REG_EIIPR_0  :  read_data = EIIPR  [ 31:0  ];
-            `EIC_REG_EIIPR_1  :  read_data = EIIPR  [ 31:0  ];
+            `EIC_REG_EIIPR_1  :  read_data = EIIPR  [ 63:32 ];
+            `EIC_REG_EIACM_0  :  read_data = EIACM  [ 31:0  ];
+            `EIC_REG_EIACM_1  :  read_data = EIACM  [ 63:32 ];
         endcase
 
     //register write operations
@@ -94,30 +101,34 @@ module mfp_eic_core
     wire  [ `EIC_CHANNELS   - 1 : 0 ]  EIMSK_new;
     wire  [ `EIC_CHANNELS   - 1 : 0 ]  EISMSK_new;
     wire  [ `EIC_EICR_WIDTH - 1 : 0 ]  EICR_new;
+    wire  [ `EIC_CHANNELS   - 1 : 0 ]  EIACM_new;
 
-    reg   [                  14 : 0 ]  write_cmd;
+    reg   [                  17 : 0 ]  write_cmd;
     new_reg_value #(.USED(`EIC_CHANNELS))   nrv_EIFR_dt (.in(EIFR_inv),   .out(EIFR_wr_data),   .word(write_data), .cmd(write_cmd[ 2:0 ]));
     new_reg_value #(.USED(`EIC_CHANNELS))   nrv_EIFR_wr (.in(EIFR_inv),   .out(EIFR_wr_enable), .word(write_data), .cmd(write_cmd[ 5:3 ]));
     new_reg_value #(.USED(`EIC_CHANNELS))   nrv_EIMSK   (.in(EIMSK_inv),  .out(EIMSK_new),      .word(write_data), .cmd(write_cmd[ 8:6 ]));
     new_reg_value #(.USED(`EIC_CHANNELS))   nrv_EISMSK  (.in(EISMSK_inv), .out(EISMSK_new),     .word(write_data), .cmd(write_cmd[11:9 ]));
     new_reg_value #(.USED(`EIC_EICR_WIDTH)) nrv_EICR    (.in(EICR_inv),   .out(EICR_new),       .word(write_data), .cmd(write_cmd[14:12]));
+    new_reg_value #(.USED(`EIC_CHANNELS))   nrv_EIACM   (.in(EIACM_inv),  .out(EIACM_new),      .word(write_data), .cmd(write_cmd[17:15]));
 
     wire  [ `EIC_ADDR_WIDTH - 1 : 0 ]  __write_addr = write_enable ? write_addr : `EIC_REG_NONE;
 
     always @ (*) begin
         case(__write_addr)
-             default          :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE };
-            `EIC_REG_EICR     :  write_cmd = { `EIC_C_VAL0, `EIC_C_NONE, `EIC_C_VAL0, `EIC_C_NONE, `EIC_C_NONE };
-            `EIC_REG_EIMSK_0  :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_VAL0, `EIC_C_NONE, `EIC_C_NONE };
-            `EIC_REG_EIMSK_1  :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_VAL1, `EIC_C_NONE, `EIC_C_NONE };
-            `EIC_REG_EIFR_0   :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_SET0, `EIC_C_VAL0 };
-            `EIC_REG_EIFR_1   :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_SET1, `EIC_C_VAL1 };
-            `EIC_REG_EIFRS_0  :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_VAL0, `EIC_C_VAL0 };
-            `EIC_REG_EIFRS_1  :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_VAL1, `EIC_C_VAL1 };
-            `EIC_REG_EIFRC_0  :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_VAL0, `EIC_C_CLR0 };
-            `EIC_REG_EIFRC_1  :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_VAL1, `EIC_C_CLR1 };
-            `EIC_REG_EISMSK_0 :  write_cmd = { `EIC_C_NONE, `EIC_C_VAL0, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE };
-            `EIC_REG_EISMSK_1 :  write_cmd = { `EIC_C_NONE, `EIC_C_VAL1, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE };
+             default          :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_CLRA, `EIC_C_CLRA };
+            `EIC_REG_EICR     :  write_cmd = { `EIC_C_NONE, `EIC_C_VAL0, `EIC_C_NONE, `EIC_C_VAL0, `EIC_C_CLRA, `EIC_C_CLRA };
+            `EIC_REG_EIMSK_0  :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_VAL0, `EIC_C_CLRA, `EIC_C_CLRA };
+            `EIC_REG_EIMSK_1  :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_VAL1, `EIC_C_CLRA, `EIC_C_CLRA };
+            `EIC_REG_EIFR_0   :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_SET0, `EIC_C_VAL0 };
+            `EIC_REG_EIFR_1   :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_SET1, `EIC_C_VAL1 };
+            `EIC_REG_EIFRS_0  :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_VAL0, `EIC_C_VAL0 };
+            `EIC_REG_EIFRS_1  :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_VAL1, `EIC_C_VAL1 };
+            `EIC_REG_EIFRC_0  :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_VAL0, `EIC_C_CLR0 };
+            `EIC_REG_EIFRC_1  :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_VAL1, `EIC_C_CLR1 };
+            `EIC_REG_EISMSK_0 :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_VAL0, `EIC_C_NONE, `EIC_C_CLRA, `EIC_C_CLRA };
+            `EIC_REG_EISMSK_1 :  write_cmd = { `EIC_C_NONE, `EIC_C_NONE, `EIC_C_VAL1, `EIC_C_NONE, `EIC_C_CLRA, `EIC_C_CLRA };
+            `EIC_REG_EIACM_0  :  write_cmd = { `EIC_C_VAL0, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_CLRA, `EIC_C_CLRA };
+            `EIC_REG_EIACM_1  :  write_cmd = { `EIC_C_VAL1, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_NONE, `EIC_C_CLRA, `EIC_C_CLRA };
         endcase
     end
 
@@ -126,6 +137,7 @@ module mfp_eic_core
                 EIMSK_inv  <= { `EIC_CHANNELS   { 1'b0 } };
                 EISMSK_inv <= { `EIC_CHANNELS   { 1'b0 } };
                 EICR_inv   <= { `EIC_EICR_WIDTH { 1'b0 } };
+                EIACM_inv  <= { `EIC_CHANNELS   { 1'b0 } };
             end
         else
             case(__write_addr)
@@ -135,15 +147,13 @@ module mfp_eic_core
                 `EIC_REG_EIMSK_1  :  EIMSK_inv  <= EIMSK_new;
                 `EIC_REG_EISMSK_0 :  EISMSK_inv <= EISMSK_new;
                 `EIC_REG_EISMSK_1 :  EISMSK_inv <= EISMSK_new;
+                `EIC_REG_EIACM_0  :  EIACM_inv  <= EIACM_new;
+                `EIC_REG_EIACM_1  :  EIACM_inv  <= EIACM_new;
             endcase
 
     //current interrupt processing by CPU (EIC_IVN, EIC_ION -> irqNumberCur, irqFlagCur)
     wire [                 7 : 0 ] irqNumberCur;
     wire [ `EIC_CHANNELS - 1 : 0 ] irqFlagCur     = (1 << irqNumberCur);
-    wire [ `EIC_CHANNELS - 1 : 0 ] allowAutoReset = { `EIC_CHANNELS { 1'b1 }};
-
-    wire [ `EIC_CHANNELS - 1 : 0 ] requestWR = EIC_IAck ? (allowAutoReset & irqFlagCur) : EIFR_wr_enable;
-    wire [ `EIC_CHANNELS - 1 : 0 ] requestIn = EIC_IAck ? { `EIC_CHANNELS { 1'b0 }}     : EIFR_wr_data;
 
     handler_params_decoder handler_params_decoder
     (
@@ -151,6 +161,12 @@ module mfp_eic_core
         .irqOffset ( EIC_ION      ),
         .irqNumber ( irqNumberCur )
     );
+
+    // auto clear flag logic
+    wire [ `EIC_CHANNELS - 1 : 0 ] requestWR = EIC_IAck ? EIFR_wr_enable |  (EIACM_inv & irqFlagCur)
+                                                        : EIFR_wr_enable;
+    wire [ `EIC_CHANNELS - 1 : 0 ] requestIn = EIC_IAck ? EIFR_wr_data   & ~(EIACM_inv & irqFlagCur)
+                                                        : EIFR_wr_data;
 
     //interrupt input logic (signal -> request)
     wire [ `EIC_SENSE_CHANNELS - 1 : 0  ] sensed;
@@ -220,8 +236,6 @@ module mfp_eic_core
         .EIC_Vector     ( EIC_Vector    )
     );
 
-    
-
 endmodule
 
 //helper for partialy updating register value
@@ -235,7 +249,6 @@ module new_reg_value
     input       [       31 : 0 ] word,  //new data value
     input       [        2 : 0 ] cmd    //update command (see EIC_C_* defines)
 );
-    localparam BYTE0_SIZE  = (USED > 32) ? 32 : USED;
     localparam BYTE1_SIZE  = (USED > 32) ? (USED - 32) : 0;
     localparam BYTE1_MAX   = (BYTE1_SIZE > 0) ? (BYTE1_SIZE - 1) : 0;
     localparam BYTE1_START = (BYTE1_SIZE > 0) ? 32 : 0;
@@ -245,12 +258,13 @@ module new_reg_value
         if(USED < 33)
             case(cmd)
                 default     : out = in;
-                `EIC_C_CLR0 : out = { BYTE0_SIZE {1'b0} };
+                `EIC_C_CLR0 : out = { USED {1'b0} };
                 `EIC_C_CLR1 : out = in;
-                `EIC_C_SET0 : out = { BYTE0_SIZE {1'b1} };
+                `EIC_C_SET0 : out = { USED {1'b1} };
                 `EIC_C_SET1 : out = in;
-                `EIC_C_VAL0 : out = word [ BYTE0_SIZE - 1 : 0 ];
+                `EIC_C_VAL0 : out = word [ USED - 1 : 0 ];
                 `EIC_C_VAL1 : out = in;
+                `EIC_C_CLRA : out = { USED {1'b0} };
             endcase
         else 
             case(cmd)
@@ -261,6 +275,7 @@ module new_reg_value
                 `EIC_C_SET1 : out = { { BYTE1_SIZE { 1'b1 } },          in [ 31 : 0 ]   };
                 `EIC_C_VAL0 : out = { in [ BYTE1_END : BYTE1_START ],   word            };
                 `EIC_C_VAL1 : out = { word [ BYTE1_MAX : 0 ],           in [ 31 : 0 ]   };
+                `EIC_C_CLRA : out = { USED {1'b0} };
             endcase
         end
 endmodule

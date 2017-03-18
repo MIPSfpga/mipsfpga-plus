@@ -36,6 +36,7 @@ void mipsInterruptInit(void)
     //eic mode
     MFP_EIC_EIMSK_0     = 0b111000;
     MFP_EIC_EISMSK_0    = 0b111111000000;
+    MFP_EIC_EIACM_0     = 0b111000;
 
     mips32_bicsr (SR_BEV);              // Status.BEV  0 - vector interrupt mode
     mips32_biscr (CR_IV);               // Cause.IV,   1 - special int vector (0x200), where 0x200 - base when Status.BEV = 0;
