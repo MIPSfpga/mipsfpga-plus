@@ -20,7 +20,6 @@
 `define MFP_USE_UART_PROGRAM_LOADER
 `define MFP_USE_DUPLEX_UART
 `define MFP_USE_MPSSE_DEBUGGER
-`define MPF_USE_TIMER_IRQ5
 // `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
 // `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 // `define MFP_DEMO_LIGHT_SENSOR
@@ -40,7 +39,8 @@
 //
 //`define MFP_USE_IRQ_NONE
 //`define MFP_USE_IRQ_INTERNAL
-`define MFP_USE_IRQ_EIC
+//`define MFP_USE_IRQ_EIC
+`define MPF_USE_TIMER_IRQ5
 
 //
 // global SDRAM bus params

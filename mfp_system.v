@@ -350,11 +350,7 @@ module mfp_system
     `endif //MFP_USE_MPSSE_DEBUGGER
 
 
-    `ifdef MPF_USE_TIMER_IRQ5
-        assign SI_IPTI          = 3'h7; //enable MIPS timer interrupt on HW5
-    `else
-        assign SI_IPTI          = 3'h0; //disable MIPS timer interrupt on HW5
-    `endif //MPF_USE_TIMER_IRQ5
+    
 
     `ifdef MFP_USE_IRQ_EIC
         wire  [ `EIC_CHANNELS - 1 : 0 ] EIC_input;
@@ -363,7 +359,20 @@ module mfp_system
         assign EIC_input[4] = SI_SWInt[1];
         assign EIC_input[3] = SI_SWInt[0];
         assign EIC_input[2:0] = 3'b0;
-    `endif
+    `else
+
+        assign SI_Offset             =  17'b0;
+        assign SI_EISS               =   4'b0;
+        assign SI_Int                =   8'b0;
+        assign SI_EICVector          =   6'b0;
+        assign SI_EICPresent         =   1'b0;
+
+        `ifdef MPF_USE_TIMER_IRQ5
+            assign SI_IPTI          = 3'h7; //enable MIPS timer interrupt on HW5
+        `else
+            assign SI_IPTI          = 3'h0; //disable MIPS timer interrupt on HW5
+        `endif //MPF_USE_TIMER_IRQ5
+    `endif //MFP_USE_IRQ_EIC
 
     assign SI_SRSDisable   = 4'b1111;  // Disable banks of shadow sets
     assign SI_TraceDisable = 1'b1;     // Disables trace hardware
@@ -446,6 +455,7 @@ module mfp_system
         .UART_STX         (   UART_STX         ),
         `endif
 
+        `ifdef MFP_USE_IRQ_EIC
         .EIC_input        (   EIC_input        ),
         .EIC_Offset       (   SI_Offset        ),
         .EIC_ShadowSet    (   SI_EISS          ),
@@ -456,6 +466,7 @@ module mfp_system
         .EIC_IPL          (   SI_IPL           ),
         .EIC_IVN          (   SI_IVN           ),
         .EIC_ION          (   SI_ION           ),
+        `endif
                                                
         .MFP_Reset        (   MFP_Reset        )
     );

@@ -218,6 +218,7 @@ module mfp_ahb_lite_matrix
     );
 
     // EIC
+    `ifdef MFP_USE_IRQ_EIC
     mfp_ahb_lite_eic eic
     (
         .HCLK             ( HCLK            ),
@@ -248,6 +249,9 @@ module mfp_ahb_lite_matrix
         .EIC_IVN          ( EIC_IVN         ),
         .EIC_ION          ( EIC_ION         )
     );
+    `else
+    assign HREADY_4 = 1'b1;
+    `endif
 
     assign HREADY = HREADY_0 & HREADY_1 & HREADY_2 & HREADY_3 & HREADY_4;
 

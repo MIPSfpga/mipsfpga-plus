@@ -51,6 +51,7 @@ module mfp_ahb_lite_matrix_with_loader
     output        UART_STX,
     `endif
 
+    `ifdef MFP_USE_IRQ_EIC
     input  [ `EIC_CHANNELS        - 1 : 0 ] EIC_input,
     output [                       17 : 1 ] EIC_Offset,
     output [                        3 : 0 ] EIC_ShadowSet,
@@ -61,6 +62,7 @@ module mfp_ahb_lite_matrix_with_loader
     input  [                        7 : 0 ] EIC_IPL,
     input  [                        5 : 0 ] EIC_IVN,
     input  [                       17 : 1 ] EIC_ION,
+    `endif //MFP_USE_IRQ_EIC
 
     output        MFP_Reset
 );
@@ -168,12 +170,6 @@ module mfp_ahb_lite_matrix_with_loader
         .SDRAM_DQM        ( SDRAM_DQM       ),
         `endif  // MFP_USE_SDRAM_MEMORY
                                              
-        .IO_Switches      ( IO_Switches     ),
-        .IO_Buttons       ( IO_Buttons      ),
-        .IO_RedLEDs       ( IO_RedLEDs      ),
-        .IO_GreenLEDs     ( IO_GreenLEDs    ), 
-        .IO_7_SegmentHEX  ( IO_7_SegmentHEX ),
-
         `ifdef MFP_DEMO_LIGHT_SENSOR
         .IO_LightSensor   ( IO_LightSensor  ), 
         `endif
@@ -186,6 +182,7 @@ module mfp_ahb_lite_matrix_with_loader
         .UART_TX          ( UART_TX         ),
         `endif //MFP_USE_DUPLEX_UART
 
+        `ifdef MFP_USE_IRQ_EIC
         .EIC_input        ( EIC_input       ),
         .EIC_Offset       ( EIC_Offset      ),
         .EIC_ShadowSet    ( EIC_ShadowSet   ),
@@ -195,6 +192,13 @@ module mfp_ahb_lite_matrix_with_loader
         .EIC_IAck         ( EIC_IAck        ),
         .EIC_IPL          ( EIC_IPL         ),
         .EIC_IVN          ( EIC_IVN         ),
-        .EIC_ION          ( EIC_ION         )
+        .EIC_ION          ( EIC_ION         ),
+        `endif //MFP_USE_IRQ_EIC
+
+        .IO_Switches      ( IO_Switches     ),
+        .IO_Buttons       ( IO_Buttons      ),
+        .IO_RedLEDs       ( IO_RedLEDs      ),
+        .IO_GreenLEDs     ( IO_GreenLEDs    ), 
+        .IO_7_SegmentHEX  ( IO_7_SegmentHEX )
     );
 endmodule
