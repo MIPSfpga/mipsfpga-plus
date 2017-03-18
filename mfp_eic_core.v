@@ -261,11 +261,36 @@ module handler_params_decoder
     output     [  7 : 0 ] EIC_Interrupt,
     output     [  5 : 0 ] EIC_Vector
 );
-    // A value of 0 indicates that no interrupt requests are pending
-    assign EIC_Offset    = 17'b0;
     assign EIC_ShadowSet = 4'b0;
+
+    // requested interrupt priority level
+    // a value of 0 indicates that no interrupt requests are pending
     assign EIC_Interrupt = irqDetected ? irqNumber + 1  : 8'b0;
-    assign EIC_Vector    = EIC_Interrupt[5:0];
+
+    `ifdef EIC_USE_EXPLICIT_VECTOR_OFFSET
+
+        // EIC Option 2 - Explicit Vector Offset
+        // for detailes see the chapter 5.3.1.3 in 
+        // 'MIPS32® microAptiv™ UP Processor Core Family Software User’s Manual, Revision 01.02'
+        //
+        // to use this option set 'assign eic_offset = 1'b1;' in m14k_cpz_eicoffset_stub.v
+
+        parameter HANDLER_BASE  = 17'h100;
+        parameter HANDLER_SHIFT = 4;
+
+        assign EIC_Offset    = HANDLER_BASE + (irqNumber << HANDLER_SHIFT);
+        assign EIC_Vector    = 6'b0;
+    `else
+
+        // EIC Option 1 - Explicit Vector irqNumber
+        // for detailes see the chapter 5.3.1.3 in 
+        // 'MIPS32® microAptiv™ UP Processor Core Family Software User’s Manual, Revision 01.02'
+        //
+        // to use this option set 'assign eic_offset = 1'b0;' in m14k_cpz_eicoffset_stub.v (default value)
+
+        assign EIC_Offset    = 17'h0;
+        assign EIC_Vector    = irqNumber[5:0];
+    `endif
 
 endmodule
 

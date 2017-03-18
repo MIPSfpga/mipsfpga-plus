@@ -34,6 +34,8 @@ add wave -radix hex sim:/mfp_testbench/system/ahb_lite_matrix/ahb_lite_matrix/ei
 add wave -radix hex sim:/mfp_testbench/system/ahb_lite_matrix/ahb_lite_matrix/eic/EIC_IVN
 add wave -radix hex sim:/mfp_testbench/system/ahb_lite_matrix/ahb_lite_matrix/eic/EIC_ION
 
+add wave -radix hex sim:/mfp_testbench/system/m14k_top/cpu/core/cpz/cpz_vectoroffset
+
 run -all
 
 wave zoom full
