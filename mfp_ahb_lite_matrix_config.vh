@@ -141,7 +141,7 @@
     `ifdef SIMULATION
     `define MFP_RAM_ADDR_WIDTH          16
     `else
-    `define MFP_RAM_ADDR_WIDTH          10  // DE1: 10, DE0-Nano: 13, DE0-CV or Basys3: 14, Nexys 4 or DE2-115: 16
+    `define MFP_RAM_ADDR_WIDTH          15  // DE1: 10, DE0-Nano: 13, DE0-CV or Basys3: 14, Nexys 4 or DE2-115: 16, DE10-Lite: 15
     `endif
 `endif
 
