@@ -29,18 +29,17 @@
 //
 //  Memory type (choose one)
 //
-//`define MFP_USE_BYTE_MEMORY
-`define MFP_USE_WORD_MEMORY
+`define MFP_USE_BYTE_MEMORY
+//`define MFP_USE_WORD_MEMORY
 //`define MFP_USE_BUSY_MEMORY
 //`define MFP_USE_SDRAM_MEMORY
 
 //
 // Interrupt type (choose one)
+// for MFP_USE_IRQ_EIC see additional settings in mfp_eic_core.vh
 //
-//`define MFP_USE_IRQ_NONE
-//`define MFP_USE_IRQ_INTERNAL
-//`define MFP_USE_IRQ_EIC
-`define MPF_USE_TIMER_IRQ5
+`define MFP_USE_IRQ_EIC
+//`define MPF_USE_TIMER_IRQ5
 
 //
 // global SDRAM bus params

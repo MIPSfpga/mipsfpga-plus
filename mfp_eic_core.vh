@@ -3,6 +3,25 @@
  * Copyright(c) 2017 Stanislav Zhelnio
  */
 
+//********  config start  ********  
+
+//default interrupt count
+`ifndef EIC_DIRECT_CHANNELS
+    `define EIC_DIRECT_CHANNELS 31  // 0-31
+`endif
+`ifndef EIC_SENSE_CHANNELS
+    `define EIC_SENSE_CHANNELS  32  // 0-32
+`endif
+
+//comment this to use 'Explicit Vector Number' option
+//when uncommented - option 'Explicit Vector Offset' enabled
+//see details in mfp_iec_handler.v
+//`define EIC_USE_EXPLICIT_VECTOR_OFFSET
+
+//********  config end  ********  
+
+`define EIC_CHANNELS        (`EIC_DIRECT_CHANNELS + `EIC_SENSE_CHANNELS)
+
 //reg addrs
 `define EIC_REG_NONE        0   // no register selected
 `define EIC_REG_EICR        1   // external interrupt control register
@@ -21,18 +40,4 @@
 `define EIC_REG_EIACM_0     14  // external interrupt auto clear mask register (31 - 0 )
 `define EIC_REG_EIACM_1     15  // external interrupt auto clear mask register (63 - 32)
 
-
 `define EIC_ADDR_WIDTH      4   // register addr width
-
-//default interrupt count
-`ifndef EIC_DIRECT_CHANNELS
-    `define EIC_DIRECT_CHANNELS 31  // 0-31
-`endif
-`ifndef EIC_SENSE_CHANNELS
-    `define EIC_SENSE_CHANNELS  32  // 0-32
-`endif
-
-//`define EIC_USE_EXPLICIT_VECTOR_OFFSET
-
-`define EIC_CHANNELS        (`EIC_DIRECT_CHANNELS + `EIC_SENSE_CHANNELS)
-
