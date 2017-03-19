@@ -41,9 +41,9 @@ void mipsInterruptInit(void)
     uint32_t intCtl = mips32_getintctl();       // get IntCtl reg value
     mips32_setintctl(intCtl | INTCTL_VS_32);    // set interrupt table vector spacing (0x20 in our case)
                                                 // see exceptions.S for details
-
-    MFP_EIC_EICR        = 0b1;
-    mips32_bissr (SR_IE);
+    
+    MFP_EIC_EICR        = 0x1;                  // enable external interrupt controller
+    mips32_bissr (SR_IE);                       // enable interrupts
 }
 
 volatile long long int n;
