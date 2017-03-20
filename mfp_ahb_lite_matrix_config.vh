@@ -38,7 +38,7 @@
 // Enable external interrupt controller
 // see additional settings in mfp_eic_core.vh
 //
-`define MFP_USE_IRQ_EIC
+//`define MFP_USE_IRQ_EIC
 
 //
 // global SDRAM bus params

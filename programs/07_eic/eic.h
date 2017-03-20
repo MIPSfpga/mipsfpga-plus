@@ -39,9 +39,9 @@
 #define MFP_EIC_EIACM_1         _MEM_ADDR( MFP_EIC_BASE_ADDR + MFP_EIC_RN_EIACM_1  )
 
 //interrupt flags
-#define IRQSW0      3
-#define IRQSW1      4
-#define IRQTIMER    5
+#define IRQSW0      0
+#define IRQSW1      1
+#define IRQTIMER    7
 #define IRQ63       31
 
 #define SMSKSW0     (2*IRQSW0)
@@ -54,9 +54,9 @@
 #define SMSK_RIZE   3       // The rising edge of signalIn generates an interrupt request
 
 #define IH_MIPS     __mips_interrupt()
-#define IH_SW0      __mips_isr_eic3()
-#define IH_SW1      __mips_isr_eic4()
-#define IH_TIMER    __mips_isr_eic5()
+#define IH_SW0      __mips_isr_eic0()
+#define IH_SW1      __mips_isr_eic1()
+#define IH_TIMER    __mips_isr_eic7()
 #define IH_IRQ63    __mips_isr_eic63()
 
 #define ISR(x)     void __attribute__ ((interrupt, keep_interrupts_masked)) x

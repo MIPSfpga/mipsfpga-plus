@@ -351,26 +351,43 @@ module mfp_system
         assign EJ_PartNumber    = 16'b0;
     `endif //MFP_USE_MPSSE_DEBUGGER
 
-    //interrupt settings
+    // Interrupt settings
+    //     
+    //     vector                vector 
+    //      mode   eic mode  IntCtl.VS=0x1   destination
+    //     ------  --------  -------------  -------------
+    //              ...
+    //   ^  hw7     eic9        .320        
+    // p |  hw6     eic8        .300        
+    // r |  hw5     eic7        .2E0        timer int
+    // i |  hw4     eic6        .2C0        
+    // o |  hw3     eic5        .2A0        uart int
+    // r |  hw2     eic4        .280        
+    // i |  hw1     eic3        .260        
+    // t |  hw0     eic2        .240        
+    // y |  sw1     eic1        .220        software int 1
+    //   |  sw0     eic0        .200        software int 0
+
     `ifdef MFP_USE_IRQ_EIC
         wire  [ `EIC_CHANNELS - 1 : 0 ] EIC_input;
-        assign EIC_input[`EIC_CHANNELS - 1:7] = {`EIC_CHANNELS - 6 {1'b0}};
-        assign EIC_input[6]   =  uart_interrupt;
-        assign EIC_input[5]   =  SI_TimerInt;
-        assign EIC_input[4]   =  SI_SWInt[1];
-        assign EIC_input[3]   =  SI_SWInt[0];
-        assign EIC_input[2:0] =  3'b0;
+        assign EIC_input[`EIC_CHANNELS - 1:8] = {`EIC_CHANNELS - 6 {1'b0}};
+        assign EIC_input[7]   =  SI_TimerInt;
+        assign EIC_input[6]   =  1'b0;
+        assign EIC_input[5]   =  uart_interrupt;
+        assign EIC_input[4:2] =  3'b0;
+        assign EIC_input[1]   =  SI_SWInt[1];
+        assign EIC_input[0]   =  SI_SWInt[0];
+        assign SI_IPTI        =  3'h0;
     `else
         assign SI_Offset      = 17'b0;
         assign SI_EISS        =  4'b0;
-        assign SI_Int[7]      =  1'b0;
-        assign SI_Int[6]      =  uart_interrupt;
-        assign SI_Int[5:0]    =  6'b0;
+        assign SI_Int[7:4]    =  4'b0;
+        assign SI_Int[3]      =  uart_interrupt;
+        assign SI_Int[2:0]    =  3'b0;
         assign SI_EICVector   =  6'b0;
         assign SI_EICPresent  =  1'b0;
+        assign SI_IPTI        =  3'h7; //enable MIPS timer interrupt on HW5
     `endif //MFP_USE_IRQ_EIC
-
-    assign SI_IPTI            =   3'h7; //enable MIPS timer interrupt on HW5
 
     //other settings
     assign SI_SRSDisable   = 4'b1111;  // Disable banks of shadow sets

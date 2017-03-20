@@ -18,7 +18,8 @@
 //comment this to use 'Explicit Vector Number' option
 //when uncommented - option 'Explicit Vector Offset' enabled
 //see details in mfp_iec_handler.v
-`define EIC_USE_EXPLICIT_VECTOR_OFFSET
+//
+//`define EIC_USE_EXPLICIT_VECTOR_OFFSET
 
 //********  config end  ********  
 
