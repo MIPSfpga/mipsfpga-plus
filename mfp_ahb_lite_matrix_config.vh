@@ -19,6 +19,7 @@
 //
 `define MFP_USE_UART_PROGRAM_LOADER
 `define MFP_USE_DUPLEX_UART
+`define MFP_USE_MPSSE_DEBUGGER
 // `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
 // `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 // `define MFP_DEMO_LIGHT_SENSOR
@@ -32,6 +33,12 @@
 //`define MFP_USE_WORD_MEMORY
 //`define MFP_USE_BUSY_MEMORY
 //`define MFP_USE_SDRAM_MEMORY
+
+//
+// Enable external interrupt controller
+// see additional settings in mfp_eic_core.vh
+//
+//`define MFP_USE_IRQ_EIC
 
 //
 // global SDRAM bus params
@@ -84,6 +91,11 @@
     `endif
 `endif
 
+// mpsse debug cant be enabled on Simulation
+`ifdef SIMULATION
+    `undef MFP_USE_MPSSE_DEBUGGER
+`endif
+
 //
 //  Memory-mapped I/O addresses
 //
@@ -127,7 +139,7 @@
     `ifdef SIMULATION
     `define MFP_RAM_ADDR_WIDTH          16
     `else
-    `define MFP_RAM_ADDR_WIDTH          10  // DE1: 10, DE0-Nano: 13, DE0-CV or Basys3: 14, Nexys 4 or DE2-115: 16
+    `define MFP_RAM_ADDR_WIDTH          15  // DE1: 10, DE0-Nano: 13, DE0-CV or Basys3: 14, Nexys 4 or DE2-115: 16, DE10-Lite: 15
     `endif
 `endif
 
@@ -135,3 +147,4 @@
 `define MFP_RAM_ADDR_MATCH          3'b0
 `define MFP_GPIO_ADDR_MATCH         7'h7e
 `define MFP_UART_ADDR_MATCH         17'h10401
+`define MFP_EIC_ADDR_MATCH          17'h10402

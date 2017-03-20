@@ -1,5 +1,6 @@
 `include "m14k_const.vh"
 `include "mfp_ahb_lite_matrix_config.vh"
+`include "mfp_eic_core.vh"
 
 module mfp_system
 (
@@ -164,6 +165,8 @@ module mfp_system
     wire         mpc_bselres_e;
 `endif
 
+    wire         uart_interrupt;
+
     m14k_top m14k_top
     (
         .BistIn                ( BistIn                ),
@@ -285,8 +288,8 @@ module mfp_system
     //  assign EJ_DINT               =   1'b0;
         assign EJ_DINTsup            =   1'b0;
         assign EJ_DisableProbeDebug  =   1'b0;
-        assign EJ_ManufID            =  11'h0; //02;
-        assign EJ_PartNumber         =  16'h0; //F1;
+    //  assign EJ_ManufID            =  11'b0;
+    //  assign EJ_PartNumber         =  16'b0;
     //  assign EJ_TCK                =   1'b0;
     //  assign EJ_TDI                =   1'b0;
     //  assign EJ_TMS                =   1'b0;
@@ -310,17 +313,17 @@ module mfp_system
     //  assign SI_ClkIn              =   1'b0;
     //  assign SI_ColdReset          =   1'b0;
         assign SI_CPUNum             =  10'b0;
-        assign SI_EICPresent         =   1'b0;
-        assign SI_EICVector          =   6'b0;
-        assign SI_EISS               =   4'b0;
+    //  assign SI_EICPresent         =   1'b0;
+    //  assign SI_EICVector          =   6'b0;
+    //  assign SI_EISS               =   4'b0;
         assign SI_Endian             =   1'b0;
-        assign SI_Int                =   8'b0;
+    //  assign SI_Int                =   8'b0;
         assign SI_IPFDCI             =   3'b0;
         assign SI_IPPCI              =   3'b0;
-        assign SI_IPTI               =   3'b0;
+    //  assign SI_IPTI               =   3'b0;
         assign SI_MergeMode          =   2'b0;
         assign SI_NMI                =   1'b0;
-        assign SI_Offset             =  17'b0;
+    //  assign SI_Offset             =  17'b0;
     //  assign SI_Reset              =   1'b0;
     //  assign SI_SRSDisable         =   4'b0;
     //  assign SI_TraceDisable       =   1'b0;
@@ -328,13 +331,65 @@ module mfp_system
         assign TC_Stall              =   1'b0;
         assign UDI_toudi             = 128'b0;
 
-    // Module for hardware reset of EJTAG just after FPGA configuration
-    // It pulses EJ_TRST_N low for 16 clock cycles.
-    
-    mfp_ejtag_reset ejtag_reset (.clk (SI_ClkIn), .trst_n (trst_n));
 
-    assign EJ_TRST_N       = trst_n & EJ_TRST_N_probe;
-    //assign EJ_TRST_N       = 1'b1; //EJ_TRST_N_probe;
+    `ifdef MFP_USE_MPSSE_DEBUGGER
+        // reset module is not used because mfp_ejtag_reset interferes
+        // with work of debugger. This is not good: this configutation faults
+        // inside the simulator but works on hardware (Altera MAX10)
+        //
+        // TODO: create universal reset module (power/cold/hot/ejtag)
+        assign EJ_TRST_N        = 1'b1;
+        assign EJ_ManufID       = 11'h02;
+        assign EJ_PartNumber    = 16'hF1;
+    `else
+        // Module for hardware reset of EJTAG just after FPGA configuration
+        // It pulses EJ_TRST_N low for 16 clock cycles.
+        mfp_ejtag_reset ejtag_reset (.clk (SI_ClkIn), .trst_n (trst_n));
+
+        assign EJ_TRST_N        = trst_n & EJ_TRST_N_probe;
+        assign EJ_ManufID       = 11'b0;
+        assign EJ_PartNumber    = 16'b0;
+    `endif //MFP_USE_MPSSE_DEBUGGER
+
+    // Interrupt settings
+    //     
+    //     vector                vector 
+    //      mode   eic mode  IntCtl.VS=0x1   destination
+    //     ------  --------  -------------  -------------
+    //              ...
+    //   ^  hw7     eic9        .320        
+    // p |  hw6     eic8        .300        
+    // r |  hw5     eic7        .2E0        timer int
+    // i |  hw4     eic6        .2C0        
+    // o |  hw3     eic5        .2A0        uart int
+    // r |  hw2     eic4        .280        
+    // i |  hw1     eic3        .260        
+    // t |  hw0     eic2        .240        
+    // y |  sw1     eic1        .220        software int 1
+    //   |  sw0     eic0        .200        software int 0
+
+    `ifdef MFP_USE_IRQ_EIC
+        wire  [ `EIC_CHANNELS - 1 : 0 ] EIC_input;
+        assign EIC_input[`EIC_CHANNELS - 1:8] = {`EIC_CHANNELS - 6 {1'b0}};
+        assign EIC_input[7]   =  SI_TimerInt;
+        assign EIC_input[6]   =  1'b0;
+        assign EIC_input[5]   =  uart_interrupt;
+        assign EIC_input[4:2] =  3'b0;
+        assign EIC_input[1]   =  SI_SWInt[1];
+        assign EIC_input[0]   =  SI_SWInt[0];
+        assign SI_IPTI        =  3'h0;
+    `else
+        assign SI_Offset      = 17'b0;
+        assign SI_EISS        =  4'b0;
+        assign SI_Int[7:4]    =  4'b0;
+        assign SI_Int[3]      =  uart_interrupt;
+        assign SI_Int[2:0]    =  3'b0;
+        assign SI_EICVector   =  6'b0;
+        assign SI_EICPresent  =  1'b0;
+        assign SI_IPTI        =  3'h7; //enable MIPS timer interrupt on HW5
+    `endif //MFP_USE_IRQ_EIC
+
+    //other settings
     assign SI_SRSDisable   = 4'b1111;  // Disable banks of shadow sets
     assign SI_TraceDisable = 1'b1;     // Disables trace hardware
     assign SI_AHBStb       = 1'b1;     // AHB: Signal indicating phase and frequency relationship between clk and hclk.
@@ -414,7 +469,21 @@ module mfp_system
         `ifdef MFP_USE_DUPLEX_UART
         .UART_SRX         (   UART_SRX         ), 
         .UART_STX         (   UART_STX         ),
-        `endif
+        `endif //MFP_USE_DUPLEX_UART
+        .UART_INT         (   uart_interrupt   ),
+
+        `ifdef MFP_USE_IRQ_EIC
+        .EIC_input        (   EIC_input        ),
+        .EIC_Offset       (   SI_Offset        ),
+        .EIC_ShadowSet    (   SI_EISS          ),
+        .EIC_Interrupt    (   SI_Int           ),
+        .EIC_Vector       (   SI_EICVector     ),
+        .EIC_Present      (   SI_EICPresent    ),
+        .EIC_IAck         (   SI_IAck          ),
+        .EIC_IPL          (   SI_IPL           ),
+        .EIC_IVN          (   SI_IVN           ),
+        .EIC_ION          (   SI_ION           ),
+        `endif //MFP_USE_IRQ_EIC
                                                
         .MFP_Reset        (   MFP_Reset        )
     );

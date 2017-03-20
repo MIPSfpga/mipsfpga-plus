@@ -1,5 +1,6 @@
 `include "mfp_ahb_lite_matrix_config.vh"
 `include "mfp_ahb_lite.vh"
+`include "mfp_eic_core.vh"
 
 module mfp_ahb_lite_matrix_with_loader
 (
@@ -43,12 +44,26 @@ module mfp_ahb_lite_matrix_with_loader
     //reset uart
     input         UART_RX,
     output        UART_TX,
+    output        UART_INT,
 
     `ifdef MFP_USE_DUPLEX_UART
     //communication uart
     input         UART_SRX,
     output        UART_STX,
     `endif
+
+    `ifdef MFP_USE_IRQ_EIC
+    input  [ `EIC_CHANNELS        - 1 : 0 ] EIC_input,
+    output [                       17 : 1 ] EIC_Offset,
+    output [                        3 : 0 ] EIC_ShadowSet,
+    output [                        7 : 0 ] EIC_Interrupt,
+    output [                        5 : 0 ] EIC_Vector,
+    output                                  EIC_Present,
+    input                                   EIC_IAck,
+    input  [                        7 : 0 ] EIC_IPL,
+    input  [                        5 : 0 ] EIC_IVN,
+    input  [                       17 : 1 ] EIC_ION,
+    `endif //MFP_USE_IRQ_EIC
 
     output        MFP_Reset
 );
@@ -145,34 +160,47 @@ module mfp_ahb_lite_matrix_with_loader
         .SI_Endian        ( SI_Endian       ),
 
         `ifdef MFP_USE_SDRAM_MEMORY
-        .SDRAM_CKE        (   SDRAM_CKE        ),
-        .SDRAM_CSn        (   SDRAM_CSn        ),
-        .SDRAM_RASn       (   SDRAM_RASn       ),
-        .SDRAM_CASn       (   SDRAM_CASn       ),
-        .SDRAM_WEn        (   SDRAM_WEn        ),
-        .SDRAM_ADDR       (   SDRAM_ADDR       ),
-        .SDRAM_BA         (   SDRAM_BA         ),
-        .SDRAM_DQ         (   SDRAM_DQ         ),
-        .SDRAM_DQM        (   SDRAM_DQM        ),
+        .SDRAM_CKE        ( SDRAM_CKE       ),
+        .SDRAM_CSn        ( SDRAM_CSn       ),
+        .SDRAM_RASn       ( SDRAM_RASn      ),
+        .SDRAM_CASn       ( SDRAM_CASn      ),
+        .SDRAM_WEn        ( SDRAM_WEn       ),
+        .SDRAM_ADDR       ( SDRAM_ADDR      ),
+        .SDRAM_BA         ( SDRAM_BA        ),
+        .SDRAM_DQ         ( SDRAM_DQ        ),
+        .SDRAM_DQM        ( SDRAM_DQM       ),
         `endif  // MFP_USE_SDRAM_MEMORY
                                              
-        .IO_Switches      ( IO_Switches     ),
-        .IO_Buttons       ( IO_Buttons      ),
-        .IO_RedLEDs       ( IO_RedLEDs      ),
-        .IO_GreenLEDs     ( IO_GreenLEDs    ), 
-        .IO_7_SegmentHEX  ( IO_7_SegmentHEX ),
-
         `ifdef MFP_DEMO_LIGHT_SENSOR
         .IO_LightSensor   ( IO_LightSensor  ), 
         `endif
 
         `ifdef MFP_USE_DUPLEX_UART
         .UART_RX          ( UART_SRX        ), 
-        .UART_TX          ( UART_STX        ) 
+        .UART_TX          ( UART_STX        ),
         `else
         .UART_RX          ( 1'b0            ), 
-        .UART_TX          ( UART_TX         ) 
+        .UART_TX          ( UART_TX         ),
         `endif //MFP_USE_DUPLEX_UART
-    );
+        .UART_INT         ( UART_INT        ),
 
+        `ifdef MFP_USE_IRQ_EIC
+        .EIC_input        ( EIC_input       ),
+        .EIC_Offset       ( EIC_Offset      ),
+        .EIC_ShadowSet    ( EIC_ShadowSet   ),
+        .EIC_Interrupt    ( EIC_Interrupt   ),
+        .EIC_Vector       ( EIC_Vector      ),
+        .EIC_Present      ( EIC_Present     ),
+        .EIC_IAck         ( EIC_IAck        ),
+        .EIC_IPL          ( EIC_IPL         ),
+        .EIC_IVN          ( EIC_IVN         ),
+        .EIC_ION          ( EIC_ION         ),
+        `endif //MFP_USE_IRQ_EIC
+
+        .IO_Switches      ( IO_Switches     ),
+        .IO_Buttons       ( IO_Buttons      ),
+        .IO_RedLEDs       ( IO_RedLEDs      ),
+        .IO_GreenLEDs     ( IO_GreenLEDs    ), 
+        .IO_7_SegmentHEX  ( IO_7_SegmentHEX )
+    );
 endmodule
