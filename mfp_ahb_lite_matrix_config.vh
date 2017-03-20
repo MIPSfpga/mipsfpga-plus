@@ -38,8 +38,8 @@
 // Interrupt type (choose one)
 // for MFP_USE_IRQ_EIC see additional settings in mfp_eic_core.vh
 //
-`define MFP_USE_IRQ_EIC
-//`define MPF_USE_TIMER_IRQ5
+//`define MFP_USE_IRQ_EIC
+`define MPF_USE_TIMER_IRQ5
 
 //
 // global SDRAM bus params

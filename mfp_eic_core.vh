@@ -6,6 +6,8 @@
 //********  config start  ********  
 
 //default interrupt count
+//the total interrupt count (direct+sense) should be less or equal 64
+//max sense channel count is 32
 `ifndef EIC_DIRECT_CHANNELS
     `define EIC_DIRECT_CHANNELS 32  // 0-32
 `endif
@@ -16,7 +18,7 @@
 //comment this to use 'Explicit Vector Number' option
 //when uncommented - option 'Explicit Vector Offset' enabled
 //see details in mfp_iec_handler.v
-//`define EIC_USE_EXPLICIT_VECTOR_OFFSET
+`define EIC_USE_EXPLICIT_VECTOR_OFFSET
 
 //********  config end  ********  
 

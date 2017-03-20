@@ -73,18 +73,16 @@ void __attribute__ ((interrupt, keep_interrupts_masked)) __mips_interrupt ()
     MFP_RED_LEDS = MFP_RED_LEDS & ~0x1;
 }
 
-void __attribute__ ((interrupt("vector=sw0"), keep_interrupts_masked)) __mips_isr_sw0 ()
+void __attribute__ ((interrupt, keep_interrupts_masked)) __mips_isr_sw0 ()
 {
     MFP_RED_LEDS = MFP_RED_LEDS | 0x2;
 
-    n++;
     mips32_biccr(CR_SINT0);     //clear software interrupt 0 flag
-    mips32_biscr(CR_SINT1);     //request for software interrupt 1
 
     MFP_RED_LEDS = MFP_RED_LEDS & ~0x2;
 }
 
-void __attribute__ ((interrupt("vector=hw5"), keep_interrupts_masked)) __mips_isr_hw5 ()
+void __attribute__ ((interrupt, keep_interrupts_masked)) __mips_isr_hw5 ()
 {
     MFP_RED_LEDS = MFP_RED_LEDS | 0x4;
 
@@ -92,6 +90,7 @@ void __attribute__ ((interrupt("vector=hw5"), keep_interrupts_masked)) __mips_is
     mipsTimerReset();
 
     mips32_biscr(CR_SINT0);     //request for software interrupt 0
+    mips32_biscr(CR_SINT1);     //request for software interrupt 1
 
     MFP_RED_LEDS = MFP_RED_LEDS & ~0x4;
 }
