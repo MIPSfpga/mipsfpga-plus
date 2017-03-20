@@ -31,19 +31,15 @@ module mfp_ahb_lite_matrix
     output [`SDRAM_DM_BITS   - 1 : 0 ]      SDRAM_DQM,
     `endif
 
-    input  [`MFP_N_SWITCHES          - 1:0] IO_Switches,
-    input  [`MFP_N_BUTTONS           - 1:0] IO_Buttons,
-    output [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs,
-    output [`MFP_N_GREEN_LEDS        - 1:0] IO_GreenLEDs,
-    output [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX,
-
     `ifdef MFP_DEMO_LIGHT_SENSOR
     input  [                       15 : 0 ] IO_LightSensor,
     `endif
 
     input                                   UART_RX,
     output                                  UART_TX,
+    output                                  UART_INT,
 
+    `ifdef MFP_USE_IRQ_EIC
     input  [ `EIC_CHANNELS        - 1 : 0 ] EIC_input,
     output [                       17 : 1 ] EIC_Offset,
     output [                        3 : 0 ] EIC_ShadowSet,
@@ -53,7 +49,14 @@ module mfp_ahb_lite_matrix
     input                                   EIC_IAck,
     input  [                        7 : 0 ] EIC_IPL,
     input  [                        5 : 0 ] EIC_IVN,
-    input  [                       17 : 1 ] EIC_ION
+    input  [                       17 : 1 ] EIC_ION,
+    `endif //MFP_USE_IRQ_EIC
+
+    input  [`MFP_N_SWITCHES          - 1:0] IO_Switches,
+    input  [`MFP_N_BUTTONS           - 1:0] IO_Buttons,
+    output [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs,
+    output [`MFP_N_GREEN_LEDS        - 1:0] IO_GreenLEDs,
+    output [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX
 );
 
     wire [ 4:0] HSEL_req;   
@@ -184,6 +187,14 @@ module mfp_ahb_lite_matrix
     );
 
     //UART
+    wire    UART_RTS;
+    wire    UART_CTS   = 1'b0;
+    wire    UART_DTR;
+    wire    UART_DSR   = 1'b0;
+    wire    UART_RI    = 1'b0;
+    wire    UART_DCD   = 1'b0;
+    wire    UART_BAUD;
+
     mfp_ahb_lite_uart16550  uart
     (
         .HCLK             ( HCLK            ),
@@ -203,9 +214,8 @@ module mfp_ahb_lite_matrix
         .SI_Endian        ( SI_Endian       ),
 
         .UART_SRX         ( UART_RX         ),  // in  UART serial input signal
-        .UART_STX         ( UART_TX         )   // out UART serial output signal
+        .UART_STX         ( UART_TX         ),  // out UART serial output signal
 
-        /*
         .UART_RTS         ( UART_RTS        ),  // out UART MODEM Request To Send
         .UART_CTS         ( UART_CTS        ),  // in  UART MODEM Clear To Send
         .UART_DTR         ( UART_DTR        ),  // out UART MODEM Data Terminal Ready
@@ -214,7 +224,6 @@ module mfp_ahb_lite_matrix
         .UART_DCD         ( UART_DCD        ),  // in  UART MODEM Data Carrier Detect
         .UART_BAUD        ( UART_BAUD       ),  // out UART baudrate output
         .UART_INT         ( UART_INT        )   // out UART interrupt
-        */
     );
 
     // EIC

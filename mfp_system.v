@@ -165,6 +165,8 @@ module mfp_system
     wire         mpc_bselres_e;
 `endif
 
+    wire         uart_interrupt;
+
     m14k_top m14k_top
     (
         .BistIn                ( BistIn                ),
@@ -349,31 +351,28 @@ module mfp_system
         assign EJ_PartNumber    = 16'b0;
     `endif //MFP_USE_MPSSE_DEBUGGER
 
-
-    
-
+    //interrupt settings
     `ifdef MFP_USE_IRQ_EIC
         wire  [ `EIC_CHANNELS - 1 : 0 ] EIC_input;
-        assign EIC_input[`EIC_CHANNELS - 1:6] = {`EIC_CHANNELS - 6 {1'b0}};
-        assign EIC_input[5] = SI_TimerInt;
-        assign EIC_input[4] = SI_SWInt[1];
-        assign EIC_input[3] = SI_SWInt[0];
-        assign EIC_input[2:0] = 3'b0;
+        assign EIC_input[`EIC_CHANNELS - 1:7] = {`EIC_CHANNELS - 6 {1'b0}};
+        assign EIC_input[6]   =  uart_interrupt;
+        assign EIC_input[5]   =  SI_TimerInt;
+        assign EIC_input[4]   =  SI_SWInt[1];
+        assign EIC_input[3]   =  SI_SWInt[0];
+        assign EIC_input[2:0] =  3'b0;
     `else
-
-        assign SI_Offset             =  17'b0;
-        assign SI_EISS               =   4'b0;
-        assign SI_Int                =   8'b0;
-        assign SI_EICVector          =   6'b0;
-        assign SI_EICPresent         =   1'b0;
-
-        `ifdef MPF_USE_TIMER_IRQ5
-            assign SI_IPTI          = 3'h7; //enable MIPS timer interrupt on HW5
-        `else
-            assign SI_IPTI          = 3'h0; //disable MIPS timer interrupt on HW5
-        `endif //MPF_USE_TIMER_IRQ5
+        assign SI_Offset      = 17'b0;
+        assign SI_EISS        =  4'b0;
+        assign SI_Int[7]      =  1'b0;
+        assign SI_Int[6]      =  uart_interrupt;
+        assign SI_Int[5:0]    =  6'b0;
+        assign SI_EICVector   =  6'b0;
+        assign SI_EICPresent  =  1'b0;
     `endif //MFP_USE_IRQ_EIC
 
+    assign SI_IPTI            =   3'h7; //enable MIPS timer interrupt on HW5
+
+    //other settings
     assign SI_SRSDisable   = 4'b1111;  // Disable banks of shadow sets
     assign SI_TraceDisable = 1'b1;     // Disables trace hardware
     assign SI_AHBStb       = 1'b1;     // AHB: Signal indicating phase and frequency relationship between clk and hclk.
@@ -453,7 +452,8 @@ module mfp_system
         `ifdef MFP_USE_DUPLEX_UART
         .UART_SRX         (   UART_SRX         ), 
         .UART_STX         (   UART_STX         ),
-        `endif
+        `endif //MFP_USE_DUPLEX_UART
+        .UART_INT         (   uart_interrupt   ),
 
         `ifdef MFP_USE_IRQ_EIC
         .EIC_input        (   EIC_input        ),
@@ -466,7 +466,7 @@ module mfp_system
         .EIC_IPL          (   SI_IPL           ),
         .EIC_IVN          (   SI_IVN           ),
         .EIC_ION          (   SI_ION           ),
-        `endif
+        `endif //MFP_USE_IRQ_EIC
                                                
         .MFP_Reset        (   MFP_Reset        )
     );

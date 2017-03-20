@@ -44,6 +44,7 @@ module mfp_ahb_lite_matrix_with_loader
     //reset uart
     input         UART_RX,
     output        UART_TX,
+    output        UART_INT,
 
     `ifdef MFP_USE_DUPLEX_UART
     //communication uart
@@ -181,6 +182,7 @@ module mfp_ahb_lite_matrix_with_loader
         .UART_RX          ( 1'b0            ), 
         .UART_TX          ( UART_TX         ),
         `endif //MFP_USE_DUPLEX_UART
+        .UART_INT         ( UART_INT        ),
 
         `ifdef MFP_USE_IRQ_EIC
         .EIC_input        ( EIC_input       ),
