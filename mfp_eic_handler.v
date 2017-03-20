@@ -26,7 +26,7 @@ module handler_params_encoder
     `ifdef EIC_USE_EXPLICIT_VECTOR_OFFSET
 
         // EIC Option 2 - Explicit Vector Offset
-        // for detailes see the chapter 5.3.1.3 in 
+        // for details see the chapter 5.3.1.3 in 
         // 'MIPS32® microAptiv™ UP Processor Core Family Software User’s Manual, Revision 01.02'
         //
         // to use this option set 'assign eic_offset = 1'b1;' in m14k_cpz_eicoffset_stub.v
@@ -39,7 +39,7 @@ module handler_params_encoder
     `else
 
         // EIC Option 1 - Explicit Vector Number
-        // for detailes see the chapter 5.3.1.3 in 
+        // for details see the chapter 5.3.1.3 in 
         // 'MIPS32® microAptiv™ UP Processor Core Family Software User’s Manual, Revision 01.02'
         //
         // to use this option set 'assign eic_offset = 1'b0;' in m14k_cpz_eicoffset_stub.v (default value)

@@ -246,7 +246,7 @@ module mfp_ahb_lite_matrix
         .HRESP            ( HRESP_4         ),
         .SI_Endian        ( SI_Endian       ),
 
-        .signal           ( EIC_input       ),
+        .EIC_input        ( EIC_input       ),
 
         .EIC_Offset       ( EIC_Offset      ),
         .EIC_ShadowSet    ( EIC_ShadowSet   ),

@@ -11,11 +11,11 @@ module mfp_ahb_lite_eic
     input                              HCLK,
     input                              HRESETn,
     input      [ 31 : 0 ]              HADDR,
-    input      [  2 : 0 ]              HBURST,
+    input      [  2 : 0 ]              HBURST,     // ignored
     input                              HMASTLOCK,  // ignored
     input      [  3 : 0 ]              HPROT,      // ignored
     input                              HSEL,
-    input      [  2 : 0 ]              HSIZE,
+    input      [  2 : 0 ]              HSIZE,      // ignored
     input      [  1 : 0 ]              HTRANS,
     input      [ 31 : 0 ]              HWDATA,
     input                              HWRITE,
@@ -24,19 +24,19 @@ module mfp_ahb_lite_eic
     output                             HRESP,
     input                              SI_Endian,  // ignored
 
-    //Interrupt side
-    input      [ `EIC_CHANNELS-1 : 0 ] signal,
+    //Interrupt signal side
+    input      [ `EIC_CHANNELS-1 : 0 ] EIC_input,
 
     //CPU side
-    output     [ 17 : 1 ]              EIC_Offset,
-    output     [  3 : 0 ]              EIC_ShadowSet,
-    output     [  7 : 0 ]              EIC_Interrupt,
-    output     [  5 : 0 ]              EIC_Vector,
-    output                             EIC_Present,
-    input                              EIC_IAck,
-    input      [  7 : 0 ]              EIC_IPL,
-    input      [  5 : 0 ]              EIC_IVN,
-    input      [ 17 : 1 ]              EIC_ION
+    output     [ 17 : 1 ]              EIC_Offset,    // connect to SI_Offset
+    output     [  3 : 0 ]              EIC_ShadowSet, // connect to SI_EISS
+    output     [  7 : 0 ]              EIC_Interrupt, // connect to SI_Int
+    output     [  5 : 0 ]              EIC_Vector,    // connect to SI_EICVector
+    output                             EIC_Present,   // connect to SI_EICPresent
+    input                              EIC_IAck,      // connect to SI_IAck
+    input      [  7 : 0 ]              EIC_IPL,       // connect to SI_IPL
+    input      [  5 : 0 ]              EIC_IVN,       // connect to SI_IVN
+    input      [ 17 : 1 ]              EIC_ION        // connect to SI_ION
 );
     assign      HRESP  = 1'b0;
     assign      HREADY = 1'b1;
@@ -72,7 +72,7 @@ module mfp_ahb_lite_eic
     (
         .CLK            ( HCLK          ),
         .RESETn         ( HRESETn       ),
-        .signal         ( signal        ),
+        .signal         ( EIC_input     ),
         .read_addr      ( read_addr     ),
         .read_data      ( read_data     ),
         .write_addr     ( write_addr    ),
