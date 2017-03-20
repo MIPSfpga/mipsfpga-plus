@@ -7,7 +7,7 @@
 
 //default interrupt count
 `ifndef EIC_DIRECT_CHANNELS
-    `define EIC_DIRECT_CHANNELS 31  // 0-31
+    `define EIC_DIRECT_CHANNELS 32  // 0-32
 `endif
 `ifndef EIC_SENSE_CHANNELS
     `define EIC_SENSE_CHANNELS  32  // 0-32
