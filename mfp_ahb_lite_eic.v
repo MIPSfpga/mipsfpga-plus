@@ -20,7 +20,7 @@ module mfp_ahb_lite_eic
     input      [ 31 : 0 ]              HWDATA,
     input                              HWRITE,
     output reg [ 31 : 0 ]              HRDATA,
-    output                             HREADY,
+    output reg                         HREADY,
     output                             HRESP,
     input                              SI_Endian,  // ignored
 
@@ -39,15 +39,20 @@ module mfp_ahb_lite_eic
     input      [ 17 : 1 ]              EIC_ION        // connect to SI_ION
 );
     assign      HRESP  = 1'b0;
-    assign      HREADY = 1'b1;
 
     wire [ `EIC_ADDR_WIDTH - 1 : 0 ] read_addr;
     wire [                  31 : 0 ] read_data;
     reg  [ `EIC_ADDR_WIDTH - 1 : 0 ] write_addr;
     wire [                  31 : 0 ] write_data;
     reg                              write_enable;
-
+    
     wire [ `EIC_ADDR_WIDTH - 1 : 0 ] ADDR = HADDR [ `EIC_ADDR_WIDTH + 2 : 2 ];
+    reg  [ `EIC_ADDR_WIDTH - 1 : 0 ] ADDR_old;
+    reg                              HWRITE_old;
+    reg  [                  31 : 0 ] HADDR_old;
+
+    wire        read_after_write = ADDR == ADDR_old && HWRITE_old && !HWRITE 
+                                   && HTRANS != `HTRANS_IDLE && HADDR_old != `HTRANS_IDLE && HSEL;
 
     parameter   HTRANS_IDLE = 2'b0;
     wire        NeedRead    = HTRANS != HTRANS_IDLE && HSEL;
@@ -56,7 +61,7 @@ module mfp_ahb_lite_eic
     assign      write_data  = HWDATA;
     assign      read_addr   = ADDR;
 
-    always @ (posedge HCLK)
+    always @ (posedge HCLK) begin
         if(~HRESETn)
             write_enable <= 1'b0;
         else begin
@@ -67,6 +72,10 @@ module mfp_ahb_lite_eic
                 write_addr <= ADDR;
             write_enable <= NeedWrite;
         end
+
+        ADDR_old <= ADDR;
+        HREADY   <= !read_after_write;
+    end
 
     mfp_eic_core eic_core
     (

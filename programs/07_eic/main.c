@@ -20,9 +20,7 @@ void mipsTimerInit(void)
 void mipsTimerReset(void)
 {
     mips32_setcount(0);                     //reset counter as it reached the TOP value
-    mips32_setcompare(MIPS_TIMER_PERIOD);   //don`t ask me why
-                                            //but this is the way to clear timer interrupt flag (SI_TimerInt)
-                                            //see m14k_cpz.v:1984 for details
+    mips32_setcompare(MIPS_TIMER_PERIOD);   //clear timer interrupt flag
 }
 
 void mipsInterruptInit(void)
@@ -49,14 +47,19 @@ void mipsInterruptInit(void)
 
 volatile long long int n;
 
-ISR(IH_MIPS)
+EH_GENERAL()
 {
     MFP_RED_LEDS = MFP_RED_LEDS | 0x2;
 
-    //check for software interrupt 1
     uint32_t cause = mips32_getcr();
-    if (cause & CR_SINT1)
-        mips32_biccr(CR_SINT1);     //clear software interrupt 1 flag
+
+    //check that this is interrupt exception
+    if((cause & CR_XMASK) == 0)
+    {
+        //check for software interrupt 1
+        if (cause & CR_SINT1)
+            mips32_biccr(CR_SINT1);     //clear software interrupt 1 flag
+    }
 
     MFP_RED_LEDS = MFP_RED_LEDS & ~0x2;
 }
@@ -101,7 +104,7 @@ int main ()
     mipsInterruptInit();
 
     for (;;)
-        MFP_7_SEGMENT_HEX = ((n >> 8) & 0xffffff00) | (n & 0xff);   //counter output
+        MFP_7_SEGMENT_HEX = n;   //counter output
 
     return 0;
 }

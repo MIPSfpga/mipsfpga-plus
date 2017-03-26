@@ -17,7 +17,7 @@ module mfp_ahb_ram_slave
     input  [31:0] HWDATA,
     input         HWRITE,
     output [31:0] HRDATA,
-    output        HREADY,
+    output reg    HREADY,
     output        HRESP,
     input         SI_Endian
 );
@@ -25,7 +25,6 @@ module mfp_ahb_ram_slave
     // Ignored: HMASTLOCK, HPROT
     // TODO: SI_Endian
 
-    assign HREADY = 1'b1;
     assign HRESP  = 1'b0;
 
     reg [ 1:0] HTRANS_dly;
@@ -50,6 +49,11 @@ module mfp_ahb_ram_slave
             HSEL_dly   <= HSEL;
         end
     end
+
+    wire    read_after_write = HADDR == HADDR_dly && HWRITE_dly && !HWRITE 
+                               && HTRANS != `HTRANS_IDLE && HTRANS_dly != `HTRANS_IDLE && HSEL;
+    always @ (posedge HCLK)
+        HREADY <= !read_after_write;
 
     `ifdef MFP_USE_BYTE_MEMORY
 

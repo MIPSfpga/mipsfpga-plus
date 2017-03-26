@@ -24,6 +24,12 @@ add wave -radix hex sim:/mfp_testbench/system/SI_TimerInt
 add wave -radix hex sim:/mfp_testbench/system/m14k_top/cpu/core/cpz/compare
 add wave -height 74 -radix hex -format analog-step -scale 0.015 sim:/mfp_testbench/system/m14k_top/cpu/core/cpz/count
 
+add wave -radix hex sim:/mfp_testbench/system/m14k_top/cpu/core/cpz/cause32
+add wave -radix hex sim:/mfp_testbench/system/m14k_top/cpu/core/cpz/badva
+add wave -radix hex sim:/mfp_testbench/system/m14k_top/cpu/core/cpz/status32
+add wave -radix hex sim:/mfp_testbench/system/m14k_top/cpu/core/cpz/cpz_eretpc 
+add wave -radix hex sim:/mfp_testbench/system/m14k_top/cpu/core/cpz_epc_w 
+
 run -all
 
 wave zoom full

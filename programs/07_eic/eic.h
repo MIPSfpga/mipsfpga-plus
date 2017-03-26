@@ -53,12 +53,12 @@
 #define SMSK_FALL   2       // The falling edge of signalIn generates an interrupt request
 #define SMSK_RIZE   3       // The rising edge of signalIn generates an interrupt request
 
-#define IH_MIPS     __mips_interrupt()
 #define IH_SW0      __mips_isr_eic0()
 #define IH_SW1      __mips_isr_eic1()
 #define IH_TIMER    __mips_isr_eic7()
 #define IH_IRQ63    __mips_isr_eic63()
 
-#define ISR(x)     void __attribute__ ((interrupt, keep_interrupts_masked)) x
+#define EH_GENERAL()    void __attribute__ ((interrupt, keep_interrupts_masked)) _mips_general_exception()
+#define ISR(x)          void __attribute__ ((interrupt, keep_interrupts_masked)) x
 
 #endif
