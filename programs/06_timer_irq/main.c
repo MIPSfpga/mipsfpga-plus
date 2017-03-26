@@ -4,16 +4,15 @@
 #include "mfp_memory_mapped_registers.h"
 
 // run types
-#define SHARED_IRQ_HANDLER      0
-#define MULTIPLE_IRQ_HANDLERS   1
+#define COMPATIBILITY   0
+#define VECTOR          1
 
 // config start
 
-#define RUNTYPE             MULTIPLE_IRQ_HANDLERS
+#define RUNTYPE             VECTOR
 #define MIPS_TIMER_PERIOD   0x200
 
 // config end
-
 
 void mipsTimerInit(void)
 {
@@ -24,23 +23,22 @@ void mipsTimerInit(void)
 void mipsTimerReset(void)
 {
     mips32_setcount(0);                     //reset counter as it reached the TOP value
-    mips32_setcompare(MIPS_TIMER_PERIOD);   //don`t ask me why
-                                            //but this is the way to clear timer interrupt flag (SI_TimerInt)
-                                            //see m14k_cpz.v:1984 for details
+    mips32_setcompare(MIPS_TIMER_PERIOD);   //clear timer interrupt flag
 }
 
 void mipsInterruptInit(void)
 {
-    #if     RUNTYPE == SHARED_IRQ_HANDLER
-        //vector mode, one common handler
-        mips32_bicsr (SR_BEV);              // Status.BEV  0 - vector interrupt mode
+    #if     RUNTYPE == COMPATIBILITY
+        //compatibility mode, one common handler
+        mips32_bicsr (SR_BEV);              // Status.BEV  0 - place handlers in kseg0 (0x80000000)
         mips32_biccr (CR_IV);               // Cause.IV,   0 - general exception handler (offset 0x180)
-        mips32_bissr (SR_IE | SR_HINT5);    // interrupt enable, HW5 - unmasked
+        mips32_bissr (SR_IE | SR_HINT5 | SR_SINT1);    // interrupt enable, HW5,SW1 - unmasked
 
-    #elif   RUNTYPE == MULTIPLE_IRQ_HANDLERS
-        //vector mode multiple handlers
-        mips32_bicsr (SR_BEV);              // Status.BEV  0 - vector interrupt mode
-        mips32_biscr (CR_IV);               // Cause.IV,   1 - special int vector (0x200), where 0x200 - base when Status.BEV = 0;
+    #elif   RUNTYPE == VECTOR
+        //vector mode, multiple handlers
+        mips32_bicsr (SR_BEV);              // Status.BEV  0 - place handlers in kseg0 (0x80000000)
+        mips32_biscr (CR_IV);               // Cause.IV,   1 - special int vector (offset 0x200), 
+                                            //                 where 0x200 - base for other vectors
 
         uint32_t intCtl = mips32_getintctl();       // get IntCtl reg value
         mips32_setintctl(intCtl | INTCTL_VS_32);    // set interrupt table vector spacing (0x20 in our case)
@@ -50,24 +48,34 @@ void mipsInterruptInit(void)
     #endif
 }
 
-volatile long long int n;
+volatile uint32_t n;
 
-void __attribute__ ((interrupt, keep_interrupts_masked)) __mips_interrupt ()
+void __attribute__ ((interrupt, keep_interrupts_masked)) _mips_general_exception ()
 {
     MFP_RED_LEDS = MFP_RED_LEDS | 0x1;
 
     uint32_t cause = mips32_getcr();
 
-    //check for timer interrupt
-    if(cause & CR_HINT5)
+    //check that this is interrupt exception
+    if((cause & CR_XMASK) == 0)
     {
-        n++;
-        mipsTimerReset();
-    }
-    //check for software interrupt 1
-    else if (cause & CR_SINT1)
-    {
-        mips32_biccr(CR_SINT1);     //clear software interrupt 1 flag
+        //check for timer interrupt
+        if(cause & CR_HINT5)
+        {
+            MFP_RED_LEDS = MFP_RED_LEDS | 0x10;
+            n++;
+            mipsTimerReset();
+
+            mips32_biscr(CR_SINT1);     //request for software interrupt 1
+            MFP_RED_LEDS = MFP_RED_LEDS & ~0x10;
+        }
+        //check for software interrupt 1
+        else if (cause & CR_SINT1)
+        {
+            MFP_RED_LEDS = MFP_RED_LEDS | 0x8;
+            mips32_biccr(CR_SINT1);     //clear software interrupt 1 flag
+            MFP_RED_LEDS = MFP_RED_LEDS & ~0x8;
+        }
     }
 
     MFP_RED_LEDS = MFP_RED_LEDS & ~0x1;
@@ -102,10 +110,7 @@ int main ()
     mipsInterruptInit();
 
     for (;;)
-    {
-        //counter output
-        MFP_7_SEGMENT_HEX = ((n >> 8) & 0xffffff00) | (n & 0xff);
-    }
+        MFP_7_SEGMENT_HEX = n;
 
     return 0;
 }

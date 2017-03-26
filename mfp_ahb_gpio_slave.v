@@ -15,7 +15,7 @@ module mfp_ahb_gpio_slave
     input      [31:0] HWDATA,
     input             HWRITE,
     output reg [31:0] HRDATA,
-    output            HREADY,
+    output reg        HREADY,
     output            HRESP,
     input             SI_Endian,
                
@@ -34,7 +34,6 @@ module mfp_ahb_gpio_slave
     // Ignored: HMASTLOCK, HPROT
     // TODO: SI_Endian
 
-    assign HREADY = 1'b1;
     assign HRESP  = 1'b0;
 
     reg [ 1:0] HTRANS_dly;
@@ -50,9 +49,12 @@ module mfp_ahb_gpio_slave
         HSEL_dly   <= HSEL;
     end
 
-    wire [3:0] read_ionum   = HADDR     [5:2];
-    wire [3:0] write_ionum  = HADDR_dly [5:2];
-    wire       write_enable = HTRANS_dly != `HTRANS_IDLE && HSEL_dly && HWRITE_dly;
+    wire [3:0] read_ionum       = HADDR     [5:2];
+    wire [3:0] write_ionum      = HADDR_dly [5:2];
+    wire       write_enable     = HTRANS_dly != `HTRANS_IDLE && HSEL_dly && HWRITE_dly;
+
+    wire       read_after_write = HADDR == HADDR_dly && HWRITE_dly && !HWRITE 
+                                  && HTRANS!= `HTRANS_IDLE && HTRANS_dly != `HTRANS_IDLE && HSEL;
 
     always @ (posedge HCLK or negedge HRESETn)
     begin
@@ -70,6 +72,7 @@ module mfp_ahb_gpio_slave
             `MFP_7_SEGMENT_HEX_IONUM : IO_7_SegmentHEX <= HWDATA [`MFP_7_SEGMENT_HEX_WIDTH - 1:0];
             endcase
         end
+        HREADY <= !read_after_write;
     end
 
     always @ (posedge HCLK or negedge HRESETn)
