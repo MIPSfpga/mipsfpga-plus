@@ -27,6 +27,12 @@
 #define MFP_UART_LSR_TFE        (1 << 5)        /* Transmitter FIFO empty */
 #define MFP_UART_IER_RDA        (1 << 0)        /* Received Data available interrupt enable */
 #define MFP_UART_IIR_RDA        (1 << 2)        /* Receiver Data available interrupt */
+#define MFP_UART_FCR_CLR        (1 << 1)        /* Clear Receiver FIFO */
+#define MFP_UART_FCR_CLT        (1 << 2)        /* Clear Transmitter FIFO */
+#define MFP_UART_FCR_ITL1       (0 << 6)        /* Receiver FIFO Interrupt trigger level - 1 byte */
+#define MFP_UART_FCR_ITL4       (1 << 6)        /* Receiver FIFO Interrupt trigger level - 4 byte */
+#define MFP_UART_FCR_ITL8       (2 << 6)        /* Receiver FIFO Interrupt trigger level - 8 byte */
+#define MFP_UART_FCR_ITL14      (3 << 6)        /* Receiver FIFO Interrupt trigger level - 14 byte */
 
 #define MFP_RED_LEDS            (* (volatile unsigned *) MFP_RED_LEDS_ADDR      )
 #define MFP_GREEN_LEDS          (* (volatile unsigned *) MFP_GREEN_LEDS_ADDR    )
@@ -44,6 +50,7 @@
 #define MFP_UART_MSR            (* (volatile unsigned *) MFP_UART_MSR_ADDR      )
 #define MFP_UART_DLL            (* (volatile unsigned *) MFP_UART_DLL_ADDR      )
 #define MFP_UART_DLH            (* (volatile unsigned *) MFP_UART_DLH_ADDR      )
+#define MFP_UART_FCR            (* (volatile unsigned *) MFP_UART_FCR_ADDR      )
 
 // This define is used in boot.S code
 

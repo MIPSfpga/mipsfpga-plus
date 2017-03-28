@@ -29,7 +29,7 @@ void _delay(uint32_t val)
         __asm__ volatile("nop");
 }
 
-void __attribute__((optimize("O0"))) uartInit(uint16_t divisor)
+void uartInit(uint16_t divisor)
 {
     MFP_UART_LCR = MFP_UART_LCR_8N1;                    // 8n1
     MFP_UART_MCR = MFP_UART_MCR_DTR | MFP_UART_MCR_RTS; // DTR + RTS
@@ -40,6 +40,7 @@ void __attribute__((optimize("O0"))) uartInit(uint16_t divisor)
     MFP_UART_LCR &= ~MFP_UART_LCR_LATCH;  // Divisor Latches access disable
 
     MFP_UART_IER = MFP_UART_IER_RDA;      //enable Received Data available interrupt
+    MFP_UART_FCR = MFP_UART_FCR_ITL4;     //set 4 byte Receiver FIFO Interrupt trigger level
 }
 
 void uartTransmit(uint8_t data)
@@ -55,11 +56,11 @@ void receivedDataOutput(uint8_t data)
     MFP_7_SEGMENT_HEX   = data;
 }
 
-void __attribute__((optimize("O0"))) uartDataReceivedHander(void)
+void uartReceive(void)
 {
-    if(MFP_UART_IIR & MFP_UART_IIR_RDA)
+    while (MFP_UART_LSR & MFP_UART_LSR_DR)      // is there something in receiver fifo?
     {
-        uint8_t data = MFP_UART_RXR;
+        uint8_t data = MFP_UART_RXR;            // data receive
         receivedDataOutput(data);
 
         #if   RUNTYPE == HARDWARE
@@ -81,9 +82,12 @@ void mipsInterruptInit(void)
     mips32_bissr (SR_IE | SR_HINT3); // interrupt enable, HW3 unmasked
 }
 
+// uart interrupt handler
 void __attribute__ ((interrupt, keep_interrupts_masked)) __mips_isr_hw3 ()
 {
-    uartDataReceivedHander();
+    // Receiver Data available interrupt handler
+    if(MFP_UART_IIR & MFP_UART_IIR_RDA)
+        uartReceive();
 }
 
 int main ()

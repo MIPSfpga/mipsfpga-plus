@@ -7,7 +7,7 @@
 
 // config start
 
-#define RUNTYPE     HARDWARE
+#define RUNTYPE     SIMULATION
 
 // config end
 
@@ -28,7 +28,7 @@ void _delay(uint32_t val)
         __asm__ volatile("nop");
 }
 
-void __attribute__((optimize("O0"))) uartInit(uint16_t divisor)
+void uartInit(uint16_t divisor)
 {
     MFP_UART_LCR = MFP_UART_LCR_8N1;                    // 8n1
     MFP_UART_MCR = MFP_UART_MCR_DTR | MFP_UART_MCR_RTS; // DTR + RTS
