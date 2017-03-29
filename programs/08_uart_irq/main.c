@@ -2,6 +2,7 @@
 #include "mfp_memory_mapped_registers.h"
 #include <stdint.h>
 #include <mips/cpu.h>
+#include "uart16550.h"
 
 #define SIMULATION  0
 #define HARDWARE    1
@@ -22,12 +23,6 @@
 #elif   RUNTYPE == HARDWARE
     #define UART_DIVISOR    DIVISOR_50M
 #endif
-
-void _delay(uint32_t val)
-{
-    for (uint32_t i = 0; i < val; i++)
-        __asm__ volatile("nop");
-}
 
 void uartInit(uint16_t divisor)
 {
@@ -90,6 +85,12 @@ void __attribute__ ((interrupt, keep_interrupts_masked)) __mips_isr_hw3 ()
         uartReceive();
 }
 
+void uartWrite(const char str[])
+{
+    while(*str)
+        uartTransmit(*str++);
+}
+
 int main ()
 {
     const uint16_t uartDivisor = UART_DIVISOR;
@@ -97,13 +98,8 @@ int main ()
     uartInit(uartDivisor);
     mipsInterruptInit();
 
-    //say Hello after reset
-    uartTransmit('H');
-    uartTransmit('e');
-    uartTransmit('l');
-    uartTransmit('l');
-    uartTransmit('o');
-    uartTransmit('!');
+    // say Hello after reset
+    uartWrite("Hello!");
 
     //received data output and loopback
     while(1);
