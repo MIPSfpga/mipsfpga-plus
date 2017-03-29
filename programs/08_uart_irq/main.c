@@ -2,6 +2,7 @@
 #include "mfp_memory_mapped_registers.h"
 #include <stdint.h>
 #include <mips/cpu.h>
+#include "uart16550.h"
 
 #define SIMULATION  0
 #define HARDWARE    1
@@ -23,23 +24,16 @@
     #define UART_DIVISOR    DIVISOR_50M
 #endif
 
-void _delay(uint32_t val)
+void uartInit(uint16_t divisor)
 {
-    for (uint32_t i = 0; i < val; i++)
-        __asm__ volatile("nop");
-}
-
-void __attribute__((optimize("O0"))) uartInit(uint16_t divisor)
-{
-    MFP_UART_LCR = MFP_UART_LCR_8N1;                    // 8n1
-    MFP_UART_MCR = MFP_UART_MCR_DTR | MFP_UART_MCR_RTS; // DTR + RTS
-
+    MFP_UART_LCR = MFP_UART_LCR_8N1;      // 8n1
     MFP_UART_LCR |= MFP_UART_LCR_LATCH;   // Divisor Latches access enable
     MFP_UART_DLL = divisor & 0xFF;        // Divisor LSB
     MFP_UART_DLH = (divisor >> 8) & 0xff; // Divisor MSB
     MFP_UART_LCR &= ~MFP_UART_LCR_LATCH;  // Divisor Latches access disable
 
     MFP_UART_IER = MFP_UART_IER_RDA;      //enable Received Data available interrupt
+    MFP_UART_FCR = MFP_UART_FCR_ITL4;     //set 4 byte Receiver FIFO Interrupt trigger level
 }
 
 void uartTransmit(uint8_t data)
@@ -55,11 +49,11 @@ void receivedDataOutput(uint8_t data)
     MFP_7_SEGMENT_HEX   = data;
 }
 
-void __attribute__((optimize("O0"))) uartDataReceivedHander(void)
+void uartReceive(void)
 {
-    if(MFP_UART_IIR & MFP_UART_IIR_RDA)
+    while (MFP_UART_LSR & MFP_UART_LSR_DR)      // is there something in receiver fifo?
     {
-        uint8_t data = MFP_UART_RXR;
+        uint8_t data = MFP_UART_RXR;            // data receive
         receivedDataOutput(data);
 
         #if   RUNTYPE == HARDWARE
@@ -81,9 +75,18 @@ void mipsInterruptInit(void)
     mips32_bissr (SR_IE | SR_HINT3); // interrupt enable, HW3 unmasked
 }
 
+// uart interrupt handler
 void __attribute__ ((interrupt, keep_interrupts_masked)) __mips_isr_hw3 ()
 {
-    uartDataReceivedHander();
+    // Receiver Data available interrupt handler
+    if(MFP_UART_IIR & MFP_UART_IIR_RDA)
+        uartReceive();
+}
+
+void uartWrite(const char str[])
+{
+    while(*str)
+        uartTransmit(*str++);
 }
 
 int main ()
@@ -93,13 +96,8 @@ int main ()
     uartInit(uartDivisor);
     mipsInterruptInit();
 
-    //say Hello after reset
-    uartTransmit('H');
-    uartTransmit('e');
-    uartTransmit('l');
-    uartTransmit('l');
-    uartTransmit('o');
-    uartTransmit('!');
+    // say Hello after reset
+    uartWrite("Hello!");
 
     //received data output and loopback
     while(1);

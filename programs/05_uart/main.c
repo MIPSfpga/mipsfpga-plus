@@ -1,5 +1,6 @@
 
 #include "mfp_memory_mapped_registers.h"
+#include "uart16550.h"
 #include <stdint.h>
 
 #define SIMULATION  0
@@ -7,7 +8,7 @@
 
 // config start
 
-#define RUNTYPE     HARDWARE
+#define RUNTYPE     SIMULATION
 
 // config end
 
@@ -22,17 +23,9 @@
     #define UART_DIVISOR    DIVISOR_50M
 #endif
 
-void _delay(uint32_t val)
+void uartInit(uint16_t divisor)
 {
-    for (uint32_t i = 0; i < val; i++)
-        __asm__ volatile("nop");
-}
-
-void __attribute__((optimize("O0"))) uartInit(uint16_t divisor)
-{
-    MFP_UART_LCR = MFP_UART_LCR_8N1;                    // 8n1
-    MFP_UART_MCR = MFP_UART_MCR_DTR | MFP_UART_MCR_RTS; // DTR + RTS
-
+    MFP_UART_LCR = MFP_UART_LCR_8N1;      // 8n1
     MFP_UART_LCR |= MFP_UART_LCR_LATCH;   // Divisor Latches access enable
     MFP_UART_DLL = divisor & 0xFF;        // Divisor LSB
     MFP_UART_DLH = (divisor >> 8) & 0xff; // Divisor MSB
@@ -63,21 +56,22 @@ uint8_t uartReceive(void)
     return MFP_UART_RXR;
 }
 
+void uartWrite(const char str[])
+{
+    while(*str)
+        uartTransmit(*str++);
+}
+
 int main ()
 {
+    // init
     const uint16_t uartDivisor = UART_DIVISOR;
-
     uartInit(uartDivisor);
 
-    //say Hello after reset
-    uartTransmit('H');
-    uartTransmit('e');
-    uartTransmit('l');
-    uartTransmit('l');
-    uartTransmit('o');
-    uartTransmit('!');
+    // say Hello after reset
+    uartWrite("Hello!");
 
-    //received data output and loopback
+    // received data output and loopback
     for(;;)
     {
         uint8_t data = uartReceive();
