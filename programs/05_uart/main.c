@@ -25,9 +25,7 @@
 
 void uartInit(uint16_t divisor)
 {
-    MFP_UART_LCR = MFP_UART_LCR_8N1;                    // 8n1
-    MFP_UART_MCR = MFP_UART_MCR_DTR | MFP_UART_MCR_RTS; // DTR + RTS
-
+    MFP_UART_LCR = MFP_UART_LCR_8N1;      // 8n1
     MFP_UART_LCR |= MFP_UART_LCR_LATCH;   // Divisor Latches access enable
     MFP_UART_DLL = divisor & 0xFF;        // Divisor LSB
     MFP_UART_DLH = (divisor >> 8) & 0xff; // Divisor MSB
