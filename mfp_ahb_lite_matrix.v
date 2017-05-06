@@ -59,18 +59,12 @@ module mfp_ahb_lite_matrix
     output [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX
 );
 
-    wire [ 4:0] HSEL_req;   
-    reg  [ 4:0] HSEL_dly;
-    wire [ 4:0] HSEL = HREADY ? HSEL_req : HSEL_dly;
+    wire [ 4:0] HSEL_req;
+    wire [ 4:0] HSEL_data;
+    wire [ 4:0] HSEL;
 
-    mfp_ahb_lite_decoder decoder (HADDR, HSEL_req);
-
-    //TODO: move all HSEL logic to selector module
-    always @ (posedge HCLK)
-        if(~HRESETn)
-            HSEL_dly <= 5'b1;
-        else 
-            if(HREADY) HSEL_dly <= HSEL;
+    mfp_ahb_lite_decoder    decoder  (HADDR, HSEL_req);
+    mfp_ahb_lite_selector   selector (HCLK, HRESETn, HREADY, HSEL_req, HSEL, HSEL_data);
 
     //TODO: change to arrays
     wire        HREADY_0 , HREADY_1 , HREADY_2 , HREADY_3 , HREADY_4;
@@ -266,7 +260,7 @@ module mfp_ahb_lite_matrix
 
     mfp_ahb_lite_response_mux response_mux
     (
-        .HSEL     ( HSEL_dly ),
+        .HSEL     ( HSEL_data ),
 
         .HRDATA_0 ( HRDATA_0 ),
         .HRDATA_1 ( HRDATA_1 ),
@@ -346,3 +340,28 @@ module mfp_ahb_lite_response_mux
         endcase
 
 endmodule
+
+//--------------------------------------------------------------------
+
+
+module mfp_ahb_lite_selector
+(
+    input             HCLK,
+    input             HRESETn,
+    input             HREADY,       // means phase change
+    input      [ 4:0] HSEL_req,     // current device requested by CPU (addr phase)
+
+    output     [ 4:0] HSEL_addr,    // addr phase HSEL signal
+    output reg [ 4:0] HSEL_data     // data phase HSEL signal
+);
+
+    always @ (posedge HCLK)
+        if(~HRESETn)
+            HSEL_data <= 5'b1;
+        else 
+            if(HREADY) HSEL_data <= HSEL_addr;
+
+    assign HSEL_addr = HREADY ? HSEL_req : HSEL_data;
+
+endmodule
+
