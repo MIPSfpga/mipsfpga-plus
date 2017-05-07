@@ -255,7 +255,6 @@ module mfp_ahb_lite_matrix
     assign READY [4] = 1'b1;
     `endif
 
-    //assign HREADY = HREADY_0 & HREADY_1 & HREADY_2 & HREADY_3 & HREADY_4;
 
     assign HREADY = &READY;
 
@@ -273,28 +272,6 @@ module mfp_ahb_lite_matrix
         .HRDATA   ( HRDATA    ),
         .HRESP    ( HRESP     )
     );
-
-/*
-    mfp_ahb_lite_response_mux response_mux
-    (
-        .HSEL     ( HSEL_data ),
-
-        .HRDATA_0 ( HRDATA_0 ),
-        .HRDATA_1 ( HRDATA_1 ),
-        .HRDATA_2 ( HRDATA_2 ),
-        .HRDATA_3 ( HRDATA_3 ),
-        .HRDATA_4 ( HRDATA_4 ),
-
-        .HRESP_0  ( HRESP_0  ),
-        .HRESP_1  ( HRESP_1  ),
-        .HRESP_2  ( HRESP_2  ),
-        .HRESP_3  ( HRESP_3  ),
-        .HRESP_4  ( HRESP_4  ),
-
-        .HRDATA   ( HRDATA   ),
-        .HRESP    ( HRESP    )
-    );
-*/
 
 endmodule
 
@@ -331,6 +308,9 @@ module mfp_ahb_lite_response_mux
 (
     input      [ 4:0] HSEL,
 
+    // Verilog doesn't allow an I/O port to be a 2D array.
+    // We can do it with some macros, but 
+   //  it will be too hard to read this code in this case
     input      [31:0] RDATA_0,
     input      [31:0] RDATA_1,
     input      [31:0] RDATA_2,
@@ -354,41 +334,6 @@ module mfp_ahb_lite_response_mux
         endcase
 
 endmodule
-
-/*
-module mfp_ahb_lite_response_mux
-(
-    input      [ 4:0] HSEL,
-               
-    input      [31:0] HRDATA_0,
-    input      [31:0] HRDATA_1,
-    input      [31:0] HRDATA_2,
-    input      [31:0] HRDATA_3,
-    input      [31:0] HRDATA_4,
-               
-    input             HRESP_0,
-    input             HRESP_1,
-    input             HRESP_2,
-    input             HRESP_3,
-    input             HRESP_4,
-
-    output reg [31:0] HRDATA,
-    output reg        HRESP
-);
-
-    always @*
-        casez (HSEL)
-            5'b????1:   begin HRDATA = HRDATA_0; HRESP = HRESP_0; end
-            5'b???10:   begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
-            5'b??100:   begin HRDATA = HRDATA_2; HRESP = HRESP_2; end
-            5'b?1000:   begin HRDATA = HRDATA_3; HRESP = HRESP_3; end
-            5'b10000:   begin HRDATA = HRDATA_4; HRESP = HRESP_4; end
-            default:    begin HRDATA = HRDATA_1; HRESP = HRESP_1; end
-        endcase
-
-endmodule
-*/
-
 //--------------------------------------------------------------------
 
 
