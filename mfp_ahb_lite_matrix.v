@@ -2,7 +2,7 @@
 `include "mfp_ahb_lite_matrix_config.vh"
 `include "mfp_eic_core.vh"
 
-`define MFP_AHB_DEVICE_COUNT  5
+`define MFP_AHB_DEVICE_COUNT    5
 
 module mfp_ahb_lite_matrix
 (
@@ -68,9 +68,6 @@ module mfp_ahb_lite_matrix
     wire   [`MFP_AHB_DEVICE_COUNT    - 1:0] READY;
     wire   [                          31:0] RDATA [`MFP_AHB_DEVICE_COUNT - 1:0];
     wire   [`MFP_AHB_DEVICE_COUNT    - 1:0] RESP;
-
-    mfp_ahb_lite_decoder    decoder  (HADDR, HSEL_req);
-    mfp_ahb_lite_selector   selector (HCLK, HRESETn, HREADY, HSEL_req, HSEL, HSEL_data);
 
     //RESET
     mfp_ahb_ram_slave
@@ -257,22 +254,36 @@ module mfp_ahb_lite_matrix
     assign READY [4] = 1'b1;
     `endif
 
+    // bus interconnection part
+    mfp_ahb_lite_decoder decoder
+    (   
+        .HADDR            ( HADDR           ),
+        .HSEL             ( HSEL_req        )
+    );
+
+    mfp_ahb_lite_selector selector
+    (   
+        .HCLK             ( HCLK            ),
+        .HRESETn          ( HRESETn         ),
+        .HREADY           ( HREADY          ),
+        .HSEL_req         ( HSEL_req        ),
+        .HSEL_addr        ( HSEL            ),
+        .HSEL_data        ( HSEL_data       )
+    );
 
     assign HREADY = &READY;
 
     mfp_ahb_lite_response_mux response_mux
     (
-        .HSEL     ( HSEL_data ),
-
-        .RDATA_0  ( RDATA[0]  ),
-        .RDATA_1  ( RDATA[1]  ),
-        .RDATA_2  ( RDATA[2]  ),
-        .RDATA_3  ( RDATA[3]  ),
-        .RDATA_4  ( RDATA[4]  ),
-
-        .RESP     ( RESP      ),
-        .HRDATA   ( HRDATA    ),
-        .HRESP    ( HRESP     )
+        .HSEL             ( HSEL_data       ),
+        .RDATA_0          ( RDATA[0]        ),
+        .RDATA_1          ( RDATA[1]        ),
+        .RDATA_2          ( RDATA[2]        ),
+        .RDATA_3          ( RDATA[3]        ),
+        .RDATA_4          ( RDATA[4]        ),
+        .RESP             ( RESP            ),
+        .HRDATA           ( HRDATA          ),
+        .HRESP            ( HRESP           )
     );
 
 endmodule
@@ -352,7 +363,7 @@ module mfp_ahb_lite_selector
 
     always @ (posedge HCLK)
         if(~HRESETn)
-            HSEL_data <= 5'b1;
+            HSEL_data <= { `MFP_AHB_DEVICE_COUNT {1'b0} };
         else 
             if(HREADY) HSEL_data <= HSEL_addr;
 
