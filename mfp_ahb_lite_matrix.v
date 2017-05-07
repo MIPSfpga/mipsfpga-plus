@@ -63,13 +63,12 @@ module mfp_ahb_lite_matrix
     wire [ 4:0] HSEL_data;
     wire [ 4:0] HSEL;
 
+    wire [ 4:0] READY;
+    wire [31:0] RDATA [ 4:0 ];
+    wire [ 4:0] RESP;
+
     mfp_ahb_lite_decoder    decoder  (HADDR, HSEL_req);
     mfp_ahb_lite_selector   selector (HCLK, HRESETn, HREADY, HSEL_req, HSEL, HSEL_data);
-
-    //TODO: change to arrays
-    wire        HREADY_0 , HREADY_1 , HREADY_2 , HREADY_3 , HREADY_4;
-    wire [31:0] HRDATA_0 , HRDATA_1 , HRDATA_2 , HRDATA_3 , HRDATA_4;
-    wire        HRESP_0  , HRESP_1  , HRESP_2  , HRESP_3  , HRESP_4;
 
     //RESET
     mfp_ahb_ram_slave
@@ -89,9 +88,9 @@ module mfp_ahb_lite_matrix
         .HTRANS     ( HTRANS     ),
         .HWDATA     ( HWDATA     ),
         .HWRITE     ( HWRITE     ),
-        .HRDATA     ( HRDATA_0   ),
-        .HREADY     ( HREADY_0   ),
-        .HRESP      ( HRESP_0    ),
+        .HRDATA     ( RDATA [0]  ),
+        .HREADY     ( READY [0]  ),
+        .HRESP      ( RESP  [0]  ),
         .SI_Endian  ( SI_Endian  )
     );
 
@@ -130,9 +129,9 @@ module mfp_ahb_lite_matrix
         .HTRANS     ( HTRANS        ),
         .HWDATA     ( HWDATA        ),
         .HWRITE     ( HWRITE        ),
-        .HRDATA     ( HRDATA_1      ),
-        .HREADY     ( HREADY_1      ),
-        .HRESP      ( HRESP_1       ),
+        .HRDATA     ( RDATA [1]     ),
+        .HREADY     ( READY [1]     ),
+        .HRESP      ( RESP  [1]     ),
         .SI_Endian  ( SI_Endian     )
 
         `ifdef MFP_USE_SDRAM_MEMORY
@@ -163,9 +162,9 @@ module mfp_ahb_lite_matrix
         .HTRANS           ( HTRANS          ),
         .HWDATA           ( HWDATA          ),
         .HWRITE           ( HWRITE          ),
-        .HRDATA           ( HRDATA_2        ),
-        .HREADY           ( HREADY_2        ),
-        .HRESP            ( HRESP_2         ),
+        .HRDATA           ( RDATA [2]       ),
+        .HREADY           ( READY [2]       ),
+        .HRESP            ( RESP  [2]       ),
         .SI_Endian        ( SI_Endian       ),
                                            
         .IO_Switches      ( IO_Switches     ),
@@ -202,9 +201,9 @@ module mfp_ahb_lite_matrix
         .HTRANS           ( HTRANS          ),
         .HWDATA           ( HWDATA          ),
         .HWRITE           ( HWRITE          ),
-        .HRDATA           ( HRDATA_3        ),
-        .HREADY           ( HREADY_3        ),
-        .HRESP            ( HRESP_3         ),
+        .HRDATA           ( RDATA [3]       ),
+        .HREADY           ( READY [3]       ),
+        .HRESP            ( RESP  [3]       ),
         .SI_Endian        ( SI_Endian       ),
 
         .UART_SRX         ( UART_RX         ),  // in  UART serial input signal
@@ -235,9 +234,9 @@ module mfp_ahb_lite_matrix
         .HTRANS           ( HTRANS          ),
         .HWDATA           ( HWDATA          ),
         .HWRITE           ( HWRITE          ),
-        .HRDATA           ( HRDATA_4        ),
-        .HREADY           ( HREADY_4        ),
-        .HRESP            ( HRESP_4         ),
+        .HRDATA           ( RDATA [4]       ),
+        .HREADY           ( READY [4]       ),
+        .HRESP            ( RESP  [4]       ),
         .SI_Endian        ( SI_Endian       ),
 
         .EIC_input        ( EIC_input       ),
@@ -253,11 +252,29 @@ module mfp_ahb_lite_matrix
         .EIC_ION          ( EIC_ION         )
     );
     `else
-    assign HREADY_4 = 1'b1;
+    assign READY [4] = 1'b1;
     `endif
 
-    assign HREADY = HREADY_0 & HREADY_1 & HREADY_2 & HREADY_3 & HREADY_4;
+    //assign HREADY = HREADY_0 & HREADY_1 & HREADY_2 & HREADY_3 & HREADY_4;
 
+    assign HREADY = &READY;
+
+    mfp_ahb_lite_response_mux response_mux
+    (
+        .HSEL     ( HSEL_data ),
+
+        .RDATA_0  ( RDATA[0]  ),
+        .RDATA_1  ( RDATA[1]  ),
+        .RDATA_2  ( RDATA[2]  ),
+        .RDATA_3  ( RDATA[3]  ),
+        .RDATA_4  ( RDATA[4]  ),
+
+        .RESP     ( RESP      ),
+        .HRDATA   ( HRDATA    ),
+        .HRESP    ( HRESP     )
+    );
+
+/*
     mfp_ahb_lite_response_mux response_mux
     (
         .HSEL     ( HSEL_data ),
@@ -277,6 +294,7 @@ module mfp_ahb_lite_matrix
         .HRDATA   ( HRDATA   ),
         .HRESP    ( HRESP    )
     );
+*/
 
 endmodule
 
@@ -312,6 +330,35 @@ endmodule
 module mfp_ahb_lite_response_mux
 (
     input      [ 4:0] HSEL,
+
+    input      [31:0] RDATA_0,
+    input      [31:0] RDATA_1,
+    input      [31:0] RDATA_2,
+    input      [31:0] RDATA_3,
+    input      [31:0] RDATA_4,
+
+    input      [ 4:0] RESP,
+
+    output reg [31:0] HRDATA,
+    output reg        HRESP
+);
+
+    always @*
+        casez (HSEL)
+            5'b????1:   begin HRDATA = RDATA_0; HRESP = RESP[0]; end
+            5'b???10:   begin HRDATA = RDATA_1; HRESP = RESP[1]; end
+            5'b??100:   begin HRDATA = RDATA_2; HRESP = RESP[2]; end
+            5'b?1000:   begin HRDATA = RDATA_3; HRESP = RESP[3]; end
+            5'b10000:   begin HRDATA = RDATA_4; HRESP = RESP[4]; end
+            default:    begin HRDATA = RDATA_1; HRESP = RESP[1]; end
+        endcase
+
+endmodule
+
+/*
+module mfp_ahb_lite_response_mux
+(
+    input      [ 4:0] HSEL,
                
     input      [31:0] HRDATA_0,
     input      [31:0] HRDATA_1,
@@ -340,6 +387,7 @@ module mfp_ahb_lite_response_mux
         endcase
 
 endmodule
+*/
 
 //--------------------------------------------------------------------
 
