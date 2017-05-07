@@ -6,68 +6,67 @@
 
 module mfp_ahb_lite_matrix
 (
-    input         HCLK,
-    input         HRESETn,
-    input  [31:0] HADDR,
-    input  [ 2:0] HBURST,
-    input         HMASTLOCK,
-    input  [ 3:0] HPROT,
-    input  [ 2:0] HSIZE,
-    input  [ 1:0] HTRANS,
-    input  [31:0] HWDATA,
-    input         HWRITE,
-    output [31:0] HRDATA,
-    output        HREADY,
-    output        HRESP,
-    input         SI_Endian,
+    input                                      HCLK,
+    input                                      HRESETn,
+    input  [                          31 : 0 ] HADDR,
+    input  [                           2 : 0 ] HBURST,
+    input                                      HMASTLOCK,
+    input  [                           3 : 0 ] HPROT,
+    input  [                           2 : 0 ] HSIZE,
+    input  [                           1 : 0 ] HTRANS,
+    input  [                          31 : 0 ] HWDATA,
+    input                                      HWRITE,
+    output [                          31 : 0 ] HRDATA,
+    output                                     HREADY,
+    output                                     HRESP,
+    input                                      SI_Endian,
 
     `ifdef MFP_USE_SDRAM_MEMORY
-    output                                  SDRAM_CKE,
-    output                                  SDRAM_CSn,
-    output                                  SDRAM_RASn,
-    output                                  SDRAM_CASn,
-    output                                  SDRAM_WEn,
-    output [`SDRAM_ADDR_BITS - 1 : 0 ]      SDRAM_ADDR,
-    output [`SDRAM_BA_BITS   - 1 : 0 ]      SDRAM_BA,
-    inout  [`SDRAM_DQ_BITS   - 1 : 0 ]      SDRAM_DQ,
-    output [`SDRAM_DM_BITS   - 1 : 0 ]      SDRAM_DQM,
+    output                                     SDRAM_CKE,
+    output                                     SDRAM_CSn,
+    output                                     SDRAM_RASn,
+    output                                     SDRAM_CASn,
+    output                                     SDRAM_WEn,
+    output [`SDRAM_ADDR_BITS         - 1 : 0 ] SDRAM_ADDR,
+    output [`SDRAM_BA_BITS           - 1 : 0 ] SDRAM_BA,
+    inout  [`SDRAM_DQ_BITS           - 1 : 0 ] SDRAM_DQ,
+    output [`SDRAM_DM_BITS           - 1 : 0 ] SDRAM_DQM,
     `endif
 
     `ifdef MFP_DEMO_LIGHT_SENSOR
-    input  [                       15 : 0 ] IO_LightSensor,
+    input  [                          15 : 0 ] IO_LightSensor,
     `endif
 
-    input                                   UART_RX,
-    output                                  UART_TX,
-    output                                  UART_INT,
+    input                                      UART_RX,
+    output                                     UART_TX,
+    output                                     UART_INT,
 
     `ifdef MFP_USE_IRQ_EIC
-    input  [ `EIC_CHANNELS        - 1 : 0 ] EIC_input,
-    output [                       17 : 1 ] EIC_Offset,
-    output [                        3 : 0 ] EIC_ShadowSet,
-    output [                        7 : 0 ] EIC_Interrupt,
-    output [                        5 : 0 ] EIC_Vector,
-    output                                  EIC_Present,
-    input                                   EIC_IAck,
-    input  [                        7 : 0 ] EIC_IPL,
-    input  [                        5 : 0 ] EIC_IVN,
-    input  [                       17 : 1 ] EIC_ION,
+    input  [ `EIC_CHANNELS           - 1 : 0 ] EIC_input,
+    output [                          17 : 1 ] EIC_Offset,
+    output [                           3 : 0 ] EIC_ShadowSet,
+    output [                           7 : 0 ] EIC_Interrupt,
+    output [                           5 : 0 ] EIC_Vector,
+    output                                     EIC_Present,
+    input                                      EIC_IAck,
+    input  [                           7 : 0 ] EIC_IPL,
+    input  [                           5 : 0 ] EIC_IVN,
+    input  [                          17 : 1 ] EIC_ION,
     `endif //MFP_USE_IRQ_EIC
 
-    input  [`MFP_N_SWITCHES          - 1:0] IO_Switches,
-    input  [`MFP_N_BUTTONS           - 1:0] IO_Buttons,
-    output [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs,
-    output [`MFP_N_GREEN_LEDS        - 1:0] IO_GreenLEDs,
-    output [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX
+    input  [`MFP_N_SWITCHES          - 1 : 0 ] IO_Switches,
+    input  [`MFP_N_BUTTONS           - 1 : 0 ] IO_Buttons,
+    output [`MFP_N_RED_LEDS          - 1 : 0 ] IO_RedLEDs,
+    output [`MFP_N_GREEN_LEDS        - 1 : 0 ] IO_GreenLEDs,
+    output [`MFP_7_SEGMENT_HEX_WIDTH - 1 : 0 ] IO_7_SegmentHEX
 );
 
-    wire   [`MFP_AHB_DEVICE_COUNT    - 1:0] HSEL_req;
-    wire   [`MFP_AHB_DEVICE_COUNT    - 1:0] HSEL_data;
-    wire   [`MFP_AHB_DEVICE_COUNT    - 1:0] HSEL;
-
-    wire   [`MFP_AHB_DEVICE_COUNT    - 1:0] READY;
-    wire   [                          31:0] RDATA [`MFP_AHB_DEVICE_COUNT - 1:0];
-    wire   [`MFP_AHB_DEVICE_COUNT    - 1:0] RESP;
+    wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL_req;
+    wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL_data;
+    wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL;
+    wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] READY;
+    wire   [                          31 : 0 ] RDATA [`MFP_AHB_DEVICE_COUNT - 1:0];
+    wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] RESP;
 
     //RESET
     mfp_ahb_ram_slave
@@ -76,33 +75,33 @@ module mfp_ahb_lite_matrix
     )
     reset_ram
     (
-        .HCLK       ( HCLK       ),
-        .HRESETn    ( HRESETn    ),
-        .HADDR      ( HADDR      ),
-        .HBURST     ( HBURST     ),
-        .HMASTLOCK  ( HMASTLOCK  ),
-        .HPROT      ( HPROT      ),
-        .HSEL       ( HSEL [0]   ),
-        .HSIZE      ( HSIZE      ),
-        .HTRANS     ( HTRANS     ),
-        .HWDATA     ( HWDATA     ),
-        .HWRITE     ( HWRITE     ),
-        .HRDATA     ( RDATA [0]  ),
-        .HREADY     ( READY [0]  ),
-        .HRESP      ( RESP  [0]  ),
-        .SI_Endian  ( SI_Endian  )
+        .HCLK             ( HCLK            ),
+        .HRESETn          ( HRESETn         ),
+        .HADDR            ( HADDR           ),
+        .HBURST           ( HBURST          ),
+        .HMASTLOCK        ( HMASTLOCK       ),
+        .HPROT            ( HPROT           ),
+        .HSEL             ( HSEL        [0] ),
+        .HSIZE            ( HSIZE           ),
+        .HTRANS           ( HTRANS          ),
+        .HWDATA           ( HWDATA          ),
+        .HWRITE           ( HWRITE          ),
+        .HRDATA           ( RDATA       [0] ),
+        .HREADY           ( READY       [0] ),
+        .HRESP            ( RESP        [0] ),
+        .SI_Endian        ( SI_Endian       )
     );
 
     //RAM
     `ifdef MFP_USE_SDRAM_MEMORY
         mfp_ahb_ram_sdram
         #(
-            .ADDR_BITS  ( `SDRAM_ADDR_BITS  ),
-            .ROW_BITS   ( `SDRAM_ROW_BITS   ),
-            .COL_BITS   ( `SDRAM_COL_BITS   ),
-            .DQ_BITS    ( `SDRAM_DQ_BITS    ),
-            .DM_BITS    ( `SDRAM_DM_BITS    ),
-            .BA_BITS    ( `SDRAM_BA_BITS    )
+            .ADDR_BITS    ( `SDRAM_ADDR_BITS ),
+            .ROW_BITS     ( `SDRAM_ROW_BITS  ),
+            .COL_BITS     ( `SDRAM_COL_BITS  ),
+            .DQ_BITS      ( `SDRAM_DQ_BITS   ),
+            .DM_BITS      ( `SDRAM_DM_BITS   ),
+            .BA_BITS      ( `SDRAM_BA_BITS   )
         )
     `elsif MFP_USE_BUSY_MEMORY
         mfp_ahb_ram_busy
@@ -117,33 +116,33 @@ module mfp_ahb_lite_matrix
     `endif
     ram
     (
-        .HCLK       ( HCLK          ),
-        .HRESETn    ( HRESETn       ),
-        .HADDR      ( HADDR         ),
-        .HBURST     ( HBURST        ),
-        .HMASTLOCK  ( HMASTLOCK     ),
-        .HPROT      ( HPROT         ),
-        .HSEL       ( HSEL [1]      ),
-        .HSIZE      ( HSIZE         ),
-        .HTRANS     ( HTRANS        ),
-        .HWDATA     ( HWDATA        ),
-        .HWRITE     ( HWRITE        ),
-        .HRDATA     ( RDATA [1]     ),
-        .HREADY     ( READY [1]     ),
-        .HRESP      ( RESP  [1]     ),
-        .SI_Endian  ( SI_Endian     )
+        .HCLK             ( HCLK            ),
+        .HRESETn          ( HRESETn         ),
+        .HADDR            ( HADDR           ),
+        .HBURST           ( HBURST          ),
+        .HMASTLOCK        ( HMASTLOCK       ),
+        .HPROT            ( HPROT           ),
+        .HSEL             ( HSEL        [1] ),
+        .HSIZE            ( HSIZE           ),
+        .HTRANS           ( HTRANS          ),
+        .HWDATA           ( HWDATA          ),
+        .HWRITE           ( HWRITE          ),
+        .HRDATA           ( RDATA       [1] ),
+        .HREADY           ( READY       [1] ),
+        .HRESP            ( RESP        [1] ),
+        .SI_Endian        ( SI_Endian       )
 
         `ifdef MFP_USE_SDRAM_MEMORY
         ,
-        .CKE        (   SDRAM_CKE   ),
-        .CSn        (   SDRAM_CSn   ),
-        .RASn       (   SDRAM_RASn  ),
-        .CASn       (   SDRAM_CASn  ),
-        .WEn        (   SDRAM_WEn   ),
-        .ADDR       (   SDRAM_ADDR  ),
-        .BA         (   SDRAM_BA    ),
-        .DQ         (   SDRAM_DQ    ),
-        .DQM        (   SDRAM_DQM   )
+        .CKE              ( SDRAM_CKE       ),
+        .CSn              ( SDRAM_CSn       ),
+        .RASn             ( SDRAM_RASn      ),
+        .CASn             ( SDRAM_CASn      ),
+        .WEn              ( SDRAM_WEn       ),
+        .ADDR             ( SDRAM_ADDR      ),
+        .BA               ( SDRAM_BA        ),
+        .DQ               ( SDRAM_DQ        ),
+        .DQM              ( SDRAM_DQM       )
         `endif
     );
 
@@ -156,14 +155,14 @@ module mfp_ahb_lite_matrix
         .HBURST           ( HBURST          ),
         .HMASTLOCK        ( HMASTLOCK       ),
         .HPROT            ( HPROT           ),
-        .HSEL             ( HSEL [2]        ),
+        .HSEL             ( HSEL        [2] ),
         .HSIZE            ( HSIZE           ),
         .HTRANS           ( HTRANS          ),
         .HWDATA           ( HWDATA          ),
         .HWRITE           ( HWRITE          ),
-        .HRDATA           ( RDATA [2]       ),
-        .HREADY           ( READY [2]       ),
-        .HRESP            ( RESP  [2]       ),
+        .HRDATA           ( RDATA       [2] ),
+        .HREADY           ( READY       [2] ),
+        .HRESP            ( RESP        [2] ),
         .SI_Endian        ( SI_Endian       ),
                                            
         .IO_Switches      ( IO_Switches     ),
@@ -195,14 +194,14 @@ module mfp_ahb_lite_matrix
         .HBURST           ( HBURST          ),
         .HMASTLOCK        ( HMASTLOCK       ),
         .HPROT            ( HPROT           ),
-        .HSEL             ( HSEL [3]        ),
+        .HSEL             ( HSEL        [3] ),
         .HSIZE            ( HSIZE           ),
         .HTRANS           ( HTRANS          ),
         .HWDATA           ( HWDATA          ),
         .HWRITE           ( HWRITE          ),
-        .HRDATA           ( RDATA [3]       ),
-        .HREADY           ( READY [3]       ),
-        .HRESP            ( RESP  [3]       ),
+        .HRDATA           ( RDATA       [3] ),
+        .HREADY           ( READY       [3] ),
+        .HRESP            ( RESP        [3] ),
         .SI_Endian        ( SI_Endian       ),
 
         .UART_SRX         ( UART_RX         ),  // in  UART serial input signal
@@ -228,14 +227,14 @@ module mfp_ahb_lite_matrix
         .HBURST           ( HBURST          ),
         .HMASTLOCK        ( HMASTLOCK       ),
         .HPROT            ( HPROT           ),
-        .HSEL             ( HSEL [4]        ),
+        .HSEL             ( HSEL        [4] ),
         .HSIZE            ( HSIZE           ),
         .HTRANS           ( HTRANS          ),
         .HWDATA           ( HWDATA          ),
         .HWRITE           ( HWRITE          ),
-        .HRDATA           ( RDATA [4]       ),
-        .HREADY           ( READY [4]       ),
-        .HRESP            ( RESP  [4]       ),
+        .HRDATA           ( RDATA       [4] ),
+        .HREADY           ( READY       [4] ),
+        .HRESP            ( RESP        [4] ),
         .SI_Endian        ( SI_Endian       ),
 
         .EIC_input        ( EIC_input       ),
@@ -276,11 +275,11 @@ module mfp_ahb_lite_matrix
     mfp_ahb_lite_response_mux response_mux
     (
         .HSEL             ( HSEL_data       ),
-        .RDATA_0          ( RDATA[0]        ),
-        .RDATA_1          ( RDATA[1]        ),
-        .RDATA_2          ( RDATA[2]        ),
-        .RDATA_3          ( RDATA[3]        ),
-        .RDATA_4          ( RDATA[4]        ),
+        .RDATA_0          ( RDATA       [0] ),
+        .RDATA_1          ( RDATA       [1] ),
+        .RDATA_2          ( RDATA       [2] ),
+        .RDATA_3          ( RDATA       [3] ),
+        .RDATA_4          ( RDATA       [4] ),
         .RESP             ( RESP            ),
         .HRDATA           ( HRDATA          ),
         .HRESP            ( HRESP           )
