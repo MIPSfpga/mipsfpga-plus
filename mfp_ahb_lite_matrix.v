@@ -62,9 +62,9 @@ module mfp_ahb_lite_matrix
     output [`MFP_7_SEGMENT_HEX_WIDTH - 1 : 0 ] IO_7_SegmentHEX
 );
 
-    wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL_req;
-    wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL_data;
-    wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL;
+    wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL_req;    // current device requested by CPU
+    wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL_data;   // effected data phase HSEL signal
+    wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL;        // effected addr phase HSEL signal
     wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] READY;
     wire   [                          31 : 0 ] RDATA [`MFP_AHB_DEVICE_COUNT - 1:0];
     wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] RESP;
