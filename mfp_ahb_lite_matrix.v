@@ -3,6 +3,7 @@
 `include "mfp_eic_core.vh"
 
 `define MFP_AHB_DEVICE_COUNT    5
+`define MFP_AHB_DEVICE_NONE     5'b0
 
 module mfp_ahb_lite_matrix
 (
@@ -360,11 +361,11 @@ module mfp_ahb_lite_selector
 
     always @ (posedge HCLK)
         if(~HRESETn)
-            HSEL_data <= { `MFP_AHB_DEVICE_COUNT {1'b0} };
+            HSEL_data <= `MFP_AHB_DEVICE_NONE;
         else 
             if(HREADY) HSEL_data <= HSEL_addr;
 
-    assign HSEL_addr = HREADY ? HSEL_req : HSEL_data;
+    assign HSEL_addr = HREADY ? HSEL_req : `MFP_AHB_DEVICE_NONE;
 
 endmodule
 
