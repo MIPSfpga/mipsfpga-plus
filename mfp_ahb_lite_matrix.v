@@ -2,6 +2,8 @@
 `include "mfp_ahb_lite_matrix_config.vh"
 `include "mfp_eic_core.vh"
 
+`define MFP_AHB_DEVICE_COUNT  5
+
 module mfp_ahb_lite_matrix
 (
     input         HCLK,
@@ -59,13 +61,13 @@ module mfp_ahb_lite_matrix
     output [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX
 );
 
-    wire [ 4:0] HSEL_req;
-    wire [ 4:0] HSEL_data;
-    wire [ 4:0] HSEL;
+    wire   [`MFP_AHB_DEVICE_COUNT    - 1:0] HSEL_req;
+    wire   [`MFP_AHB_DEVICE_COUNT    - 1:0] HSEL_data;
+    wire   [`MFP_AHB_DEVICE_COUNT    - 1:0] HSEL;
 
-    wire [ 4:0] READY;
-    wire [31:0] RDATA [ 4:0 ];
-    wire [ 4:0] RESP;
+    wire   [`MFP_AHB_DEVICE_COUNT    - 1:0] READY;
+    wire   [                          31:0] RDATA [`MFP_AHB_DEVICE_COUNT - 1:0];
+    wire   [`MFP_AHB_DEVICE_COUNT    - 1:0] RESP;
 
     mfp_ahb_lite_decoder    decoder  (HADDR, HSEL_req);
     mfp_ahb_lite_selector   selector (HCLK, HRESETn, HREADY, HSEL_req, HSEL, HSEL_data);
@@ -280,7 +282,7 @@ endmodule
 module mfp_ahb_lite_decoder
 (
     input  [31:0] HADDR,
-    output [ 4:0] HSEL
+    output [`MFP_AHB_DEVICE_COUNT    - 1:0] HSEL
 );
 
     // Decode based on most significant bits of the address
@@ -306,7 +308,7 @@ endmodule
 
 module mfp_ahb_lite_response_mux
 (
-    input      [ 4:0] HSEL,
+    input      [`MFP_AHB_DEVICE_COUNT    - 1:0] HSEL,
 
     // Verilog doesn't allow an I/O port to be a 2D array.
     // We can do it with some macros, but 
@@ -317,7 +319,7 @@ module mfp_ahb_lite_response_mux
     input      [31:0] RDATA_3,
     input      [31:0] RDATA_4,
 
-    input      [ 4:0] RESP,
+    input      [`MFP_AHB_DEVICE_COUNT    - 1:0] RESP,
 
     output reg [31:0] HRDATA,
     output reg        HRESP
@@ -342,10 +344,10 @@ module mfp_ahb_lite_selector
     input             HCLK,
     input             HRESETn,
     input             HREADY,       // means phase change
-    input      [ 4:0] HSEL_req,     // current device requested by CPU (addr phase)
+    input      [`MFP_AHB_DEVICE_COUNT    - 1:0] HSEL_req,     // current device requested by CPU (addr phase)
 
-    output     [ 4:0] HSEL_addr,    // addr phase HSEL signal
-    output reg [ 4:0] HSEL_data     // data phase HSEL signal
+    output     [`MFP_AHB_DEVICE_COUNT    - 1:0] HSEL_addr,    // addr phase HSEL signal
+    output reg [`MFP_AHB_DEVICE_COUNT    - 1:0] HSEL_data     // data phase HSEL signal
 );
 
     always @ (posedge HCLK)
