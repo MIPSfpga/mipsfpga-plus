@@ -62,8 +62,8 @@ module mfp_ahb_lite_matrix
     output [`MFP_7_SEGMENT_HEX_WIDTH - 1 : 0 ] IO_7_SegmentHEX
 );
 
-    wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL_req;    // current device requested by CPU
-    wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL_data;   // effected data phase HSEL signal
+    wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL_Q;    // current device requested by CPU
+    wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL_R;   // effected data phase HSEL signal
     wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL;        // effected addr phase HSEL signal
     wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] READY;
     wire   [                          31 : 0 ] RDATA [`MFP_AHB_DEVICE_COUNT - 1:0];
@@ -258,7 +258,7 @@ module mfp_ahb_lite_matrix
     mfp_ahb_lite_decoder decoder
     (   
         .HADDR            ( HADDR           ),
-        .HSEL             ( HSEL_req        )
+        .HSEL_Q           ( HSEL_Q          )
     );
 
     mfp_ahb_lite_selector selector
@@ -266,16 +266,16 @@ module mfp_ahb_lite_matrix
         .HCLK             ( HCLK            ),
         .HRESETn          ( HRESETn         ),
         .HREADY           ( HREADY          ),
-        .HSEL_req         ( HSEL_req        ),
-        .HSEL_addr        ( HSEL            ),
-        .HSEL_data        ( HSEL_data       )
+        .HSEL_Q           ( HSEL_Q          ),
+        .HSEL             ( HSEL            ),
+        .HSEL_R           ( HSEL_R          )
     );
 
     assign HREADY = &READY;
 
     mfp_ahb_lite_response_mux response_mux
     (
-        .HSEL             ( HSEL_data       ),
+        .HSEL_R           ( HSEL_R          ),
         .RDATA_0          ( RDATA       [0] ),
         .RDATA_1          ( RDATA       [1] ),
         .RDATA_2          ( RDATA       [2] ),
@@ -293,25 +293,25 @@ endmodule
 module mfp_ahb_lite_decoder
 (
     input  [                           31 : 0 ] HADDR,
-    output [ `MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL
+    output [ `MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL_Q
 );
 
     // Decode based on most significant bits of the address
 
     // RAM   4 MB max at 0xbfc00000 (physical: 0x1fc00000 - 0x1fffffff)
-    assign HSEL [0] = ( HADDR [28:22] == `MFP_RESET_RAM_ADDR_MATCH );
+    assign HSEL_Q [0] = ( HADDR [28:22] == `MFP_RESET_RAM_ADDR_MATCH );
 
     // RAM  64 MB max at 0x80000000 (physical: 0x00000000 - 0x03FFFFFF)
-    assign HSEL [1] = ( HADDR [28:26] == `MFP_RAM_ADDR_MATCH       );
+    assign HSEL_Q [1] = ( HADDR [28:26] == `MFP_RAM_ADDR_MATCH       );
 
     // GPIO  4 MB max at 0xbf800000 (physical: 0x1f800000 - 0x1fbfffff)
-    assign HSEL [2] = ( HADDR [28:22] == `MFP_GPIO_ADDR_MATCH      );
+    assign HSEL_Q [2] = ( HADDR [28:22] == `MFP_GPIO_ADDR_MATCH      );
 
     // UART  4 KB max at 0xb0401000 (physical: 0x10401000 - 0x10401fff)
-    assign HSEL [3] = ( HADDR [28:12] == `MFP_UART_ADDR_MATCH      );
+    assign HSEL_Q [3] = ( HADDR [28:12] == `MFP_UART_ADDR_MATCH      );
 
     // EIC   4 KB max at 0xb0402000 (physical: 0x10402000 - 0x10402fff)
-    assign HSEL [4] = ( HADDR [28:12] == `MFP_EIC_ADDR_MATCH       );
+    assign HSEL_Q [4] = ( HADDR [28:12] == `MFP_EIC_ADDR_MATCH       );
 
 endmodule
 
@@ -319,7 +319,7 @@ endmodule
 
 module mfp_ahb_lite_response_mux
 (
-    input      [ `MFP_AHB_DEVICE_COUNT - 1 : 0 ] HSEL,
+    input      [ `MFP_AHB_DEVICE_COUNT - 1 : 0 ] HSEL_R,
     // Verilog doesn't allow an I/O port to be a 2D array.
     // We can do it with some macros, but 
     // it will be too hard to read this code in this case
@@ -335,7 +335,7 @@ module mfp_ahb_lite_response_mux
 );
 
     always @*
-        casez (HSEL)
+        casez (HSEL_R)
             5'b????1:   begin HRDATA = RDATA_0; HRESP = RESP[0]; end
             5'b???10:   begin HRDATA = RDATA_1; HRESP = RESP[1]; end
             5'b??100:   begin HRDATA = RDATA_2; HRESP = RESP[2]; end
@@ -353,19 +353,19 @@ module mfp_ahb_lite_selector
     input                                    HCLK,
     input                                    HRESETn,
     input                                    HREADY,    // means phase change
-    input      [`MFP_AHB_DEVICE_COUNT - 1:0] HSEL_req,  // current device requested by CPU (addr phase)
+    input      [`MFP_AHB_DEVICE_COUNT - 1:0] HSEL_Q,    // current device requested by CPU (addr phase)
 
-    output     [`MFP_AHB_DEVICE_COUNT - 1:0] HSEL_addr, // addr phase HSEL signal
-    output reg [`MFP_AHB_DEVICE_COUNT - 1:0] HSEL_data  // data phase HSEL signal
+    output     [`MFP_AHB_DEVICE_COUNT - 1:0] HSEL,      // addr phase HSEL signal
+    output reg [`MFP_AHB_DEVICE_COUNT - 1:0] HSEL_R     // data phase HSEL signal
 );
 
     always @ (posedge HCLK)
         if(~HRESETn)
-            HSEL_data <= `MFP_AHB_DEVICE_NONE;
+            HSEL_R <= `MFP_AHB_DEVICE_NONE;
         else 
-            if(HREADY) HSEL_data <= HSEL_addr;
+            if(HREADY) HSEL_R <= HSEL;
 
-    assign HSEL_addr = HREADY ? HSEL_req : `MFP_AHB_DEVICE_NONE;
+    assign HSEL = HREADY ? HSEL_Q : `MFP_AHB_DEVICE_NONE;
 
 endmodule
 
