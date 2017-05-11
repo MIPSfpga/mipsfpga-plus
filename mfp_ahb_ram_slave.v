@@ -68,12 +68,12 @@ module mfp_ahb_ram_slave
                 )
                 ram
                 (
-                    .clk          ( HCLK                                      ),
-                    .read_addr    ( read_addr                                 ),
-                    .write_addr   ( write_addr                                ),
-                    .write_data   ( HWDATA      [ i * 8 +: 8 ]                ),
-                    .write_enable ( write_mask  [ i ] & { 4 { write_enable }} ),
-                    .read_data    ( HRDATA      [ i * 8 +: 8 ]                )
+                    .clk          ( HCLK                       ),
+                    .read_addr    ( read_addr                  ),
+                    .write_addr   ( write_addr                 ),
+                    .write_data   ( HWDATA      [ i * 8 +: 8 ] ),
+                    .write_enable ( write_mask  [ i ]          ),
+                    .read_data    ( HRDATA      [ i * 8 +: 8 ] )
                 );
             end
         endgenerate

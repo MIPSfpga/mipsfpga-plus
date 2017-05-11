@@ -44,7 +44,7 @@ module mfp_ahb_lite_decoder
         else begin
             write_enable    <= enable & HWRITE;
             write_addr      <= HADDR [ ADDR_END : ADDR_START ];
-            write_mask      <= mask;
+            write_mask      <= (enable & HWRITE) ? mask : 4'b0;
         end
     end
 
