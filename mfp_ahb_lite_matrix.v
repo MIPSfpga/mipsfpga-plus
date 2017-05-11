@@ -255,13 +255,13 @@ module mfp_ahb_lite_matrix
     `endif
 
     // bus interconnection part
-    mfp_ahb_lite_decoder decoder
+    mfp_ahb_lite_address_decoder decoder
     (   
         .HADDR            ( HADDR           ),
         .HSEL_Q           ( HSEL_Q          )
     );
 
-    mfp_ahb_lite_selector selector
+    mfp_ahb_lite_device_selector selector
     (   
         .HCLK             ( HCLK            ),
         .HRESETn          ( HRESETn         ),
@@ -290,7 +290,7 @@ endmodule
 
 //--------------------------------------------------------------------
 
-module mfp_ahb_lite_decoder
+module mfp_ahb_lite_address_decoder
 (
     input  [                           31 : 0 ] HADDR,
     output [ `MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL_Q
@@ -348,7 +348,7 @@ endmodule
 //--------------------------------------------------------------------
 
 
-module mfp_ahb_lite_selector
+module mfp_ahb_lite_device_selector
 (
     input                                    HCLK,
     input                                    HRESETn,
