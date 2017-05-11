@@ -110,8 +110,7 @@ module mfp_ahb_lite_matrix
             .ADDR_WIDTH ( `MFP_RAM_ADDR_WIDTH )
         )
     `else
-        //mfp_ahb_ram_slave
-        mfp_ahb_ram_block
+        mfp_ahb_ram_slave
         #(
             .ADDR_WIDTH ( `MFP_RAM_ADDR_WIDTH )
         )
