@@ -23,10 +23,13 @@ module mfp_ahb_lite_decoder
     output reg [                 3 : 0 ] write_mask,
     output                               read_after_write
 );
+    reg [ ADDR_END : ADDR_START ] read_addr_old;
+
     wire   enable       = HTRANS != `HTRANS_IDLE && HSEL;
 
     assign read_enable  = enable & !HWRITE;
-    assign read_addr    = HADDR [ ADDR_END : ADDR_START ];
+    assign read_addr    = read_enable ? HADDR [ ADDR_END : ADDR_START ]
+                                      : read_addr_old;
 
     assign read_after_write = read_enable & write_enable 
                             & (read_addr == write_addr);
@@ -43,8 +46,13 @@ module mfp_ahb_lite_decoder
             end
         else begin
             write_enable    <= enable & HWRITE;
-            write_addr      <= HADDR [ ADDR_END : ADDR_START ];
             write_mask      <= (enable & HWRITE) ? mask : 4'b0;
+
+            if(enable & HWRITE)
+                write_addr      <= HADDR [ ADDR_END : ADDR_START ];
+
+            if(read_enable)
+                read_addr_old   <= HADDR [ ADDR_END : ADDR_START ];
         end
     end
 
