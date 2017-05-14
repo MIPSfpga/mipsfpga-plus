@@ -245,7 +245,7 @@ module mfp_testbench;
                 = { reset_ram [i + 3], reset_ram [i + 2], reset_ram [i + 1], reset_ram [i + 0] };
 
         for (i = 0; i < (1 << `MFP_RAM_ADDR_WIDTH); i = i + 4)
-            system.ahb_lite_matrix.ahb_lite_matrix.ram.ram [i / 4]
+            system.ahb_lite_matrix.ahb_lite_matrix.ram.ram.ram [i / 4]
                 = { ram [i + 3], ram [i + 2], ram [i + 1], ram [i + 0] };
     end
 
