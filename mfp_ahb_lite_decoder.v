@@ -19,17 +19,19 @@ module mfp_ahb_lite_decoder
     output                               read_enable,
     output     [ ADDR_END : ADDR_START ] read_addr,
     output reg                           write_enable,
-    output reg [ ADDR_END : ADDR_START ] write_addr,
+    output     [ ADDR_END : ADDR_START ] write_addr,
     output reg [                 3 : 0 ] write_mask,
     output                               read_after_write
 );
-    reg [ ADDR_END : ADDR_START ] read_addr_old;
+    wire   request       = HTRANS != `HTRANS_IDLE && HSEL;
+    wire   read_request  = request & !HWRITE;
+    wire   write_request = request & HWRITE;
 
-    wire   enable       = HTRANS != `HTRANS_IDLE && HSEL;
+    reg [ ADDR_END : ADDR_START ] HADDR_old;
 
-    assign read_enable  = enable & !HWRITE;
-    assign read_addr    = read_enable ? HADDR [ ADDR_END : ADDR_START ]
-                                      : read_addr_old;
+    assign write_addr   = HADDR_old;
+    assign read_addr    = read_request ? HADDR : HADDR_old;
+    assign read_enable  = read_request;
 
     assign read_after_write = read_enable & write_enable 
                             & (read_addr == write_addr);
@@ -41,18 +43,17 @@ module mfp_ahb_lite_decoder
     always @ (posedge HCLK) begin
         if(~HRESETn) begin
             write_enable    <= 1'b0;
-            write_addr      <= { ADDR_WIDTH - 1 { 1'b0 }};
+            HADDR_old       <= { ADDR_WIDTH { 1'b0 }};
             write_mask      <= 4'b0;
             end
         else begin
-            write_enable    <= enable & HWRITE;
-            write_mask      <= (enable & HWRITE) ? mask : 4'b0;
+            write_enable    <= write_request;
 
-            if(enable & HWRITE)
-                write_addr      <= HADDR [ ADDR_END : ADDR_START ];
+            if(request)
+                HADDR_old   <= HADDR;
 
-            if(read_enable)
-                read_addr_old   <= HADDR [ ADDR_END : ADDR_START ];
+            if(write_request)
+                write_mask  <= (ADDR_START == 0) ? mask : 4'b0;
         end
     end
 

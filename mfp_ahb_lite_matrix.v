@@ -70,7 +70,8 @@ module mfp_ahb_lite_matrix
     wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] RESP;
 
     //RESET
-    mfp_ahb_ram_slave
+    //mfp_ahb_ram_slave
+    mfp_ahb_ram_busy
     # (
         .ADDR_WIDTH ( `MFP_RESET_RAM_ADDR_WIDTH )
     )
