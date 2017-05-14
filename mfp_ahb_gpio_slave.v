@@ -34,69 +34,76 @@ module mfp_ahb_gpio_slave
     // Ignored: HMASTLOCK, HPROT
     // TODO: SI_Endian
 
+    parameter ADDR_WIDTH = 4;
+
+    wire [ ADDR_WIDTH - 1 : 0 ] read_addr;
+    wire                        read_enable;
+    wire [ ADDR_WIDTH - 1 : 0 ] write_addr;
+    wire [              3 : 0 ] write_mask;
+    wire                        write_enable;
+    wire                        read_after_write;
+
     assign HRESP  = 1'b0;
 
-    reg [ 1:0] HTRANS_dly;
-    reg [31:0] HADDR_dly;
-    reg        HWRITE_dly;
-    reg        HSEL_dly;
-
     always @ (posedge HCLK)
-    begin
-        HTRANS_dly <= HTRANS;
-        HADDR_dly  <= HADDR;
-        HWRITE_dly <= HWRITE;
-        HSEL_dly   <= HSEL;
-    end
-
-    wire [3:0] read_ionum       = HADDR     [5:2];
-    wire [3:0] write_ionum      = HADDR_dly [5:2];
-    wire       write_enable     = HTRANS_dly != `HTRANS_IDLE && HSEL_dly && HWRITE_dly;
-
-    wire       read_after_write = HADDR == HADDR_dly && HWRITE_dly && !HWRITE 
-                                  && HTRANS!= `HTRANS_IDLE && HTRANS_dly != `HTRANS_IDLE && HSEL;
-
-    always @ (posedge HCLK or negedge HRESETn)
-    begin
-        if (! HRESETn)
-        begin
-            IO_RedLEDs      <= `MFP_N_RED_LEDS'b0;
-            IO_GreenLEDs    <= `MFP_N_GREEN_LEDS'b0;
-            IO_7_SegmentHEX <= `MFP_7_SEGMENT_HEX_WIDTH'b0;
-        end
-        else if (write_enable)
-        begin
-            case (write_ionum)
-            `MFP_RED_LEDS_IONUM      : IO_RedLEDs      <= HWDATA [`MFP_N_RED_LEDS          - 1:0];
-            `MFP_GREEN_LEDS_IONUM    : IO_GreenLEDs    <= HWDATA [`MFP_N_GREEN_LEDS        - 1:0];
-            `MFP_7_SEGMENT_HEX_IONUM : IO_7_SegmentHEX <= HWDATA [`MFP_7_SEGMENT_HEX_WIDTH - 1:0];
-            endcase
-        end
         HREADY <= !read_after_write;
-    end
 
-    always @ (posedge HCLK or negedge HRESETn)
-    begin
+    mfp_ahb_lite_decoder 
+    #(
+        .ADDR_WIDTH ( ADDR_WIDTH ),
+        .ADDR_START (          2 )
+    )
+    decoder
+    (
+        .HCLK               ( HCLK              ),
+        .HRESETn            ( HRESETn           ),
+        .HADDR              ( HADDR [ ADDR_WIDTH - 1 + 2 : 2] ),
+        .HSIZE              ( HSIZE             ),
+        .HTRANS             ( HTRANS            ),
+        .HWRITE             ( HWRITE            ),
+        .HSEL               ( HSEL              ),
+        .read_enable        ( read_enable       ),
+        .read_addr          ( read_addr         ),
+        .write_enable       ( write_enable      ),
+        .write_addr         ( write_addr        ),
+        .write_mask         ( write_mask        ),
+        .read_after_write   ( read_after_write  )
+    );
+
+    always @ (posedge HCLK or negedge HRESETn) begin
         if (! HRESETn)
-        begin
-            HRDATA <= 32'h00000000;
-        end
-        else
-        begin
-            case (read_ionum)
-            `MFP_SWITCHES_IONUM      : HRDATA <= { { 32 - `MFP_N_SWITCHES { 1'b0 } } , IO_Switches };
-            `MFP_BUTTONS_IONUM       : HRDATA <= { { 32 - `MFP_N_BUTTONS  { 1'b0 } } , IO_Buttons  };
+            begin
+                IO_RedLEDs      <= `MFP_N_RED_LEDS'b0;
+                IO_GreenLEDs    <= `MFP_N_GREEN_LEDS'b0;
+                IO_7_SegmentHEX <= `MFP_7_SEGMENT_HEX_WIDTH'b0;
 
-            `MFP_RED_LEDS_IONUM      : HRDATA <= { { 32 - `MFP_N_RED_LEDS           { 1'b0 } } ,IO_RedLEDs      };
-            `MFP_GREEN_LEDS_IONUM    : HRDATA <= { { 32 - `MFP_N_GREEN_LEDS         { 1'b0 } } ,IO_GreenLEDs    };
-            `MFP_7_SEGMENT_HEX_IONUM : HRDATA <= { { 32 - `MFP_7_SEGMENT_HEX_WIDTH  { 1'b0 } } ,IO_7_SegmentHEX };
+                HRDATA          <= 32'b0;
+            end
+        else begin
+            if(write_enable) begin
+                case (write_addr)
+                    `MFP_RED_LEDS_IONUM      : IO_RedLEDs      <= HWDATA [`MFP_N_RED_LEDS          - 1:0];
+                    `MFP_GREEN_LEDS_IONUM    : IO_GreenLEDs    <= HWDATA [`MFP_N_GREEN_LEDS        - 1:0];
+                    `MFP_7_SEGMENT_HEX_IONUM : IO_7_SegmentHEX <= HWDATA [`MFP_7_SEGMENT_HEX_WIDTH - 1:0];
+                endcase
+            end
             
-            `ifdef MFP_DEMO_LIGHT_SENSOR
-            `MFP_LIGHT_SENSOR_IONUM  : HRDATA <= { 16'b0, IO_LightSensor };
-            `endif
-            
-            default:                   HRDATA <= 32'h00000000;
-            endcase
+            if(read_enable) begin
+                case (read_addr)
+                    `MFP_SWITCHES_IONUM      : HRDATA <= { { 32 - `MFP_N_SWITCHES { 1'b0 } } , IO_Switches };
+                    `MFP_BUTTONS_IONUM       : HRDATA <= { { 32 - `MFP_N_BUTTONS  { 1'b0 } } , IO_Buttons  };
+
+                    `MFP_RED_LEDS_IONUM      : HRDATA <= { { 32 - `MFP_N_RED_LEDS           { 1'b0 } } ,IO_RedLEDs      };
+                    `MFP_GREEN_LEDS_IONUM    : HRDATA <= { { 32 - `MFP_N_GREEN_LEDS         { 1'b0 } } ,IO_GreenLEDs    };
+                    `MFP_7_SEGMENT_HEX_IONUM : HRDATA <= { { 32 - `MFP_7_SEGMENT_HEX_WIDTH  { 1'b0 } } ,IO_7_SegmentHEX };
+                    
+                    `ifdef MFP_DEMO_LIGHT_SENSOR
+                    `MFP_LIGHT_SENSOR_IONUM  : HRDATA <= { 16'b0, IO_LightSensor };
+                    `endif
+                    
+                    default:                   HRDATA <= 32'b0;
+                endcase
+            end
         end
     end
 
