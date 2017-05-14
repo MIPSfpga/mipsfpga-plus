@@ -3,7 +3,7 @@
  */
 
 // simply ram with HREADY support
-module mfp_ahb_ram_busy_old
+module mfp_ahb_ram_busy
 #(
     parameter ADDR_WIDTH = 6,
     parameter DELAY_VAL  = 2
@@ -93,8 +93,8 @@ module mfp_ahb_ram_busy_old
 
 endmodule
 
-
-module mfp_ahb_ram_busy
+/*
+module mfp_ahb_ram_busy_new
 #(
     parameter ADDR_WIDTH = 6,
     parameter DELAY_VAL  = 2
@@ -178,3 +178,4 @@ module mfp_ahb_ram_busy
         );
 
 endmodule
+*/

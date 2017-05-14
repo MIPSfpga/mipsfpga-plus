@@ -15,7 +15,7 @@ module mfp_ahb_gpio_slave
     input      [31:0] HWDATA,
     input             HWRITE,
     output reg [31:0] HRDATA,
-    output reg        HREADY,
+    output            HREADY,
     output            HRESP,
     input             SI_Endian,
                
@@ -45,9 +45,6 @@ module mfp_ahb_gpio_slave
 
     assign HRESP  = 1'b0;
 
-    always @ (posedge HCLK)
-        HREADY <= !read_after_write;
-
     mfp_ahb_lite_decoder 
     #(
         .ADDR_WIDTH ( ADDR_WIDTH ),
@@ -62,12 +59,12 @@ module mfp_ahb_gpio_slave
         .HTRANS             ( HTRANS            ),
         .HWRITE             ( HWRITE            ),
         .HSEL               ( HSEL              ),
+        .HREADY             ( HREADY            ),
         .read_enable        ( read_enable       ),
         .read_addr          ( read_addr         ),
         .write_enable       ( write_enable      ),
         .write_addr         ( write_addr        ),
-        .write_mask         ( write_mask        ),
-        .read_after_write   ( read_after_write  )
+        .write_mask         ( write_mask        )
     );
 
     always @ (posedge HCLK or negedge HRESETn) begin

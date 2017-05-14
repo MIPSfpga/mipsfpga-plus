@@ -17,7 +17,7 @@ module mfp_ahb_ram_slave
     input  [31:0] HWDATA,
     input         HWRITE,
     output [31:0] HRDATA,
-    output reg    HREADY,
+    output        HREADY,
     output        HRESP,
     input         SI_Endian
 );
@@ -26,12 +26,8 @@ module mfp_ahb_ram_slave
     wire [ ADDR_WIDTH - 1 : 0 ] write_addr;
     wire [              3 : 0 ] write_mask;
     wire                        write_enable;
-    wire                        read_after_write;
 
     assign HRESP  = 1'b0;
-
-    always @ (posedge HCLK)
-        HREADY <= !read_after_write;
 
     mfp_ahb_lite_decoder 
     #(
@@ -47,12 +43,12 @@ module mfp_ahb_ram_slave
         .HTRANS             ( HTRANS            ),
         .HWRITE             ( HWRITE            ),
         .HSEL               ( HSEL              ),
+        .HREADY             ( HREADY            ),
         .read_enable        ( read_enable       ),
         .read_addr          ( read_addr         ),
         .write_enable       ( write_enable      ),
         .write_addr         ( write_addr        ),
-        .write_mask         ( write_mask        ),
-        .read_after_write   ( read_after_write  )
+        .write_mask         ( write_mask        )
     );
 
     `ifdef MFP_USE_BYTE_MEMORY
