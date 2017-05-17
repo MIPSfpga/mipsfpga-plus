@@ -430,6 +430,7 @@ set_global_assignment -name VERILOG_FILE ../de10_lite.v
 
 set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_gpio_slave.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_lite_matrix.v
+set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_lite_slave.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_lite_matrix_with_loader.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_ram_slave.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_ram_busy.v
