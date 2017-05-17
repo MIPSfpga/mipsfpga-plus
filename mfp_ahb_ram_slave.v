@@ -30,7 +30,7 @@ module mfp_ahb_ram_slave
 
     assign HRESP  = 1'b0;
 
-    mfp_ahb_lite_decoder 
+    mfp_ahb_lite_slave 
     #(
         .ADDR_WIDTH ( ADDR_WIDTH ),
         .ADDR_START (          2 )

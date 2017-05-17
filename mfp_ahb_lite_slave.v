@@ -1,7 +1,7 @@
 
 `include "mfp_ahb_lite.vh"
 
-module mfp_ahb_lite_decoder
+module mfp_ahb_lite_slave
 #(
     parameter   ADDR_WIDTH = 32,
                 ADDR_START = 0,

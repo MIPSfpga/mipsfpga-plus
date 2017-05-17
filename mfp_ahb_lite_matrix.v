@@ -255,7 +255,7 @@ module mfp_ahb_lite_matrix
     `endif
 
     // bus interconnection part
-    mfp_ahb_lite_address_decoder decoder
+    mfp_ahb_lite_decoder decoder
     (   
         .HADDR            ( HADDR           ),
         .HSEL_Q           ( HSEL_Q          )
@@ -290,7 +290,7 @@ endmodule
 
 //--------------------------------------------------------------------
 
-module mfp_ahb_lite_address_decoder
+module mfp_ahb_lite_decoder
 (
     input  [                           31 : 0 ] HADDR,
     output [ `MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL_Q
