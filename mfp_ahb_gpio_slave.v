@@ -54,7 +54,7 @@ module mfp_ahb_gpio_slave
     (
         .HCLK               ( HCLK              ),
         .HRESETn            ( HRESETn           ),
-        .HADDR              ( HADDR [ ADDR_WIDTH - 1 + 2 : 2] ),
+        .HADDR              ( HADDR [ ADDR_WIDTH - 1 + 2 : 0] ),
         .HSIZE              ( HSIZE             ),
         .HTRANS             ( HTRANS            ),
         .HWRITE             ( HWRITE            ),
