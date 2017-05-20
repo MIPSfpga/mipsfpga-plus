@@ -20,7 +20,7 @@ module mfp_ahb_lite_eic
     input      [ 31 : 0 ]              HWDATA,
     input                              HWRITE,
     output reg [ 31 : 0 ]              HRDATA,
-    output reg                         HREADY,
+    output                             HREADY,
     output                             HRESP,
     input                              SI_Endian,  // ignored
 
@@ -41,41 +41,43 @@ module mfp_ahb_lite_eic
     assign      HRESP  = 1'b0;
 
     wire [ `EIC_ADDR_WIDTH - 1 : 0 ] read_addr;
+    wire                             read_enable;
     wire [                  31 : 0 ] read_data;
-    reg  [ `EIC_ADDR_WIDTH - 1 : 0 ] write_addr;
+    wire [ `EIC_ADDR_WIDTH - 1 : 0 ] write_addr;
+    wire [                   3 : 0 ] write_mask;
+    wire                             write_enable;
     wire [                  31 : 0 ] write_data;
-    reg                              write_enable;
-    
-    wire [ `EIC_ADDR_WIDTH - 1 : 0 ] ADDR = HADDR [ `EIC_ADDR_WIDTH + 2 : 2 ];
-    reg  [ `EIC_ADDR_WIDTH - 1 : 0 ] ADDR_old;
-    reg                              HWRITE_old;
-    reg  [                  31 : 0 ] HADDR_old;
-
-    wire        read_after_write = ADDR == ADDR_old && HWRITE_old && !HWRITE 
-                                   && HTRANS != `HTRANS_IDLE && HADDR_old != `HTRANS_IDLE && HSEL;
-
-    parameter   HTRANS_IDLE = 2'b0;
-    wire        NeedRead    = HTRANS != HTRANS_IDLE && HSEL;
-    wire        NeedWrite   = NeedRead & HWRITE;
 
     assign      write_data  = HWDATA;
-    assign      read_addr   = ADDR;
 
-    always @ (posedge HCLK) begin
-        if(~HRESETn)
-            write_enable <= 1'b0;
-        else begin
-            if(NeedRead)
-                HRDATA <= read_data;
-
-            if(NeedWrite)
-                write_addr <= ADDR;
-            write_enable <= NeedWrite;
-        end
-
-        ADDR_old <= ADDR;
-        HREADY   <= !read_after_write;
+    always @ (posedge HCLK or negedge HRESETn) begin
+        if (! HRESETn)
+            HRDATA <= 32'b0;
+        else
+            if(read_enable) HRDATA <= read_data;
     end
+
+    mfp_ahb_lite_slave 
+    #(
+        .ADDR_WIDTH ( `EIC_ADDR_WIDTH ),
+        .ADDR_START (               2 )
+    )
+    decoder
+    (
+        .HCLK           ( HCLK          ),
+        .HRESETn        ( HRESETn       ),
+        .HADDR          ( HADDR [ `EIC_ADDR_WIDTH - 1 + 2 : 0] ),
+        .HSIZE          ( HSIZE         ),
+        .HTRANS         ( HTRANS        ),
+        .HWRITE         ( HWRITE        ),
+        .HSEL           ( HSEL          ),
+        .HREADY         ( HREADY        ),
+        .read_enable    ( read_enable   ),
+        .read_addr      ( read_addr     ),
+        .write_enable   ( write_enable  ),
+        .write_addr     ( write_addr    ),
+        .write_mask     ( write_mask    )
+    );
 
     mfp_eic_core eic_core
     (
