@@ -37,11 +37,9 @@ module mfp_ahb_lite_slave
     wire   read_after_write = read_enable & write_enable 
                             & (read_addr == write_addr);
 
-    // wire [3:0] mask = ( HSIZE == `HSIZE_1 ) ? 4'b0001 << HADDR [1:0] : (
-    //                   ( HSIZE == `HSIZE_2 ) ? (HADDR [1] ? 4'b1100 : 4'b0011) : (
-    //                   ( HSIZE == `HSIZE_4 ) ? 4'b1111 : 4'b0000 ));
-
-    wire [3:0] mask = 4'b1111;
+    wire [3:0] mask = ( HSIZE == `HSIZE_1 ) ? 4'b0001 << HADDR [1:0] : (
+                      ( HSIZE == `HSIZE_2 ) ? (HADDR [1] ? 4'b1100 : 4'b0011) : (
+                      ( HSIZE == `HSIZE_4 ) ? 4'b1111 : 4'b0000 ));
 
     always @ (posedge HCLK) begin
         if(~HRESETn) begin
