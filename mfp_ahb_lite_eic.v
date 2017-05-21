@@ -66,7 +66,7 @@ module mfp_ahb_lite_eic
     (
         .HCLK           ( HCLK          ),
         .HRESETn        ( HRESETn       ),
-        .HADDR          ( HADDR [ `EIC_ADDR_WIDTH - 1 + 2 : 0] ),
+        .HADDR          ( HADDR         ),
         .HSIZE          ( HSIZE         ),
         .HTRANS         ( HTRANS        ),
         .HWRITE         ( HWRITE        ),

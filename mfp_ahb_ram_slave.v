@@ -39,7 +39,7 @@ module mfp_ahb_ram_slave
     (
         .HCLK               ( HCLK              ),
         .HRESETn            ( HRESETn           ),
-        .HADDR              ( HADDR [ ADDR_WIDTH - 1 + 2 : 0] ),
+        .HADDR              ( HADDR             ),
         .HSIZE              ( HSIZE             ),
         .HTRANS             ( HTRANS            ),
         .HWRITE             ( HWRITE            ),

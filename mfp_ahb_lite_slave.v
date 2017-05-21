@@ -10,7 +10,7 @@ module mfp_ahb_lite_slave
 (
     input                                HCLK,
     input                                HRESETn,
-    input      [          ADDR_END : 0 ] HADDR,
+    input      [                31 : 0 ] HADDR,
     input      [                 2 : 0 ] HSIZE,
     input      [                 1 : 0 ] HTRANS,
     input                                HWRITE,
