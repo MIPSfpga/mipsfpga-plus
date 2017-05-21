@@ -1,6 +1,4 @@
-/* Simple SDRAM controller for MIPSfpga+ system AHB-Lite bus
- * Copyright(c) 2017 Stanislav Zhelnio
- */
+`include "mfp_ahb_lite.vh"
 
 // simply ram with HREADY support
 module mfp_ahb_ram_busy
@@ -21,7 +19,7 @@ module mfp_ahb_ram_busy
     input       [ 1:0]          HTRANS,
     input       [31:0]          HWDATA,
     input                       HWRITE,
-    output  reg [31:0]          HRDATA,
+    output      [31:0]          HRDATA,
     output                      HREADY,
     output                      HRESP,
     input                       SI_Endian   // ignored
@@ -34,16 +32,12 @@ module mfp_ahb_ram_busy
                 S_WRITE         = 3,
                 S_WAIT          = 4;
 
-    parameter   HTRANS_IDLE     = 2'b0;
-
     reg     [  4 : 0 ]      State, Next;
     reg     [ 31 : 0 ]      HADDR_old;
-    reg                     HWRITE_old;
-    reg     [  1 : 0 ]      HTRANS_old;
     reg     [  3 : 0 ]      Delay;
 
     assign  HREADY = (State == S_IDLE);
-    wire    NeedAction = HTRANS != HTRANS_IDLE && HSEL;
+    wire    NeedAction = HTRANS != `HTRANS_IDLE && HSEL;
     wire    DelayFinished = ( ~| Delay );
 
     always @ (posedge HCLK) begin
@@ -64,31 +58,33 @@ module mfp_ahb_ram_busy
         endcase
     end
 
-    reg [31:0] ram [ (1 << ADDR_WIDTH) - 1 : 0 ];
-
     always @ (posedge HCLK) begin
-        if(State == S_INIT) begin
-            HADDR_old   <= 32'b0;
-            HWRITE_old  <= 1'b0;
-            HTRANS_old  <= HTRANS_IDLE;
-        end
-
-        if(State == S_IDLE && HSEL) begin
-            HADDR_old   <= HADDR;
-            HWRITE_old  <= HWRITE;
-            HTRANS_old  <= HTRANS;
-        end
-
-        if(State == S_READ)
-            HRDATA <= ram[HADDR_old [ ADDR_WIDTH - 1 + 2 : 2] ];
-            
-        if(State == S_WRITE)
-            ram[HADDR_old [ ADDR_WIDTH - 1 + 2 : 2] ] <= HWDATA;
-
-        if(State == S_READ || State == S_WRITE)
-            Delay <= DELAY_VAL;
-        if(~DelayFinished)
-            Delay <= Delay - 1;
+        case(State)
+            S_INIT:         HADDR_old   <= 32'b0;
+            S_IDLE:         if(NeedAction) HADDR_old <= HADDR;
+            S_READ:         Delay <= DELAY_VAL;
+            S_WRITE:        Delay <= DELAY_VAL;
+            S_WAIT:         Delay <= Delay - 1;
+        endcase
     end
+
+    wire write_enable = (State == S_WRITE);
+    wire [ ADDR_WIDTH - 1 : 0 ] read_addr  = HADDR_old [ ADDR_WIDTH - 1 + 2 : 2];
+    wire [ ADDR_WIDTH - 1 : 0 ] write_addr = HADDR_old [ ADDR_WIDTH - 1 + 2 : 2];
+
+    mfp_dual_port_ram
+    #(
+        .ADDR_WIDTH ( ADDR_WIDTH ),
+        .DATA_WIDTH ( 32         )
+    )
+    ram
+    (
+        .clk          ( HCLK            ),
+        .read_addr    ( read_addr       ),
+        .write_addr   ( write_addr      ),
+        .write_data   ( HWDATA          ),
+        .write_enable ( write_enable    ),
+        .read_data    ( HRDATA          )
+    );
 
 endmodule

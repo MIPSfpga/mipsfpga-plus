@@ -1,4 +1,5 @@
 `include "mfp_ahb_lite.vh"
+`include "mfp_ahb_lite_matrix_config.vh"
 
 module mfp_ahb_ram_slave
 # (
@@ -17,109 +18,78 @@ module mfp_ahb_ram_slave
     input  [31:0] HWDATA,
     input         HWRITE,
     output [31:0] HRDATA,
-    output reg    HREADY,
+    output        HREADY,
     output        HRESP,
     input         SI_Endian
 );
-
-    // Ignored: HMASTLOCK, HPROT
-    // TODO: SI_Endian
+    wire [ ADDR_WIDTH - 1 : 0 ] read_addr;
+    wire                        read_enable;
+    wire [ ADDR_WIDTH - 1 : 0 ] write_addr;
+    wire [              3 : 0 ] write_mask;
+    wire                        write_enable;
 
     assign HRESP  = 1'b0;
 
-    reg [ 1:0] HTRANS_dly;
-    reg [31:0] HADDR_dly;
-    reg        HWRITE_dly;
-    reg        HSEL_dly;
-
-    always @ (posedge HCLK)
-    begin
-        if (! HRESETn)
-        begin
-            HTRANS_dly <= 2'b0;
-            HADDR_dly  <= 32'h0;
-            HWRITE_dly <= 1'b0;
-            HSEL_dly   <= 1'b0;
-        end
-        else
-        begin
-            HTRANS_dly <= HTRANS;
-            HADDR_dly  <= HADDR;
-            HWRITE_dly <= HWRITE;
-            HSEL_dly   <= HSEL;
-        end
-    end
-
-    wire    read_after_write = HADDR == HADDR_dly && HWRITE_dly && !HWRITE 
-                               && HTRANS != `HTRANS_IDLE && HTRANS_dly != `HTRANS_IDLE && HSEL;
-    always @ (posedge HCLK)
-        HREADY <= !read_after_write;
-
-    `ifdef MFP_USE_BYTE_MEMORY
-
-    reg [3:0] mask, mask_dly;
-
-    always @*
-    begin
-        if (! (HTRANS != `HTRANS_IDLE && HSEL && HWRITE))
-            mask = 4'b0000;
-        else if (HBURST == `HBURST_SINGLE && HSIZE == `HSIZE_1)
-            mask = 4'b0001 << HADDR [1:0];
-        else if (HBURST == `HBURST_SINGLE && HSIZE == `HSIZE_2)
-            mask = HADDR [1] ? 4'b1100 : 4'b0011;
-        else
-            mask = 4'b1111;
-    end
-
-    always @ (posedge HCLK)
-    begin
-        if (! HRESETn)
-            mask_dly <= 4'b0;
-        else
-            mask_dly <= mask;
-    end
-
-    generate
-        genvar i;
-
-        for (i = 0; i <= 3; i = i + 1)
-        begin : u
-            mfp_dual_port_ram
-            # (
-                .ADDR_WIDTH ( ADDR_WIDTH ),
-                .DATA_WIDTH ( 8          )
-            )
-            ram
-            (
-                .clk          ( HCLK                                ),
-                .read_addr    ( HADDR     [ ADDR_WIDTH - 1 + 2 : 2] ),
-                .write_addr   ( HADDR_dly [ ADDR_WIDTH - 1 + 2 : 2] ),
-                .write_data   ( HWDATA    [ i * 8 +: 8 ]            ),
-                .write_enable ( mask_dly  [ i ]                     ),
-                .read_data    ( HRDATA    [ i * 8 +: 8 ]            )
-            );
-        end
-    endgenerate
-
-    `else
-
-    wire write_enable = HTRANS_dly != `HTRANS_IDLE && HSEL_dly && HWRITE_dly;
-
-    mfp_dual_port_ram
-    # (
+    mfp_ahb_lite_slave 
+    #(
         .ADDR_WIDTH ( ADDR_WIDTH ),
-        .DATA_WIDTH ( 32         )
+        .ADDR_START (          2 )
     )
-    ram
+    decoder
     (
-        .clk          ( HCLK                                ),
-        .read_addr    ( HADDR     [ ADDR_WIDTH - 1 + 2 : 2] ),
-        .write_addr   ( HADDR_dly [ ADDR_WIDTH - 1 + 2 : 2] ),
-        .write_data   ( HWDATA                              ),
-        .write_enable ( write_enable                        ),
-        .read_data    ( HRDATA                              )
+        .HCLK               ( HCLK              ),
+        .HRESETn            ( HRESETn           ),
+        .HADDR              ( HADDR             ),
+        .HSIZE              ( HSIZE             ),
+        .HTRANS             ( HTRANS            ),
+        .HWRITE             ( HWRITE            ),
+        .HSEL               ( HSEL              ),
+        .HREADY             ( HREADY            ),
+        .read_enable        ( read_enable       ),
+        .read_addr          ( read_addr         ),
+        .write_enable       ( write_enable      ),
+        .write_addr         ( write_addr        ),
+        .write_mask         ( write_mask        )
     );
 
+    `ifdef MFP_USE_BYTE_MEMORY
+        generate
+            genvar i;
+
+            for (i = 0; i <= 3; i = i + 1)
+            begin : u
+                mfp_dual_port_ram
+                # (
+                    .ADDR_WIDTH ( ADDR_WIDTH ),
+                    .DATA_WIDTH ( 8          )
+                )
+                ram
+                (
+                    .clk          ( HCLK                      ),
+                    .read_addr    ( read_addr                 ),
+                    .write_addr   ( write_addr                ),
+                    .write_data   ( HWDATA     [ i * 8 +: 8 ] ),
+                    .write_enable ( write_mask [ i ]          ),
+                    .read_data    ( HRDATA     [ i * 8 +: 8 ] )
+                );
+            end
+        endgenerate
+
+    `else
+        mfp_dual_port_ram
+        #(
+            .ADDR_WIDTH ( ADDR_WIDTH ),
+            .DATA_WIDTH ( 32         )
+        )
+        ram
+        (
+            .clk          ( HCLK            ),
+            .read_addr    ( read_addr       ),
+            .write_addr   ( write_addr      ),
+            .write_data   ( HWDATA          ),
+            .write_enable ( write_enable    ),
+            .read_data    ( HRDATA          )
+        );
     `endif
 
 endmodule

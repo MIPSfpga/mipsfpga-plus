@@ -8,7 +8,8 @@
  * these projects source code is placed in 'uart16550' folder
  */
 
-module mfp_ahb_lite_uart16550(
+module mfp_ahb_lite_uart16550
+(
     //ABB-Lite side
     input                               HCLK,
     input                               HRESETn,
