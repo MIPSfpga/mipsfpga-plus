@@ -6,20 +6,13 @@ int main ()
 
     for (;;)
     {
-        /*
-        MFP_RED_LEDS      = n;
-        MFP_GREEN_LEDS    = n;
-        MFP_7_SEGMENT_HEX = n;
-        */
+        long long int val = ((n >> 8) & 0xffffff00) | (n & 0xff);
 
-        MFP_RED_LEDS   = n >> 16;
-        MFP_GREEN_LEDS = n >> 16;
-        MFP_7_SEGMENT_HEX = ((n >> 8) & 0xffffff00) | (n & 0xff);
+        MFP_RED_LEDS      = val;
+        MFP_GREEN_LEDS    = MFP_RED_LEDS;
+        MFP_7_SEGMENT_HEX = val;
 
         n ++;
-
-        // asm ("mfc0 $8, $15, 0");
-        // MFP_7_SEGMENT_HEX = 1;
     }
 
     return 0;

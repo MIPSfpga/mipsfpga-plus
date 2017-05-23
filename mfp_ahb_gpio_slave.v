@@ -41,7 +41,6 @@ module mfp_ahb_gpio_slave
     wire [ ADDR_WIDTH - 1 : 0 ] write_addr;
     wire [              3 : 0 ] write_mask;
     wire                        write_enable;
-    wire                        read_after_write;
 
     assign HRESP  = 1'b0;
 
