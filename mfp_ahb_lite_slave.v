@@ -30,9 +30,10 @@ module mfp_ahb_lite_slave
     wire [ ADDR_END : ADDR_START ] ADDR = HADDR [ ADDR_END : ADDR_START ];
     reg  [ ADDR_END : ADDR_START ] ADDR_old;
 
+    reg    read_pending;
     assign write_addr   = ADDR_old;
     assign read_addr    = read_request ? ADDR : ADDR_old;
-    assign read_enable  = read_request;
+    assign read_enable  = read_request | read_pending;
 
     wire   read_after_write = read_enable & write_enable 
                             & (read_addr == write_addr);
@@ -45,6 +46,7 @@ module mfp_ahb_lite_slave
         if(~HRESETn) begin
             write_enable    <= 1'b0;
             write_mask      <= 4'b0;
+            read_pending    <= 1'b0;
             ADDR_old        <= { ADDR_WIDTH { 1'b0 }};
             HREADY          <= 1'b1;
             end
@@ -56,6 +58,7 @@ module mfp_ahb_lite_slave
                 ADDR_old    <= ADDR;
 
             HREADY          <= !read_after_write;
+            read_pending    <= read_after_write;
         end
     end
 
