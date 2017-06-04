@@ -48,15 +48,22 @@ module de10_lite
     inout   [35:0]  GPIO
 );
 
+    // global clock signals
     wire clk;
+    wire ADC_CLK;
+    wire clk200;  //for phase shift debug with logic analyser
 
     `ifdef MFP_USE_SDRAM_MEMORY
+        wire CLK_Lock;
+        pll pll(MAX10_CLK1_50, ADC_CLK, clk, DRAM_CLK, clk200, CLK_Lock);
 
-        wire clk200;    //may be used to debug sdram with logic analyser
-        pll pll(MAX10_CLK1_50, DRAM_CLK, clk, clk200);
+    `elsif MFP_USE_ADC_MAX10
+        wire CLK_Lock;
+        pll pll(MAX10_CLK1_50, ADC_CLK, clk, DRAM_CLK, clk200, CLK_Lock);
 
     `elsif MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 
+        wire       CLK_Lock = 1'b1;
         wire       muxed_clk;
         wire [1:0] sw_db;
 
@@ -107,13 +114,27 @@ module de10_lite
         assign LEDR = IO_RedLEDs [9:0];
     `endif
 
+    `ifdef MFP_USE_ADC_MAX10
+        wire          ADC_C_Valid;
+        wire [  4:0 ] ADC_C_Channel;
+        wire          ADC_C_SOP;
+        wire          ADC_C_EOP;
+        wire          ADC_C_Ready;
+        wire          ADC_R_Valid;
+        wire [  4:0 ] ADC_R_Channel;
+        wire [ 11:0 ] ADC_R_Data;
+        wire          ADC_R_SOP;
+        wire          ADC_R_EOP;
+    `endif
+
+    //This is a workaround to make EJTAG working
+    //TODO: add complex reset signals handling module
+    wire RESETn = KEY [0] & GPIO [20] & CLK_Lock;
+
     mfp_system mfp_system
     (
         .SI_ClkIn         (   clk             ),
-
-        //This is a workaround to make EJTAG working
-        //TODO: add complex reset signals handling module
-        .SI_Reset         ( ~KEY [0] | ~GPIO [20] ),
+        .SI_Reset         (   ~RESETn         ),
                           
         .HADDR            (   HADDR           ),
         .HRDATA           (   HRDATA          ),
@@ -154,10 +175,43 @@ module de10_lite
         .UART_STX         (   GPIO [35]       ),
         `endif
 
+        `ifdef MFP_USE_ADC_MAX10
+        .ADC_C_Valid      (  ADC_C_Valid      ),
+        .ADC_C_Channel    (  ADC_C_Channel    ),
+        .ADC_C_SOP        (  ADC_C_SOP        ),
+        .ADC_C_EOP        (  ADC_C_EOP        ),
+        .ADC_C_Ready      (  ADC_C_Ready      ),
+        .ADC_R_Valid      (  ADC_R_Valid      ),
+        .ADC_R_Channel    (  ADC_R_Channel    ),
+        .ADC_R_Data       (  ADC_R_Data       ),
+        .ADC_R_SOP        (  ADC_R_SOP        ),
+        .ADC_R_EOP        (  ADC_R_EOP        ),
+        `endif
+
         .SPI_CS           (   GPIO [34]       ),
         .SPI_SCK          (   GPIO [28]       ),
         .SPI_SDO          (   GPIO [30]       )
     );
+
+    `ifdef MFP_USE_ADC_MAX10
+        adc adc
+        (
+            .adc_pll_clock_clk      ( ADC_CLK       ),
+            .adc_pll_locked_export  ( CLK_Lock      ),
+            .clock_clk              ( clk           ),
+            .command_valid          ( ADC_C_Valid   ),
+            .command_channel        ( ADC_C_Channel ),
+            .command_startofpacket  ( ADC_C_SOP     ),
+            .command_endofpacket    ( ADC_C_EOP     ),
+            .command_ready          ( ADC_C_Ready   ),
+            .reset_sink_reset_n     ( RESETn        ),
+            .response_valid         ( ADC_R_Valid   ),
+            .response_channel       ( ADC_R_Channel ),
+            .response_data          ( ADC_R_Data    ),
+            .response_startofpacket ( ADC_R_SOP     ),
+            .response_endofpacket   ( ADC_R_EOP     ) 
+        );
+    `endif
 
     `ifdef MFP_USE_SDRAM_MEMORY
         //SDRAM controller delay params

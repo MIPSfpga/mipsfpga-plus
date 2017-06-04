@@ -65,6 +65,21 @@ module mfp_ahb_lite_matrix_with_loader
     input  [                       17 : 1 ] EIC_ION,
     `endif //MFP_USE_IRQ_EIC
 
+    `ifdef MFP_USE_ADC_MAX10
+    output                                  ADC_C_Valid,
+    output [                        4 : 0 ] ADC_C_Channel,
+    output                                  ADC_C_SOP,
+    output                                  ADC_C_EOP,
+    input                                   ADC_C_Ready,
+    input                                   ADC_R_Valid,
+    input [                         4 : 0 ] ADC_R_Channel,
+    input [                        11 : 0 ] ADC_R_Data,
+    input                                   ADC_R_SOP,
+    input                                   ADC_R_EOP,
+    input                                   ADC_Trigger,
+    output                                  ADC_Interrupt,
+    `endif //MFP_USE_ADC_MAX10
+
     output        MFP_Reset
 );
 
@@ -196,6 +211,21 @@ module mfp_ahb_lite_matrix_with_loader
         .EIC_IVN          ( EIC_IVN         ),
         .EIC_ION          ( EIC_ION         ),
         `endif //MFP_USE_IRQ_EIC
+
+        `ifdef MFP_USE_ADC_MAX10
+        .ADC_C_Valid      ( ADC_C_Valid     ),
+        .ADC_C_Channel    ( ADC_C_Channel   ),
+        .ADC_C_SOP        ( ADC_C_SOP       ),
+        .ADC_C_EOP        ( ADC_C_EOP       ),
+        .ADC_C_Ready      ( ADC_C_Ready     ),
+        .ADC_R_Valid      ( ADC_R_Valid     ),
+        .ADC_R_Channel    ( ADC_R_Channel   ),
+        .ADC_R_Data       ( ADC_R_Data      ),
+        .ADC_R_SOP        ( ADC_R_SOP       ),
+        .ADC_R_EOP        ( ADC_R_EOP       ),
+        .ADC_Trigger      ( ADC_Trigger     ),
+        .ADC_Interrupt    ( ADC_Interrupt   ),
+        `endif //MFP_USE_ADC_MAX10
 
         .IO_Switches      ( IO_Switches     ),
         .IO_Buttons       ( IO_Buttons      ),
