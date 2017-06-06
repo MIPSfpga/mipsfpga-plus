@@ -333,6 +333,7 @@ module mfp_ahb_lite_matrix
         .RDATA_2          ( RDATA       [2] ),
         .RDATA_3          ( RDATA       [3] ),
         .RDATA_4          ( RDATA       [4] ),
+        .RDATA_5          ( RDATA       [5] ),
         .RESP             ( RESP            ),
         .HRDATA           ( HRDATA          ),
         .HRESP            ( HRESP           )
