@@ -4,32 +4,23 @@
 #include "mfp_memory_mapped_registers.h"
 #include "adc_m10.h"
 
+#define SIMULATION  0
+#define HARDWARE    1
+
 // config start
 
-#define MIPS_TIMER_PERIOD   0x200
+#define RUNTYPE     HARDWARE
 
 // config end
 
-void adcInit(void)
-{
-    MFP_ADCM10_ADMSK = ( ADMSK1 );
-    MFP_ADCM10_ADCS  = ( ADCS_EN | ADCS_IE );
-}
+#define PERIOD_200  200
+#define PERIOD_4M   (4*1000*1000)
 
-void adcMeasure(void)
-{
-    MFP_ADCM10_ADCS |= ( ADCS_SC );
-}
-
-uint16_t adcValue(void)
-{
-    return MFP_ADCM10_ADC1;
-}
-
-void adcReset(void)
-{
-    MFP_ADCM10_ADCS |= ( ADCS_IF );
-}
+#if     RUNTYPE == SIMULATION
+    #define MIPS_TIMER_PERIOD    PERIOD_200
+#elif   RUNTYPE == HARDWARE
+    #define MIPS_TIMER_PERIOD    PERIOD_4M
+#endif
 
 void mipsTimerInit(void)
 {
@@ -67,19 +58,28 @@ EH_GENERAL()
 ISR(IH_ADC)
 {
     MFP_RED_LEDS = MFP_RED_LEDS | 0x2;
-    MFP_7_SEGMENT_HEX = adcValue();
-    adcReset();
+
+    MFP_7_SEGMENT_HEX = MFP_ADCM10_ADC1;   //ADC value (channel 1) output
+    MFP_ADCM10_ADCS |= ( ADCS_IF );        //reset the ADC interrupt flag
+
     MFP_RED_LEDS = MFP_RED_LEDS & ~0x2;
 }
 
 ISR(IH_TIMER)
 {
     MFP_RED_LEDS = MFP_RED_LEDS | 0x4;
-    adcMeasure();
+
+    MFP_ADCM10_ADCS |= ( ADCS_SC );         //start ADC measurement
+
     mipsTimerReset();
     MFP_RED_LEDS = MFP_RED_LEDS & ~0x4;
 }
 
+void adcInit(void)
+{
+    MFP_ADCM10_ADMSK = ( ADMSK1 );
+    MFP_ADCM10_ADCS  = ( ADCS_EN | ADCS_IE );
+}
 
 int main ()
 {
