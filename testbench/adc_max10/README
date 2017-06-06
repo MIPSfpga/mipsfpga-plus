@@ -1,0 +1,5 @@
+
+# These files are required for MAX10 ADC core simulation.
+# They can be generated from QSYS interface of ADC core module 
+# in "boards/de10_lite/project/de10_lite" project
+# Run "boards/de10_lite/make_project.bat" to it
