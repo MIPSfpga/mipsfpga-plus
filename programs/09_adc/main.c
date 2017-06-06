@@ -69,7 +69,7 @@ ISR(IH_TIMER)
 {
     MFP_RED_LEDS = MFP_RED_LEDS | 0x4;
 
-    MFP_ADCM10_ADCS |= ( ADCS_SC );         //start ADC measurement
+    MFP_ADCM10_ADCS |= ( ADCS_SC );         //start ADC conversion
 
     mipsTimerReset();
     MFP_RED_LEDS = MFP_RED_LEDS & ~0x4;
@@ -77,8 +77,8 @@ ISR(IH_TIMER)
 
 void adcInit(void)
 {
-    MFP_ADCM10_ADMSK = ( ADMSK1 );
-    MFP_ADCM10_ADCS  = ( ADCS_EN | ADCS_IE );
+    MFP_ADCM10_ADMSK = ( ADMSK1 );              // unmask ADC channel 1
+    MFP_ADCM10_ADCS  = ( ADCS_EN | ADCS_IE );   // enable ADC, enable conversion end interrupt
 }
 
 int main ()
