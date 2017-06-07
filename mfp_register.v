@@ -12,7 +12,7 @@ module mfp_register_r
     input                        wr,
     output reg [ WIDTH - 1 : 0 ] q
 );
-    always @ (posedge clk)
+    always @ (posedge clk or negedge rst)
         if(~rst)
             q <= RESET;
         else
