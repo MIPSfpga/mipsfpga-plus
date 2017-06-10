@@ -172,7 +172,7 @@ module mfp_adc_max10_core
                               SequenceAhead ? S_FIRST  : S_SINGLE );
             S_FIRST  : Next = ~ADC_C_Ready  ? S_FIRST  : (
                               SequenceAhead ? S_NEXT   : S_LAST );
-            S_NEXT   : Next = ~ADC_C_Ready  ? S_FIRST  : (
+            S_NEXT   : Next = ~ADC_C_Ready  ? S_NEXT   : (
                               SequenceAhead ? S_NEXT   : S_LAST );
             S_LAST   : Next = ~ADC_C_Ready  ? S_LAST   : S_WAIT;
             S_SINGLE : Next = ~ADC_C_Ready  ? S_SINGLE : S_WAIT;
