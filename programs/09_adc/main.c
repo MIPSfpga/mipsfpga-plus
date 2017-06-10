@@ -22,6 +22,7 @@
     #define MIPS_TIMER_PERIOD    PERIOD_4M
 #endif
 
+// interrupt functions
 void mipsTimerInit(void)
 {
     mips32_setcompare(MIPS_TIMER_PERIOD);   //set compare (TOP) value to turn timer on
@@ -45,12 +46,53 @@ void mipsInterruptInit(void)
     mips32_setintctl(intCtl | INTCTL_VS_32);    // set interrupt table vector spacing (0x20 in our case)
                                                 // see exceptions.S for details
 
-    mips32_bissr (SR_IE | SR_HINT4 | SR_HINT5 ); // interrupt enable, HW4 - unmasked
+    // interrupt enable, HW4, HW5 - unmasked
+    mips32_bissr (SR_IE | SR_HINT4 | SR_HINT5 ); 
 }
 
-EH_GENERAL()
+// ADC functions
+void adcInit(void)
+{
+    // unmask ADC channels 1-4
+    MFP_ADCM10_ADMSK = ( ADMSK1 | ADMSK2 | ADMSK3 | ADMSK4 );
+    // enable ADC module and ADC interrupt
+    MFP_ADCM10_ADCS  = ( ADCS_EN | ADCS_IE );
+}
+
+void adcStart(void)
+{
+    //start ADC conversion
+    MFP_ADCM10_ADCS |= ( ADCS_SC );
+}
+
+void adcOutput(void)
+{
+    uint16_t val;
+
+    //get switch value (channel selector)
+    switch(MFP_SWITCHES)
+    {
+        //get ADC value
+        default: val = MFP_ADCM10_ADC1; break;
+        case  1: val = MFP_ADCM10_ADC2; break;
+        case  2: val = MFP_ADCM10_ADC3; break;
+        case  3: val = MFP_ADCM10_ADC4; break;
+    }
+
+    //value output
+    MFP_7_SEGMENT_HEX = val >> 4;
+
+    //reset the ADC interrupt flag
+    MFP_ADCM10_ADCS |= ( ADCS_IF );
+}
+
+//interrupt handlers
+ISR(IH_TIMER)
 {
     MFP_RED_LEDS = MFP_RED_LEDS | 0x1;
+
+    adcStart();
+    mipsTimerReset();
 
     MFP_RED_LEDS = MFP_RED_LEDS & ~0x1;
 }
@@ -59,26 +101,9 @@ ISR(IH_ADC)
 {
     MFP_RED_LEDS = MFP_RED_LEDS | 0x2;
 
-    MFP_7_SEGMENT_HEX = MFP_ADCM10_ADC1;   //ADC value (channel 1) output
-    MFP_ADCM10_ADCS |= ( ADCS_IF );        //reset the ADC interrupt flag
+    adcOutput();
 
     MFP_RED_LEDS = MFP_RED_LEDS & ~0x2;
-}
-
-ISR(IH_TIMER)
-{
-    MFP_RED_LEDS = MFP_RED_LEDS | 0x4;
-
-    MFP_ADCM10_ADCS |= ( ADCS_SC );         //start ADC conversion
-
-    mipsTimerReset();
-    MFP_RED_LEDS = MFP_RED_LEDS & ~0x4;
-}
-
-void adcInit(void)
-{
-    MFP_ADCM10_ADMSK = ( ADMSK1 );              // unmask ADC channel 1
-    MFP_ADCM10_ADCS  = ( ADCS_EN | ADCS_IE );   // enable ADC, enable conversion end interrupt
 }
 
 int main ()
