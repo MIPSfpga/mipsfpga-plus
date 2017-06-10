@@ -6,12 +6,12 @@ set p1 +define+SIMULATION
 
 set i0 +incdir+../../../../../MIPSfpga/rtl_up
 set i1 +incdir+../../..
-set i2 +incdir+../../../sdr_sdram
+set i2 +incdir+../../../testbench/sdr_sdram
 set i3 +incdir+../../../uart16550
 
 set s0 ../../../../../MIPSfpga/rtl_up/*.v
 set s1 ../../../*.v
-set s2 ../../../sdr_sdram/*.v
+set s2 ../../../testbench/sdr_sdram/*.v
 set s3 ../../../uart16550/*.v
 
 # These files were generated from QSYS interface of ADC core module 
