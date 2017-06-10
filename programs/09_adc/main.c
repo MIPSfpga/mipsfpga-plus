@@ -9,7 +9,7 @@
 
 // config start
 
-#define RUNTYPE     HARDWARE
+#define RUNTYPE     SIMULATION
 
 // config end
 

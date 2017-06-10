@@ -1,6 +1,7 @@
-
-
-
+/* Altera MAX10 ADC controller for MIPSfpga+ system 
+ * managed using AHB-Lite bus
+ * Copyright(c) 2017 Stanislav Zhelnio
+ */
 
 `define ADC_ADDR_WIDTH  4
 `define ADC_CH_COUNT    10
