@@ -30,8 +30,8 @@ module mfp_adc_max10_core
     input               ADC_R_EOP,
 
     // trigger and interrupt side
-    input           ADC_Trigger,
-    output          ADC_Interrupt
+    input               ADC_Trigger,
+    output              ADC_Interrupt
 );
 
     // ADC conversion results saving
@@ -86,10 +86,11 @@ module mfp_adc_max10_core
     // set ADCS.IF when conversion ends and ADCS.IE anabled
     // and reset ADCS.IF when it was writen to 1 by CPU
     // or when ADC is disabled
-    wire    ADCS_IF_wr    = (ADC_R_EOP & ADCS_IE & ADCS_EN) 
+    wire    ConversionEnd = !(ADMSK >> ADC_R_Channel + 1);
+    wire    ADCS_IF_wr    = (ConversionEnd & ADCS_IE & ADCS_EN) 
                           | (ADCS_wr & write_data[`ADC_FIELD_ADCS_IF])
                           | ~ADCS_EN;
-    wire    ADCS_IF_new   = (ADC_R_EOP & ADCS_IE & ADCS_EN) ? 1'b1 : 1'b0;
+    wire    ADCS_IF_new   = (ConversionEnd & ADCS_IE & ADCS_EN);
     mfp_register_r #(.WIDTH(1)) r_ADCS_IF (CLK, RESETn, ADCS_IF_new, ADCS_IF_wr, ADCS_IF );
     assign  ADC_Interrupt = ADCS_IF;
 
@@ -129,7 +130,7 @@ module mfp_adc_max10_core
     reg  [ 2 : 0 ] Next;
     mfp_register_r #(.WIDTH(3), .RESET(S_IDLE)) r_FSM_State (CLK, RESETn, Next, 1'b1, State );
 
-    // current requested ADC channel
+    // current requested (unmasked) ADC channel
     wire [ 3 : 0 ] ActiveCell;
     wire [ 3 : 0 ] NextCell;
     reg  ActiveCell_wr;
@@ -143,40 +144,39 @@ module mfp_adc_max10_core
             default : ActiveCell_wr = 1'b0;
         endcase
     end
-    
-    // filter hides unmasked channels that were requested already
-    wire    [`ADC_CH_COUNT - 1 : 0] ActiveFilter = (State == S_IDLE)
-                                                 ? { `ADC_CH_COUNT { 1'b1 }}
-                                                 : { `ADC_CH_COUNT { 1'b1 }} << ActiveCell + 1;
 
-    wire    [`ADC_CH_COUNT - 1 : 0] NextFilter = { `ADC_CH_COUNT { 1'b1 }} << NextCell + 1;
+    // get next requested (unmasked) ADC channel
+    wire NextIsValid, NextIsFirst, NextIsLast;
+    wire NeedFirst = State == S_IDLE;
 
-    wire    SingleAhead; //at least one ADC channel can be requested
-    wire    NeedStart     = SingleAhead & ADCS_EN & (ADCS_SC | (ADCS_TE & ADC_Trigger));
-    wire    SequenceAhead = SingleAhead && (NextFilter & ADMSK); //at least 2 ADC channels can be requested
-    
-    wire [ 15 : 0 ] ADMSK_Filtered = {{ 15 - `ADC_CH_COUNT { 1'b0 }}, ADMSK & ActiveFilter };
-
-    // NextCell is the number of next unmasked channel
-    priority_encoder16_r mask_en
+    offset_revolver offset_revolver
     (
-        .in     ( ADMSK_Filtered ),
-        .detect ( SingleAhead     ),
-        .out    ( NextCell       )
+        .bitMask     ( ADMSK       ),
+        .offset      ( ActiveCell  ),
+        .needFirst   ( NeedFirst   ),
+        .nextOffset  ( NextCell    ),
+        .nextIsValid ( NextIsValid ),
+        .nextIsFirst ( NextIsFirst ),
+        .nextIsLast  ( NextIsLast  )
     );
 
     // command fsm logic
+    wire NeedStart = NextIsValid & ADCS_EN & (ADCS_SC | (ADCS_TE & ADC_Trigger));
+    wire FreeRun   = ADCS_FR & ADCS_EN & NextIsValid;
+
     always @ (*)
         case(State)
-            S_IDLE   : Next = ~NeedStart    ? S_IDLE   : (
-                              SequenceAhead ? S_FIRST  : S_SINGLE );
-            S_FIRST  : Next = ~ADC_C_Ready  ? S_FIRST  : (
-                              SequenceAhead ? S_NEXT   : S_LAST );
-            S_NEXT   : Next = ~ADC_C_Ready  ? S_NEXT   : (
-                              SequenceAhead ? S_NEXT   : S_LAST );
-            S_LAST   : Next = ~ADC_C_Ready  ? S_LAST   : S_WAIT;
-            S_SINGLE : Next = ~ADC_C_Ready  ? S_SINGLE : S_WAIT;
-            S_WAIT   : Next = ~ADC_R_EOP    ? S_WAIT   : S_IDLE;
+            S_IDLE   : Next = ~NeedStart   ? S_IDLE   : (
+                              FreeRun      ? S_FIRST  : (
+                              NextIsLast   ? S_SINGLE : S_FIRST ));
+            S_FIRST  : Next = ~ADC_C_Ready ? S_FIRST  : (
+                              FreeRun      ? S_NEXT   : (
+                              NextIsLast   ? S_LAST   : S_NEXT ));
+            S_NEXT   : Next = ~ADC_C_Ready | FreeRun ? S_NEXT   : (
+                              NextIsLast   ? S_LAST   : S_NEXT );
+            S_LAST   : Next = ~ADC_C_Ready ? S_LAST   : S_WAIT;
+            S_SINGLE : Next = ~ADC_C_Ready ? S_SINGLE : S_WAIT;
+            S_WAIT   : Next = ~ADC_R_EOP   ? S_WAIT   : S_IDLE;
         endcase
 
     // command output
@@ -207,5 +207,38 @@ module mfp_adc_max10_core
             `ADC_CELL_T : ADC_C_Channel = `ADC_CH_T;
         endcase
     end
+
+endmodule
+
+module offset_revolver
+(
+    input   [`ADC_CH_COUNT - 1 : 0 ] bitMask,
+    input   [                3 : 0 ] offset,
+    input                            needFirst,
+    output  [                3 : 0 ] nextOffset,
+    output                           nextIsValid,
+    output                           nextIsFirst,
+    output                           nextIsLast
+);
+    localparam ALL_VALUES = {`ADC_CH_COUNT {1'b1}};
+    
+    assign nextIsValid = | (bitMask & (1 << nextOffset));
+    assign nextIsFirst = nextIsValid && !(bitMask << `ADC_CH_COUNT - nextOffset);
+    assign nextIsLast  = nextIsValid && !(bitMask >> nextOffset + 1);
+    
+    wire curIsLast = !(bitMask >> offset + 1);
+    wire [`ADC_CH_COUNT - 1 : 0] nextFilter = curIsLast | needFirst 
+                                            ? ALL_VALUES 
+                                            : ALL_VALUES << offset + 1;
+    
+    wire [ 15 : 0 ] filteredMask = {{ 15 - `ADC_CH_COUNT { 1'b0 }}, bitMask & nextFilter };
+    wire detect;
+
+    priority_encoder16_r mask_en
+    (
+        .in     ( filteredMask ),
+        .detect ( detect       ),
+        .out    ( nextOffset   )
+    );
 
 endmodule
