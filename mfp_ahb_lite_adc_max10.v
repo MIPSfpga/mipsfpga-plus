@@ -24,7 +24,7 @@ module mfp_ahb_lite_adc_max10
     output                  HRESP,
     input                   SI_Endian,  // ignored
 
-    //ADC side
+    //ADC side (Avalon-ST)
     output                  ADC_C_Valid,    //  command.valid
     output     [  4 : 0 ]   ADC_C_Channel,  //         .channel
     output                  ADC_C_SOP,      //         .startofpacket

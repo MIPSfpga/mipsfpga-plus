@@ -17,7 +17,7 @@ module mfp_adc_max10_core
     input      [                  31 : 0  ]  write_data,
     input                                    write_enable,
 
-    // Altera MAX10 ADC side
+    // Altera MAX10 ADC side (Avalon-ST)
     output              ADC_C_Valid,
     output reg [  4:0 ] ADC_C_Channel,
     output              ADC_C_SOP,
@@ -210,6 +210,7 @@ module mfp_adc_max10_core
 
 endmodule
 
+// returns the next unmasked bit offset
 module offset_revolver
 (
     input   [`ADC_CH_COUNT - 1 : 0 ] bitMask,
