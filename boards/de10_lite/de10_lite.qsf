@@ -454,10 +454,14 @@ set_global_assignment -name VERILOG_FILE ../../../uart16550/uart_tfifo.v
 set_global_assignment -name VERILOG_FILE ../../../uart16550/uart_transmitter.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_lite_uart16550.v
 
-set_global_assignment -name VERILOG_FILE ../../../mfp_eic_priority_encoder.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_eic_handler.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_eic_core.v
 set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_lite_eic.v
+
+set_global_assignment -name VERILOG_FILE ../../../mfp_register.v
+set_global_assignment -name VERILOG_FILE ../../../mfp_priority_encoder.v
+set_global_assignment -name VERILOG_FILE ../../../mfp_adc_max10_core.v
+set_global_assignment -name VERILOG_FILE ../../../mfp_ahb_lite_adc_max10.v
 
 set_global_assignment -name VERILOG_FILE ../../../../../MIPSfpga/rtl_up/d_wsram_2k2way_xilinx.v
 set_global_assignment -name VERILOG_FILE ../../../../../MIPSfpga/rtl_up/dataram_2k2way_xilinx.v
@@ -608,5 +612,4 @@ set_global_assignment -name SEARCH_PATH ../../../../../MIPSfpga/rtl_up
 set_global_assignment -name SDC_FILE de10_lite.sdc
 
 set_global_assignment -name QIP_FILE ../pll.qip
-
-
+set_global_assignment -name QSYS_FILE ../adc.qsys

@@ -48,6 +48,19 @@ module mfp_system
     output        UART_STX,
     `endif
 
+    `ifdef MFP_USE_ADC_MAX10
+    output                                  ADC_C_Valid,
+    output [                        4 : 0 ] ADC_C_Channel,
+    output                                  ADC_C_SOP,
+    output                                  ADC_C_EOP,
+    input                                   ADC_C_Ready,
+    input                                   ADC_R_Valid,
+    input [                         4 : 0 ] ADC_R_Channel,
+    input [                        11 : 0 ] ADC_R_Data,
+    input                                   ADC_R_SOP,
+    input                                   ADC_R_EOP,
+    `endif //MFP_USE_ADC_MAX10
+
     output        SPI_CS,
     output        SPI_SCK,
     input         SPI_SDO
@@ -166,6 +179,15 @@ module mfp_system
 `endif
 
     wire         uart_interrupt;
+
+    `ifdef MFP_USE_ADC_MAX10
+        wire ADC_Interrupt;
+
+        //TODO: in future it will be connected to advanced timer output
+        wire ADC_Trigger    = 1'b0;
+    `else
+        wire ADC_Interrupt  = 1'b0;
+    `endif
 
     m14k_top m14k_top
     (
@@ -360,7 +382,7 @@ module mfp_system
     //   ^  hw7     eic9        .320        
     // p |  hw6     eic8        .300        
     // r |  hw5     eic7        .2E0        timer int
-    // i |  hw4     eic6        .2C0        
+    // i |  hw4     eic6        .2C0        adc int
     // o |  hw3     eic5        .2A0        uart int
     // r |  hw2     eic4        .280        
     // i |  hw1     eic3        .260        
@@ -372,7 +394,7 @@ module mfp_system
         wire  [ `EIC_CHANNELS - 1 : 0 ] EIC_input;
         assign EIC_input[`EIC_CHANNELS - 1:8] = {`EIC_CHANNELS - 6 {1'b0}};
         assign EIC_input[7]   =  SI_TimerInt;
-        assign EIC_input[6]   =  1'b0;
+        assign EIC_input[6]   =  ADC_Interrupt;
         assign EIC_input[5]   =  uart_interrupt;
         assign EIC_input[4:2] =  3'b0;
         assign EIC_input[1]   =  SI_SWInt[1];
@@ -381,7 +403,8 @@ module mfp_system
     `else
         assign SI_Offset      = 17'b0;
         assign SI_EISS        =  4'b0;
-        assign SI_Int[7:4]    =  4'b0;
+        assign SI_Int[7:5]    =  4'b0;
+        assign SI_Int[4]      =  ADC_Interrupt;
         assign SI_Int[3]      =  uart_interrupt;
         assign SI_Int[2:0]    =  3'b0;
         assign SI_EICVector   =  6'b0;
@@ -484,6 +507,21 @@ module mfp_system
         .EIC_IVN          (   SI_IVN           ),
         .EIC_ION          (   SI_ION           ),
         `endif //MFP_USE_IRQ_EIC
+
+        `ifdef MFP_USE_ADC_MAX10
+        .ADC_C_Valid      (   ADC_C_Valid      ),
+        .ADC_C_Channel    (   ADC_C_Channel    ),
+        .ADC_C_SOP        (   ADC_C_SOP        ),
+        .ADC_C_EOP        (   ADC_C_EOP        ),
+        .ADC_C_Ready      (   ADC_C_Ready      ),
+        .ADC_R_Valid      (   ADC_R_Valid      ),
+        .ADC_R_Channel    (   ADC_R_Channel    ),
+        .ADC_R_Data       (   ADC_R_Data       ),
+        .ADC_R_SOP        (   ADC_R_SOP        ),
+        .ADC_R_EOP        (   ADC_R_EOP        ),
+        .ADC_Trigger      (   ADC_Trigger      ),
+        .ADC_Interrupt    (   ADC_Interrupt    ),
+        `endif //MFP_USE_ADC_MAX10
                                                
         .MFP_Reset        (   MFP_Reset        )
     );

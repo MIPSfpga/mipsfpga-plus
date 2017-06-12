@@ -2,8 +2,8 @@
 `include "mfp_ahb_lite_matrix_config.vh"
 `include "mfp_eic_core.vh"
 
-`define MFP_AHB_DEVICE_COUNT    5
-`define MFP_AHB_DEVICE_NONE     5'b0
+`define MFP_AHB_DEVICE_COUNT    6
+`define MFP_AHB_DEVICE_NONE     6'b0
 
 module mfp_ahb_lite_matrix
 (
@@ -54,6 +54,21 @@ module mfp_ahb_lite_matrix
     input  [                           5 : 0 ] EIC_IVN,
     input  [                          17 : 1 ] EIC_ION,
     `endif //MFP_USE_IRQ_EIC
+
+    `ifdef MFP_USE_ADC_MAX10
+    output                                     ADC_C_Valid,
+    output [                           4 : 0 ] ADC_C_Channel,
+    output                                     ADC_C_SOP,
+    output                                     ADC_C_EOP,
+    input                                      ADC_C_Ready,
+    input                                      ADC_R_Valid,
+    input [                            4 : 0 ] ADC_R_Channel,
+    input [                           11 : 0 ] ADC_R_Data,
+    input                                      ADC_R_SOP,
+    input                                      ADC_R_EOP,
+    input                                      ADC_Trigger,
+    output                                     ADC_Interrupt,
+    `endif //MFP_USE_ADC_MAX10
 
     input  [`MFP_N_SWITCHES          - 1 : 0 ] IO_Switches,
     input  [`MFP_N_BUTTONS           - 1 : 0 ] IO_Buttons,
@@ -254,6 +269,43 @@ module mfp_ahb_lite_matrix
     assign READY [4] = 1'b1;
     `endif
 
+    // ADC MAX10 
+    `ifdef MFP_USE_ADC_MAX10
+    mfp_ahb_lite_adc_max10 adc
+    (
+        .HCLK             ( HCLK            ),
+        .HRESETn          ( HRESETn         ),
+        .HADDR            ( HADDR           ),
+        .HBURST           ( HBURST          ),
+        .HMASTLOCK        ( HMASTLOCK       ),
+        .HPROT            ( HPROT           ),
+        .HSEL             ( HSEL        [5] ),
+        .HSIZE            ( HSIZE           ),
+        .HTRANS           ( HTRANS          ),
+        .HWDATA           ( HWDATA          ),
+        .HWRITE           ( HWRITE          ),
+        .HRDATA           ( RDATA       [5] ),
+        .HREADY           ( READY       [5] ),
+        .HRESP            ( RESP        [5] ),
+        .SI_Endian        ( SI_Endian       ),
+
+        .ADC_C_Valid      ( ADC_C_Valid     ),
+        .ADC_C_Channel    ( ADC_C_Channel   ),
+        .ADC_C_SOP        ( ADC_C_SOP       ),
+        .ADC_C_EOP        ( ADC_C_EOP       ),
+        .ADC_C_Ready      ( ADC_C_Ready     ),
+        .ADC_R_Valid      ( ADC_R_Valid     ),
+        .ADC_R_Channel    ( ADC_R_Channel   ),
+        .ADC_R_Data       ( ADC_R_Data      ),
+        .ADC_R_SOP        ( ADC_R_SOP       ),
+        .ADC_R_EOP        ( ADC_R_EOP       ),
+        .ADC_Trigger      ( ADC_Trigger     ),
+        .ADC_Interrupt    ( ADC_Interrupt   )
+    );
+    `else
+    assign READY [5] = 1'b1;
+    `endif
+
     // bus interconnection part
     mfp_ahb_lite_decoder decoder
     (   
@@ -281,6 +333,7 @@ module mfp_ahb_lite_matrix
         .RDATA_2          ( RDATA       [2] ),
         .RDATA_3          ( RDATA       [3] ),
         .RDATA_4          ( RDATA       [4] ),
+        .RDATA_5          ( RDATA       [5] ),
         .RESP             ( RESP            ),
         .HRDATA           ( HRDATA          ),
         .HRESP            ( HRESP           )
@@ -313,6 +366,9 @@ module mfp_ahb_lite_decoder
     // EIC   4 KB max at 0xb0402000 (physical: 0x10402000 - 0x10402fff)
     assign HSEL_Q [4] = ( HADDR [28:12] == `MFP_EIC_ADDR_MATCH       );
 
+    // ADC MAX10 4 KB max at 0xb0403000 (physical: 0x10403000 - 0x10403fff)
+    assign HSEL_Q [5] = ( HADDR [28:12] == `MFP_ADC_MAX10_ADDR_MATCH );
+
 endmodule
 
 //--------------------------------------------------------------------
@@ -328,6 +384,7 @@ module mfp_ahb_lite_response_mux
     input      [                        31 : 0 ] RDATA_2,
     input      [                        31 : 0 ] RDATA_3,
     input      [                        31 : 0 ] RDATA_4,
+    input      [                        31 : 0 ] RDATA_5,
     input      [ `MFP_AHB_DEVICE_COUNT - 1 : 0 ] RESP,
 
     output reg [                        31 : 0 ] HRDATA,
@@ -336,12 +393,13 @@ module mfp_ahb_lite_response_mux
 
     always @*
         casez (HSEL_R)
-            5'b????1:   begin HRDATA = RDATA_0; HRESP = RESP[0]; end
-            5'b???10:   begin HRDATA = RDATA_1; HRESP = RESP[1]; end
-            5'b??100:   begin HRDATA = RDATA_2; HRESP = RESP[2]; end
-            5'b?1000:   begin HRDATA = RDATA_3; HRESP = RESP[3]; end
-            5'b10000:   begin HRDATA = RDATA_4; HRESP = RESP[4]; end
-            default:    begin HRDATA = RDATA_1; HRESP = RESP[1]; end
+            6'b?????1 : begin HRDATA = RDATA_0; HRESP = RESP[0]; end
+            6'b????10 : begin HRDATA = RDATA_1; HRESP = RESP[1]; end
+            6'b???100 : begin HRDATA = RDATA_2; HRESP = RESP[2]; end
+            6'b??1000 : begin HRDATA = RDATA_3; HRESP = RESP[3]; end
+            6'b?10000 : begin HRDATA = RDATA_4; HRESP = RESP[4]; end
+            6'b100000 : begin HRDATA = RDATA_5; HRESP = RESP[5]; end
+            default   : begin HRDATA = RDATA_1; HRESP = RESP[1]; end
         endcase
 
 endmodule

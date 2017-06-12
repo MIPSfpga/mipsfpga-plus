@@ -20,6 +20,7 @@
 `define MFP_USE_UART_PROGRAM_LOADER
 `define MFP_USE_DUPLEX_UART
 `define MFP_USE_MPSSE_DEBUGGER
+// `define MFP_USE_ADC_MAX10
 // `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
 // `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 // `define MFP_DEMO_LIGHT_SENSOR
@@ -83,6 +84,10 @@
     `endif
 `endif
 
+// ADC module can't work wout the PLL core
+`ifdef MFP_USE_ADC_MAX10
+    `undef MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+`endif
 
 //not all types of memory can work with HSIZE_1
 `ifdef MFP_USE_UART_PROGRAM_LOADER
@@ -148,3 +153,4 @@
 `define MFP_GPIO_ADDR_MATCH         7'h7e
 `define MFP_UART_ADDR_MATCH         17'h10401
 `define MFP_EIC_ADDR_MATCH          17'h10402
+`define MFP_ADC_MAX10_ADDR_MATCH    17'h10403

@@ -53,6 +53,20 @@ module mfp_testbench;
     wire        UART_SRX = UART_STX;
     `endif
 
+    `ifdef MFP_USE_ADC_MAX10
+    wire          ADC_C_Valid;
+    wire [  4:0 ] ADC_C_Channel;
+    wire          ADC_C_SOP;
+    wire          ADC_C_EOP;
+    wire          ADC_C_Ready;
+    wire          ADC_R_Valid;
+    wire [  4:0 ] ADC_R_Channel;
+    wire [ 11:0 ] ADC_R_Data;
+    wire          ADC_R_SOP;
+    wire          ADC_R_EOP;
+    `endif
+
+
     wire        SPI_CS;
     wire        SPI_SCK;
     reg         SPI_SDO;
@@ -105,16 +119,58 @@ module mfp_testbench;
         .UART_STX         ( UART_STX         ),
         `endif
 
+        `ifdef MFP_USE_ADC_MAX10
+        .ADC_C_Valid      (  ADC_C_Valid      ),
+        .ADC_C_Channel    (  ADC_C_Channel    ),
+        .ADC_C_SOP        (  ADC_C_SOP        ),
+        .ADC_C_EOP        (  ADC_C_EOP        ),
+        .ADC_C_Ready      (  ADC_C_Ready      ),
+        .ADC_R_Valid      (  ADC_R_Valid      ),
+        .ADC_R_Channel    (  ADC_R_Channel    ),
+        .ADC_R_Data       (  ADC_R_Data       ),
+        .ADC_R_SOP        (  ADC_R_SOP        ),
+        .ADC_R_EOP        (  ADC_R_EOP        ),
+        `endif
+
         .SPI_CS           ( SPI_CS           ),
         .SPI_SCK          ( SPI_SCK          ),
         .SPI_SDO          ( SPI_SDO          )
     );
 
+    `ifdef MFP_USE_ADC_MAX10
+        reg         ADC_CLK;
+
+        adc_core adc
+        (
+            .adc_pll_clock_clk      ( ADC_CLK       ),
+            .adc_pll_locked_export  ( 1'b1          ),
+            .clock_clk              ( SI_ClkIn      ),
+            .command_valid          ( ADC_C_Valid   ),
+            .command_channel        ( ADC_C_Channel ),
+            .command_startofpacket  ( ADC_C_SOP     ),
+            .command_endofpacket    ( ADC_C_EOP     ),
+            .command_ready          ( ADC_C_Ready   ),
+            .reset_sink_reset_n     ( ~SI_Reset     ),
+            .response_valid         ( ADC_R_Valid   ),
+            .response_channel       ( ADC_R_Channel ),
+            .response_data          ( ADC_R_Data    ),
+            .response_startofpacket ( ADC_R_SOP     ),
+            .response_endofpacket   ( ADC_R_EOP     ) 
+        );
+
+        parameter Tadc = 100;
+        initial begin
+            ADC_CLK = 0;
+            forever ADC_CLK = #(Tadc/2) ~ADC_CLK;
+        end
+
+    `endif
+
     //----------------------------------------------------------------
 
     `ifdef MFP_USE_SDRAM_MEMORY
 
-        parameter tT = 20;
+        parameter tT = 20; //TODО: (50?)
 
         initial begin
             SDRAM_CLK = 0; 
@@ -136,7 +192,7 @@ module mfp_testbench;
         begin
             SI_ClkIn = 0;
             forever
-                # 50 SI_ClkIn = ~ SI_ClkIn;
+                # 20 SI_ClkIn = ~ SI_ClkIn;
         end
     `endif //MFP_USE_SDRAM_MEMORY
 
