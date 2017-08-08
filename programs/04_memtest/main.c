@@ -10,7 +10,7 @@
 
 //count of HEX segments on board
 #define HEX_SEGMENT_COUNT   6
-#define MEMTYPE SDRAM_64M
+#define MEMTYPE SIMULATION
 
 // --------  config end  ------------
 
