@@ -10,3 +10,4 @@
 `define HSIZE_1        3'b000
 `define HSIZE_2        3'b001
 `define HSIZE_4        3'b010
+

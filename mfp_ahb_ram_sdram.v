@@ -48,8 +48,9 @@ module mfp_ahb_ram_sdram
     input       [  1 : 0 ]              HTRANS,
     input       [ 31 : 0 ]              HWDATA,
     input                               HWRITE,
+    input                               HREADY,
     output  reg [ 31 : 0 ]              HRDATA,
-    output                              HREADY,
+    output                              HREADYOUT,
     output                              HRESP,
     input                               SI_Endian,  // ignored
 
@@ -118,9 +119,9 @@ module mfp_ahb_ram_sdram
                 HSIZE_X32   = 3'b010;
 
     assign  HRESP  = 1'b0;   
-    assign  HREADY = (State == S_IDLE);
+    assign  HREADYOUT = (State == S_IDLE);
 
-    wire    NeedAction = HTRANS != HTRANS_IDLE && HSEL;
+    wire    NeedAction = HTRANS != HTRANS_IDLE && HSEL && HREADY;
     wire    NeedRefresh         = ~|delay_u;
     wire    DelayFinished       = ~|delay_n;
     wire    BigDelayFinished    = ~|delay_u;

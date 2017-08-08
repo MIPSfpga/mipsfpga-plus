@@ -22,8 +22,9 @@ module mfp_ahb_lite_uart16550
     input       [  1 : 0 ]              HTRANS,
     input       [ 31 : 0 ]              HWDATA,
     input                               HWRITE,
+    input                               HREADY,
     output  reg [ 31 : 0 ]              HRDATA,
-    output                              HREADY,
+    output                              HREADYOUT,
     output                              HRESP,
     input                               SI_Endian,  // ignored
 
@@ -50,7 +51,7 @@ module mfp_ahb_lite_uart16550
     reg  [ 1:0 ]    State, Next;
 
     assign      HRESP  = 1'b0;
-    assign      HREADY = (State ==  S_IDLE);
+    assign      HREADYOUT = (State ==  S_IDLE);
 
     always @ (posedge HCLK) begin
         if (~HRESETn)
@@ -64,7 +65,7 @@ module mfp_ahb_lite_uart16550
     wire [ 7:0 ]    ReadData;
 
     parameter       HTRANS_IDLE       = 2'b0;
-    wire            NeedAction = HTRANS != HTRANS_IDLE && HSEL;
+    wire            NeedAction = HTRANS != HTRANS_IDLE && HSEL && HREADY;
 
     always @ (*) begin
         //State change decision

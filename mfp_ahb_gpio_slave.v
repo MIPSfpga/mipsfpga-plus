@@ -14,8 +14,9 @@ module mfp_ahb_gpio_slave
     input      [ 1:0] HTRANS,
     input      [31:0] HWDATA,
     input             HWRITE,
+    input             HREADY,
     output reg [31:0] HRDATA,
-    output            HREADY,
+    output            HREADYOUT,
     output            HRESP,
     input             SI_Endian,
                
@@ -59,6 +60,7 @@ module mfp_ahb_gpio_slave
         .HWRITE             ( HWRITE            ),
         .HSEL               ( HSEL              ),
         .HREADY             ( HREADY            ),
+        .HREADYOUT          ( HREADYOUT         ),
         .read_enable        ( read_enable       ),
         .read_addr          ( read_addr         ),
         .write_enable       ( write_enable      ),
