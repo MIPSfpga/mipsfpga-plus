@@ -1,0 +1,5 @@
+CPU core files from MIPSfpga Getting Started Guide should be copied here.
+
+Please copy to this folder all the files from 'MIPSfpga_GSG_1.3\MIPSfpga\rtl_up' when using MIPSfpga 1.3 or from 'MIPSfpga_GSG_v2.0\MIPSfpga_GSG\rtl_up\core' in the case of using MIPSfpga 2.0.
+
+You can download MIPSfpga Getting Started Guide from https://community.imgtec.com/downloads/

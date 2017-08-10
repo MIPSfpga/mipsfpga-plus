@@ -15,7 +15,8 @@ module mfp_ahb_lite_slave
     input      [                 1 : 0 ] HTRANS,
     input                                HWRITE,
     input                                HSEL,
-    output reg                           HREADY,
+    input                                HREADY,
+    output reg                           HREADYOUT,
 
     output                               read_enable,
     output     [ ADDR_END : ADDR_START ] read_addr,
@@ -23,7 +24,7 @@ module mfp_ahb_lite_slave
     output     [ ADDR_END : ADDR_START ] write_addr,
     output reg [                 3 : 0 ] write_mask
 );
-    wire   request       = HTRANS != `HTRANS_IDLE && HSEL;
+    wire   request       = HTRANS != `HTRANS_IDLE && HSEL && HREADY;
     wire   read_request  = request & !HWRITE;
     wire   write_request = request & HWRITE;
 
@@ -48,7 +49,7 @@ module mfp_ahb_lite_slave
             write_mask      <= 4'b0;
             read_pending    <= 1'b0;
             ADDR_old        <= { ADDR_WIDTH { 1'b0 }};
-            HREADY          <= 1'b1;
+            HREADYOUT       <= 1'b1;
             end
         else begin
             write_enable    <= write_request;
@@ -57,7 +58,7 @@ module mfp_ahb_lite_slave
             if(request)
                 ADDR_old    <= ADDR;
 
-            HREADY          <= !read_after_write;
+            HREADYOUT       <= !read_after_write;
             read_pending    <= read_after_write;
         end
     end

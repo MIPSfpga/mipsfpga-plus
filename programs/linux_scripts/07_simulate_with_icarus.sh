@@ -9,7 +9,7 @@ mkdir sim
 cd sim
 cp ../*.hex .
 
-iverilog -g2005 -I ../../../ -I ../../../../MIPSfpga/rtl_up ../../../../MIPSfpga/rtl_up/mvp*.v ../../../../MIPSfpga/rtl_up/RAM*.v  ../../../../MIPSfpga/rtl_up/*xilinx.v ../../../../MIPSfpga/rtl_up/m14k*.v ../../../*.v
+iverilog -g2005 -D SIMULATION -I ../../../core -I ../../../system_rtl -I ../../../system_rtl/uart16550 -I ../../../testbench -I ../../../testbench/sdr_sdram -s mfp_testbench ../../../core/*.v ../../../system_rtl/*.v ../../../system_rtl/uart16550/*.v ../../../testbench/*.v ../../../testbench/sdr_sdram/*.v
 
 vvp a.out > a.lst
 

@@ -59,23 +59,23 @@ pre
 
 <ul>
 <li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/boards/nexys4_ddr/nexys4_ddr.v">de0_cv</a> - an external wrapper module, specific for each FPGA board type. The ports of this module correspond to physical ports on FPGA chip itself. The specific module <i>nexys4_ddr</i> is written for Digilent Nexys 4 DDR board with Xilinx Artix-7 FPGA.</li>
-<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_system.v">mfp_system</a> - system module, common for all FPGA boards that support MIPSfpga 2.0.
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_system.v">mfp_system</a> - system module, common for all FPGA boards that support MIPSfpga 2.0.
 <ul>
 <li><a href="http://www.silicon-russia.com/2015/12/11/mipsfpga-download-instructions">m14k_top</a> - top-level module of the microprocessor core <a href="http://imgtec.com/mips/aptiv/microaptiv/">MIPS microAptiv UP (also referenced in some documentation as MIPS microAptiv MPU)</a>. The name <i>m14k</i> is left from the earlier variant of the processor core - MIPS M14Kc.</li>
-<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_system.v">mfp_ejtag_reset</a> - a utility module to reset EJTAG debug interface used in Bus Blaster / OpenOCD Flow<a href="http://www.linux-mips.org/wiki/JTAG">EJTAG</a></li>
-<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_matrix</a> - a module that combines memory blocks, the controller for <a href="http://www.eecs.umich.edu/courses/eecs373/readings/ARM_IHI0033A_AMBA_AHB-Lite_SPEC.pdf">AHB-Lite</a> bus and I/O logic. The I/O logic links the addresses coming from the software running on CPU core via AHB-Lite bus, with the signals that control hardware peripherals: buttons, LED indicators etc.
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_system.v">mfp_ejtag_reset</a> - a utility module to reset EJTAG debug interface used in Bus Blaster / OpenOCD Flow<a href="http://www.linux-mips.org/wiki/JTAG">EJTAG</a></li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_ahb_lite_matrix.v">mfp_ahb_lite_matrix</a> - a module that combines memory blocks, the controller for <a href="http://www.eecs.umich.edu/courses/eecs373/readings/ARM_IHI0033A_AMBA_AHB-Lite_SPEC.pdf">AHB-Lite</a> bus and I/O logic. The I/O logic links the addresses coming from the software running on CPU core via AHB-Lite bus, with the signals that control hardware peripherals: buttons, LED indicators etc.
 <ul>
-<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_decoder</a> - a module that decode an address on AHB-Lite bus and determines which hardware slave (a memory of an input/output device is going to process the corresponding transaction on the bus</li>
-<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_ram_slave.v">mfp_ahb_ram_slave</a> <i>reset_ram</i> - an AHB-Lite wrapper for memory blocks. This particular group of memory blocks (<i>reset_ram</i>) is intended for the part of software that starts immediately after the processor exits the reset. This part of software is called "the bootloader".
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_ahb_lite_matrix.v">mfp_ahb_lite_decoder</a> - a module that decode an address on AHB-Lite bus and determines which hardware slave (a memory of an input/output device is going to process the corresponding transaction on the bus</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_ahb_ram_slave.v">mfp_ahb_ram_slave</a> <i>reset_ram</i> - an AHB-Lite wrapper for memory blocks. This particular group of memory blocks (<i>reset_ram</i>) is intended for the part of software that starts immediately after the processor exits the reset. This part of software is called "the bootloader".
 <ul>
-<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_dual_port_ram.v">mfp_dual_port_ram</a> <i>i0-i3</i> - modules that infer FPGA block memory during the synthesize. In order for the synthesizer to interpret the code for the module in appropriate way, The code in these modules was written according to <a href="http://quartushelp.altera.com/14.1/mergedProjects/hdl/vlog/vlog_pro_ram_inferred.htm">special guidelines</a> from EDA (Electronic Design Automation) tool vendors, including Xilinx and Altera, so that the synthesizer interprets the code in appropriate way and infers FPGA-specific block memory. There are four 8-bit wide memory blocks in order to implement 32-bit wide random access memory (RAM). Such design is needed in order to support a single byte-wide AHB-Lite transfer. The alternative idea with 32-bit wide memory would be not sufficient since neither Xilinx nor Altera support writing 32-bit date in memory with a mask.</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_dual_port_ram.v">mfp_dual_port_ram</a> <i>i0-i3</i> - modules that infer FPGA block memory during the synthesize. In order for the synthesizer to interpret the code for the module in appropriate way, The code in these modules was written according to <a href="http://quartushelp.altera.com/14.1/mergedProjects/hdl/vlog/vlog_pro_ram_inferred.htm">special guidelines</a> from EDA (Electronic Design Automation) tool vendors, including Xilinx and Altera, so that the synthesizer interprets the code in appropriate way and infers FPGA-specific block memory. There are four 8-bit wide memory blocks in order to implement 32-bit wide random access memory (RAM). Such design is needed in order to support a single byte-wide AHB-Lite transfer. The alternative idea with 32-bit wide memory would be not sufficient since neither Xilinx nor Altera support writing 32-bit date in memory with a mask.</li>
 </ul></li>
-<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_ram_slave.v">mfp_ahb_ram_slave</a> <i>ram</i> - another AHB-Lite memory wrapper. This group of memory blocks (<i>ram</i>) is intended for the main part of the software program, that is fetched from the cacheable region of the virtual memory map.
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_ahb_ram_slave.v">mfp_ahb_ram_slave</a> <i>ram</i> - another AHB-Lite memory wrapper. This group of memory blocks (<i>ram</i>) is intended for the main part of the software program, that is fetched from the cacheable region of the virtual memory map.
 <ul>
-<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_dual_port_ram.v">mfp_dual_port_ram</a> <i>i0-i3</i> - same as above</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_dual_port_ram.v">mfp_dual_port_ram</a> <i>i0-i3</i> - same as above</li>
 </ul></li>
-<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_gpio_slave.v">mfp_ahb_gpio_slave</a> - AHB-Lite slave implementing GPIO - General Purpose Input / Output. The logic in this module maps bus addresses to the signals used for the peripheral devices: buttons, LED indicators etc.</li>
-<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_response_mux</a> - one of submodules used for implementing AHB-Lite bus protocol. Contains a multiplexer that produces correct read data for the CPU based on read data from all memories and I/O slaves. This multiplexer uses the id of a slave stored during the address phase of the corresponding bus transaction in flight</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_ahb_gpio_slave.v">mfp_ahb_gpio_slave</a> - AHB-Lite slave implementing GPIO - General Purpose Input / Output. The logic in this module maps bus addresses to the signals used for the peripheral devices: buttons, LED indicators etc.</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_ahb_lite_matrix.v">mfp_ahb_lite_response_mux</a> - one of submodules used for implementing AHB-Lite bus protocol. Contains a multiplexer that produces correct read data for the CPU based on read data from all memories and I/O slaves. This multiplexer uses the id of a slave stored during the address phase of the corresponding bus transaction in flight</li>
 </ul></li>
 </ul></li></ul>
 
@@ -90,11 +90,11 @@ pre
 <p>The contents and functionality of the added modules:</p>
 
 <ul>
-<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_with_loader.v">mfp_ahb_lite_matrix_with_loader</a> - this module replaces <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_matrix</a> from the previous hierarchy. <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_with_loader.v">mfp_ahb_lite_matrix_with_loader</a> contains both <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_matrix</a>, as well as three modules with new functionality:
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_ahb_lite_matrix_with_loader.v">mfp_ahb_lite_matrix_with_loader</a> - this module replaces <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_ahb_lite_matrix.v">mfp_ahb_lite_matrix</a> from the previous hierarchy. <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_ahb_lite_matrix_with_loader.v">mfp_ahb_lite_matrix_with_loader</a> contains both <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_ahb_lite_matrix.v">mfp_ahb_lite_matrix</a>, as well as three modules with new functionality:
 <ul>
-<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_uart_receiver.v">mfp_uart_receiver</a> - this module receives data from PC through UART and converts this data into a stream of bytes / ASCII characters</li>
-<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_srec_parser.v">mfp_srec_parser</a> - parses the stream of ASCII characters received from <i>mfp_uart_receiver</i>, interprets these characters as text in Motorola S-Record format, and generates as sequence of transactions (address / data) to fill the memory of a synthesized system with the data described in Motorola S-Record text</li>
-<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_srec_parser_to_ahb_lite_bridge.v">mfp_srec_parser_to_ahb_lite_bridge</a> - converts the transactions, obtained from <i>mfp_srec_parser</i> into transactions that confirm AHB-Lite protocol. This module also converts the virtual addresses used by the software, into physical addresses used by hardware. The conversion is done using simple fixed mapping (nothing complicated like TLB MMU is involved).</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_uart_receiver.v">mfp_uart_receiver</a> - this module receives data from PC through UART and converts this data into a stream of bytes / ASCII characters</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_srec_parser.v">mfp_srec_parser</a> - parses the stream of ASCII characters received from <i>mfp_uart_receiver</i>, interprets these characters as text in Motorola S-Record format, and generates as sequence of transactions (address / data) to fill the memory of a synthesized system with the data described in Motorola S-Record text</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_srec_parser_to_ahb_lite_bridge.v">mfp_srec_parser_to_ahb_lite_bridge</a> - converts the transactions, obtained from <i>mfp_srec_parser</i> into transactions that confirm AHB-Lite protocol. This module also converts the virtual addresses used by the software, into physical addresses used by hardware. The conversion is done using simple fixed mapping (nothing complicated like TLB MMU is involved).</li>
 </ul>
 </li>
 </ul>
@@ -207,12 +207,12 @@ href="http://www.ftdichip.com/Drivers/VCP.htm">http://www.ftdichip.com/Drivers/V
 <p><big><b>4.1. Selecting the appropriate hardware configuration for the lab</b></big></p>
 
 <p>Before running synthesis it is necessary to review and possibly modify the file
-<a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a>
+<a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a>
 that includes a set of Verilog  <i>`define</i> statements that determine the functionality
 of the synthesized MIPSfpga system. Make sure that <i>`define MFP_USE_UART_PROGRAM_LOADER</i>
 is not commented out:</p>
 
-<blockquote><p>File <i><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a></i></p>
+<blockquote><p>File <i><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a></i></p>
 <pre>                           
 
 //
@@ -236,7 +236,7 @@ The defines below can be used to increase block memory size. To avoid low max cl
 with larger memories and if a lot of memory is necessary, we recommend implementing the interface
 to memory chip external to FPGA, such as SDRAM memory present on many FPGA boards.</p>
 
-<blockquote><p>File <i><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a></i></p>
+<blockquote><p>File <i><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a></i></p>
 <pre>                           
 
 `define MFP_RESET_RAM_ADDR_WIDTH    10  // The boot sequence is the same for everything

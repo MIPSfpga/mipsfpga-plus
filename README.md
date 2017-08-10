@@ -6,13 +6,17 @@ MIPSfpga+ / mipsfpga-plus / MFP is a cleaned-up and improved variant of MIPSfpga
 <li>An example of integration of a light sensor with SPI protocol</li>
 <li>Smaller software initialization sequence that fits in 1 KB instead of 32 KB memory, which allows porting MIPSfpga to a wider selection of FPGA boards, without using external memory</li>
 <li>Miscellaneous fixes like improving AHB-Lite slave to handle narrow uncached writes of sizes 1 or 2-bytes</li>
+<li>Easy to use configurable SDRAM interface module</li>
+<li>Altera MAX10 ADC interface module support</li>
+<li>Widely used UART16550 interface module</li>
+<li>External interrupt controller that is working throw MIPS microAptiv core Interrupt Interface</li>
 </ol>
 
 The hierarchy of synthesizable modules for Digilent Nexys 4 DDR with Xilinx Artix-7 FPGA:
 
-<a href="http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr_full.html"><img src="http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr_full.png"></a>
+<a href="https://cdn.rawgit.com/zhelnio/mipsfpga-plus/a36be531/documentation/edited_figures/hierarchy_nexys4_ddr_full.html"><img src="https://raw.githubusercontent.com/zhelnio/mipsfpga-plus/master/documentation/edited_figures/hierarchy_nexys4_ddr_full.png"></a>
 
-MIPSfpga+ currently works on eight FPGA boards:
+MIPSfpga+ currently works on these FPGA boards:
 
 <ol>
 <li><a href="http://store.digilentinc.com/nexys-4-ddr-artix-7-fpga-trainer-board-recommended-for-ece-curriculum/">Digilent Nexys 4 DDR</a> board with Xilinx Artix-7 FPGA. See the Appendix A about how the board is connected with the applicable peripherals.</li>
@@ -24,6 +28,7 @@ MIPSfpga+ currently works on eight FPGA boards:
 <li><a href="http://de0.terasic.com">Terasic DE0</a> with Altera Cyclone III</li>
 <li><a href="http://de1.terasic.com">Terasic DE1</a> with Altera Cyclone II</li>
 <li><a href="http://de10-lite.terasic.com">Terasic DE10-Lite</a> with Altera MAX10</li>
+<li><a href="http://de10-nano.terasic.com">Terasic DE10-Nano</a> with Altera Cyclone V</li>
 </ol>
 
 There are three planned ports:
@@ -34,9 +39,9 @@ There are three planned ports:
 <li><a href="http://de2.terasic.com">Terasic DE2</a> with Altera Cyclone II</li>
 </ol>
 
-The source code for MIPSfpga+ is located at <a href="http://github.com/MIPSfpga/mipsfpga-plus">http://github.com/MIPSfpga/mipsfpga-plus</a>; this code does not include any source code of MIPS microAptiv UP CPU core from MIPSfpga Getting Started package. A user of MIPSfpga+ is supposed to download Getting Started package version 1.3 from Imagination Technologies web site <a href="http://community.imgtec.com/downloads/mipsfpga-getting-started-v1-3">http://community.imgtec.com/downloads/mipsfpga-getting-started-v1-3</a>.
+The source code for MIPSfpga+ is located at <a href="http://github.com/MIPSfpga/mipsfpga-plus">http://github.com/MIPSfpga/mipsfpga-plus</a>; this code does not include any source code of MIPS microAptiv UP CPU core from MIPSfpga Getting Started package. A user of MIPSfpga+ is supposed to download Getting Started package from Imagination Technologies web site: <a href="https://community.imgtec.com/downloads/mipsfpga-getting-started-guide-2-0/">MIPSfpga Getting Started Guide 2.0</a> or <a href="http://community.imgtec.com/downloads/mipsfpga-getting-started-v1-3">MIPSfpga Getting Started Guide 1.3</a>.
 
-After downloading both MIPSfpga from Imagination site and MIPSfpga+ from GitHub, the user is expected to install MIPSfpga under 64-bit Microsoft Windows (either Windows 7 or Windows 8) by placing MIPSfpga into directory C:\MIPSfpga and MIPSfpga+ into C:\github\mipsfpga_plus. The paths inside MIPSfpga+ synthesis and simulation scripts rely on such installation.
+After downloading both MIPSfpga from Imagination site and MIPSfpga+ from GitHub, the user is expected to install MIPSfpga under 64-bit Microsoft Windows (either Windows 7 or Windows 8) by placing MIPSfpga core source files to MIPSfpga+\core directory. To do this one need to copy to MIPSfpga+\core all the files from 'MIPSfpga_GSG_1.3\MIPSfpga\rtl_up' when using MIPSfpga 1.3 or from 'MIPSfpga_GSG_v2.0\MIPSfpga_GSG\rtl_up\core' in the case of using MIPSfpga 2.0. The paths inside MIPSfpga+ synthesis and simulation scripts rely on such installation.
 
 MIPSfpga+ (as well as the original MFGS package) can be also used on a workstation with 32-bit Windows, 32-bit Linux, 64-bit Linux, with or without Windows or Linux virtual machine. It is possible to install MIPSfpga+ in different directories, and use it with a number of Verilog simulators and synthesis tools: Synopsys VCS, Cadence IES, Mentor ModelSim, Icarus Verilog with GTKWave, Xilinx ISim and Vivado, Altera Quartus II, Synopsys Synplify Pro and others. Some usage scenarios require modifying the scripts and adhering to specific versions of EDA and software development tools, for example:
 
@@ -48,8 +53,9 @@ MIPSfpga+ (as well as the original MFGS package) can be also used on a workstati
 How to synthesize mipsfpga-plus for Terasic DE0-CV board:
 
 <ol>
-<li>Unzip MIPSfpga to C:\MIPSfpga</li>
+<li>Unzip MIPSfpga 2.0 Getting Started Guide to C:\MIPSfpga</li>
 <li>Get mipsfpgfa-plus into C:\github\mipsfpga-plus</li>
+<li>copy all the files from C:\MIPSfpga\MIPSfpga_GSG\rtl_up\core to C:\github\mipsfpga-plus\core</li>
 <li>cd C:\github\mipsfpga-plus\boards\de0_cv</li>
 <li>make_project.bat</li>
 <li>Run Altera Quartus II</li>

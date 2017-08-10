@@ -19,8 +19,9 @@ module mfp_ahb_ram_busy
     input       [ 1:0]          HTRANS,
     input       [31:0]          HWDATA,
     input                       HWRITE,
+    input                       HREADY,
     output      [31:0]          HRDATA,
-    output                      HREADY,
+    output                      HREADYOUT,
     output                      HRESP,
     input                       SI_Endian   // ignored
 );
@@ -36,8 +37,8 @@ module mfp_ahb_ram_busy
     reg     [ 31 : 0 ]      HADDR_old;
     reg     [  3 : 0 ]      Delay;
 
-    assign  HREADY = (State == S_IDLE);
-    wire    NeedAction = HTRANS != `HTRANS_IDLE && HSEL;
+    assign  HREADYOUT = (State == S_IDLE);
+    wire    NeedAction = HTRANS != `HTRANS_IDLE && HSEL && HREADY;
     wire    DelayFinished = ( ~| Delay );
 
     always @ (posedge HCLK) begin
