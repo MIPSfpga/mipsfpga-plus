@@ -4,12 +4,12 @@
 <p><big><b>4.1. Selecting the appropriate hardware configuration for the lab</b></big></p>
 
 <p>Before running synthesis it is necessary to review and possibly modify the file
-<a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a>
+<a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a>
 that includes a set of Verilog  <i>`define</i> statements that determine the functionality
 of the synthesized MIPSfpga system. Make sure that <i>`define MFP_USE_UART_PROGRAM_LOADER</i>
 is not commented out:</p>
 
-<blockquote><p>File <i><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a></i></p>
+<blockquote><p>File <i><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a></i></p>
 <pre>                           
 
 //
@@ -33,7 +33,7 @@ The defines below can be used to increase block memory size. To avoid low max cl
 with larger memories and if a lot of memory is necessary, we recommend implementing the interface
 to memory chip external to FPGA, such as SDRAM memory present on many FPGA boards.</p>
 
-<blockquote><p>File <i><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a></i></p>
+<blockquote><p>File <i><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/system_rtl/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a></i></p>
 <pre>                           
 
 `define MFP_RESET_RAM_ADDR_WIDTH    10  // The boot sequence is the same for everything
