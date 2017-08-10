@@ -12,6 +12,10 @@ MIPSfpga+ / mipsfpga-plus / MFP is a cleaned-up and improved variant of MIPSfpga
 <li>External interrupt controller that is working throw MIPS microAptiv core Interrupt Interface</li>
 </ol>
 
+The hierarchy of synthesizable modules for Digilent Nexys 4 DDR with Xilinx Artix-7 FPGA:
+
+<a href="https://cdn.rawgit.com/zhelnio/mipsfpga-plus/a36be531/documentation/edited_figures/hierarchy_nexys4_ddr_full.html"><img src="https://raw.githubusercontent.com/zhelnio/mipsfpga-plus/master/documentation/edited_figures/hierarchy_nexys4_ddr_full.png"></a>
+
 MIPSfpga+ currently works on these FPGA boards:
 
 <ol>
