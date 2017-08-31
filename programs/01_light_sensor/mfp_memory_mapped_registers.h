@@ -6,7 +6,8 @@
 #define MFP_SWITCHES_ADDR       0xBF800008
 #define MFP_BUTTONS_ADDR        0xBF80000C
 #define MFP_7_SEGMENT_HEX_ADDR  0xBF800010
-#define MFP_LIGHT_SENSOR_ADDR   0xBF800014
+
+#define MFP_LIGHT_SENSOR_ADDR   0xB0404000
 
 #define MFP_RED_LEDS            (* (volatile unsigned *) MFP_RED_LEDS_ADDR      )
 #define MFP_GREEN_LEDS          (* (volatile unsigned *) MFP_GREEN_LEDS_ADDR    )

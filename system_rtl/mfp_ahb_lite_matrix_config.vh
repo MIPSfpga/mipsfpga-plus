@@ -23,7 +23,7 @@
 //`define MFP_USE_ADC_MAX10
 // `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
 // `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
-// `define MFP_DEMO_LIGHT_SENSOR
+ `define MFP_DEMO_LIGHT_SENSOR
 // `define MFP_DEMO_CACHE_MISSES
 // `define MFP_DEMO_PIPE_BYPASS
 
@@ -111,6 +111,7 @@
 `define MFP_N_BUTTONS               5
 `define MFP_7_SEGMENT_HEX_WIDTH     32
 
+//TODO: check and delete
 `define MFP_RED_LEDS_ADDR           32'h1f800000
 `define MFP_GREEN_LEDS_ADDR         32'h1f800004
 `define MFP_SWITCHES_ADDR           32'h1f800008
@@ -126,10 +127,6 @@
 `define MFP_SWITCHES_IONUM          4'h2
 `define MFP_BUTTONS_IONUM           4'h3
 `define MFP_7_SEGMENT_HEX_IONUM     4'h4
-                                    
-`ifdef MFP_DEMO_LIGHT_SENSOR            
-`define MFP_LIGHT_SENSOR_IONUM      4'h5
-`endif
 
 //
 // RAM addresses
@@ -154,3 +151,4 @@
 `define MFP_UART_ADDR_MATCH         17'h10401
 `define MFP_EIC_ADDR_MATCH          17'h10402
 `define MFP_ADC_MAX10_ADDR_MATCH    17'h10403
+`define MFP_ALS_ADDR_MATCH          17'h10404

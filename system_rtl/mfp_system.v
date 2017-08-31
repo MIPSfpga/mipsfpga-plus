@@ -34,11 +34,11 @@ module mfp_system
     output [`SDRAM_DM_BITS   - 1 : 0 ]      SDRAM_DQM,
     `endif
 
-    input  [`MFP_N_SWITCHES          - 1:0] IO_Switches,
-    input  [`MFP_N_BUTTONS           - 1:0] IO_Buttons,
-    output [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs,
-    output [`MFP_N_GREEN_LEDS        - 1:0] IO_GreenLEDs,
-    output [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX,
+    `ifdef MFP_DEMO_LIGHT_SENSOR
+    output                                  SPI_CS,
+    output                                  SPI_SCK,
+    input                                   SPI_SDO,
+    `endif
 
     input         UART_RX,
     output        UART_TX,
@@ -61,9 +61,11 @@ module mfp_system
     input                                   ADC_R_EOP,
     `endif //MFP_USE_ADC_MAX10
 
-    output        SPI_CS,
-    output        SPI_SCK,
-    input         SPI_SDO
+    input  [`MFP_N_SWITCHES          - 1:0] IO_Switches,
+    input  [`MFP_N_BUTTONS           - 1:0] IO_Buttons,
+    output [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs,
+    output [`MFP_N_GREEN_LEDS        - 1:0] IO_GreenLEDs,
+    output [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX
 );
 
     wire MFP_Reset;
@@ -434,10 +436,6 @@ module mfp_system
     };
 
     `endif
- 
-    `ifdef MFP_DEMO_LIGHT_SENSOR
-    wire [15:0] IO_LightSensor;
-    `endif
 
     mfp_ahb_lite_matrix_with_loader ahb_lite_matrix
     (
@@ -483,7 +481,9 @@ module mfp_system
         .IO_7_SegmentHEX  (   IO_7_SegmentHEX  ),
                                                
         `ifdef MFP_DEMO_LIGHT_SENSOR           
-        .IO_LightSensor   (   IO_LightSensor   ), 
+        .SPI_CS           ( SPI_CS             ),
+        .SPI_SCK          ( SPI_SCK            ),
+        .SPI_SDO          ( SPI_SDO            ),
         `endif                                 
                                                
         .UART_RX          (   UART_RX          ), 
@@ -525,20 +525,6 @@ module mfp_system
                                                
         .MFP_Reset        (   MFP_Reset        )
     );
-
-    `ifdef MFP_DEMO_LIGHT_SENSOR
-
-    mfp_pmod_als_spi_receiver mfp_pmod_als_spi_receiver
-    (
-        .clock   (   SI_ClkIn       ),
-        .reset_n ( ~ SI_Reset       ),
-        .cs      (   SPI_CS         ),
-        .sck     (   SPI_SCK        ),
-        .sdo     (   SPI_SDO        ),
-        .value   (   IO_LightSensor )
-    );
-
-    `endif
 
 endmodule
 

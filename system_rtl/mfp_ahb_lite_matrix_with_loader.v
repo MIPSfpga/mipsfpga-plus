@@ -38,7 +38,9 @@ module mfp_ahb_lite_matrix_with_loader
     output [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX,
 
     `ifdef MFP_DEMO_LIGHT_SENSOR
-    input  [15:0] IO_LightSensor,
+    output                                  SPI_CS,
+    output                                  SPI_SCK,
+    input                                   SPI_SDO,
     `endif
 
     //reset uart
@@ -187,7 +189,9 @@ module mfp_ahb_lite_matrix_with_loader
         `endif  // MFP_USE_SDRAM_MEMORY
                                              
         `ifdef MFP_DEMO_LIGHT_SENSOR
-        .IO_LightSensor   ( IO_LightSensor  ), 
+        .SPI_CS           ( SPI_CS          ),
+        .SPI_SCK          ( SPI_SCK         ),
+        .SPI_SDO          ( SPI_SDO         ),
         `endif
 
         `ifdef MFP_USE_DUPLEX_UART
