@@ -28,10 +28,6 @@ module mfp_testbench;
     wire [`MFP_N_GREEN_LEDS        - 1:0] IO_GreenLEDs;
     wire [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX;
 
-    `ifdef MFP_DEMO_LIGHT_SENSOR
-    wire [15:0] IO_LightSensor;
-    `endif
-
     `ifdef MFP_USE_SDRAM_MEMORY
     reg                                 SDRAM_CLK;
     wire                                SDRAM_CKE;
@@ -69,7 +65,7 @@ module mfp_testbench;
 
     wire        SPI_CS;
     wire        SPI_SCK;
-    reg         SPI_SDO;
+    wire        SPI_SDO;
 
     //----------------------------------------------------------------
 
@@ -135,6 +131,13 @@ module mfp_testbench;
         .SPI_CS           ( SPI_CS           ),
         .SPI_SCK          ( SPI_SCK          ),
         .SPI_SDO          ( SPI_SDO          )
+    );
+
+    pmod_als_spi_stub pmod_als_spi_stub
+    (
+        .cs               ( SPI_CS           ),
+        .sck              ( SPI_SCK          ),
+        .sdo              ( SPI_SDO          )
     );
 
     `ifdef MFP_USE_ADC_MAX10
@@ -385,6 +388,30 @@ module mfp_testbench;
             $display ("Timeout");
             $finish;
         end
+    end
+
+endmodule
+
+
+module pmod_als_spi_stub
+#(
+    parameter value = 8'hAB
+)
+(
+    input             cs,
+    input             sck,
+    output reg        sdo
+);
+    wire [7:0]  tvalue  = value;
+    wire [15:0] tpacket = { 4'b0, tvalue, 4'b0 };
+
+    reg  [15:0] buffer;
+
+    always @(negedge sck) begin
+        if(!cs)
+            { sdo, buffer } <= { buffer, 1'b0 };
+        else
+            buffer <= tpacket;
     end
 
 endmodule
