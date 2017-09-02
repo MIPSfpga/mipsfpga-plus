@@ -357,7 +357,7 @@ module mfp_system
 
 
     `ifdef MFP_USE_MPSSE_DEBUGGER
-        // reset module is not used because mfp_ejtag_reset interferes
+        // reset module is not used because mfp_reset_controller interferes
         // with work of debugger. This is not good: this configutation faults
         // inside the simulator but works on hardware (Altera MAX10)
         //
@@ -368,7 +368,7 @@ module mfp_system
     `else
         // Module for hardware reset of EJTAG just after FPGA configuration
         // It pulses EJ_TRST_N low for 16 clock cycles.
-        mfp_ejtag_reset ejtag_reset (.clk (SI_ClkIn), .trst_n (trst_n));
+        mfp_reset_controller reset_control (.clk (SI_ClkIn), .trst_n (trst_n));
 
         assign EJ_TRST_N        = trst_n & EJ_TRST_N_probe;
         assign EJ_ManufID       = 11'b0;
@@ -530,7 +530,7 @@ endmodule
 
 //--------------------------------------------------------------------
 
-module mfp_ejtag_reset
+module mfp_reset_controller
 (
     input      clk,
     output reg trst_n
