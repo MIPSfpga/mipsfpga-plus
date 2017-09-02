@@ -304,7 +304,7 @@ module mfp_ahb_lite_matrix
     `endif
 
     `ifdef MFP_DEMO_LIGHT_SENSOR
-    mfp_ahb_lite_pmod_als mfp_ahb_lite_pmod_als
+    mfp_ahb_lite_pmod_als als
     (
         .HCLK             ( HCLK            ),
         .HRESETn          ( HRESETn         ),
