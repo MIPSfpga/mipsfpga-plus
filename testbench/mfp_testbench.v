@@ -259,11 +259,11 @@ module mfp_testbench;
         $readmemh ("program_00000000.hex", ram);
 
         for (i = 0; i < (1 << `MFP_RESET_RAM_ADDR_WIDTH); i = i + 4)
-            system.ahb_lite_matrix.ahb_lite_matrix.reset_ram.ram.ram [i / 4]
+            system.matrix_loader.matrix.reset_ram.ram.ram [i / 4]
                 = { reset_ram [i + 3], reset_ram [i + 2], reset_ram [i + 1], reset_ram [i + 0] };
 
         for (i = 0; i < (1 << `MFP_RAM_ADDR_WIDTH); i = i + 4)
-            system.ahb_lite_matrix.ahb_lite_matrix.ram.ram.ram [i / 4]
+            system.matrix_loader.matrix.ram.ram.ram [i / 4]
                 = { ram [i + 3], ram [i + 2], ram [i + 1], ram [i + 0] };
     end
 
@@ -281,11 +281,11 @@ module mfp_testbench;
                 $readmemh ("program_00000000.hex", ram);
                     
                 for (i = 0; i < (1 << `MFP_RESET_RAM_ADDR_WIDTH); i = i + 4)
-                    system.ahb_lite_matrix.ahb_lite_matrix.reset_ram.u [j].ram.ram [i / 4]
+                    system.matrix_loader.matrix.reset_ram.u [j].ram.ram [i / 4]
                         = reset_ram [i + j];
                 
                 for (i = 0; i < (1 << `MFP_RAM_ADDR_WIDTH); i = i + 4)
-                    system.ahb_lite_matrix.ahb_lite_matrix.ram.u [j].ram.ram [i / 4]
+                    system.matrix_loader.matrix.ram.u [j].ram.ram [i / 4]
                         = ram [i + j];
             end
         end
@@ -300,11 +300,11 @@ module mfp_testbench;
         $readmemh ("program_00000000.hex", ram);
 
         for (i = 0; i < (1 << `MFP_RESET_RAM_ADDR_WIDTH); i = i + 4)
-            system.ahb_lite_matrix.ahb_lite_matrix.reset_ram.ram.ram [i / 4]
+            system.matrix_loader.matrix.reset_ram.ram.ram [i / 4]
                 = { reset_ram [i + 3], reset_ram [i + 2], reset_ram [i + 1], reset_ram [i + 0] };
 
         for (i = 0; i < (1 << `MFP_RAM_ADDR_WIDTH); i = i + 4)
-            system.ahb_lite_matrix.ahb_lite_matrix.ram.ram.ram [i / 4]
+            system.matrix_loader.matrix.ram.ram.ram [i / 4]
                 = { ram [i + 3], ram [i + 2], ram [i + 1], ram [i + 0] };
     end
 
@@ -321,7 +321,7 @@ module mfp_testbench;
         $readmemh ("program_00000000.hex", ram);
 
         for (i = 0; i < (1 << `MFP_RESET_RAM_ADDR_WIDTH); i = i + 4)
-            system.ahb_lite_matrix.ahb_lite_matrix.reset_ram.ram.ram [i / 4]
+            system.matrix_loader.matrix.reset_ram.ram.ram [i / 4]
                 = { reset_ram [i + 3], reset_ram [i + 2], reset_ram [i + 1], reset_ram [i + 0] };
         
         for (i = 0; i < (1 << `MFP_RAM_ADDR_WIDTH); i = i + 2) begin

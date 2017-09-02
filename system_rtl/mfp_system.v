@@ -437,7 +437,7 @@ module mfp_system
 
     `endif
 
-    mfp_ahb_lite_matrix_with_loader ahb_lite_matrix
+    mfp_ahb_lite_matrix_with_loader matrix_loader
     (
         .HCLK             (   HCLK             ),
         .HRESETn          ( ~ SI_Reset         ),  // Not HRESETn - this is necessary for serial loader

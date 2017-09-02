@@ -157,7 +157,7 @@ module mfp_ahb_lite_matrix_with_loader
         .HWRITE         ( loader_HWRITE    )
     );
 
-    mfp_ahb_lite_matrix ahb_lite_matrix
+    mfp_ahb_lite_matrix matrix
     (
         .HCLK             ( HCLK            ),
         .HRESETn          ( HRESETn         ),
