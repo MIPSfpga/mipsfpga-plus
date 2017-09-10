@@ -1,31 +1,29 @@
-# microAptiv_UP makefile for MIPSfpga
-
+# MIPSfpga-plus makefile
 CC = mips-mti-elf-gcc
 LD = mips-mti-elf-gcc
 OD = mips-mti-elf-objdump
 OC = mips-mti-elf-objcopy
 SZ = mips-mti-elf-size
+GDB = mips-mti-elf-gdb
 
-# Imagination CodeScape toolchain
-ifneq (,$(wildcard $(MIPS_ELF_ROOT)/bin/mips-mti-elf-gcc))
-    CC = $(MIPS_ELF_ROOT)/bin/mips-mti-elf-gcc
-    LD = $(MIPS_ELF_ROOT)/bin/mips-mti-elf-gcc
-    OD = $(MIPS_ELF_ROOT)/bin/mips-mti-elf-objdump
-    OC = $(MIPS_ELF_ROOT)/bin/mips-mti-elf-objcopy
-    SZ = $(MIPS_ELF_ROOT)/bin/mips-mti-elf-size
+#OS dependent
+# HEX splitter
+HS = ../../scripts/utilities/ad_hoc_program_hex_splitter
+
+ifeq ($(OS), Windows_NT)
+	HS = ../../scripts/utilities/ad_hoc_program_hex_splitter.exe
 endif
 
-# Mentor CodeSourcery toolchain
-ifneq (,$(wildcard $(MIPS_ELF_ROOT)/bin/mips-sde-elf-gcc))
-    CC = $(MIPS_ELF_ROOT)/bin/mips-sde-elf-gcc
-    LD = $(MIPS_ELF_ROOT)/bin/mips-sde-elf-gcc
-    OD = $(MIPS_ELF_ROOT)/bin/mips-sde-elf-objdump
-    OC = $(MIPS_ELF_ROOT)/bin/mips-sde-elf-objcopy
-    SZ = $(MIPS_ELF_ROOT)/bin/mips-sde-elf-size
-endif
-
-CFLAGS  = -EL -march=m14kc -msoft-float -O2
+# -EL           - Little-endian
+# -march=m14kc  - MIPSfpga = MIPS microAptiv UP based on MIPS M14Kc
+# -msoft-float  - should not use floating-point processor instructions
+# -O2           - optimization level
+# -std=c99		- C99 lang standard options enabled
+CFLAGS  = -EL -march=m14kc -msoft-float -O2 #-std=c99 
 LDFLAGS = -EL -march=m14kc -msoft-float -Wl,-Map=program.map
+
+# -g -gdwarf-2  - debug symbols to use with gdb
+DBFLAGS = -g -gdwarf-2 
 
 # Set up the link addresses for a bootable C program on MIPSfpga
 LDFLAGS += -T program.ld
@@ -59,29 +57,87 @@ COBJECTS = $(CSOURCES:.c=.o)
 CASMS    = $(CSOURCES:.c=.s)
 AOBJECTS = $(ASOURCES:.S=.o)
 
-all: program $(CASMS)
+.PHONY: clean sim
+
+all: compile program size disasm readmemh srecord
 
 program : $(AOBJECTS) $(COBJECTS) 
-	$(LD)  $(LDFLAGS) $(AOBJECTS) $(COBJECTS) -o program.elf
-	$(SZ) program.elf
-	$(OD) -D -l program.elf > program.dis
-	$(OC) program.elf -O verilog program.hex
-	$(OC) program.elf -O srec program.rec
+	$(LD)  $(LDFLAGS) $(AOBJECTS) $(COBJECTS) $(DBFLAGS) -o program.elf
 
 .c.o:
-	$(CC) -c $(CFLAGS) $< -o $@
+	$(CC) -c $(CFLAGS) $(DBFLAGS) $< -o $@
 
 .S.o:
-	$(CC) -c $(CFLAGS) $< -o $@
+	$(CC) -c $(CFLAGS) $(DBFLAGS) $< -o $@
 
 .c.s:
 	$(CC) -S $(CFLAGS) $< -o $@
 
+compile: $(CASMS)
+
+size:
+	$(SZ) program.elf
+
+disasm:
+	$(OD) -D -l program.elf > program.dis
+
+readmemh:
+	$(OC) program.elf -O verilog program.hex
+	$(HS)
+
+srecord:
+	$(OC) program.elf -O srec program.rec
+
+debug:
+	$(info )
+	$(info Please check that OpenOCD is running and successfully connected to the CPU)
+	$(info )
+
+	$(GDB) --command=./commands.gdb
+
 clean:
+	rm -rf sim
 	rm -f main.s
 	rm -f *.o
 	rm -f program.elf
 	rm -f program.map
 	rm -f program.dis
-	rm -f program.hex
+	rm -f program*.hex
 	rm -f program.rec
+
+#########################################################
+# Modelsim simulation
+
+modelsim:
+	rm -rf sim
+	mkdir sim
+	cp *.hex sim
+	cd sim && vsim -do ../modelsim_script.tcl
+
+#########################################################
+# Icarus verilog simulation
+
+TOPMODULE=mfp_testbench
+IVARG = -g2005 
+IVARG += -D SIMULATION
+IVARG += -I ../../../core
+IVARG += -I ../../../system_rtl
+IVARG += -I ../../../system_rtl/uart16550
+IVARG += -I ../../../testbench
+IVARG += -I ../../../testbench/sdr_sdram
+IVARG += -s $(TOPMODULE)
+IVARG += ../../../core/*.v
+IVARG += ../../../system_rtl/*.v
+IVARG += ../../../system_rtl/uart16550/*.v
+IVARG += ../../../testbench/*.v
+IVARG += ../../../testbench/sdr_sdram/*.v
+
+icarus:
+	rm -rf sim
+	mkdir sim
+	cp *.hex sim
+	cd sim && iverilog $(IVARG)
+	cd sim && vvp -la.lst a.out -n
+	
+gtkwave:
+	cd sim && gtkwave dump.vcd

@@ -1,0 +1,1654 @@
+
+program.elf:     file format elf32-tradlittlemips
+
+
+Disassembly of section .reset:
+
+9fc00000 <start>:
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:17
+9fc00000:	40804800 	mtc0	zero,c0_count
+
+9fc00004 <init_gpr>:
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:24
+9fc00004:	3c01dead 	lui	at,0xdead
+9fc00008:	3421beef 	ori	at,at,0xbeef
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:30
+9fc0000c:	401d6002 	mfc0	sp,c0_srsctl
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:31
+9fc00010:	7fbe1e80 	ext	s8,sp,0x1a,0x4
+
+9fc00014 <next_shadow_set>:
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:34
+9fc00014:	7fdd4984 	ins	sp,s8,0x6,0x4
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:35
+9fc00018:	409d6002 	mtc0	sp,c0_srsctl
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:37
+9fc0001c:	41c10800 	wrpgpr	at,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:38
+9fc00020:	41c11000 	wrpgpr	v0,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:39
+9fc00024:	41c11800 	wrpgpr	v1,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:40
+9fc00028:	41c12000 	wrpgpr	a0,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:41
+9fc0002c:	41c12800 	wrpgpr	a1,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:42
+9fc00030:	41c13000 	wrpgpr	a2,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:43
+9fc00034:	41c13800 	wrpgpr	a3,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:44
+9fc00038:	41c14000 	wrpgpr	t0,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:45
+9fc0003c:	41c14800 	wrpgpr	t1,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:46
+9fc00040:	41c15000 	wrpgpr	t2,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:47
+9fc00044:	41c15800 	wrpgpr	t3,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:48
+9fc00048:	41c16000 	wrpgpr	t4,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:49
+9fc0004c:	41c16800 	wrpgpr	t5,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:50
+9fc00050:	41c17000 	wrpgpr	t6,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:51
+9fc00054:	41c17800 	wrpgpr	t7,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:52
+9fc00058:	41c18000 	wrpgpr	s0,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:53
+9fc0005c:	41c18800 	wrpgpr	s1,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:54
+9fc00060:	41c19000 	wrpgpr	s2,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:55
+9fc00064:	41c19800 	wrpgpr	s3,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:56
+9fc00068:	41c1a000 	wrpgpr	s4,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:57
+9fc0006c:	41c1a800 	wrpgpr	s5,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:58
+9fc00070:	41c1b000 	wrpgpr	s6,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:59
+9fc00074:	41c1b800 	wrpgpr	s7,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:60
+9fc00078:	41c1c000 	wrpgpr	t8,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:61
+9fc0007c:	41c1c800 	wrpgpr	t9,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:62
+9fc00080:	41c1d000 	wrpgpr	k0,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:63
+9fc00084:	41c1d800 	wrpgpr	k1,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:64
+9fc00088:	41c1e000 	wrpgpr	gp,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:65
+9fc0008c:	13c00005 	beqz	s8,9fc000a4 <init_cp0>
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:66
+9fc00090:	41c1e800 	wrpgpr	sp,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:68
+9fc00094:	41c1f000 	wrpgpr	s8,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:69
+9fc00098:	41c1f800 	wrpgpr	ra,at
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:70
+9fc0009c:	1000ffdd 	b	9fc00014 <next_shadow_set>
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:71
+9fc000a0:	23deffff 	addi	s8,s8,-1
+
+9fc000a4 <init_cp0>:
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:78
+9fc000a4:	3c030040 	lui	v1,0x40
+9fc000a8:	34630004 	ori	v1,v1,0x4
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:79
+9fc000ac:	40836000 	mtc0	v1,c0_status
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:82
+9fc000b0:	40028001 	mfc0	v0,c0_config1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:83
+9fc000b4:	7c4300c0 	ext	v1,v0,0x3,0x1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:84
+9fc000b8:	1060001f 	beqz	v1,9fc00138 <done_wr>
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:85
+9fc000bc:	24030007 	li	v1,7
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:88
+9fc000c0:	40839800 	mtc0	v1,c0_watchhi
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:89
+9fc000c4:	40029800 	mfc0	v0,c0_watchhi
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:90
+9fc000c8:	0441001b 	bgez	v0,9fc00138 <done_wr>
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:91
+9fc000cc:	40809000 	mtc0	zero,c0_watchlo
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:93
+9fc000d0:	40839801 	mtc0	v1,c0_watchhi,1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:94
+9fc000d4:	40029801 	mfc0	v0,c0_watchhi,1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:95
+9fc000d8:	04410017 	bgez	v0,9fc00138 <done_wr>
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:96
+9fc000dc:	40809001 	mtc0	zero,c0_watchlo,1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:98
+9fc000e0:	40839802 	mtc0	v1,c0_watchhi,2
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:99
+9fc000e4:	40029802 	mfc0	v0,c0_watchhi,2
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:100
+9fc000e8:	04410013 	bgez	v0,9fc00138 <done_wr>
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:101
+9fc000ec:	40809002 	mtc0	zero,c0_watchlo,2
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:103
+9fc000f0:	40839803 	mtc0	v1,c0_watchhi,3
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:104
+9fc000f4:	40029803 	mfc0	v0,c0_watchhi,3
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:105
+9fc000f8:	0441000f 	bgez	v0,9fc00138 <done_wr>
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:106
+9fc000fc:	40809003 	mtc0	zero,c0_watchlo,3
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:108
+9fc00100:	40839804 	mtc0	v1,c0_watchhi,4
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:109
+9fc00104:	40029804 	mfc0	v0,c0_watchhi,4
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:110
+9fc00108:	0441000b 	bgez	v0,9fc00138 <done_wr>
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:111
+9fc0010c:	40809004 	mtc0	zero,c0_watchlo,4
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:113
+9fc00110:	40839805 	mtc0	v1,c0_watchhi,5
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:114
+9fc00114:	40029805 	mfc0	v0,c0_watchhi,5
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:115
+9fc00118:	04410007 	bgez	v0,9fc00138 <done_wr>
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:116
+9fc0011c:	40809005 	mtc0	zero,c0_watchlo,5
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:118
+9fc00120:	40839806 	mtc0	v1,c0_watchhi,6
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:119
+9fc00124:	40029806 	mfc0	v0,c0_watchhi,6
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:120
+9fc00128:	04410003 	bgez	v0,9fc00138 <done_wr>
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:121
+9fc0012c:	40809006 	mtc0	zero,c0_watchlo,6
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:123
+9fc00130:	40839807 	mtc0	v1,c0_watchhi,7
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:124
+9fc00134:	40809007 	mtc0	zero,c0_watchlo,7
+
+9fc00138 <done_wr>:
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:128
+9fc00138:	40806800 	mtc0	zero,c0_cause
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:131
+9fc0013c:	40805800 	mtc0	zero,c0_compare
+
+9fc00140 <init_tlb>:
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:141
+9fc00140:	40038000 	mfc0	v1,c0_config
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:142
+9fc00144:	7c6311c0 	ext	v1,v1,0x7,0x3
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:143
+9fc00148:	24070001 	li	a3,1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:144
+9fc0014c:	1467000e 	bne	v1,a3,9fc00188 <init_icache>
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:147
+9fc00150:	40028001 	mfc0	v0,c0_config1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:148
+9fc00154:	7c432e40 	ext	v1,v0,0x19,0x6
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:149
+9fc00158:	40801000 	mtc0	zero,c0_entrylo0
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:150
+9fc0015c:	40801800 	mtc0	zero,c0_entrylo1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:151
+9fc00160:	40802800 	mtc0	zero,c0_pagemask
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:152
+9fc00164:	40803000 	mtc0	zero,c0_wired
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:153
+9fc00168:	3c048000 	lui	a0,0x8000
+
+9fc0016c <next_tlb_entry>:
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:156
+9fc0016c:	40830000 	mtc0	v1,c0_index
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:157
+9fc00170:	40845000 	mtc0	a0,c0_entryhi
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:158
+9fc00174:	000000c0 	ehb
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:159
+9fc00178:	42000002 	tlbwi
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:160
+9fc0017c:	20844000 	addi	a0,a0,16384
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:162
+9fc00180:	1460fffa 	bnez	v1,9fc0016c <next_tlb_entry>
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:163
+9fc00184:	2063ffff 	addi	v1,v1,-1
+
+9fc00188 <init_icache>:
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:170
+9fc00188:	40028001 	mfc0	v0,c0_config1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:171
+9fc0018c:	7c4314c0 	ext	v1,v0,0x13,0x3
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:172
+9fc00190:	10600010 	beqz	v1,9fc001d4 <done_icache>
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:173
+9fc00194:	00000000 	nop
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:175
+9fc00198:	24060002 	li	a2,2
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:176
+9fc0019c:	00661804 	sllv	v1,a2,v1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:178
+9fc001a0:	7c441580 	ext	a0,v0,0x16,0x3
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:179
+9fc001a4:	24060040 	li	a2,64
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:180
+9fc001a8:	00862004 	sllv	a0,a2,a0
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:182
+9fc001ac:	7c451400 	ext	a1,v0,0x10,0x3
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:183
+9fc001b0:	20a50001 	addi	a1,a1,1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:184
+9fc001b4:	70852002 	mul	a0,a0,a1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:185
+9fc001b8:	3c068000 	lui	a2,0x8000
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:187
+9fc001bc:	4080e000 	mtc0	zero,c0_taglo
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:188
+9fc001c0:	00803825 	move	a3,a0
+
+9fc001c4 <next_icache_tag>:
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:193
+9fc001c4:	bcc80000 	cache	0x8,0(a2)
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:194
+9fc001c8:	20e7ffff 	addi	a3,a3,-1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:195
+9fc001cc:	14e0fffd 	bnez	a3,9fc001c4 <next_icache_tag>
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:196
+9fc001d0:	00c33020 	add	a2,a2,v1
+
+9fc001d4 <done_icache>:
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:208
+9fc001d4:	40028000 	mfc0	v0,c0_config
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:209
+9fc001d8:	24030003 	li	v1,3
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:210
+9fc001dc:	7c621004 	ins	v0,v1,0x0,0x3
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:211
+9fc001e0:	40828000 	mtc0	v0,c0_config
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:213
+9fc001e4:	3c069fc0 	lui	a2,0x9fc0
+9fc001e8:	24c601f4 	addiu	a2,a2,500
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:214
+9fc001ec:	00c00008 	jr	a2
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:215
+9fc001f0:	000000c0 	ehb
+
+9fc001f4 <init_dcache>:
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:221
+9fc001f4:	40028001 	mfc0	v0,c0_config1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:222
+9fc001f8:	7c431280 	ext	v1,v0,0xa,0x3
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:223
+9fc001fc:	10600011 	beqz	v1,9fc00244 <done_dcache>
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:224
+9fc00200:	00000000 	nop
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:226
+9fc00204:	24060002 	li	a2,2
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:227
+9fc00208:	00661804 	sllv	v1,a2,v1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:229
+9fc0020c:	7c441340 	ext	a0,v0,0xd,0x3
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:230
+9fc00210:	24060040 	li	a2,64
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:231
+9fc00214:	00862004 	sllv	a0,a2,a0
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:233
+9fc00218:	7c4511c0 	ext	a1,v0,0x7,0x3
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:234
+9fc0021c:	20a50001 	addi	a1,a1,1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:235
+9fc00220:	70852002 	mul	a0,a0,a1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:236
+9fc00224:	3c068000 	lui	a2,0x8000
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:238
+9fc00228:	4080e000 	mtc0	zero,c0_taglo
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:239
+9fc0022c:	4080e002 	mtc0	zero,c0_taglo1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:240
+9fc00230:	00803825 	move	a3,a0
+
+9fc00234 <next_dcache_tag>:
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:245
+9fc00234:	bcc90000 	cache	0x9,0(a2)
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:246
+9fc00238:	20e7ffff 	addi	a3,a3,-1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:247
+9fc0023c:	14e0fffd 	bnez	a3,9fc00234 <next_dcache_tag>
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:248
+9fc00240:	00c33020 	add	a2,a2,v1
+
+9fc00244 <done_dcache>:
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:253
+9fc00244:	3c1f9fc0 	lui	ra,0x9fc0
+9fc00248:	27ff0274 	addiu	ra,ra,628
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:254
+9fc0024c:	00002025 	move	a0,zero
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:256
+9fc00250:	3c028000 	lui	v0,0x8000
+9fc00254:	24421254 	addiu	v0,v0,4692
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:257
+9fc00258:	4082f000 	mtc0	v0,c0_errorepc
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:258
+9fc0025c:	000000c0 	ehb
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:262
+9fc00260:	3c1d8400 	lui	sp,0x8400
+9fc00264:	27bd0000 	addiu	sp,sp,0
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:263
+9fc00268:	3c1c8001 	lui	gp,0x8001
+9fc0026c:	279c93a8 	addiu	gp,gp,-27736
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:267
+9fc00270:	42000018 	eret
+
+9fc00274 <all_done>:
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:273
+9fc00274:	1000ffff 	b	9fc00274 <all_done>
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/boot.S:274
+9fc00278:	00000000 	nop
+all_done():
+9fc0027c:	00000000 	nop
+
+Disassembly of section .pdr:
+
+00000000 <.pdr>:
+   0:	800011a4 	lb	zero,4516(zero)
+	...
+  18:	0000001d 	0x1d
+  1c:	0000001f 	0x1f
+  20:	800011c4 	lb	zero,4548(zero)
+	...
+  38:	0000001d 	0x1d
+  3c:	0000001f 	0x1f
+  40:	800011e4 	lb	zero,4580(zero)
+	...
+  58:	0000001d 	0x1d
+  5c:	0000001f 	0x1f
+  60:	80001204 	lb	zero,4612(zero)
+	...
+  78:	0000001d 	0x1d
+  7c:	0000001f 	0x1f
+  80:	80001254 	lb	zero,4692(zero)
+  84:	40000000 	mfc0	zero,c0_index
+  88:	fffffffc 	sdc3	$31,-4(ra)
+	...
+  94:	00000018 	mult	zero,zero
+  98:	0000001e 	0x1e
+  9c:	0000001f 	0x1f
+
+Disassembly of section .gnu.attributes:
+
+00000000 <.gnu.attributes>:
+   0:	00000f41 	0xf41
+   4:	756e6700 	jalx	5b99c00 <__app_start-0x7a466400>
+   8:	00070100 	sll	zero,a3,0x4
+   c:	03040000 	0x3040000
+
+Disassembly of section .comment:
+
+00000000 <.comment>:
+   0:	3a434347 	xori	v1,s2,0x4347
+   4:	6f432820 	0x6f432820
+   8:	63736564 	0x63736564
+   c:	20657061 	addi	a1,v1,28769
+  10:	20554e47 	addi	s5,v0,20039
+  14:	6c6f6f54 	0x6c6f6f54
+  18:	30322073 	andi	s2,at,0x2073
+  1c:	302e3631 	andi	t6,at,0x3631
+  20:	33302d35 	andi	s0,t9,0x2d35
+  24:	726f6620 	0x726f6620
+  28:	50494d20 	beql	v0,t1,134ac <__app_start-0x7ffecb54>
+  2c:	544d2053 	bnel	v0,t5,817c <__app_start-0x7fff7e84>
+  30:	61422049 	0x61422049
+  34:	4d206572 	0x4d206572
+  38:	6c617465 	0x6c617465
+  3c:	2e342029 	sltiu	s4,s1,8233
+  40:	00322e39 	0x322e39
+
+Disassembly of section .text_ram:
+
+80001000 <deregister_tm_clones>:
+deregister_tm_clones():
+80001000:	3c048000 	lui	a0,0x8000
+80001004:	3c028000 	lui	v0,0x8000
+80001008:	248413c4 	addiu	a0,a0,5060
+8000100c:	244213c7 	addiu	v0,v0,5063
+80001010:	00441023 	subu	v0,v0,a0
+80001014:	2c420007 	sltiu	v0,v0,7
+80001018:	14400006 	bnez	v0,80001034 <deregister_tm_clones+0x34>
+8000101c:	3c190000 	lui	t9,0x0
+80001020:	27390000 	addiu	t9,t9,0
+80001024:	13200003 	beqz	t9,80001034 <deregister_tm_clones+0x34>
+80001028:	00000000 	nop
+8000102c:	03200008 	jr	t9
+80001030:	00000000 	nop
+80001034:	03e00008 	jr	ra
+80001038:	00000000 	nop
+
+8000103c <register_tm_clones>:
+register_tm_clones():
+8000103c:	3c048000 	lui	a0,0x8000
+80001040:	3c028000 	lui	v0,0x8000
+80001044:	248413c4 	addiu	a0,a0,5060
+80001048:	244213c4 	addiu	v0,v0,5060
+8000104c:	00441023 	subu	v0,v0,a0
+80001050:	00021083 	sra	v0,v0,0x2
+80001054:	00022fc2 	srl	a1,v0,0x1f
+80001058:	00a22821 	addu	a1,a1,v0
+8000105c:	00052843 	sra	a1,a1,0x1
+80001060:	10a00006 	beqz	a1,8000107c <register_tm_clones+0x40>
+80001064:	3c190000 	lui	t9,0x0
+80001068:	27390000 	addiu	t9,t9,0
+8000106c:	13200003 	beqz	t9,8000107c <register_tm_clones+0x40>
+80001070:	00000000 	nop
+80001074:	03200008 	jr	t9
+80001078:	00000000 	nop
+8000107c:	03e00008 	jr	ra
+80001080:	00000000 	nop
+
+80001084 <__do_global_dtors_aux>:
+__do_global_dtors_aux():
+80001084:	27bdffd8 	addiu	sp,sp,-40
+80001088:	afb10018 	sw	s1,24(sp)
+8000108c:	3c118000 	lui	s1,0x8000
+80001090:	afbf0024 	sw	ra,36(sp)
+80001094:	afb30020 	sw	s3,32(sp)
+80001098:	afb2001c 	sw	s2,28(sp)
+8000109c:	afb00014 	sw	s0,20(sp)
+800010a0:	922213c4 	lbu	v0,5060(s1)
+800010a4:	14400020 	bnez	v0,80001128 <__do_global_dtors_aux+0xa4>
+800010a8:	3c028000 	lui	v0,0x8000
+800010ac:	3c108000 	lui	s0,0x8000
+800010b0:	244213b8 	addiu	v0,v0,5048
+800010b4:	261013bc 	addiu	s0,s0,5052
+800010b8:	3c138000 	lui	s3,0x8000
+800010bc:	02028023 	subu	s0,s0,v0
+800010c0:	00409025 	move	s2,v0
+800010c4:	00108083 	sra	s0,s0,0x2
+800010c8:	2610ffff 	addiu	s0,s0,-1
+800010cc:	8e6213c8 	lw	v0,5064(s3)
+800010d0:	0050182b 	sltu	v1,v0,s0
+800010d4:	10600009 	beqz	v1,800010fc <__do_global_dtors_aux+0x78>
+800010d8:	24420001 	addiu	v0,v0,1
+800010dc:	ae6213c8 	sw	v0,5064(s3)
+800010e0:	00021080 	sll	v0,v0,0x2
+800010e4:	02421021 	addu	v0,s2,v0
+800010e8:	8c420000 	lw	v0,0(v0)
+800010ec:	0040f809 	jalr	v0
+800010f0:	00000000 	nop
+800010f4:	1000fff6 	b	800010d0 <__do_global_dtors_aux+0x4c>
+800010f8:	8e6213c8 	lw	v0,5064(s3)
+800010fc:	0c000400 	jal	80001000 <deregister_tm_clones>
+80001100:	00000000 	nop
+80001104:	3c020000 	lui	v0,0x0
+80001108:	24420000 	addiu	v0,v0,0
+8000110c:	10400005 	beqz	v0,80001124 <__do_global_dtors_aux+0xa0>
+80001110:	24020001 	li	v0,1
+80001114:	3c048000 	lui	a0,0x8000
+80001118:	0c000000 	jal	80000000 <__app_start>
+8000111c:	248413a0 	addiu	a0,a0,5024
+80001120:	24020001 	li	v0,1
+80001124:	a22213c4 	sb	v0,5060(s1)
+80001128:	8fbf0024 	lw	ra,36(sp)
+8000112c:	8fb30020 	lw	s3,32(sp)
+80001130:	8fb2001c 	lw	s2,28(sp)
+80001134:	8fb10018 	lw	s1,24(sp)
+80001138:	8fb00014 	lw	s0,20(sp)
+8000113c:	03e00008 	jr	ra
+80001140:	27bd0028 	addiu	sp,sp,40
+
+80001144 <frame_dummy>:
+frame_dummy():
+80001144:	3c020000 	lui	v0,0x0
+80001148:	27bdffe8 	addiu	sp,sp,-24
+8000114c:	24420000 	addiu	v0,v0,0
+80001150:	10400006 	beqz	v0,8000116c <frame_dummy+0x28>
+80001154:	afbf0014 	sw	ra,20(sp)
+80001158:	3c048000 	lui	a0,0x8000
+8000115c:	3c058000 	lui	a1,0x8000
+80001160:	248413a0 	addiu	a0,a0,5024
+80001164:	0c000000 	jal	80000000 <__app_start>
+80001168:	24a513cc 	addiu	a1,a1,5068
+8000116c:	3c048000 	lui	a0,0x8000
+80001170:	248413c0 	addiu	a0,a0,5056
+80001174:	8c820000 	lw	v0,0(a0)
+80001178:	10400008 	beqz	v0,8000119c <frame_dummy+0x58>
+8000117c:	8fbf0014 	lw	ra,20(sp)
+80001180:	3c020000 	lui	v0,0x0
+80001184:	24420000 	addiu	v0,v0,0
+80001188:	10400004 	beqz	v0,8000119c <frame_dummy+0x58>
+8000118c:	00000000 	nop
+80001190:	0040f809 	jalr	v0
+80001194:	00000000 	nop
+80001198:	8fbf0014 	lw	ra,20(sp)
+8000119c:	0800040f 	j	8000103c <register_tm_clones>
+800011a0:	27bd0018 	addiu	sp,sp,24
+
+800011a4 <_delay>:
+_delay():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:33
+800011a4:	10800005 	beqz	a0,800011bc <_delay+0x18>
+800011a8:	00001025 	move	v0,zero
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:34 (discriminator 3)
+800011ac:	00000000 	nop
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:33 (discriminator 3)
+800011b0:	24420001 	addiu	v0,v0,1
+800011b4:	1444fffd 	bne	v0,a0,800011ac <_delay+0x8>
+800011b8:	00000000 	nop
+800011bc:	03e00008 	jr	ra
+800011c0:	00000000 	nop
+
+800011c4 <statOut>:
+statOut():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:39
+800011c4:	308400ff 	andi	a0,a0,0xff
+800011c8:	30a5ffff 	andi	a1,a1,0xffff
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:42
+800011cc:	00042400 	sll	a0,a0,0x10
+800011d0:	00852021 	addu	a0,a0,a1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:49
+800011d4:	3c02bf80 	lui	v0,0xbf80
+800011d8:	ac440010 	sw	a0,16(v0)
+800011dc:	03e00008 	jr	ra
+800011e0:	00000000 	nop
+
+800011e4 <stepOut>:
+stepOut():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:55
+800011e4:	24020001 	li	v0,1
+800011e8:	00822004 	sllv	a0,v0,a0
+800011ec:	3084ffff 	andi	a0,a0,0xffff
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:56
+800011f0:	3c02bf80 	lui	v0,0xbf80
+800011f4:	ac440000 	sw	a0,0(v0)
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:57
+800011f8:	ac440004 	sw	a0,4(v0)
+800011fc:	03e00008 	jr	ra
+80001200:	00000000 	nop
+
+80001204 <cacheFlush>:
+cacheFlush():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:62
+80001204:	03e00008 	jr	ra
+80001208:	bc950000 	cache	0x15,0(a0)
+
+8000120c <__do_global_ctors_aux>:
+__do_global_ctors_aux():
+8000120c:	27bdffe0 	addiu	sp,sp,-32
+80001210:	afb00014 	sw	s0,20(sp)
+80001214:	3c108000 	lui	s0,0x8000
+80001218:	afb10018 	sw	s1,24(sp)
+8000121c:	2411ffff 	li	s1,-1
+80001220:	261013b0 	addiu	s0,s0,5040
+80001224:	afbf001c 	sw	ra,28(sp)
+80001228:	8e020000 	lw	v0,0(s0)
+8000122c:	10510005 	beq	v0,s1,80001244 <__do_global_ctors_aux+0x38>
+80001230:	8fbf001c 	lw	ra,28(sp)
+80001234:	0040f809 	jalr	v0
+80001238:	2610fffc 	addiu	s0,s0,-4
+8000123c:	1000fffb 	b	8000122c <__do_global_ctors_aux+0x20>
+80001240:	8e020000 	lw	v0,0(s0)
+80001244:	8fb10018 	lw	s1,24(sp)
+80001248:	8fb00014 	lw	s0,20(sp)
+8000124c:	03e00008 	jr	ra
+80001250:	27bd0020 	addiu	sp,sp,32
+
+80001254 <main>:
+main():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:69
+80001254:	27bdffe8 	addiu	sp,sp,-24
+stepOut():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:56
+80001258:	3c02bf80 	lui	v0,0xbf80
+8000125c:	24040001 	li	a0,1
+main():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:69
+80001260:	afbe0014 	sw	s8,20(sp)
+80001264:	03a0f025 	move	s8,sp
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:75
+80001268:	27bdfcd8 	addiu	sp,sp,-808
+stepOut():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:56
+8000126c:	ac440000 	sw	a0,0(v0)
+main():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:75
+80001270:	03a05825 	move	t3,sp
+stepOut():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:57
+80001274:	ac440004 	sw	a0,4(v0)
+80001278:	03a01825 	move	v1,sp
+main():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:79
+8000127c:	00001025 	move	v0,zero
+80001280:	240400c8 	li	a0,200
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:80 (discriminator 3)
+80001284:	ac620000 	sw	v0,0(v1)
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:79 (discriminator 3)
+80001288:	24420001 	addiu	v0,v0,1
+8000128c:	1444fffd 	bne	v0,a0,80001284 <main+0x30>
+80001290:	24630004 	addiu	v1,v1,4
+80001294:	00006025 	move	t4,zero
+80001298:	00002025 	move	a0,zero
+8000129c:	25690320 	addiu	t1,t3,800
+stepOut():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:56
+800012a0:	3c07bf80 	lui	a3,0xbf80
+800012a4:	240f0002 	li	t7,2
+800012a8:	240e0004 	li	t6,4
+800012ac:	240d0008 	li	t5,8
+main():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:96
+800012b0:	240800c8 	li	t0,200
+800012b4:	24180001 	li	t8,1
+stepOut():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:56
+800012b8:	acef0000 	sw	t7,0(a3)
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:57
+800012bc:	01601025 	move	v0,t3
+800012c0:	acef0004 	sw	t7,4(a3)
+cacheFlush():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:62 (discriminator 3)
+800012c4:	bc550000 	cache	0x15,0(v0)
+800012c8:	24420004 	addiu	v0,v0,4
+main():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:87 (discriminator 3)
+800012cc:	1522fffd 	bne	t1,v0,800012c4 <main+0x70>
+800012d0:	00000000 	nop
+stepOut():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:56
+800012d4:	acee0000 	sw	t6,0(a3)
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:57
+800012d8:	2402000a 	li	v0,10
+800012dc:	acee0004 	sw	t6,4(a3)
+_delay():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:34
+800012e0:	00000000 	nop
+800012e4:	2442ffff 	addiu	v0,v0,-1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:33
+800012e8:	1440fffd 	bnez	v0,800012e0 <main+0x8c>
+800012ec:	00000000 	nop
+stepOut():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:56
+800012f0:	aced0000 	sw	t5,0(a3)
+800012f4:	000c5400 	sll	t2,t4,0x10
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:57
+800012f8:	aced0004 	sw	t5,4(a3)
+800012fc:	01601825 	move	v1,t3
+main():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:97
+80001300:	8d650000 	lw	a1,0(t3)
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:98
+80001304:	24860001 	addiu	a2,a0,1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:97
+80001308:	10a20004 	beq	a1,v0,8000131c <main+0xc8>
+8000130c:	24630004 	addiu	v1,v1,4
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:98
+80001310:	30c4ffff 	andi	a0,a2,0xffff
+statOut():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:42
+80001314:	008a2821 	addu	a1,a0,t2
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:49
+80001318:	ace50010 	sw	a1,16(a3)
+main():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:96 (discriminator 2)
+8000131c:	24420001 	addiu	v0,v0,1
+80001320:	5448fff8 	bnel	v0,t0,80001304 <main+0xb0>
+80001324:	8c650000 	lw	a1,0(v1)
+statOut():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:42
+80001328:	008a5021 	addu	t2,a0,t2
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:49
+8000132c:	acea0010 	sw	t2,16(a3)
+main():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:83
+80001330:	1598ffe1 	bne	t4,t8,800012b8 <main+0x64>
+80001334:	240c0001 	li	t4,1
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:107
+80001338:	24020020 	li	v0,32
+8000133c:	24030010 	li	v1,16
+80001340:	0064100a 	movz	v0,v1,a0
+80001344:	00402025 	move	a0,v0
+stepOut():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:56
+80001348:	3c02bf80 	lui	v0,0xbf80
+8000134c:	ac440000 	sw	a0,0(v0)
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:57
+80001350:	ac440004 	sw	a0,4(v0)
+main():
+C:\ZSL\projects\mipsfpga-plus\programs\04_memtest/main.c:109 (discriminator 1)
+80001354:	1000ffff 	b	80001354 <main+0x100>
+80001358:	00000000 	nop
+8000135c:	00000000 	nop
+
+Disassembly of section .init:
+
+80001360 <_init>:
+_init():
+80001360:	27bdffe0 	addiu	sp,sp,-32
+80001364:	afbf0014 	sw	ra,20(sp)
+80001368:	0c000451 	jal	80001144 <frame_dummy>
+8000136c:	00000000 	nop
+80001370:	0c000483 	jal	8000120c <__do_global_ctors_aux>
+80001374:	00000000 	nop
+
+80001378 <init>:
+init():
+80001378:	8fbf0014 	lw	ra,20(sp)
+8000137c:	03e00008 	jr	ra
+80001380:	27bd0020 	addiu	sp,sp,32
+
+Disassembly of section .fini:
+
+80001384 <_fini>:
+_fini():
+80001384:	27bdffe0 	addiu	sp,sp,-32
+80001388:	afbf0014 	sw	ra,20(sp)
+8000138c:	0c000421 	jal	80001084 <__do_global_dtors_aux>
+80001390:	00000000 	nop
+
+80001394 <fini>:
+fini():
+80001394:	8fbf0014 	lw	ra,20(sp)
+80001398:	03e00008 	jr	ra
+8000139c:	27bd0020 	addiu	sp,sp,32
+
+Disassembly of section .eh_frame:
+
+800013a0 <__EH_FRAME_BEGIN__>:
+800013a0:	00000000 	nop
+
+Disassembly of section .data:
+
+800013a4 <__dso_handle-0x4>:
+800013a4:	00000000 	nop
+
+800013a8 <__dso_handle>:
+	...
+
+Disassembly of section .ctors:
+
+800013b0 <__CTOR_LIST__>:
+800013b0:	ffffffff 	sdc3	$31,-1(ra)
+
+800013b4 <__CTOR_END__>:
+800013b4:	00000000 	nop
+
+Disassembly of section .dtors:
+
+800013b8 <__DTOR_LIST__>:
+800013b8:	ffffffff 	sdc3	$31,-1(ra)
+
+800013bc <__DTOR_END__>:
+800013bc:	00000000 	nop
+
+Disassembly of section .jcr:
+
+800013c0 <__JCR_END__>:
+800013c0:	00000000 	nop
+
+Disassembly of section .bss:
+
+800013c4 <completed.3449>:
+800013c4:	00000000 	nop
+
+800013c8 <dtor_idx.3451>:
+800013c8:	00000000 	nop
+
+800013cc <object.3461>:
+	...
+
+Disassembly of section .debug_line:
+
+00000000 <.debug_line>:
+   0:	000000cd 	break	0x0,0x3
+   4:	001d0002 	srl	zero,sp,0x0
+   8:	01010000 	0x1010000
+   c:	000d0efb 	0xd0efb
+  10:	01010101 	0x1010101
+  14:	01000000 	0x1000000
+  18:	00010000 	sll	zero,at,0x0
+  1c:	746f6f62 	jalx	1bdbd88 <__app_start-0x7e424278>
+  20:	0000532e 	0x532e
+  24:	00000000 	nop
+  28:	00000205 	0x205
+  2c:	10039fc0 	beq	zero,v1,fffe7f30 <__flash_start+0x403e7f30>
+  30:	4b885101 	c2	0x1885101
+  34:	4b4c4b4d 	c2	0x14c4b4d
+  38:	4b4b4b4b 	c2	0x14b4b4b
+  3c:	4b4b4b4b 	c2	0x14b4b4b
+  40:	4b4b4b4b 	c2	0x14b4b4b
+  44:	4b4b4b4b 	c2	0x14b4b4b
+  48:	4b4b4b4b 	c2	0x14b4b4b
+  4c:	4b4b4b4b 	c2	0x14b4b4b
+  50:	4b4b4b4b 	c2	0x14b4b4b
+  54:	4b4b4b4c 	c2	0x14b4b4c
+  58:	4b4d8351 	c2	0x14d8351
+  5c:	4b4d4b4b 	c2	0x14d4b4b
+  60:	4b4c4b4b 	c2	0x14c4b4b
+  64:	4b4c4b4b 	c2	0x14c4b4b
+  68:	4b4c4b4b 	c2	0x14c4b4b
+  6c:	4b4c4b4b 	c2	0x14c4b4b
+  70:	4b4c4b4b 	c2	0x14c4b4b
+  74:	4b4c4b4b 	c2	0x14c4b4b
+  78:	4b4c4b4b 	c2	0x14c4b4b
+  7c:	0a034d4e 	j	80d3538 <__app_start-0x77f2cac8>
+  80:	4b4b4b4a 	c2	0x14b4b4a
+  84:	4b4b4b4d 	c2	0x14b4b4d
+  88:	4d4b4b4b 	0x4d4b4b4b
+  8c:	4b4b4b4b 	c2	0x14b4b4b
+  90:	4b514b4c 	c2	0x1514b4c
+  94:	4b4c4b4b 	c2	0x14c4b4b
+  98:	4c4b4b4c 	0x4c4b4b4c
+  9c:	4c4b4b4b 	0x4c4b4b4b
+  a0:	4b4b4f4b 	c2	0x14b4f4b
+  a4:	4a0c034b 	c2	0xc034b
+  a8:	4c4b4b4b 	0x4c4b4b4b
+  ac:	4b504b83 	c2	0x1504b83
+  b0:	4b4c4b4b 	c2	0x14c4b4b
+  b4:	4c4b4b4c 	0x4c4b4b4c
+  b8:	4c4b4b4b 	0x4c4b4b4b
+  bc:	4b4f4b4b 	c2	0x14f4b4b
+  c0:	834f4b4b 	lb	t7,19275(k0)
+  c4:	4e4b834c 	c3	0x4b834c
+  c8:	4b508683 	c2	0x1508683
+  cc:	01000402 	0x1000402
+  d0:	00017a01 	0x17a01
+  d4:	d9000200 	ldc2	$0,512(t0)
+  d8:	01000000 	0x1000000
+  dc:	0d0efb01 	jal	43bec04 <__app_start-0x7bc413fc>
+  e0:	01010100 	0x1010100
+  e4:	00000001 	movf	zero,zero,$fcc0
+  e8:	01000001 	movf	zero,t0,$fcc0
+  ec:	7a5c3a63 	ld.d	$w9,-3360(a3)
+  f0:	625c6c73 	0x625c6c73
+  f4:	635c6e69 	0x635c6e69
+  f8:	7365646f 	0x7365646f
+  fc:	5c317e63 	0x5c317e63
+ 100:	6c6f6f74 	0x6c6f6f74
+ 104:	317e6863 	andi	s8,t3,0x6863
+ 108:	70696d5c 	udi12	v1,t1,t5,0x15
+ 10c:	746d2d73 	jalx	1b4b5cc <__app_start-0x7e4b4a34>
+ 110:	6c652d69 	0x6c652d69
+ 114:	30325c66 	andi	s2,at,0x5c66
+ 118:	302e3631 	andi	t6,at,0x3631
+ 11c:	33302d35 	andi	s0,t9,0x2d35
+ 120:	70696d5c 	udi12	v1,t1,t5,0x15
+ 124:	746d2d73 	jalx	1b4b5cc <__app_start-0x7e4b4a34>
+ 128:	6c652d69 	0x6c652d69
+ 12c:	6e695c66 	0x6e695c66
+ 130:	64756c63 	0x64756c63
+ 134:	616d5c65 	0x616d5c65
+ 138:	6e696863 	0x6e696863
+ 13c:	3a630065 	xori	v1,s3,0x65
+ 140:	6c737a5c 	0x6c737a5c
+ 144:	6e69625c 	0x6e69625c
+ 148:	646f635c 	0x646f635c
+ 14c:	7e637365 	0x7e637365
+ 150:	6f745c31 	0x6f745c31
+ 154:	68636c6f 	0x68636c6f
+ 158:	6d5c317e 	0x6d5c317e
+ 15c:	2d737069 	sltiu	s3,t3,28777
+ 160:	2d69746d 	sltiu	t1,t3,29805
+ 164:	5c666c65 	0x5c666c65
+ 168:	36313032 	ori	s1,s1,0x3032
+ 16c:	2d35302e 	sltiu	s5,t1,12334
+ 170:	6d5c3330 	0x6d5c3330
+ 174:	2d737069 	sltiu	s3,t3,28777
+ 178:	2d69746d 	sltiu	t1,t3,29805
+ 17c:	5c666c65 	0x5c666c65
+ 180:	6c636e69 	0x6c636e69
+ 184:	00656475 	0x656475
+ 188:	69616d00 	0x69616d00
+ 18c:	00632e6e 	0x632e6e
+ 190:	5f000000 	bgtzl	t8,194 <__app_start-0x7ffffe6c>
+ 194:	61666564 	0x61666564
+ 198:	5f746c75 	0x5f746c75
+ 19c:	65707974 	0x65707974
+ 1a0:	00682e73 	tltu	v1,t0,0xb9
+ 1a4:	73000001 	maddu	t8,zero
+ 1a8:	6e696474 	0x6e696474
+ 1ac:	00682e74 	teq	v1,t0,0xb9
+ 1b0:	00000002 	srl	zero,zero,0x0
+ 1b4:	a4020500 	sh	v0,1280(zero)
+ 1b8:	03800011 	mthi	gp
+ 1bc:	0013011f 	0x13011f
+ 1c0:	83030402 	lb	v1,1026(t8)
+ 1c4:	03040200 	0x3040200
+ 1c8:	01420849 	0x1420849
+ 1cc:	13f78985 	beq	ra,s7,fffe27e4 <__flash_start+0x403e27e4>
+ 1d0:	13be83bb 	beq	sp,s8,fffe10c0 <__flash_start+0x403e10c0>
+ 1d4:	01000802 	0x1000802
+ 1d8:	02050001 	movt	zero,s0,$fcc1
+ 1dc:	80001254 	lb	zero,4692(zero)
+ 1e0:	0100c403 	0x100c403
+ 1e4:	034a7303 	0x34a7303
+ 1e8:	0388820d 	break	0x388,0x208
+ 1ec:	13034a6d 	beq	t8,v1,12ba4 <__app_start-0x7ffed45c>
+ 1f0:	4a6e034a 	c2	0x6e034a
+ 1f4:	00821603 	0x821603
+ 1f8:	83030402 	lb	v1,1026(t8)
+ 1fc:	03040200 	0x3040200
+ 200:	08690349 	j	1a40d24 <__app_start-0x7e5bf2dc>
+ 204:	f2280374 	0xf2280374
+ 208:	4b825803 	c2	0x1825803
+ 20c:	03040200 	0x3040200
+ 210:	04020087 	bltzl	zero,430 <__app_start-0x7ffffbd0>
+ 214:	82190303 	lb	t9,771(s0)
+ 218:	4b826103 	c2	0x1826103
+ 21c:	81826903 	lb	v0,26883(t4)
+ 220:	83821703 	lb	v0,5891(gp)
+ 224:	4b822803 	c2	0x1822803
+ 228:	48038349 	0x48038349
+ 22c:	0200514a 	0x200514a
+ 230:	2f030204 	sltiu	v1,t8,516
+ 234:	ba4a034a 	swr	t2,842(s2)
+ 238:	4a220351 	c2	0x220351
+ 23c:	03821803 	0x3821803
+ 240:	0083f24d 	break	0x83,0x3c9
+ 244:	03010402 	0x3010402
+ 248:	08024a34 	j	928d0 <__app_start-0x7ff6d730>
+ 24c:	Address 0x000000000000024c is out of bounds.
+
+
+Disassembly of section .debug_info:
+
+00000000 <.debug_info>:
+   0:	0000005e 	0x5e
+   4:	00000002 	srl	zero,zero,0x0
+   8:	01040000 	0x1040000
+   c:	00000000 	nop
+  10:	9fc00000 	0x9fc00000
+  14:	9fc0027c 	0x9fc0027c
+  18:	746f6f62 	jalx	1bdbd88 <__app_start-0x7e424278>
+  1c:	4300532e 	c0	0x100532e
+  20:	535a5c3a 	beql	k0,k0,1710c <__app_start-0x7ffe8ef4>
+  24:	72705c4c 	d16madl	xr1,xr7,xr1,xr12,SA,LW
+  28:	63656a6f 	0x63656a6f
+  2c:	6d5c7374 	0x6d5c7374
+  30:	66737069 	0x66737069
+  34:	2d616770 	sltiu	at,t3,26480
+  38:	73756c70 	d32sll	xr1,xr11,xr5,xr13,13
+  3c:	6f72705c 	0x6f72705c
+  40:	6d617267 	0x6d617267
+  44:	34305c73 	ori	s0,at,0x5c73
+  48:	6d656d5f 	0x6d656d5f
+  4c:	74736574 	jalx	1cd95d0 <__app_start-0x7e326a30>
+  50:	554e4700 	bnel	t2,t6,11c54 <__app_start-0x7ffee3ac>
+  54:	20534120 	addi	s3,v0,16672
+  58:	34322e32 	ori	s2,at,0x2e32
+  5c:	0030392e 	0x30392e
+  60:	04348001 	0x4348001
+  64:	00020000 	sll	zero,v0,0x0
+  68:	00000014 	0x14
+  6c:	00700104 	0x700104
+  70:	5a010000 	0x5a010000
+  74:	24000001 	li	zero,1
+  78:	80000000 	lb	zero,0(zero)
+	...
+  84:	d1000000 	0xd1000000
+  88:	02000000 	0x2000000
+  8c:	00d80601 	0xd80601
+  90:	09030000 	j	40c0000 <__app_start-0x7bf40000>
+  94:	02000000 	0x2000000
+  98:	00003b1c 	0x3b1c
+  9c:	08010200 	j	40800 <__app_start-0x7ffbf800>
+  a0:	000000d6 	0xd6
+  a4:	61050202 	0x61050202
+  a8:	03000001 	movf	zero,t8,$fcc0
+  ac:	000000ff 	0xff
+  b0:	00542602 	0x542602
+  b4:	02020000 	0x2020000
+  b8:	0000ec07 	0xec07
+  bc:	05040200 	0x5040200
+  c0:	00000151 	0x151
+  c4:	00010a03 	sra	at,at,0x8
+  c8:	6d380200 	0x6d380200
+  cc:	02000000 	0x2000000
+  d0:	01210704 	0x1210704
+  d4:	08020000 	j	80000 <__app_start-0x7ff80000>
+  d8:	00014c05 	0x14c05
+  dc:	07080200 	tgei	t8,512
+  e0:	0000011c 	0x11c
+  e4:	00000b03 	sra	at,zero,0xc
+  e8:	302a0300 	andi	t2,at,0x300
+  ec:	03000000 	0x3000000
+  f0:	00000101 	0x101
+  f4:	00493603 	0x493603
+  f8:	0c030000 	jal	c0000 <__app_start-0x7ff40000>
+  fc:	03000001 	movf	zero,t8,$fcc0
+ 100:	00006242 	srl	t4,zero,0x9
+ 104:	05040400 	0x5040400
+ 108:	00746e69 	0x746e69
+ 10c:	26070402 	addiu	a3,s0,1026
+ 110:	05000001 	bltz	t0,118 <__app_start-0x7ffffee8>
+ 114:	0000e401 	0xe401
+ 118:	01350100 	0x1350100
+ 11c:	0000d601 	0xd601
+ 120:	016b0600 	0x16b0600
+ 124:	35010000 	ori	at,t0,0x0
+ 128:	00000082 	srl	zero,zero,0x2
+ 12c:	74756f07 	jalx	1d5bc1c <__app_start-0x7e2a43e4>
+ 130:	8d370100 	lw	s7,256(t1)
+ 134:	00000000 	nop
+ 138:	01380105 	0x1380105
+ 13c:	3c010000 	lui	at,0x0
+ 140:	00f00101 	0xf00101
+ 144:	6b060000 	0x6b060000
+ 148:	01000000 	0x1000000
+ 14c:	0000f03c 	0xf03c
+ 150:	04080000 	tgei	zero,0
+ 154:	00000098 	0x98
+ 158:	01150105 	0x1150105
+ 15c:	1f010000 	0x1f010000
+ 160:	011b0101 	0x11b0101
+ 164:	76090000 	jalx	8240000 <__app_start-0x77dc0000>
+ 168:	01006c61 	0x1006c61
+ 16c:	0000981f 	0x981f
+ 170:	69070a00 	0x69070a00
+ 174:	98210100 	lwr	at,256(at)
+ 178:	00000000 	nop
+ 17c:	13010500 	beq	t8,at,1580 <__app_start-0x7fffea80>
+ 180:	01000000 	0x1000000
+ 184:	4b010126 	c2	0x1010126
+ 188:	06000001 	bltz	s0,190 <__app_start-0x7ffffe70>
+ 18c:	00000056 	0x56
+ 190:	00822601 	0x822601
+ 194:	73060000 	madd	t8,a2
+ 198:	01000001 	movf	zero,t0,$fcc0
+ 19c:	00008d26 	0x8d26
+ 1a0:	756f0700 	jalx	5bc1c00 <__app_start-0x7a43e400>
+ 1a4:	2a010074 	slti	at,s0,116
+ 1a8:	00000098 	0x98
+ 1ac:	00f60b00 	0xf60b00
+ 1b0:	11a40000 	beq	t5,a0,1b4 <__app_start-0x7ffffe4c>
+ 1b4:	11c48000 	beq	t6,a0,fffe01b8 <__flash_start+0x403e01b8>
+ 1b8:	8d028000 	lw	v0,-32768(t0)
+ 1bc:	017b0100 	0x17b0100
+ 1c0:	040c0000 	teqi	zero,0
+ 1c4:	01000001 	movf	zero,t0,$fcc0
+ 1c8:	11a40d54 	beq	t5,a0,371c <__app_start-0x7fffc8e4>
+ 1cc:	11c48000 	beq	t6,a0,fffe01d0 <__flash_start+0x403e01d0>
+ 1d0:	100e8000 	beq	zero,t6,fffe01d4 <__flash_start+0x403e01d4>
+ 1d4:	00000001 	movf	zero,zero,$fcc0
+ 1d8:	00000000 	nop
+ 1dc:	011b0b00 	0x11b0b00
+ 1e0:	11c40000 	beq	t6,a0,1e4 <__app_start-0x7ffffe1c>
+ 1e4:	11e48000 	beq	t7,a0,fffe01e8 <__flash_start+0x403e01e8>
+ 1e8:	8d028000 	lw	v0,-32768(t0)
+ 1ec:	01a80100 	0x1a80100
+ 1f0:	290f0000 	slti	t7,t0,0
+ 1f4:	1f000001 	bgtz	t8,1fc <__app_start-0x7ffffe04>
+ 1f8:	0c000000 	jal	0 <__app_start-0x80000000>
+ 1fc:	00000134 	teq	zero,zero,0x4
+ 200:	3f105501 	0x3f105501
+ 204:	01000001 	movf	zero,t0,$fcc0
+ 208:	b10b0054 	0xb10b0054
+ 20c:	e4000000 	swc1	$f0,0(zero)
+ 210:	04800011 	bltz	a0,258 <__app_start-0x7ffffda8>
+ 214:	02800012 	0x2800012
+ 218:	cc01008d 	pref	0x1,141(zero)
+ 21c:	0f000001 	jal	c000004 <__app_start-0x73fffffc>
+ 220:	000000bf 	0xbf
+ 224:	00000040 	ssnop
+ 228:	0000ca11 	0xca11
+ 22c:	d60b0000 	ldc1	$f11,0(s0)
+ 230:	04000000 	bltz	zero,234 <__app_start-0x7ffffdcc>
+ 234:	0c800012 	jal	2000048 <__app_start-0x7dffffb8>
+ 238:	02800012 	0x2800012
+ 23c:	e901008d 	swc2	$1,141(t0)
+ 240:	0c000001 	jal	4 <__app_start-0x7ffffffc>
+ 244:	000000e4 	0xe4
+ 248:	12005401 	beqz	s0,15250 <__app_start-0x7ffeadb0>
+ 24c:	00013301 	0x13301
+ 250:	a3440100 	sb	a0,256(k0)
+ 254:	54000000 	bnezl	zero,258 <__app_start-0x7ffffda8>
+ 258:	5c800012 	bgtzl	a0,2a4 <__app_start-0x7ffffd5c>
+ 25c:	61800013 	0x61800013
+ 260:	01000000 	0x1000000
+ 264:	00000414 	0x414
+ 268:	00006313 	0x6313
+ 26c:	14460100 	bne	v0,a2,670 <__app_start-0x7ffff990>
+ 270:	c8000004 	lwc2	$0,4(zero)
+ 274:	00001b13 	0x1b13
+ 278:	14470100 	bne	v0,a3,67c <__app_start-0x7ffff984>
+ 27c:	0a000004 	j	8000010 <__app_start-0x77fffff0>
+ 280:	00000013 	mtlo	zero
+ 284:	19480100 	0x19480100
+ 288:	02000004 	sllv	zero,zero,s0
+ 28c:	00017314 	0x17314
+ 290:	8d4a0100 	lw	t2,256(t2)
+ 294:	8d000000 	lw	zero,0(t0)
+ 298:	15000000 	bnez	t0,29c <__app_start-0x7ffffd64>
+ 29c:	00727261 	0x727261
+ 2a0:	041e4b01 	0x41e4b01
+ 2a4:	7b020000 	xori.b	$w0,$w0,0x2
+ 2a8:	00b11600 	0xb11600
+ 2ac:	12580000 	beq	s2,t8,2b0 <__app_start-0x7ffffd50>
+ 2b0:	00008000 	sll	s0,zero,0x0
+ 2b4:	4e010000 	lwxc1	$f0,at(s0)
+ 2b8:	0000026d 	0x26d
+ 2bc:	0000bf17 	0xbf17
+ 2c0:	00180000 	sll	zero,t8,0x0
+ 2c4:	19000000 	blez	t0,2c8 <__app_start-0x7ffffd38>
+ 2c8:	000000ca 	0xca
+ 2cc:	1a000001 	blez	s0,2d4 <__app_start-0x7ffffd2c>
+ 2d0:	8000127c 	lb	zero,4732(zero)
+ 2d4:	800012a0 	lb	zero,4768(zero)
+ 2d8:	00000288 	0x288
+ 2dc:	0100691b 	0x100691b
+ 2e0:	0000984f 	0x984f
+ 2e4:	0000ac00 	sll	s5,zero,0x10
+ 2e8:	a01a0000 	sb	k0,0(zero)
+ 2ec:	38800012 	xori	zero,a0,0x12
+ 2f0:	ef800013 	swc3	$0,19(gp)
+ 2f4:	1b000003 	blez	t8,304 <__app_start-0x7ffffcfc>
+ 2f8:	5301006a 	beql	t8,at,4a4 <__app_start-0x7ffffb5c>
+ 2fc:	00000082 	srl	zero,zero,0x2
+ 300:	000000cb 	0xcb
+ 304:	0000b116 	0xb116
+ 308:	0012a000 	sll	s4,s2,0x0
+ 30c:	00002080 	sll	a0,zero,0x2
+ 310:	c8560100 	lwc2	$22,256(v0)
+ 314:	17000002 	bnez	t8,320 <__app_start-0x7ffffce0>
+ 318:	000000bf 	0xbf
+ 31c:	00201801 	movf	v1,at,$fcc0
+ 320:	ca190000 	lwc2	$25,0(s0)
+ 324:	02000000 	0x2000000
+ 328:	b1160000 	0xb1160000
+ 32c:	a8000000 	swl	zero,0(zero)
+ 330:	38800012 	xori	zero,a0,0x12
+ 334:	01000000 	0x1000000
+ 338:	0002ee5b 	0x2ee5b
+ 33c:	00bf1700 	0xbf1700
+ 340:	18020000 	0x18020000
+ 344:	00000038 	0x38
+ 348:	0000ca19 	0xca19
+ 34c:	00000400 	sll	zero,zero,0x10
+ 350:	0000b116 	0xb116
+ 354:	0012ac00 	sll	s5,s2,0x10
+ 358:	00005080 	sll	t2,zero,0x2
+ 35c:	145f0100 	bne	v0,ra,760 <__app_start-0x7ffff8a0>
+ 360:	17000003 	bnez	t8,370 <__app_start-0x7ffffc90>
+ 364:	000000bf 	0xbf
+ 368:	00501803 	0x501803
+ 36c:	ca190000 	lwc2	$25,0(s0)
+ 370:	08000000 	j	0 <__app_start-0x80000000>
+ 374:	681c0000 	0x681c0000
+ 378:	60000000 	0x60000000
+ 37c:	1b000003 	blez	t8,38c <__app_start-0x7ffffc74>
+ 380:	60010069 	0x60010069
+ 384:	00000098 	0x98
+ 388:	000000eb 	0xeb
+ 38c:	00011b1d 	0x11b1d
+ 390:	00131400 	sll	v0,s3,0x10
+ 394:	00131c80 	sll	v1,s3,0x12
+ 398:	0f630180 	jal	d8c0600 <__app_start-0x7273fa00>
+ 39c:	00000134 	teq	zero,zero,0x4
+ 3a0:	0000010a 	0x10a
+ 3a4:	0001290f 	0x1290f
+ 3a8:	00011d00 	sll	v1,at,0x14
+ 3ac:	13140d00 	beq	t8,s4,37b0 <__app_start-0x7fffc850>
+ 3b0:	131c8000 	beq	t8,gp,fffe03b4 <__flash_start+0x403e03b4>
+ 3b4:	3f0e8000 	0x3f0e8000
+ 3b8:	30000001 	andi	zero,zero,0x1
+ 3bc:	00000001 	movf	zero,zero,$fcc0
+ 3c0:	c41a0000 	lwc1	$f26,0(zero)
+ 3c4:	d4800012 	ldc1	$f0,18(a0)
+ 3c8:	90800012 	lbu	zero,18(a0)
+ 3cc:	07000003 	bltz	t8,3dc <__app_start-0x7ffffc24>
+ 3d0:	57010069 	bnel	t8,at,578 <__app_start-0x7ffffa88>
+ 3d4:	00000098 	0x98
+ 3d8:	0000d61d 	0xd61d
+ 3dc:	0012c400 	sll	t8,s2,0x10
+ 3e0:	0012cc80 	sll	t9,s2,0x12
+ 3e4:	0f580180 	jal	d600600 <__app_start-0x729ffa00>
+ 3e8:	000000e4 	0xe4
+ 3ec:	00000143 	sra	zero,zero,0x5
+ 3f0:	f61e0000 	sdc1	$f30,0(s0)
+ 3f4:	e0000000 	sc	zero,0(zero)
+ 3f8:	f0800012 	0xf0800012
+ 3fc:	01800012 	0x1800012
+ 400:	0003bd5c 	0x3bd5c
+ 404:	01041700 	0x1041700
+ 408:	0d0a0000 	jal	4280000 <__app_start-0x7bd80000>
+ 40c:	800012e0 	lb	zero,4832(zero)
+ 410:	800012f0 	lb	zero,4848(zero)
+ 414:	0001100e 	0x1100e
+ 418:	00016300 	sll	t4,at,0xc
+ 41c:	1d000000 	bgtz	t0,420 <__app_start-0x7ffffbe0>
+ 420:	0000011b 	0x11b
+ 424:	80001328 	lb	zero,4904(zero)
+ 428:	80001330 	lb	zero,4912(zero)
+ 42c:	340f6601 	li	t7,0x6601
+ 430:	98000001 	lwr	zero,1(zero)
+ 434:	0c000001 	jal	4 <__app_start-0x7ffffffc>
+ 438:	00000129 	0x129
+ 43c:	280d5c01 	slti	t5,zero,23553
+ 440:	30800013 	andi	zero,a0,0x13
+ 444:	10800013 	beqz	a0,494 <__app_start-0x7ffffb6c>
+ 448:	0000013f 	0x13f
+ 44c:	00005a01 	0x5a01
+ 450:	00b11d00 	0xb11d00
+ 454:	13480000 	beq	k0,t0,458 <__app_start-0x7ffffba8>
+ 458:	13548000 	beq	k0,s4,fffe045c <__flash_start+0x403e045c>
+ 45c:	6b018000 	0x6b018000
+ 460:	0000bf1f 	0xbf1f
+ 464:	13480d00 	beq	k0,t0,3868 <__app_start-0x7fffc798>
+ 468:	13548000 	beq	k0,s4,fffe046c <__flash_start+0x403e046c>
+ 46c:	ca118000 	lwc2	$17,-32768(s0)
+ 470:	00000000 	nop
+ 474:	98200000 	lwr	zero,0(at)
+ 478:	20000000 	addi	zero,zero,0
+ 47c:	00000082 	srl	zero,zero,0x2
+ 480:	00009821 	move	s3,zero
+ 484:	00043000 	sll	a2,a0,0x0
+ 488:	04302200 	bltzal	at,8c8c <__app_start-0x7fff7374>
+ 48c:	08020000 	j	80000 <__app_start-0x7ff80000>
+ 490:	040200c7 	bltzl	zero,7b0 <__app_start-0x7ffff850>
+ 494:	00014307 	0x14307
+	...
+
+Disassembly of section .debug_abbrev:
+
+00000000 <.debug_abbrev>:
+   0:	10001101 	b	4408 <__app_start-0x7fffbbf8>
+   4:	12011106 	beq	s0,at,4420 <__app_start-0x7fffbbe0>
+   8:	1b080301 	0x1b080301
+   c:	13082508 	beq	t8,t0,9430 <__app_start-0x7fff6bd0>
+  10:	00000005 	lsa	zero,zero,zero,0x1
+  14:	25011101 	addiu	at,t0,4353
+  18:	030b130e 	0x30b130e
+  1c:	550e1b0e 	bnel	t0,t6,6c58 <__app_start-0x7fff93a8>
+  20:	52011106 	beql	s0,at,443c <__app_start-0x7fffbbc4>
+  24:	00061001 	0x61001
+  28:	00240200 	0x240200
+  2c:	0b3e0b0b 	j	cf82c2c <__app_start-0x7307d3d4>
+  30:	00000e03 	sra	at,zero,0x18
+  34:	03001603 	0x3001603
+  38:	3b0b3a0e 	xori	t3,t8,0x3a0e
+  3c:	0013490b 	0x13490b
+  40:	00240400 	0x240400
+  44:	0b3e0b0b 	j	cf82c2c <__app_start-0x7307d3d4>
+  48:	00000803 	sra	at,zero,0x0
+  4c:	3f012e05 	0x3f012e05
+  50:	3a0e030c 	xori	t6,s0,0x30c
+  54:	270b3b0b 	addiu	t3,t8,15115
+  58:	010b200c 	syscall	0x42c80
+  5c:	06000013 	bltz	s0,ac <__app_start-0x7fffff54>
+  60:	0e030005 	jal	80c0014 <__app_start-0x77f3ffec>
+  64:	0b3b0b3a 	j	cec2ce8 <__app_start-0x7313d318>
+  68:	00001349 	0x1349
+  6c:	03003407 	0x3003407
+  70:	3b0b3a08 	xori	t3,t8,0x3a08
+  74:	0013490b 	0x13490b
+  78:	000f0800 	sll	at,t7,0x0
+  7c:	13490b0b 	beq	k0,t1,2cac <__app_start-0x7fffd354>
+  80:	05090000 	tgeiu	t0,0
+  84:	3a080300 	xori	t0,s0,0x300
+  88:	490b3b0b 	bc2tl	$cc2,ecb8 <__app_start-0x7fff1348>
+  8c:	0a000013 	j	800004c <__app_start-0x77ffffb4>
+  90:	0000010b 	0x10b
+  94:	31012e0b 	andi	at,t0,0x2e0b
+  98:	12011113 	beq	s0,at,44e8 <__app_start-0x7fffbb18>
+  9c:	970a4001 	lhu	t2,16385(t8)
+  a0:	13010c42 	beq	t8,at,31ac <__app_start-0x7fffce54>
+  a4:	050c0000 	teqi	t0,0
+  a8:	02133100 	0x2133100
+  ac:	0d00000a 	jal	4000028 <__app_start-0x7bffffd8>
+  b0:	0111010b 	0x111010b
+  b4:	00000112 	0x112
+  b8:	3100340e 	andi	zero,t0,0x340e
+  bc:	00060213 	0x60213
+  c0:	00050f00 	sll	at,a1,0x1c
+  c4:	06021331 	bltzl	s0,4d8c <__app_start-0x7fffb274>
+  c8:	34100000 	li	s0,0x0
+  cc:	02133100 	0x2133100
+  d0:	1100000a 	beqz	t0,fc <__app_start-0x7fffff04>
+  d4:	13310034 	beq	t9,s1,1a8 <__app_start-0x7ffffe58>
+  d8:	2e120000 	sltiu	s2,s0,0
+  dc:	030c3f01 	0x30c3f01
+  e0:	3b0b3a0e 	xori	t3,t8,0x3a0e
+  e4:	1113490b 	beq	t0,s3,12514 <__app_start-0x7ffedaec>
+  e8:	40011201 	0x40011201
+  ec:	0c429706 	jal	10a5c18 <__app_start-0x7ef5a3e8>
+  f0:	00001301 	0x1301
+  f4:	03003413 	0x3003413
+  f8:	3b0b3a0e 	xori	t3,t8,0x3a0e
+  fc:	1c13490b 	0x1c13490b
+ 100:	1400000b 	bnez	zero,130 <__app_start-0x7ffffed0>
+ 104:	0e030034 	jal	80c00d0 <__app_start-0x77f3ff30>
+ 108:	0b3b0b3a 	j	cec2ce8 <__app_start-0x7313d318>
+ 10c:	06021349 	bltzl	s0,4e34 <__app_start-0x7fffb1cc>
+ 110:	34150000 	li	s5,0x0
+ 114:	3a080300 	xori	t0,s0,0x300
+ 118:	490b3b0b 	bc2tl	$cc2,ed48 <__app_start-0x7fff12b8>
+ 11c:	000a0213 	0xa0213
+ 120:	011d1600 	0x11d1600
+ 124:	01521331 	tgeu	t2,s2,0x4c
+ 128:	0b580655 	j	d601954 <__app_start-0x729fe6ac>
+ 12c:	13010b59 	beq	t8,at,2e94 <__app_start-0x7fffd16c>
+ 130:	05170000 	0x5170000
+ 134:	1c133100 	0x1c133100
+ 138:	1800000b 	blez	zero,168 <__app_start-0x7ffffe98>
+ 13c:	0655010b 	0x655010b
+ 140:	34190000 	li	t9,0x0
+ 144:	1c133100 	0x1c133100
+ 148:	1a00000b 	blez	s0,178 <__app_start-0x7ffffe88>
+ 14c:	0111010b 	0x111010b
+ 150:	13010112 	beq	t8,at,59c <__app_start-0x7ffffa64>
+ 154:	341b0000 	li	k1,0x0
+ 158:	3a080300 	xori	t0,s0,0x300
+ 15c:	490b3b0b 	bc2tl	$cc2,ed8c <__app_start-0x7fff1274>
+ 160:	00060213 	0x60213
+ 164:	010b1c00 	0x10b1c00
+ 168:	13010655 	beq	t8,at,1ac0 <__app_start-0x7fffe540>
+ 16c:	1d1d0000 	0x1d1d0000
+ 170:	11133101 	beq	t0,s3,c578 <__app_start-0x7fff3a88>
+ 174:	58011201 	0x58011201
+ 178:	000b590b 	0xb590b
+ 17c:	011d1e00 	0x11d1e00
+ 180:	01111331 	tgeu	t0,s1,0x4c
+ 184:	0b580112 	j	d600448 <__app_start-0x729ffbb8>
+ 188:	13010b59 	beq	t8,at,2ef0 <__app_start-0x7fffd110>
+ 18c:	051f0000 	synci	0(t0)
+ 190:	00133100 	sll	a2,s3,0x4
+ 194:	00262000 	0x262000
+ 198:	00001349 	0x1349
+ 19c:	49010121 	bc2t	624 <__app_start-0x7ffff9dc>
+ 1a0:	00130113 	0x130113
+ 1a4:	00212200 	0x212200
+ 1a8:	0a2f1349 	j	8bc4d24 <__app_start-0x7743b2dc>
+ 1ac:	Address 0x00000000000001ac is out of bounds.
+
+
+Disassembly of section .debug_aranges:
+
+00000000 <.debug_aranges>:
+   0:	0000001c 	0x1c
+   4:	00000002 	srl	zero,zero,0x0
+   8:	00040000 	sll	zero,a0,0x0
+   c:	00000000 	nop
+  10:	9fc00000 	0x9fc00000
+  14:	0000027c 	0x27c
+	...
+  20:	00000024 	and	zero,zero,zero
+  24:	00620002 	0x620002
+  28:	00040000 	sll	zero,a0,0x0
+  2c:	00000000 	nop
+  30:	800011a4 	lb	zero,4516(zero)
+  34:	00000068 	0x68
+  38:	80001254 	lb	zero,4692(zero)
+  3c:	00000108 	0x108
+	...
+
+Disassembly of section .debug_loc:
+
+00000000 <.debug_loc>:
+   0:	800011a4 	lb	zero,4516(zero)
+   4:	800011ac 	lb	zero,4524(zero)
+   8:	9f300002 	0x9f300002
+   c:	800011ac 	lb	zero,4524(zero)
+  10:	800011bc 	lb	zero,4540(zero)
+  14:	00520001 	0x520001
+  18:	00000000 	nop
+  1c:	c4000000 	lwc1	$f0,0(zero)
+  20:	d0800011 	0xd0800011
+  24:	01800011 	mthi	t4
+  28:	11d05400 	beq	t6,s0,1502c <__app_start-0x7ffeafd4>
+  2c:	11e48000 	beq	t7,a0,fffe0030 <__flash_start+0x403e0030>
+  30:	00048000 	sll	s0,a0,0x0
+  34:	9f5401f3 	0x9f5401f3
+	...
+  40:	800011e4 	lb	zero,4580(zero)
+  44:	800011ec 	lb	zero,4588(zero)
+  48:	ec540001 	swc3	$20,1(v0)
+  4c:	04800011 	bltz	a0,94 <__app_start-0x7fffff6c>
+  50:	04800012 	bltz	a0,9c <__app_start-0x7fffff64>
+  54:	5401f300 	bnel	zero,at,ffffcc58 <__flash_start+0x403fcc58>
+  58:	0000009f 	0x9f
+  5c:	00000000 	nop
+  60:	00125400 	sll	t2,s2,0x10
+  64:	00125880 	sll	t3,s2,0x2
+  68:	8d000280 	lw	zero,640(t0)
+  6c:	00125800 	sll	t3,s2,0x0
+  70:	00126880 	sll	t5,s2,0x2
+  74:	8d000280 	lw	zero,640(t0)
+  78:	00126818 	0x126818
+  7c:	00135c80 	sll	t3,s3,0x12
+  80:	8e000280 	lw	zero,640(s0)
+  84:	00000018 	mult	zero,zero
+  88:	00000000 	nop
+  8c:	00125400 	sll	t2,s2,0x10
+  90:	0012b880 	sll	s7,s2,0x2
+  94:	30000280 	andi	zero,zero,0x280
+  98:	0012b89f 	0x12b89f
+  9c:	00134880 	sll	t1,s3,0x2
+  a0:	54000180 	bnezl	zero,6a4 <__app_start-0x7ffff95c>
+  a4:	00000000 	nop
+  a8:	00000000 	nop
+  ac:	80001278 	lb	zero,4728(zero)
+  b0:	80001284 	lb	zero,4740(zero)
+  b4:	9f300002 	0x9f300002
+  b8:	80001284 	lb	zero,4740(zero)
+  bc:	800012b8 	lb	zero,4792(zero)
+  c0:	00520001 	0x520001
+  c4:	00000000 	nop
+  c8:	b8000000 	swr	zero,0(zero)
+  cc:	30800012 	andi	zero,a0,0x12
+  d0:	01800013 	mtlo	t4
+  d4:	13305c00 	beq	t9,s0,170d8 <__app_start-0x7ffe8f28>
+  d8:	135c8000 	beq	k0,gp,fffe00dc <__flash_start+0x403e00dc>
+  dc:	00038000 	sll	s0,v1,0x0
+  e0:	009f017c 	0x9f017c
+  e4:	00000000 	nop
+  e8:	fc000000 	sdc3	$0,0(zero)
+  ec:	00800012 	0x800012
+  f0:	02800013 	mtlo	s4
+  f4:	009f3000 	0x9f3000
+  f8:	3c800013 	0x3c800013
+  fc:	01800013 	mtlo	t4
+ 100:	00005200 	sll	t2,zero,0x8
+ 104:	00000000 	nop
+ 108:	13140000 	beq	t8,s4,10c <__app_start-0x7ffffef4>
+ 10c:	131c8000 	beq	t8,gp,fffe0110 <__flash_start+0x403e0110>
+ 110:	00018000 	sll	s0,at,0x0
+ 114:	00000054 	0x54
+ 118:	00000000 	nop
+ 11c:	00131400 	sll	v0,s3,0x10
+ 120:	00131c80 	sll	v1,s3,0x12
+ 124:	5c000180 	bgtzl	zero,728 <__app_start-0x7ffff8d8>
+ 128:	00000000 	nop
+ 12c:	00000000 	nop
+ 130:	80001318 	lb	zero,4888(zero)
+ 134:	8000131c 	lb	zero,4892(zero)
+ 138:	00550001 	movt	zero,v0,$fcc5
+ 13c:	00000000 	nop
+ 140:	c4000000 	lwc1	$f0,0(zero)
+ 144:	cc800012 	pref	0x0,18(a0)
+ 148:	01800012 	0x1800012
+ 14c:	12cc5200 	beq	s6,t4,14950 <__app_start-0x7ffeb6b0>
+ 150:	12dc8000 	beq	s6,gp,fffe0154 <__flash_start+0x403e0154>
+ 154:	00038000 	sll	s0,v1,0x0
+ 158:	009f7c72 	tlt	a0,ra,0x1f1
+ 15c:	00000000 	nop
+ 160:	e0000000 	sc	zero,0(zero)
+ 164:	e4800012 	swc1	$f0,18(a0)
+ 168:	05800012 	bltz	t4,1b4 <__app_start-0x7ffffe4c>
+ 16c:	00723a00 	0x723a00
+ 170:	12e49f1c 	beq	s7,a0,fffe7de4 <__flash_start+0x403e7de4>
+ 174:	12e88000 	beq	s7,t0,fffe0178 <__flash_start+0x403e0178>
+ 178:	00058000 	sll	s0,a1,0x0
+ 17c:	1c00723b 	bgtz	zero,1ca6c <__app_start-0x7ffe3594>
+ 180:	0012e89f 	0x12e89f
+ 184:	00130080 	sll	zero,s3,0x2
+ 188:	3a000580 	xori	zero,s0,0x580
+ 18c:	9f1c0072 	0x9f1c0072
+	...
+ 198:	80001328 	lb	zero,4904(zero)
+ 19c:	80001348 	lb	zero,4936(zero)
+ 1a0:	00540001 	movf	zero,v0,$fcc5
+ 1a4:	00000000 	nop
+ 1a8:	Address 0x00000000000001a8 is out of bounds.
+
+
+Disassembly of section .debug_ranges:
+
+00000000 <.debug_ranges>:
+   0:	80001258 	lb	zero,4696(zero)
+   4:	80001260 	lb	zero,4704(zero)
+   8:	8000126c 	lb	zero,4716(zero)
+   c:	80001270 	lb	zero,4720(zero)
+  10:	80001274 	lb	zero,4724(zero)
+  14:	8000127c 	lb	zero,4732(zero)
+	...
+  20:	800012a0 	lb	zero,4768(zero)
+  24:	800012a8 	lb	zero,4776(zero)
+  28:	800012b8 	lb	zero,4792(zero)
+  2c:	800012c4 	lb	zero,4804(zero)
+	...
+  38:	800012a8 	lb	zero,4776(zero)
+  3c:	800012ac 	lb	zero,4780(zero)
+  40:	800012d4 	lb	zero,4820(zero)
+  44:	800012e0 	lb	zero,4832(zero)
+	...
+  50:	800012ac 	lb	zero,4780(zero)
+  54:	800012b0 	lb	zero,4784(zero)
+  58:	800012f0 	lb	zero,4848(zero)
+  5c:	80001300 	lb	zero,4864(zero)
+	...
+  68:	800012b0 	lb	zero,4784(zero)
+  6c:	800012b8 	lb	zero,4792(zero)
+  70:	80001300 	lb	zero,4864(zero)
+  74:	80001328 	lb	zero,4904(zero)
+	...
+  80:	800011a4 	lb	zero,4516(zero)
+  84:	8000120c 	lb	zero,4620(zero)
+  88:	80001254 	lb	zero,4692(zero)
+  8c:	8000135c 	lb	zero,4956(zero)
+	...
+
+Disassembly of section .debug_str:
+
+00000000 <.debug_str>:
+   0:	63656863 	0x63656863
+   4:	746e436b 	jalx	1b90dac <__app_start-0x7e46f254>
+   8:	755f5f00 	jalx	57d7c00 <__app_start-0x7a828400>
+   c:	38746e69 	xori	s4,v1,0x6e69
+  10:	7300745f 	udi15	t8,zero,t6,0x11
+  14:	4f746174 	c3	0x1746174
+  18:	64007475 	0x64007475
+  1c:	79616c65 	st.h	$w17,706(t5)
+  20:	00746e43 	0x746e43
+  24:	5a5c3a43 	0x5a5c3a43
+  28:	705c4c53 	udi3	v0,gp,t1,0x11
+  2c:	656a6f72 	0x656a6f72
+  30:	5c737463 	0x5c737463
+  34:	7370696d 	s16sdi	xr5,k1,52,
+  38:	61677066 	0x61677066
+  3c:	756c702d 	jalx	5b1c0b4 <__app_start-0x7a4e3f4c>
+  40:	72705c73 	d32sar	xr1,xr7,xr1,xr12,9
+  44:	6172676f 	0x6172676f
+  48:	305c736d 	andi	gp,v0,0x736d
+  4c:	656d5f34 	0x656d5f34
+  50:	7365746d 	s16sdi	xr1,k1,-326,ptn0
+  54:	74690074 	jalx	1a401d0 <__app_start-0x7e5bfe30>
+  58:	74617265 	jalx	185c994 <__app_start-0x7e7a366c>
+  5c:	4e6e6f69 	msub.d	$f29,$f19,$f13,$f14
+  60:	61006d75 	0x61006d75
+  64:	69537272 	0x69537272
+  68:	6100657a 	0x6100657a
+  6c:	00726464 	0x726464
+  70:	20554e47 	addi	s5,v0,20039
+  74:	2e342043 	sltiu	s4,s1,8259
+  78:	20322e39 	addi	s2,at,11833
+  7c:	6c656d2d 	0x6c656d2d
+  80:	616d2d20 	0x616d2d20
+  84:	3d686372 	0x3d686372
+  88:	6b34316d 	0x6b34316d
+  8c:	6d2d2063 	0x6d2d2063
+  90:	74666f73 	jalx	199bdcc <__app_start-0x7e664234>
+  94:	6f6c662d 	0x6f6c662d
+  98:	2d207461 	sltiu	zero,t1,29793
+  9c:	746c706d 	jalx	1b1c1b4 <__app_start-0x7e4e3e4c>
+  a0:	696d2d20 	0x696d2d20
+  a4:	32337370 	andi	s3,s1,0x7370
+  a8:	2d203272 	sltiu	zero,t1,12914
+  ac:	6e79736d 	0x6e79736d
+  b0:	2d206963 	sltiu	zero,t1,26979
+  b4:	6962616d 	0x6962616d
+  b8:	2032333d 	addi	s2,at,13117
+  bc:	2d20672d 	sltiu	zero,t1,26413
+  c0:	61776467 	0x61776467
+  c4:	322d6672 	andi	t5,s1,0x6672
+  c8:	324f2d20 	andi	t7,s2,0x2d20
+  cc:	74732d20 	jalx	1ccb480 <__app_start-0x7e334b80>
+  d0:	39633d64 	xori	v1,t3,0x3d64
+  d4:	6e750039 	0x6e750039
+  d8:	6e676973 	0x6e676973
+  dc:	63206465 	0x63206465
+  e0:	00726168 	0x726168
+  e4:	70657473 	d32sar	xr1,xr13,xr5,xr9,1
+  e8:	0074754f 	0x74754f
+  ec:	726f6873 	d32sar	xr1,xr10,xr13,xr11,9
+  f0:	6e752074 	0x6e752074
+  f4:	6e676973 	0x6e676973
+  f8:	69206465 	0x69206465
+  fc:	5f00746e 	bgtzl	t8,1d2b8 <__app_start-0x7ffe2d48>
+ 100:	6e69755f 	0x6e69755f
+ 104:	5f363174 	0x5f363174
+ 108:	5f5f0074 	0x5f5f0074
+ 10c:	746e6975 	jalx	1b9a5d4 <__app_start-0x7e465a2c>
+ 110:	745f3233 	jalx	17cc8cc <__app_start-0x7e833734>
+ 114:	65645f00 	0x65645f00
+ 118:	0079616c 	0x79616c
+ 11c:	676e6f6c 	0x676e6f6c
+ 120:	6e6f6c20 	0x6e6f6c20
+ 124:	6e752067 	0x6e752067
+ 128:	6e676973 	0x6e676973
+ 12c:	69206465 	0x69206465
+ 130:	6d00746e 	0x6d00746e
+ 134:	006e6961 	0x6e6961
+ 138:	68636163 	0x68636163
+ 13c:	756c4665 	jalx	5b11994 <__app_start-0x7a4ee66c>
+ 140:	73006873 	d32sar	xr1,xr10,xr1,xr0,12
+ 144:	74657a69 	jalx	195e9a4 <__app_start-0x7e6a165c>
+ 148:	00657079 	0x657079
+ 14c:	676e6f6c 	0x676e6f6c
+ 150:	6e6f6c20 	0x6e6f6c20
+ 154:	6e692067 	0x6e692067
+ 158:	616d0074 	0x616d0074
+ 15c:	632e6e69 	0x632e6e69
+ 160:	6f687300 	0x6f687300
+ 164:	69207472 	0x69207472
+ 168:	7300746e 	0x7300746e
+ 16c:	4e706574 	c3	0x706574
+ 170:	65006d75 	0x65006d75
+ 174:	6f437272 	0x6f437272
+ 178:	00746e75 	0x746e75
+
+Disassembly of section .debug_frame:
+
+00000000 <.debug_frame>:
+   0:	0000000c 	syscall
+   4:	ffffffff 	sdc3	$31,-1(ra)
+   8:	7c010001 	0x7c010001
+   c:	001d0d1f 	0x1d0d1f
+  10:	0000000c 	syscall
+  14:	00000000 	nop
+  18:	800011a4 	lb	zero,4516(zero)
+  1c:	00000020 	add	zero,zero,zero
+  20:	0000000c 	syscall
+  24:	00000000 	nop
+  28:	800011c4 	lb	zero,4548(zero)
+  2c:	00000020 	add	zero,zero,zero
+  30:	0000000c 	syscall
+  34:	00000000 	nop
+  38:	800011e4 	lb	zero,4580(zero)
+  3c:	00000020 	add	zero,zero,zero
+  40:	0000000c 	syscall
+  44:	00000000 	nop
+  48:	80001204 	lb	zero,4612(zero)
+  4c:	00000008 	jr	zero
+  50:	00000018 	mult	zero,zero
+  54:	00000000 	nop
+  58:	80001254 	lb	zero,4692(zero)
+  5c:	00000108 	0x108
+  60:	4c180e44 	0x4c180e44
+  64:	0d44019e 	jal	5100678 <__app_start-0x7aeff988>
+  68:	0000001e 	0x1e
