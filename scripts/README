@@ -1,3 +1,11 @@
 
-Use init_linux.sh to replace all the *.bat (build, simulation and etc.) files with their linux analogs (*.sh).
-Batch init_windows.bat provides the reverse action.
+Scripts description:
+
+init_linux.sh     - repleces all the programs/*/*.bat (build, simulation and etc.) files with their linux analogs (*.sh).
+init_windows.bat  - provides the reverse action
+init_clear.*      - clears all the *.bat and *.sh files from programs/*/* to use only makefile
+
+*Release notes:
+-Do you have installed and properly configured the MIPS compiler to run properly the scripts
+-Do you have installed Modelsim to run properly the 06_simulate_with_modelsim.sh script
+-Do you have installed icarus verilog to run properly the 07_simulate_with_icarus.sh script
