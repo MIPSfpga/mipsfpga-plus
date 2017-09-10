@@ -8,10 +8,10 @@ GDB = mips-mti-elf-gdb
 
 #OS dependent
 # HEX splitter
-HS = ../utilities/ad_hoc_program_hex_splitter
+HS = ../../scripts/utilities/ad_hoc_program_hex_splitter
 
 ifeq ($(OS), Windows_NT)
-	HS = ../utilities/ad_hoc_program_hex_splitter.exe
+	HS = ../../scripts/utilities/ad_hoc_program_hex_splitter.exe
 endif
 
 # -EL           - Little-endian
