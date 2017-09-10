@@ -84,48 +84,7 @@ module mfp_ahb_lite_matrix_with_loader
 
     output        MFP_Reset
 );
-
-    wire [7:0] char_data;
-    wire       char_ready;
-
-    mfp_uart_receiver mfp_uart_receiver
-    (
-        .clock      ( HCLK       ),
-        .reset_n    ( HRESETn    ),
-        .rx         ( UART_RX    ),
-        .byte_data  ( char_data  ),
-        .byte_ready ( char_ready )
-    );                     
-
-    wire        in_progress;
-    wire        format_error;
-    wire        checksum_error;
-    wire [ 7:0] error_location;
-
-    wire [31:0] write_address;
-    wire [ 7:0] write_byte;
-    wire        write_enable;
-
-//    assign IO_RedLEDs = { in_progress, format_error, checksum_error, write_enable, write_address [31:0] };
-
-    mfp_srec_parser mfp_srec_parser
-    (
-        .clock           ( HCLK           ),
-        .reset_n         ( HRESETn        ),
-
-        .char_data       ( char_data      ),
-        .char_ready      ( char_ready     ), 
-
-        .in_progress     ( in_progress    ),
-        .format_error    ( format_error   ),
-        .checksum_error  ( checksum_error ),
-        .error_location  ( error_location ),
-
-        .write_address   ( write_address  ),
-        .write_byte      ( write_byte     ),
-        .write_enable    ( write_enable   )
-    );
-
+    wire   in_progress;
     assign MFP_Reset = in_progress;
 
     wire [31:0] loader_HADDR;
@@ -137,24 +96,22 @@ module mfp_ahb_lite_matrix_with_loader
     wire [31:0] loader_HWDATA;
     wire        loader_HWRITE;
 
-    mfp_srec_parser_to_ahb_lite_bridge mfp_srec_parser_to_ahb_lite_bridge
+    mfp_uart_loader loader
     (
-        .clock          ( HCLK             ),
-        .reset_n        ( HRESETn          ),
-        .big_endian     ( SI_Endian        ),
-    
-        .write_address  ( write_address    ),
-        .write_byte     ( write_byte       ),
-        .write_enable   ( write_enable     ), 
-    
-        .HADDR          ( loader_HADDR     ),
-        .HBURST         ( loader_HBURST    ),
-        .HMASTLOCK      ( loader_HMASTLOCK ),
-        .HPROT          ( loader_HPROT     ),
-        .HSIZE          ( loader_HSIZE     ),
-        .HTRANS         ( loader_HTRANS    ),
-        .HWDATA         ( loader_HWDATA    ),
-        .HWRITE         ( loader_HWRITE    )
+        .HCLK             ( HCLK             ),
+        .HRESETn          ( HRESETn          ),
+        .loader_HADDR     ( loader_HADDR     ),
+        .loader_HBURST    ( loader_HBURST    ),
+        .loader_HMASTLOCK ( loader_HMASTLOCK ),
+        .loader_HPROT     ( loader_HPROT     ),
+        .loader_HSIZE     ( loader_HSIZE     ),
+        .loader_HTRANS    ( loader_HTRANS    ),
+        .loader_HWDATA    ( loader_HWDATA    ),
+        .loader_HWRITE    ( loader_HWRITE    ),
+
+        .UART_RX          ( UART_RX          ),
+
+        .loader_Busy      ( in_progress      )
     );
 
     mfp_ahb_lite_matrix matrix

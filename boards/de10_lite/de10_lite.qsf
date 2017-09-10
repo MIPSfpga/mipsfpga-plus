@@ -443,7 +443,7 @@ set_global_assignment -name VERILOG_FILE ../../../system_rtl/mfp_srec_parser_to_
 set_global_assignment -name VERILOG_FILE ../../../system_rtl/mfp_switch_and_button_debouncers.v
 set_global_assignment -name VERILOG_FILE ../../../system_rtl/mfp_system.v
 set_global_assignment -name VERILOG_FILE ../../../system_rtl/mfp_uart_receiver.v
-
+set_global_assignment -name VERILOG_FILE ../../../system_rtl/mfp_uart_loader.v
 
 set_global_assignment -name VERILOG_FILE ../../../system_rtl/uart16550/raminfr.v
 set_global_assignment -name VERILOG_FILE ../../../system_rtl/uart16550/uart_receiver.v
