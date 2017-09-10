@@ -19,7 +19,7 @@ endif
 # -msoft-float  - should not use floating-point processor instructions
 # -O2           - optimization level
 # -std=c99		- C99 lang standard options enabled
-CFLAGS  = -EL -march=m14kc -msoft-float -O2 #-std=c99 
+CFLAGS  = -EL -march=m14kc -msoft-float -O2 -std=c99 
 LDFLAGS = -EL -march=m14kc -msoft-float -Wl,-Map=program.map
 
 # -g -gdwarf-2  - debug symbols to use with gdb

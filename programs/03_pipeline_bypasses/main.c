@@ -15,16 +15,16 @@ int main ()
         {
             for (;;)
             {
-                asm ("addiu $9,  $8, 1");
-                asm ("addiu $10, $9, 1");
+                __asm__ volatile ("addiu $9,  $8, 1");
+                __asm__ volatile ("addiu $10, $9, 1");
             }
         }
         else
         {
             for (;;)
             {
-                asm ("addiu $9,  $8, 1");
-                asm ("addiu $10, $8, 1");
+                __asm__ volatile ("addiu $9,  $8, 1");
+                __asm__ volatile ("addiu $10, $8, 1");
             }
         }
     }
