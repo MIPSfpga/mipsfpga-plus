@@ -13,6 +13,7 @@ HS = ../../scripts/utilities/ad_hoc_program_hex_splitter
 OCD = openocd
 OCD_MPSSE = ../../scripts/load/mfp_mpsse.cfg
 OCD_BUSB3 = ../../scripts/load/mfp_busbluster.cfg
+GDB_CLOAD = ../../scripts/load/commands.gdb
 
 ifeq ($(OS), Windows_NT)
 	HS  = ../../scripts/utilities/ad_hoc_program_hex_splitter.exe
@@ -112,7 +113,7 @@ debug:
 	$(info Please check that OpenOCD is running and successfully connected to the CPU)
 	$(info )
 
-	$(GDB) --command=./commands.gdb
+	$(GDB) --command=$(GDB_CLOAD)
 
 # runing OpenOCD with MPSSE debugger
 ocd_mpsse:
