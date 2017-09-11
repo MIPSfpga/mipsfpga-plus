@@ -9,9 +9,14 @@ GDB = mips-mti-elf-gdb
 #OS dependent
 # HEX splitter
 HS = ../../scripts/utilities/ad_hoc_program_hex_splitter
+# OpenOCD debugger
+OCD = openocd
+OCD_MPSSE = ../../scripts/load/mfp_mpsse.cfg
+OCD_BUSB3 = ../../scripts/load/mfp_busbluster.cfg
 
 ifeq ($(OS), Windows_NT)
-	HS = ../../scripts/utilities/ad_hoc_program_hex_splitter.exe
+	HS  = ../../scripts/utilities/ad_hoc_program_hex_splitter.exe
+	OCD = openocd-0.9.2.exe
 endif
 
 # -EL           - Little-endian
@@ -88,13 +93,6 @@ readmemh:
 srecord:
 	$(OC) program.elf -O srec program.rec
 
-debug:
-	$(info )
-	$(info Please check that OpenOCD is running and successfully connected to the CPU)
-	$(info )
-
-	$(GDB) --command=./commands.gdb
-
 clean:
 	rm -rf sim
 	rm -f main.s
@@ -104,6 +102,25 @@ clean:
 	rm -f program.dis
 	rm -f program*.hex
 	rm -f program.rec
+
+#########################################################
+# On Board Debug
+
+# starting console debug session
+debug:
+	$(info )
+	$(info Please check that OpenOCD is running and successfully connected to the CPU)
+	$(info )
+
+	$(GDB) --command=./commands.gdb
+
+# runing OpenOCD with MPSSE debugger
+ocd_mpsse:
+	$(OCD) -f $(OCD_MPSSE)
+
+# runing OpenOCD with BusBlaster3
+ocd_busblaster:
+	$(OCD) -f $(OCD_BUSB3)
 
 #########################################################
 # Modelsim simulation
