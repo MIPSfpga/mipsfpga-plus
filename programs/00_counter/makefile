@@ -12,7 +12,7 @@ HS = ../../scripts/utilities/ad_hoc_program_hex_splitter
 # OpenOCD debugger
 OCD = openocd
 OCD_MPSSE = ../../scripts/load/mfp_mpsse.cfg
-OCD_BUSB3 = ../../scripts/load/mfp_mpsse.cfg
+OCD_BUSB3 = ../../scripts/load/mfp_busbluster.cfg
 
 ifeq ($(OS), Windows_NT)
 	HS  = ../../scripts/utilities/ad_hoc_program_hex_splitter.exe
