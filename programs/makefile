@@ -12,7 +12,7 @@ TOPTARGETS := all clean init_linux init_windows init_clean
 PROGRAMS   := $(wildcard */.)
 BOARDS	   := $(wildcard ../boards/*/.)
 
-.PHONY: $(TOPTARGETS) $(PROGRAMS) $(BOARDS)
+.PHONY: $(TOPTARGETS) $(PROGRAMS) $(BOARDS) init_vscode
 
 $(TOPTARGETS): $(PROGRAMS) $(BOARDS)
 
@@ -50,3 +50,7 @@ ifeq ($(MAKECMDGOALS), init_windows)
 	rm -f $@/*.sh
 	cp ../scripts/make_wrappers/board/*.bat $@
 endif
+
+init_vscode:
+	rm -rf ../.vscode
+	cp -fr ../scripts/vscode ../.vscode
