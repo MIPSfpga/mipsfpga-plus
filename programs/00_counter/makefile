@@ -16,7 +16,6 @@ OCD_CONF = ../../scripts/load/mfp_mpsse.cfg
 
 ifeq ($(OS), Windows_NT)
 	HS  = ../../scripts/utilities/ad_hoc_program_hex_splitter.exe
-	OCD = openocd-0.9.2.exe
 endif
 
 # -EL           - Little-endian
