@@ -7,6 +7,8 @@
 #                     make wrapper scripts with *.bat analogs
 # make init_clean   - clears all programs/*/*.sh and programs/*/*.bat
 #                     make wrapper scripts
+# make init_vscode  - replaces current VSCode config (.vscode folder)
+#                     with copy of scripts/vscode
 
 TOPTARGETS := all clean init_linux init_windows init_clean
 PROGRAMS   := $(wildcard */.)
