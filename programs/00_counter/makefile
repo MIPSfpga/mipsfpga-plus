@@ -176,3 +176,8 @@ icarus:
 	
 gtkwave:
 	cd sim && gtkwave dump.vcd
+
+#########################################################
+# How to make a bat replacement
+#  make --no-print-directory -n debug > debug.bat
+#  make --no-print-directory -n debug > attach.bat
