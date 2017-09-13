@@ -11,13 +11,11 @@ GDB = mips-mti-elf-gdb
 HS = ../../scripts/utilities/ad_hoc_program_hex_splitter
 # OpenOCD debugger
 OCD = openocd
-OCD_MPSSE = ../../scripts/load/mfp_mpsse.cfg
-OCD_BUSB3 = ../../scripts/load/mfp_busbluster.cfg
-GDB_CLOAD = ../../scripts/load/commands.gdb
+OCD_CONF = ../../scripts/load/mfp_mpsse.cfg
+#OCD_CONF = ../../scripts/load/mfp_busbluster.cfg
 
 ifeq ($(OS), Windows_NT)
 	HS  = ../../scripts/utilities/ad_hoc_program_hex_splitter.exe
-	OCD = openocd-0.9.2.exe
 endif
 
 # -EL           - Little-endian
@@ -40,8 +38,15 @@ LDFLAGS += -Wl,--defsym,__flash_start=0xbfc00000
 LDFLAGS += -Wl,--defsym,__flash_app_start=0x80000000
 # Place the application code (virtual address)
 LDFLAGS += -Wl,--defsym,__app_start=0x80000000
+
 # Set the stack to the top of the Code/Data RAM
-LDFLAGS += -Wl,--defsym,__stack=0x80040000
+# stack depends on available mem size:
+#     256K -> 0x80040000 (simulation)
+#       8M -> 0x80800000 
+#      64M -> 0x84000000 (de10-lite)
+STACK   = 0x80040000
+LDFLAGS += -Wl,--defsym,__stack=$(STACK)
+
 # Cautiously set the size of memory as the 2015.01 toolchain uses
 # this size as the amount of free memory between the end of the
 # program data and the lowest address that the stack will reach.
@@ -50,6 +55,7 @@ LDFLAGS += -Wl,--defsym,__stack=0x80040000
 # Max 128K for program code/data (0x20000)
 # Leaving 126K heap (0x1f800)
 LDFLAGS += -Wl,--defsym,__memory_size=0x1f800
+
 # Set the entry point to the true hard-reset address
 LDFLAGS += -Wl,-e,0xbfc00000
 
@@ -103,25 +109,35 @@ clean:
 	rm -f program.dis
 	rm -f program*.hex
 	rm -f program.rec
+	rm -f *.log
 
 #########################################################
 # On Board Debug
 
-# starting console debug session
+GDBCMD_ATTACH  = --silent
+GDBCMD_ATTACH += -ex "set pagination off"
+GDBCMD_ATTACH += -ex "file program.elf"
+GDBCMD_ATTACH += -ex "target remote | $(OCD) -f $(OCD_CONF) -p -c 'log_output openocd.log'"
+
+GDBCMD_LOAD   += -ex "monitor reset halt"
+GDBCMD_LOAD   += -ex "load"
+GDBCMD_LOAD   += -ex "compare-sections"
+
+GDBCMD_BREAK  += -ex "b main"
+GDBCMD_BREAK  += -ex "continue"
+
+GDBCMD_INT    += -ex "interrupt"
+
+GDBCMD_RESRUN += -ex "monitor reset run"
+
+attach:
+	$(GDB) $(GDBCMD_ATTACH) $(GDBCMD_INT)
+
+load:
+	$(GDB) --batch $(GDBCMD_ATTACH) $(GDBCMD_LOAD) $(GDBCMD_RESRUN)
+
 debug:
-	$(info )
-	$(info Please check that OpenOCD is running and successfully connected to the CPU)
-	$(info )
-
-	$(GDB) --command=$(GDB_CLOAD)
-
-# runing OpenOCD with MPSSE debugger
-ocd_mpsse:
-	$(OCD) -f $(OCD_MPSSE)
-
-# runing OpenOCD with BusBlaster3
-ocd_busblaster:
-	$(OCD) -f $(OCD_BUSB3)
+	$(GDB) $(GDBCMD_ATTACH) $(GDBCMD_LOAD) $(GDBCMD_BREAK)
 
 #########################################################
 # Modelsim simulation
@@ -159,3 +175,8 @@ icarus:
 	
 gtkwave:
 	cd sim && gtkwave dump.vcd
+
+#########################################################
+# How to make a bat replacement
+#  make --no-print-directory -n debug > debug.bat
+#  make --no-print-directory -n debug > attach.bat
