@@ -14,7 +14,7 @@ help:
 	$(info make disasm     - disassemble program.elf )
 	$(info make readmemh   - create verilog memory init file for simulation)
 	$(info make srecord    - create Motorola S-record file to use it with UART loader)
-	$(info make make clean - delete all created files)
+	$(info make clean      - delete all created files)
 	$(info make load       - load program into the device memory, run it and detach gdb)
 	$(info make debug      - load program into the device memory, wait for gdb commands)
 	$(info make attach     - attach to the device, wait for gdb commands)
