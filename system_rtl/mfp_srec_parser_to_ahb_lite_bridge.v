@@ -4,12 +4,11 @@ module mfp_srec_parser_to_ahb_lite_bridge
 (
     input             clock,
     input             reset_n,
-    input             big_endian,
-               
+
     input      [31:0] write_address,
     input      [ 7:0] write_byte,
     input             write_enable,
-               
+
     output     [31:0] HADDR,
     output     [ 2:0] HBURST,
     output            HMASTLOCK,

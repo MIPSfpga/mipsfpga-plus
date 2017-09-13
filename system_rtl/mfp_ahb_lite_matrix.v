@@ -2,7 +2,7 @@
 `include "mfp_ahb_lite_matrix_config.vh"
 `include "mfp_eic_core.vh"
 
-`define MFP_AHB_DEVICE_COUNT    6
+`define MFP_AHB_DEVICE_COUNT    7
 
 module mfp_ahb_lite_matrix
 (
@@ -34,7 +34,9 @@ module mfp_ahb_lite_matrix
     `endif
 
     `ifdef MFP_DEMO_LIGHT_SENSOR
-    input  [                          15 : 0 ] IO_LightSensor,
+    output                                     SPI_CS,
+    output                                     SPI_SCK,
+    input                                      SPI_SDO,
     `endif
 
     input                                      UART_RX,
@@ -76,8 +78,7 @@ module mfp_ahb_lite_matrix
     output [`MFP_7_SEGMENT_HEX_WIDTH - 1 : 0 ] IO_7_SegmentHEX
 );
 
-    wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL_Q;    // current device requested by CPU
-    wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL_R;   // effected data phase HSEL signal
+    wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL_R;      // effected data phase HSEL signal
     wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HSEL;        // effected addr phase HSEL signal
     wire   [`MFP_AHB_DEVICE_COUNT    - 1 : 0 ] HREADYOUT;
     wire   [                          31 : 0 ] RDATA [`MFP_AHB_DEVICE_COUNT - 1:0];
@@ -188,11 +189,6 @@ module mfp_ahb_lite_matrix
         .IO_RedLEDs       ( IO_RedLEDs      ),
         .IO_GreenLEDs     ( IO_GreenLEDs    ),
         .IO_7_SegmentHEX  ( IO_7_SegmentHEX )
-
-        `ifdef MFP_DEMO_LIGHT_SENSOR
-        ,
-        .IO_LightSensor   ( IO_LightSensor  )
-        `endif
     );
 
     //UART
@@ -269,8 +265,6 @@ module mfp_ahb_lite_matrix
         .EIC_IVN          ( EIC_IVN         ),
         .EIC_ION          ( EIC_ION         )
     );
-    `else
-    assign HREADYOUT [4] = 1'b1;
     `endif
 
     // ADC MAX10 
@@ -307,8 +301,32 @@ module mfp_ahb_lite_matrix
         .ADC_Trigger      ( ADC_Trigger     ),
         .ADC_Interrupt    ( ADC_Interrupt   )
     );
-    `else
-    assign HREADYOUT [5] = 1'b1;
+    `endif
+
+    `ifdef MFP_DEMO_LIGHT_SENSOR
+    mfp_ahb_lite_pmod_als als
+    (
+        .HCLK             ( HCLK            ),
+        .HRESETn          ( HRESETn         ),
+        .HADDR            ( HADDR           ),
+        .HBURST           ( HBURST          ),
+        .HMASTLOCK        ( HMASTLOCK       ),
+        .HPROT            ( HPROT           ),
+        .HSEL             ( HSEL        [6] ),
+        .HSIZE            ( HSIZE           ),
+        .HTRANS           ( HTRANS          ),
+        .HWDATA           ( HWDATA          ),
+        .HWRITE           ( HWRITE          ),
+        .HRDATA           ( RDATA       [6] ),
+        .HREADYOUT        ( HREADYOUT   [6] ),
+        .HREADY           ( HREADY          ),
+        .HRESP            ( RESP        [6] ),
+        .SI_Endian        ( SI_Endian       ),
+
+        .SPI_CS           ( SPI_CS          ),
+        .SPI_SCK          ( SPI_SCK         ),
+        .SPI_SDO          ( SPI_SDO         )
+    );
     `endif
 
     // bus interconnection part
@@ -333,6 +351,7 @@ module mfp_ahb_lite_matrix
         .RDATA_3          ( RDATA       [3] ),
         .RDATA_4          ( RDATA       [4] ),
         .RDATA_5          ( RDATA       [5] ),
+        .RDATA_6          ( RDATA       [6] ),
         .RESP             ( RESP            ),
         .HRDATA           ( HRDATA          ),
         .HRESP            ( HRESP           ),
@@ -370,6 +389,9 @@ module mfp_ahb_lite_decoder
     // ADC MAX10 4 KB max at 0xb0403000 (physical: 0x10403000 - 0x10403fff)
     assign HSEL [5] = ( HADDR [28:12] == `MFP_ADC_MAX10_ADDR_MATCH );
 
+    // Light Sensor 4 KB max at 0xb0404000 (physical: 0x10404000 - 0x10404fff)
+    assign HSEL [6] = ( HADDR [28:12] == `MFP_ALS_ADDR_MATCH       );
+
 endmodule
 
 //--------------------------------------------------------------------
@@ -386,6 +408,7 @@ module mfp_ahb_lite_response_mux
     input      [                        31 : 0 ] RDATA_3,
     input      [                        31 : 0 ] RDATA_4,
     input      [                        31 : 0 ] RDATA_5,
+    input      [                        31 : 0 ] RDATA_6,
     input      [ `MFP_AHB_DEVICE_COUNT - 1 : 0 ] RESP,
     input      [ `MFP_AHB_DEVICE_COUNT - 1 : 0 ] HREADYOUT,
 
@@ -396,13 +419,14 @@ module mfp_ahb_lite_response_mux
 
     always @*
         casez (HSEL_R)
-            6'b?????1 : begin HRDATA = RDATA_0; HRESP = RESP[0]; HREADY = HREADYOUT[0]; end
-            6'b????10 : begin HRDATA = RDATA_1; HRESP = RESP[1]; HREADY = HREADYOUT[1]; end
-            6'b???100 : begin HRDATA = RDATA_2; HRESP = RESP[2]; HREADY = HREADYOUT[2]; end
-            6'b??1000 : begin HRDATA = RDATA_3; HRESP = RESP[3]; HREADY = HREADYOUT[3]; end
-            6'b?10000 : begin HRDATA = RDATA_4; HRESP = RESP[4]; HREADY = HREADYOUT[4]; end
-            6'b100000 : begin HRDATA = RDATA_5; HRESP = RESP[5]; HREADY = HREADYOUT[5]; end
-            default   : begin HRDATA = RDATA_1; HRESP = RESP[1]; HREADY = HREADYOUT[1]; end
+            7'b??????1 : begin HRDATA = RDATA_0; HRESP = RESP[0]; HREADY = HREADYOUT[0]; end
+            7'b?????10 : begin HRDATA = RDATA_1; HRESP = RESP[1]; HREADY = HREADYOUT[1]; end
+            7'b????100 : begin HRDATA = RDATA_2; HRESP = RESP[2]; HREADY = HREADYOUT[2]; end
+            7'b???1000 : begin HRDATA = RDATA_3; HRESP = RESP[3]; HREADY = HREADYOUT[3]; end
+            7'b??10000 : begin HRDATA = RDATA_4; HRESP = RESP[4]; HREADY = HREADYOUT[4]; end
+            7'b?100000 : begin HRDATA = RDATA_5; HRESP = RESP[5]; HREADY = HREADYOUT[5]; end
+            7'b1000000 : begin HRDATA = RDATA_6; HRESP = RESP[6]; HREADY = HREADYOUT[6]; end
+            default    : begin HRDATA = RDATA_1; HRESP = RESP[1]; HREADY = HREADYOUT[1]; end
         endcase
 
 endmodule

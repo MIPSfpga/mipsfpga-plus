@@ -8,22 +8,22 @@ module mfp_pmod_als_spi_receiver
     output reg [15:0] value
 );
 
-    reg [21:0] cnt;
+    reg [ 8:0] cnt;
     reg [15:0] shift;
 
     always @ (posedge clock or negedge reset_n)
     begin       
         if (! reset_n)
-            cnt <= 22'b100;
+            cnt <= 8'b100;
         else
-            cnt <= cnt + 22'b1;
+            cnt <= cnt + 8'b1;
     end
 
     assign sck = ~ cnt [3];
     assign cs  =   cnt [8];
 
     wire sample_bit = ( cs == 1'b0 && cnt [3:0] == 4'b1111 );
-    wire value_done = ( cnt [21:0] == 22'b0 );
+    wire value_done = ( cs == 1'b1 && cnt [7:0] == 8'b0 );
 
     always @ (posedge clock or negedge reset_n)
     begin       

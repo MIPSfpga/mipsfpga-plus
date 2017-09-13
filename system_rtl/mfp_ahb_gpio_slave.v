@@ -25,11 +25,6 @@ module mfp_ahb_gpio_slave
     output reg [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs,
     output reg [`MFP_N_GREEN_LEDS        - 1:0] IO_GreenLEDs,
     output reg [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX
-
-    `ifdef MFP_DEMO_LIGHT_SENSOR
-    ,
-    input      [15:0] IO_LightSensor
-    `endif
 );
 
     // Ignored: HMASTLOCK, HPROT
@@ -94,10 +89,6 @@ module mfp_ahb_gpio_slave
                     `MFP_RED_LEDS_IONUM      : HRDATA <= { { 32 - `MFP_N_RED_LEDS           { 1'b0 } } ,IO_RedLEDs      };
                     `MFP_GREEN_LEDS_IONUM    : HRDATA <= { { 32 - `MFP_N_GREEN_LEDS         { 1'b0 } } ,IO_GreenLEDs    };
                     `MFP_7_SEGMENT_HEX_IONUM : HRDATA <= { { 32 - `MFP_7_SEGMENT_HEX_WIDTH  { 1'b0 } } ,IO_7_SegmentHEX };
-                    
-                    `ifdef MFP_DEMO_LIGHT_SENSOR
-                    `MFP_LIGHT_SENSOR_IONUM  : HRDATA <= { 16'b0, IO_LightSensor };
-                    `endif
                     
                     default:                   HRDATA <= 32'b0;
                 endcase

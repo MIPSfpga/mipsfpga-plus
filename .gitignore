@@ -8,6 +8,7 @@ sim/
 *.map
 *.rec
 *.hex
+*.log
 FPGA*.txt
 test.html
 test.html.imgtec_forum
