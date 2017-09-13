@@ -1,14 +1,22 @@
+# MIPSfpga-plus makefile
+# Stanislav Zhelnio, 2017
+#
+# based on:
+#      microAptiv_UP makefile for MIPSfpga
+#      Andrea Guerrieri scripts
 
-# make all          - builds all for all programs subdirs
-# make clean        - cleans all for all programs subdirs
-# make init_linux   - replaces all programs/*/*.bat and /boards/*/.bat
-#                     make wrapper scripts with *.sh analogs
-# make init_windows - replaces all programs/*/*.sh and /boards/*/.sh
-#                     make wrapper scripts with *.bat analogs
-# make init_clean   - clears all programs/*/*.sh and programs/*/*.bat
-#                     make wrapper scripts
-# make init_vscode  - replaces current VSCode config (.vscode folder)
-#                     with copy of scripts/vscode
+help:
+	$(info make help         - show this message)
+	$(info make all          - builds all in programs subdirs)
+	$(info make init_linux   - replaces all programs/*/*.bat and /boards/*/.bat)
+	$(info `                   wrapper scripts with *.sh analogs)
+	$(info make init_windows - replaces all programs/*/*.sh and /boards/*/.sh)
+	$(info `                   wrapper scripts with *.bat analogs)
+	$(info make init_clean   - clears all programs/*/*.sh and programs/*/*.bat)
+	$(info `                   wrapper scripts)
+	$(info make init_vscode  - creates VSCode config folder (.vscode))
+	$(info `                   as a copy of scripts/vscode)
+	@true
 
 TOPTARGETS := all clean init_linux init_windows init_clean
 PROGRAMS   := $(wildcard */.)

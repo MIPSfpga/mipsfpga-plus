@@ -1,4 +1,31 @@
 # MIPSfpga-plus makefile
+# Stanislav Zhelnio, 2017
+#
+# based on:
+#      microAptiv_UP makefile for MIPSfpga
+#      Andrea Guerrieri scripts
+
+help:
+	$(info make help       - show this message)
+	$(info make all        - alternative for: compile program size disasm readmemh srecord)
+	$(info make program    - build program.elf from sources)
+	$(info make compile    - compile all C sources to ASM)
+	$(info make size       - show program size information)
+	$(info make disasm     - disassemble program.elf )
+	$(info make readmemh   - create verilog memory init file for simulation)
+	$(info make srecord    - create Motorola S-record file to use it with UART loader)
+	$(info make make clean - delete all created files)
+	$(info make load       - load program into the device memory, run it and detach gdb)
+	$(info make debug      - load program into the device memory, wait for gdb commands)
+	$(info make attach     - attach to the device, wait for gdb commands)
+	$(info make modelsim   - simulate program and device using Modelsim)
+	$(info make icarus     - simulate program and device using Icarus Verilog)
+	$(info make gtkwave    - show the result of Icarus Verilog simulation in GTKWave)
+	@true
+
+#########################################################
+# Path and program settings
+
 CC = mips-mti-elf-gcc
 LD = mips-mti-elf-gcc
 OD = mips-mti-elf-objdump
@@ -9,14 +36,17 @@ GDB = mips-mti-elf-gdb
 #OS dependent
 # HEX splitter
 HS = ../../scripts/utilities/ad_hoc_program_hex_splitter
+ifeq ($(OS), Windows_NT)
+	HS  = ../../scripts/utilities/ad_hoc_program_hex_splitter.exe
+endif
+
 # OpenOCD debugger
 OCD = openocd
 OCD_CONF = ../../scripts/load/mfp_mpsse.cfg
 #OCD_CONF = ../../scripts/load/mfp_busbluster.cfg
 
-ifeq ($(OS), Windows_NT)
-	HS  = ../../scripts/utilities/ad_hoc_program_hex_splitter.exe
-endif
+#########################################################
+# Compile settings and tasks
 
 # -EL           - Little-endian
 # -march=m14kc  - MIPSfpga = MIPS microAptiv UP based on MIPS M14Kc
