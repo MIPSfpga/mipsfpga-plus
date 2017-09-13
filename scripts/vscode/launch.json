@@ -18,11 +18,12 @@
             "setupCommands": [
                 {"text": "cd ${fileDirname}"},
                 {"text": "file program.elf"},
-                {"text": "target remote localhost:3333"},
+                {"text": "target remote | openocd -f ../../scripts/load/mfp_mpsse.cfg -p -c 'log_output openocd.log'"},
                 {"text": "set endian little"},
                 {"text": "monitor reset halt"}, 
                 {"text": "load"},
-                {"text": "br main"},
+                {"text": "compare-sections"},
+                {"text": "break main"},
                 {"text": "monitor continue"}
             ],
             "launchCompleteCommand": "None",
@@ -48,7 +49,7 @@
             "setupCommands": [
                 {"text": "cd ${fileDirname}"},
                 {"text": "file program.elf"},
-                {"text": "target remote localhost:3333"},
+                {"text": "target remote | openocd -f ../../scripts/load/mfp_mpsse.cfg -p -c 'log_output openocd.log'"},
                 {"text": "set endian little"}
             ],
             "customLaunchSetupCommands": [],
