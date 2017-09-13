@@ -7,14 +7,14 @@
 
 help:
 	$(info make help         - show this message)
-	$(info make all          - builds all in programs subdirs)
-	$(info make init_linux   - replaces all programs/*/*.bat and /boards/*/.bat)
+	$(info make all          - build all in programs subdirs)
+	$(info make init_linux   - replace all programs/*/*.bat and /boards/*/.bat)
 	$(info `                   wrapper scripts with *.sh analogs)
-	$(info make init_windows - replaces all programs/*/*.sh and /boards/*/.sh)
+	$(info make init_windows - replace all programs/*/*.sh and /boards/*/.sh)
 	$(info `                   wrapper scripts with *.bat analogs)
-	$(info make init_clean   - clears all programs/*/*.sh and programs/*/*.bat)
+	$(info make init_clean   - clear all programs/*/*.sh and programs/*/*.bat)
 	$(info `                   wrapper scripts)
-	$(info make init_vscode  - creates VSCode config folder (.vscode))
+	$(info make init_vscode  - create VSCode config folder (.vscode))
 	$(info `                   as a copy of scripts/vscode)
 	@true
 
