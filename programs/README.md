@@ -12,7 +12,7 @@
   09_adc               Altera MAX10 ADC module usage example
 ```
 
-## Program Make Wrappers
+## Program Make Wrapper Scripts
 ```
   00_clean_all                       - delete all created files, alternative for 'make clean'
   01_compile_c_to_assembly           - compile all C sources to ASM, alternative for 'make compile'
