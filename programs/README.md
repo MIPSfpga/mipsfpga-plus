@@ -72,7 +72,9 @@ Those make commands can be run in program/* directories
 ```
 
 ## Scripts Prerequisites
-  - MIPS SDK is installed and properly configured 
-  - Modelsim is installed, the directory with 'vsim' is added to $PATH
-  - Icarus Verilog installed, the directories with 'icarus' and 'gtkwave' are added to $PATH
-  - OpenOCD installed, the directory with 'openocd' is added to $PATH
+  - MIPS SDK is installed and properly configured (for program build)
+  - Modelsim is installed, the directory with 'vsim' is added to $PATH (for simulation)
+  - Icarus Verilog installed, the directories with 'icarus' and 'gtkwave' are added to $PATH (for simulation)
+  - OpenOCD installed, the directory with 'openocd' is added to $PATH (for onboard debug)
+  - Bus blaster or MPSSE debugger is connected and configured (for onboard debug)
+  - USB-UART converted (for UART program load only)
