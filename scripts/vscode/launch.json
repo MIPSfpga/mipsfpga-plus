@@ -1,0 +1,65 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "MIPS Load",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/program.elf",
+            "cwd": "${fileDirname}",
+            "MIMode" : "gdb",
+            "windows": {
+                "miDebuggerPath": "mips-mti-elf-gdb.exe"
+            },
+            "linux": {
+                "miDebuggerPath": "mips-mti-elf-gdb"
+            },
+            "setupCommands": [
+                {"text": "cd ${fileDirname}"},
+                {"text": "file program.elf"},
+                {"text": "target remote | openocd -f ../../scripts/load/mfp_mpsse.cfg -p -c 'log_output openocd.log'"},
+                {"text": "set endian little"},
+                {"text": "monitor reset halt"}, 
+                {"text": "load"},
+                {"text": "compare-sections"},
+                {"text": "break main"},
+                {"text": "monitor continue"}
+            ],
+            "launchCompleteCommand": "None",
+            "targetArchitecture": "mips"
+
+            //Uncomment this to debug
+            //,"logging": { "engineLogging": true }
+            //or this for verbose debug
+            //,"logging": { "engineLogging": true, "trace": true, "traceResponse": true }
+        },
+        {
+            "name": "MIPS Attach",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/program.elf",
+            "cwd": "${fileDirname}",
+            "windows": {
+                "miDebuggerPath": "mips-mti-elf-gdb.exe"
+            },
+            "linux": {
+                "miDebuggerPath": "mips-mti-elf-gdb"
+            },
+            "setupCommands": [
+                {"text": "cd ${fileDirname}"},
+                {"text": "file program.elf"},
+                {"text": "target remote | openocd -f ../../scripts/load/mfp_mpsse.cfg -p -c 'log_output openocd.log'"},
+                {"text": "set endian little"}
+            ],
+            "customLaunchSetupCommands": [],
+            "launchCompleteCommand": "None",
+            "targetArchitecture": "mips"
+
+            //Uncomment this to debug
+            //,"logging": { "engineLogging": true }
+            //or this for verbose debug
+            //,"logging": { "engineLogging": true, "trace": true, "traceResponse": true }
+        }
+    ]
+}

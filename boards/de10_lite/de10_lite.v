@@ -92,6 +92,7 @@ module de10_lite
         );
 
     `else
+        wire   CLK_Lock = 1'b1;
         assign clk = MAX10_CLK1_50;
     `endif
 

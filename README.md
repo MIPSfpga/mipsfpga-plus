@@ -78,11 +78,11 @@ How to load a software example into mipsfpga-plus using USB-to-UART-based serial
 cd C:\github\mipsfpga-plus\programs\00_counter
 02_compile_and_link.bat
 08_generate_motorola_s_record_file.bat
-11_check_which_com_port_is_used.bat
+09_check_which_com_port_is_used.bat
 </pre>
 
-Modify <i>12_upload_to_the_board_using_uart.bat</i>.
+Modify <i>10_upload_to_the_board_using_uart.bat</i>.
 
 <pre>
-12_upload_to_the_board_using_uart.bat
+10_upload_to_the_board_using_uart.bat
 </pre>

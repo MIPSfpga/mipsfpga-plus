@@ -34,11 +34,11 @@ module mfp_system
     output [`SDRAM_DM_BITS   - 1 : 0 ]      SDRAM_DQM,
     `endif
 
-    input  [`MFP_N_SWITCHES          - 1:0] IO_Switches,
-    input  [`MFP_N_BUTTONS           - 1:0] IO_Buttons,
-    output [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs,
-    output [`MFP_N_GREEN_LEDS        - 1:0] IO_GreenLEDs,
-    output [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX,
+    `ifdef MFP_DEMO_LIGHT_SENSOR
+    output                                  SPI_CS,
+    output                                  SPI_SCK,
+    input                                   SPI_SDO,
+    `endif
 
     input         UART_RX,
     output        UART_TX,
@@ -61,9 +61,11 @@ module mfp_system
     input                                   ADC_R_EOP,
     `endif //MFP_USE_ADC_MAX10
 
-    output        SPI_CS,
-    output        SPI_SCK,
-    input         SPI_SDO
+    input  [`MFP_N_SWITCHES          - 1:0] IO_Switches,
+    input  [`MFP_N_BUTTONS           - 1:0] IO_Buttons,
+    output [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs,
+    output [`MFP_N_GREEN_LEDS        - 1:0] IO_GreenLEDs,
+    output [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX
 );
 
     wire MFP_Reset;
@@ -355,7 +357,7 @@ module mfp_system
 
 
     `ifdef MFP_USE_MPSSE_DEBUGGER
-        // reset module is not used because mfp_ejtag_reset interferes
+        // reset module is not used because mfp_reset_controller interferes
         // with work of debugger. This is not good: this configutation faults
         // inside the simulator but works on hardware (Altera MAX10)
         //
@@ -366,7 +368,7 @@ module mfp_system
     `else
         // Module for hardware reset of EJTAG just after FPGA configuration
         // It pulses EJ_TRST_N low for 16 clock cycles.
-        mfp_ejtag_reset ejtag_reset (.clk (SI_ClkIn), .trst_n (trst_n));
+        mfp_reset_controller reset_control (.clk (SI_ClkIn), .trst_n (trst_n));
 
         assign EJ_TRST_N        = trst_n & EJ_TRST_N_probe;
         assign EJ_ManufID       = 11'b0;
@@ -434,12 +436,8 @@ module mfp_system
     };
 
     `endif
- 
-    `ifdef MFP_DEMO_LIGHT_SENSOR
-    wire [15:0] IO_LightSensor;
-    `endif
 
-    mfp_ahb_lite_matrix_with_loader ahb_lite_matrix
+    mfp_ahb_lite_matrix_with_loader matrix_loader
     (
         .HCLK             (   HCLK             ),
         .HRESETn          ( ~ SI_Reset         ),  // Not HRESETn - this is necessary for serial loader
@@ -483,7 +481,9 @@ module mfp_system
         .IO_7_SegmentHEX  (   IO_7_SegmentHEX  ),
                                                
         `ifdef MFP_DEMO_LIGHT_SENSOR           
-        .IO_LightSensor   (   IO_LightSensor   ), 
+        .SPI_CS           ( SPI_CS             ),
+        .SPI_SCK          ( SPI_SCK            ),
+        .SPI_SDO          ( SPI_SDO            ),
         `endif                                 
                                                
         .UART_RX          (   UART_RX          ), 
@@ -526,25 +526,11 @@ module mfp_system
         .MFP_Reset        (   MFP_Reset        )
     );
 
-    `ifdef MFP_DEMO_LIGHT_SENSOR
-
-    mfp_pmod_als_spi_receiver mfp_pmod_als_spi_receiver
-    (
-        .clock   (   SI_ClkIn       ),
-        .reset_n ( ~ SI_Reset       ),
-        .cs      (   SPI_CS         ),
-        .sck     (   SPI_SCK        ),
-        .sdo     (   SPI_SDO        ),
-        .value   (   IO_LightSensor )
-    );
-
-    `endif
-
 endmodule
 
 //--------------------------------------------------------------------
 
-module mfp_ejtag_reset
+module mfp_reset_controller
 (
     input      clk,
     output reg trst_n

@@ -1,1 +1,1 @@
-mips-mti-elf-size program.elf
+make size
