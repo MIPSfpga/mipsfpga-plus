@@ -37,7 +37,7 @@ In program/10_linux directory.
     make xilfpga_static_defconfig
     make
     ```
-  - Linux configure using v4.12.1 tag = commit cb6621858813)
+  - Linux configure (using v4.12.1 tag = commit cb6621858813)
     ```
     cd ../kernel/
     ls -l ../buildroot/output/images/rootfs.cpio
@@ -126,11 +126,9 @@ In program/10_linux directory.
 
     Welcome to MIPSfpga
     mipsfpga login:
-
-    GPIO test (MIPSfpga console)
     ```
 ## GPIO test
-  - GPIO init and value set
+  - GPIO init and value set (UART console)
     ```
     ls /sys/class/gpio/
       export       gpiochip480  unexport
@@ -141,4 +139,4 @@ In program/10_linux directory.
     echo out > /sys/class/gpio/gpio480/direction
     echo 1 > /sys/class/gpio/gpio480/value
     ```
-  - after those actions LED0 should be ON.
+  - after those actions LED0 should be ON
