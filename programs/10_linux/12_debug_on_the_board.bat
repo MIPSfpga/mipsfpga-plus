@@ -1,1 +1,0 @@
-mips-mti-elf-gdb --se=image\vmlinuz --silent -ex "set pagination off" -ex "target remote | openocd.exe -f ../../scripts/load/mfp_mpsse.cfg -p -c 'log_output openocd.log'" -ex "monitor reset halt" -ex "load" -ex "continue"
