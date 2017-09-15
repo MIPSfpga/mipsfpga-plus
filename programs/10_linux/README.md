@@ -128,7 +128,8 @@ In program/10_linux directory.
     mipsfpga login:
     ```
 ## GPIO test
-  - GPIO init and value set (UART console)
+  - enter the system as 'root'
+  - GPIO init and value set
     ```
     ls /sys/class/gpio/
       export       gpiochip480  unexport
