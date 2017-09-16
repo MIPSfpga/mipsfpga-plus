@@ -168,12 +168,15 @@ module de10_lite
         .IO_GreenLEDs     (   IO_GreenLEDs    ), 
         .IO_7_SegmentHEX  (   IO_7_SegmentHEX ),
 
-        .UART_RX          (   GPIO [31]       ),
-        .UART_TX          (   GPIO [32]       ),
-
         `ifdef MFP_USE_DUPLEX_UART
         .UART_SRX         (   GPIO [33]       ), 
         .UART_STX         (   GPIO [35]       ),
+        `endif
+
+        `ifdef MFP_DEMO_LIGHT_SENSOR
+        .SPI_CS           (   GPIO [34]       ),
+        .SPI_SCK          (   GPIO [28]       ),
+        .SPI_SDO          (   GPIO [30]       ),
         `endif
 
         `ifdef MFP_USE_ADC_MAX10
@@ -189,9 +192,8 @@ module de10_lite
         .ADC_R_EOP        (  ADC_R_EOP        ),
         `endif
 
-        .SPI_CS           (   GPIO [34]       ),
-        .SPI_SCK          (   GPIO [28]       ),
-        .SPI_SDO          (   GPIO [30]       )
+        .UART_RX          (   GPIO [31]       ),
+        .UART_TX          (   GPIO [32]       )
     );
 
     `ifdef MFP_USE_ADC_MAX10
@@ -216,16 +218,16 @@ module de10_lite
 
     `ifdef MFP_USE_SDRAM_MEMORY
         //SDRAM controller delay params
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_nCKE          = `SDRAM_DELAY_nCKE;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tREF          = `SDRAM_DELAY_tREF;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRP           = `SDRAM_DELAY_tRP;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRFC          = `SDRAM_DELAY_tRFC;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tMRD          = `SDRAM_DELAY_tMRD;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tRCD          = `SDRAM_DELAY_tRCD;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_tCAS          = `SDRAM_DELAY_tCAS;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_afterREAD     = `SDRAM_DELAY_afterREAD;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.DELAY_afterWRITE    = `SDRAM_DELAY_afterWRITE;
-        defparam mfp_system.ahb_lite_matrix.ahb_lite_matrix.ram.COUNT_initAutoRef   = `SDRAM_COUNT_initAutoRef;
+        defparam mfp_system.matrix_loader.matrix.ram.DELAY_nCKE          = `SDRAM_DELAY_nCKE;
+        defparam mfp_system.matrix_loader.matrix.ram.DELAY_tREF          = `SDRAM_DELAY_tREF;
+        defparam mfp_system.matrix_loader.matrix.ram.DELAY_tRP           = `SDRAM_DELAY_tRP;
+        defparam mfp_system.matrix_loader.matrix.ram.DELAY_tRFC          = `SDRAM_DELAY_tRFC;
+        defparam mfp_system.matrix_loader.matrix.ram.DELAY_tMRD          = `SDRAM_DELAY_tMRD;
+        defparam mfp_system.matrix_loader.matrix.ram.DELAY_tRCD          = `SDRAM_DELAY_tRCD;
+        defparam mfp_system.matrix_loader.matrix.ram.DELAY_tCAS          = `SDRAM_DELAY_tCAS;
+        defparam mfp_system.matrix_loader.matrix.ram.DELAY_afterREAD     = `SDRAM_DELAY_afterREAD;
+        defparam mfp_system.matrix_loader.matrix.ram.DELAY_afterWRITE    = `SDRAM_DELAY_afterWRITE;
+        defparam mfp_system.matrix_loader.matrix.ram.COUNT_initAutoRef   = `SDRAM_COUNT_initAutoRef;
     `endif
 
     assign GPIO [15] = 1'b0;

@@ -74,7 +74,7 @@ LDFLAGS += -Wl,--defsym,__app_start=0x80000000
 #     256K -> 0x80040000 (simulation)
 #       8M -> 0x80800000 
 #      64M -> 0x84000000 (de10-lite)
-STACK   = 0x80040000
+STACK   = 0x84000000
 LDFLAGS += -Wl,--defsym,__stack=$(STACK)
 
 # Cautiously set the size of memory as the 2015.01 toolchain uses
@@ -84,7 +84,7 @@ LDFLAGS += -Wl,--defsym,__stack=$(STACK)
 # Max 2K for stack (0x800)
 # Max 128K for program code/data (0x20000)
 # Leaving 126K heap (0x1f800)
-LDFLAGS += -Wl,--defsym,__memory_size=0x1f800
+#LDFLAGS += -Wl,--defsym,__memory_size=0x1f800
 
 # Set the entry point to the true hard-reset address
 LDFLAGS += -Wl,-e,0xbfc00000

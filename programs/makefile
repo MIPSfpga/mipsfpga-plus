@@ -19,8 +19,12 @@ help:
 	@true
 
 TOPTARGETS := all clean init_linux init_windows init_clean
+
 PROGRAMS   := $(wildcard */.)
+PROGRAMS   := $(filter-out 10_linux/., $(PROGRAMS))
+
 BOARDS	   := $(wildcard ../boards/*/.)
+
 
 .PHONY: $(TOPTARGETS) $(PROGRAMS) $(BOARDS) init_vscode
 
