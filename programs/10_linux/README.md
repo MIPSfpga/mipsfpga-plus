@@ -63,14 +63,16 @@ In program/10_linux directory.
     ```
     minicom --device /dev/ttyUSB1
     ```
-  - load and run kernel
+    to exit minicom use 'CTRL+A', then 'X'
+  - turn off the hardware flow control in minicom settings:
+    press 'CTRL+A', then 'O' -> 'Serial port setup' -> F 'Hardware flow control'
+  - upload and run kernel. You can upload the kernel that was build by yourself
     ```
-    mips-mti-linux-gnu-gdb ./vmlinux
-    (gdb) target remote <OpenOCD host>:<port>
-    (gdb) mo reset halt
-    (gdb) set endian little
-    (gdb) load
-    (gdb) continue
+    ./01_upload_compiled_image.sh
+    ```
+    or use the already prepared kernel image from '10_linux/image' directory
+    ```
+    ./00_upload_presaved_image.sh
     ```
   - after the shord delay (because of EARLY_PRINTK disabled) the log like this will be shown:
     ```
