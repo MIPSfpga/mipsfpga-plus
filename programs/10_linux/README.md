@@ -63,9 +63,9 @@ In program/10_linux directory.
     ```
     minicom --device /dev/ttyUSB1
     ```
-    to exit minicom use 'CTRL+A', then 'X'
+    to exit minicom use **CTRL+A**, then **X**
   - turn off the hardware flow control in minicom settings:
-    press 'CTRL+A', then 'O' -> 'Serial port setup' -> F 'Hardware flow control'
+    press **CTRL+A**, then **O** -> **Serial port setup** -> **F** **Hardware flow control**
   - upload and run kernel. You can upload the kernel that was build by yourself
     ```
     ./01_upload_compiled_image.sh
