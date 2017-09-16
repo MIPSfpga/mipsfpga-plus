@@ -62,10 +62,11 @@ module mfp_testbench;
     wire          ADC_R_EOP;
     `endif
 
-
+    `ifdef MFP_DEMO_LIGHT_SENSOR
     wire        SPI_CS;
     wire        SPI_SCK;
     wire        SPI_SDO;
+    `endif
 
     //----------------------------------------------------------------
 
@@ -107,9 +108,6 @@ module mfp_testbench;
         .IO_GreenLEDs     ( IO_GreenLEDs     ), 
         .IO_7_SegmentHEX  ( IO_7_SegmentHEX  ),
                                                
-        .UART_RX          ( UART_RX          ),
-        .UART_TX          ( UART_TX          ), 
-
         `ifdef MFP_USE_DUPLEX_UART
         .UART_SRX         ( UART_SRX         ), 
         .UART_STX         ( UART_STX         ),
@@ -128,9 +126,14 @@ module mfp_testbench;
         .ADC_R_EOP        (  ADC_R_EOP        ),
         `endif
 
+        `ifdef MFP_DEMO_LIGHT_SENSOR
         .SPI_CS           ( SPI_CS           ),
         .SPI_SCK          ( SPI_SCK          ),
         .SPI_SDO          ( SPI_SDO          )
+        `endif
+
+        .UART_RX          ( UART_RX          ),
+        .UART_TX          ( UART_TX          )
     );
 
     pmod_als_spi_stub pmod_als_spi_stub

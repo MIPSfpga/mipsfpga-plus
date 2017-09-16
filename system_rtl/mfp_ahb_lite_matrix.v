@@ -414,20 +414,28 @@ module mfp_ahb_lite_response_mux
 
     output reg [                        31 : 0 ] HRDATA,
     output reg                                   HRESP,
-    output reg                                   HREADY
+    output                                       HREADY
 );
+    reg READY;
 
     always @*
         casez (HSEL_R)
-            7'b??????1 : begin HRDATA = RDATA_0; HRESP = RESP[0]; HREADY = HREADYOUT[0]; end
-            7'b?????10 : begin HRDATA = RDATA_1; HRESP = RESP[1]; HREADY = HREADYOUT[1]; end
-            7'b????100 : begin HRDATA = RDATA_2; HRESP = RESP[2]; HREADY = HREADYOUT[2]; end
-            7'b???1000 : begin HRDATA = RDATA_3; HRESP = RESP[3]; HREADY = HREADYOUT[3]; end
-            7'b??10000 : begin HRDATA = RDATA_4; HRESP = RESP[4]; HREADY = HREADYOUT[4]; end
-            7'b?100000 : begin HRDATA = RDATA_5; HRESP = RESP[5]; HREADY = HREADYOUT[5]; end
-            7'b1000000 : begin HRDATA = RDATA_6; HRESP = RESP[6]; HREADY = HREADYOUT[6]; end
-            default    : begin HRDATA = RDATA_1; HRESP = RESP[1]; HREADY = HREADYOUT[1]; end
+            7'b??????1 : begin HRDATA = RDATA_0; HRESP = RESP[0]; READY = HREADYOUT[0]; end
+            7'b?????10 : begin HRDATA = RDATA_1; HRESP = RESP[1]; READY = HREADYOUT[1]; end
+            7'b????100 : begin HRDATA = RDATA_2; HRESP = RESP[2]; READY = HREADYOUT[2]; end
+            7'b???1000 : begin HRDATA = RDATA_3; HRESP = RESP[3]; READY = HREADYOUT[3]; end
+            7'b??10000 : begin HRDATA = RDATA_4; HRESP = RESP[4]; READY = HREADYOUT[4]; end
+            7'b?100000 : begin HRDATA = RDATA_5; HRESP = RESP[5]; READY = HREADYOUT[5]; end
+            7'b1000000 : begin HRDATA = RDATA_6; HRESP = RESP[6]; READY = HREADYOUT[6]; end
+            default    : begin HRDATA = RDATA_1; HRESP = RESP[1]; READY = HREADYOUT[1]; end
         endcase
+
+    //MFP SDRAM bug workaround
+    `ifdef MFP_USE_SDRAM_MEMORY
+        assign HREADY = READY & HREADYOUT[1];
+    `else
+        assign HREADY = READY;
+    `endif
 
 endmodule
 //--------------------------------------------------------------------

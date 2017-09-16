@@ -1,0 +1,203 @@
+diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+index 2828ecde133d..6a975a9cd622 100644
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -465,7 +465,7 @@ config MACH_PISTACHIO
+ 	  This enables support for the IMG Pistachio SoC platform.
+ 
+ config MACH_XILFPGA
+-	bool "MIPSfpga Xilinx based boards"
++	bool "MIPSfpga boards"
+ 	select BOOT_ELF32
+ 	select BOOT_RAW
+ 	select BUILTIN_DTB
+@@ -476,14 +476,11 @@ config MACH_XILFPGA
+ 	select IRQ_MIPS_CPU
+ 	select LIBFDT
+ 	select MIPS_CPU_SCACHE
+-	select SYS_HAS_EARLY_PRINTK
+ 	select SYS_HAS_CPU_MIPS32_R2
+ 	select SYS_SUPPORTS_32BIT_KERNEL
+ 	select SYS_SUPPORTS_LITTLE_ENDIAN
+ 	select SYS_SUPPORTS_ZBOOT_UART16550
+ 	select USE_OF
+-	select USE_GENERIC_EARLY_PRINTK_8250
+-	select XILINX_INTC
+ 	help
+ 	  This enables support for the IMG University Program MIPSfpga platform.
+ 
+diff --git a/arch/mips/boot/dts/xilfpga/Makefile b/arch/mips/boot/dts/xilfpga/Makefile
+index 913a752a9ff1..3dda391c906c 100644
+--- a/arch/mips/boot/dts/xilfpga/Makefile
++++ b/arch/mips/boot/dts/xilfpga/Makefile
+@@ -1,4 +1,5 @@
+ dtb-$(CONFIG_XILFPGA_NEXYS4DDR)	+= nexys4ddr.dtb
++dtb-$(CONFIG_XILFPGA_DE10LITE)	+= de10lite.dtb
+ 
+ obj-y				+= $(patsubst %.dtb, %.dtb.o, $(dtb-y))
+ 
+diff --git a/arch/mips/boot/dts/xilfpga/de10lite.dts b/arch/mips/boot/dts/xilfpga/de10lite.dts
+new file mode 100644
+index 000000000000..7b56ad38cc30
+--- /dev/null
++++ b/arch/mips/boot/dts/xilfpga/de10lite.dts
+@@ -0,0 +1,48 @@
++/dts-v1/;
++
++#include <dt-bindings/gpio/gpio.h>
++
++#include "microAptiv.dtsi"
++
++/ {
++	compatible = "terasic,de10lite";
++
++	memory {
++		device_type = "memory";
++		reg = <0x0 0x04000000>;
++		reg-io-width = <4>;
++	};
++
++	cpuintc: interrupt-controller {
++		#address-cells = <0>;
++		#interrupt-cells = <1>;
++		interrupt-controller;
++		compatible = "mti,cpu-interrupt-controller";
++	};
++
++	uart: serial@b0400000 {
++		compatible = "ns16550a";
++		reg = <0xb0400000 0x10000>;
++
++		reg-shift = <2>;
++		reg-offset = <0x1000>;
++
++		clocks	= <&ext>;
++
++		interrupt-parent = <&cpuintc>;
++		interrupts = <0>;
++	};
++
++	gpio: gpio@bf800000 {
++		compatible = "wd,mbl-gpio";
++		reg = <0xbf800000 0x4>;
++
++		reg-names = "dat";
++		gpio-controller;
++		#gpio-cells = <2>;
++	} ;
++};
++
++&ext {
++	clock-frequency = <50000000>;
++};
+diff --git a/arch/mips/configs/xilfpga_de10lite_defconfig b/arch/mips/configs/xilfpga_de10lite_defconfig
+new file mode 100644
+index 000000000000..507211028d5a
+--- /dev/null
++++ b/arch/mips/configs/xilfpga_de10lite_defconfig
+@@ -0,0 +1,46 @@
++CONFIG_MACH_XILFPGA=y
++CONFIG_XILFPGA_DE10LITE=y
++# CONFIG_COMPACTION is not set
++CONFIG_MIPS_CMDLINE_FROM_BOOTLOADER=y
++# CONFIG_LOCALVERSION_AUTO is not set
++CONFIG_EMBEDDED=y
++# CONFIG_VM_EVENT_COUNTERS is not set
++# CONFIG_COMPAT_BRK is not set
++CONFIG_SLAB=y
++# CONFIG_BLOCK is not set
++# CONFIG_SUSPEND is not set
++# CONFIG_UEVENT_HELPER is not set
++CONFIG_DEVTMPFS=y
++CONFIG_DEVTMPFS_MOUNT=y
++# CONFIG_STANDALONE is not set
++# CONFIG_PREVENT_FIRMWARE_BUILD is not set
++# CONFIG_ALLOW_DEV_COREDUMP is not set
++# CONFIG_INPUT_KEYBOARD is not set
++# CONFIG_INPUT_MOUSE is not set
++# CONFIG_SERIO is not set
++CONFIG_VT_HW_CONSOLE_BINDING=y
++# CONFIG_UNIX98_PTYS is not set
++# CONFIG_LEGACY_PTYS is not set
++CONFIG_SERIAL_8250=y
++CONFIG_SERIAL_8250_CONSOLE=y
++CONFIG_SERIAL_OF_PLATFORM=y
++# CONFIG_HW_RANDOM is not set
++CONFIG_DEBUG_GPIO=y
++CONFIG_GPIO_SYSFS=y
++CONFIG_GPIO_GENERIC_PLATFORM=y
++# CONFIG_HWMON is not set
++# CONFIG_USB_SUPPORT is not set
++# CONFIG_IOMMU_SUPPORT is not set
++# CONFIG_PROC_PAGE_MONITOR is not set
++# CONFIG_MISC_FILESYSTEMS is not set
++CONFIG_DEBUG_INFO=y
++CONFIG_DEBUG_INFO_DWARF4=y
++CONFIG_GDB_SCRIPTS=y
++CONFIG_DEBUG_FS=y
++CONFIG_PANIC_ON_OOPS=y
++# CONFIG_SCHED_DEBUG is not set
++# CONFIG_FTRACE is not set
++CONFIG_MEMTEST=y
++CONFIG_CMDLINE_BOOL=y
++CONFIG_CMDLINE="console=ttyS0,115200"
++CONFIG_XZ_DEC=y
+diff --git a/arch/mips/include/asm/mach-xilfpga/irq.h b/arch/mips/include/asm/mach-xilfpga/irq.h
+index 0132a5b91f57..b650a9b54e13 100644
+--- a/arch/mips/include/asm/mach-xilfpga/irq.h
++++ b/arch/mips/include/asm/mach-xilfpga/irq.h
+@@ -11,7 +11,12 @@
+ #ifndef __MIPS_ASM_MACH_XILFPGA_IRQ_H__
+ #define __MIPS_ASM_MACH_XILFPGA_IRQ_H__
+ 
+-#define NR_IRQS 32
++#ifdef CONFIG_XILFPGA_NEXYS4DDR
++	#define NR_IRQS 32
++#endif
++#ifdef CONFIG_XILFPGA_DE10LITE
++	#define NR_IRQS 8
++#endif
+ 
+ #include_next <irq.h>
+ 
+diff --git a/arch/mips/xilfpga/Kconfig b/arch/mips/xilfpga/Kconfig
+index 42a030a0edba..f3f458670a25 100644
+--- a/arch/mips/xilfpga/Kconfig
++++ b/arch/mips/xilfpga/Kconfig
+@@ -5,5 +5,12 @@ choice
+ 
+ config XILFPGA_NEXYS4DDR
+ 	bool "Nexys4DDR by Digilent"
++	select SYS_HAS_EARLY_PRINTK
++	select USE_GENERIC_EARLY_PRINTK_8250
++	select XILINX_INTC
++
++config XILFPGA_DE10LITE
++	bool "DE10-Lite by Terasic"
++
+ 
+ endchoice
+diff --git a/arch/mips/xilfpga/time.c b/arch/mips/xilfpga/time.c
+index cbb3fca7b6fa..c6965812c729 100644
+--- a/arch/mips/xilfpga/time.c
++++ b/arch/mips/xilfpga/time.c
+@@ -20,6 +20,11 @@ void __init plat_time_init(void)
+ {
+ 	struct device_node *np;
+ 	struct clk *clk;
++
++#ifdef CONFIG_XILFPGA_DE10LITE
++	write_c0_count(0);
++	write_c0_compare(0xffff);
++#endif
+ 
+ 	of_clk_init(NULL);
+ 	clocksource_probe();
+@@ -36,6 +41,6 @@ void __init plat_time_init(void)
+ 		return;
+ 	}
+ 
+-	mips_hpt_frequency = clk_get_rate(clk) / 2;
++	mips_hpt_frequency = clk_get_rate(clk);
+ 	clk_put(clk);
+ }

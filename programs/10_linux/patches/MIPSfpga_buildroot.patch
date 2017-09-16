@@ -1,0 +1,21 @@
+diff --git a/configs/xilfpga_static_defconfig b/configs/xilfpga_static_defconfig
+new file mode 100644
+index 000000000..c7a4484eb
+--- /dev/null
++++ b/configs/xilfpga_static_defconfig
+@@ -0,0 +1,15 @@
++BR2_mipsel=y
++BR2_mips_32r2=y
++# BR2_MIPS_SOFT_FLOAT is not set
++BR2_STATIC_LIBS=y
++# BR2_UCLIBC_INSTALL_UTILS is not set
++BR2_TARGET_GENERIC_HOSTNAME="mipsfpga"
++BR2_TARGET_GENERIC_ISSUE="Welcome to MIPSfpga"
++BR2_TARGET_GENERIC_PASSWD_SHA256=y
++BR2_PACKAGE_BUSYBOX_SHOW_OTHERS=y
++BR2_PACKAGE_SPIDEV_TEST=y
++BR2_PACKAGE_EVTEST=y
++BR2_PACKAGE_I2C_TOOLS=y
++BR2_PACKAGE_NETCAT=y
++BR2_TARGET_ROOTFS_CPIO=y
++# BR2_TARGET_ROOTFS_TAR is not set
