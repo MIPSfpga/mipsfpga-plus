@@ -128,6 +128,29 @@ module de10_lite
         wire          ADC_R_EOP;
     `endif
 
+    `ifdef MFP_DEMO_LIGHT_SENSOR
+        //  ALS   CONN   PIN         DIRECTION
+        // ===== ====== =====      =============
+        //  VCC    29   3.3V
+        //  GND    31   GPIO[26]   output
+        //  SCK    33   GPIO[28]   output
+        //  SDO    35   GPIO[30]   input
+        //  NC     37   GPIO[32]   not connected
+        //  CS     39   GPIO[34]   output
+
+        wire    ALS_GND = 1'b0;
+        wire    ALS_SCK;
+        wire    ALS_SDO;
+        wire    ALS_NC  = 1'bz;
+        wire    ALS_CS;
+
+        assign GPIO[26] = ALS_GND;
+        assign GPIO[28] = ALS_SCK;
+        assign ALS_SDO  = GPIO[30];
+        assign GPIO[32] = ALS_NC;
+        assign GPIO[34] = ALS_CS;
+    `endif
+
     //This is a workaround to make EJTAG working
     //TODO: add complex reset signals handling module
     wire RESETn = KEY [0] & GPIO [20] & CLK_Lock;
@@ -174,9 +197,9 @@ module de10_lite
         `endif
 
         `ifdef MFP_DEMO_LIGHT_SENSOR
-        .SPI_CS           (   GPIO [34]       ),
-        .SPI_SCK          (   GPIO [28]       ),
-        .SPI_SDO          (   GPIO [30]       ),
+        .SPI_CS           (   ALS_CS          ),
+        .SPI_SCK          (   ALS_SCK         ),
+        .SPI_SDO          (   ALS_SDO         ),
         `endif
 
         `ifdef MFP_USE_ADC_MAX10
@@ -235,7 +258,7 @@ module de10_lite
     assign GPIO [13] = 1'b1;
     assign GPIO [12] = 1'b1;
    
-    assign GPIO [26] = 1'b0;
+    
 
     assign HEX0 [ 7] = 1'b1;
     assign HEX1 [ 7] = 1'b1;
