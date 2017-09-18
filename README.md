@@ -69,7 +69,7 @@ How to load a software example into mipsfpga-plus using BusBlaster and OpenOCD:
 <pre>
 cd C:\github\mipsfpga-plus\programs\00_counter
 02_compile_and_link.bat
-10_upload_to_altera_board_using_bus_blaster.bat
+11_upload_to_the_board.bat
 </pre>
 
 How to load a software example into mipsfpga-plus using USB-to-UART-based serial loader:
@@ -86,3 +86,7 @@ Modify <i>10_upload_to_the_board_using_uart.bat</i>.
 <pre>
 10_upload_to_the_board_using_uart.bat
 </pre>
+
+Some details about scripts using: <a href="programs/README.md">programs/README.md</a>
+
+
