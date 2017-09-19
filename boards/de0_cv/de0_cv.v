@@ -103,6 +103,29 @@ module de0_cv
     wire [31:0] HADDR, HRDATA, HWDATA;
     wire        HWRITE;
 
+    `ifdef MFP_DEMO_LIGHT_SENSOR
+        //  ALS   CONN    PIN          DIRECTION
+        // ===== ======  =====       =============
+        //  VCC  JP2 29  3.3V
+        //  GND  JP2 31  GPIO_1[26]   output
+        //  SCK  JP2 33  GPIO_1[28]   output
+        //  SDO  JP2 35  GPIO_1[30]   input
+        //  NC   JP2 37  GPIO_1[32]   not connected
+        //  CS   JP2 39  GPIO_1[34]   output
+
+        wire    ALS_GND = 1'b0;
+        wire    ALS_SCK;
+        wire    ALS_SDO;
+        wire    ALS_NC  = 1'bz;
+        wire    ALS_CS;
+
+        assign GPIO_1[26] = ALS_GND;
+        assign GPIO_1[28] = ALS_SCK;
+        assign ALS_SDO    = GPIO_1[30];
+        assign GPIO_1[32] = ALS_NC;
+        assign GPIO_1[34] = ALS_CS;
+    `endif
+
     mfp_system mfp_system
     (
         .SI_ClkIn         (   clk             ),
@@ -126,21 +149,21 @@ module de0_cv
         .IO_RedLEDs       (   IO_RedLEDs      ),
         .IO_GreenLEDs     (   IO_GreenLEDs    ), 
         .IO_7_SegmentHEX  (   IO_7_SegmentHEX ),
+
+        `ifdef MFP_DEMO_LIGHT_SENSOR
+        .SPI_CS           (   ALS_CS          ),
+        .SPI_SCK          (   ALS_SCK         ),
+        .SPI_SDO          (   ALS_SDO         ),
+        `endif
                                               
         .UART_RX          (   GPIO_1 [31]     ),
-        .UART_TX          (   /* TODO */      ),
-
-        .SPI_CS           (   GPIO_1 [34]     ),
-        .SPI_SCK          (   GPIO_1 [28]     ),
-        .SPI_SDO          (   GPIO_1 [30]     )
+        .UART_TX          (   /* TODO */      )
     );
 
     assign GPIO_1 [15] = 1'b0;
     assign GPIO_1 [14] = 1'b0;
     assign GPIO_1 [13] = 1'b1;
     assign GPIO_1 [12] = 1'b1;
-
-    assign GPIO_1 [26] = 1'b0;
 
     mfp_single_digit_seven_segment_display digit_5 ( IO_7_SegmentHEX [23:20] , HEX5 );
     mfp_single_digit_seven_segment_display digit_4 ( IO_7_SegmentHEX [19:16] , HEX4 );
