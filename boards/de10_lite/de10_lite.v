@@ -128,6 +128,61 @@ module de10_lite
         wire          ADC_R_EOP;
     `endif
 
+    `define MFP_EJTAG_DEBUGGER
+    `ifdef MFP_EJTAG_DEBUGGER
+        // MIPSfpga EJTAG BusBluster 3 connector pinout
+        // EJTAG     DIRECTION   PIN      CONN      PIN    DIRECTION EJTAG 
+        // =====     ========= ======== ========= ======== ========= ======
+        //  VCC       output   GPIO[12]  15 | 16  GPIO[13]  output    VCC  
+        //  GND       output   GPIO[14]  17 | 18  GPIO[15]  output    GND  
+        //  NC        output   GPIO[16]  19 | 20  GPIO[17]  input    EJ_TCK
+        //  NC        output   GPIO[18]  21 | 22  GPIO[19]  output   EJ_TDO
+        //  EJ_RST    input    GPIO[20]  23 | 24  GPIO[21]  input    EJ_TDI
+        //  EJ_TRST   input    GPIO[22]  25 | 26  GPIO[23]  input    EJ_TMS
+
+        wire EJ_VCC  = 1'b1;
+        wire EJ_GND  = 1'b0;
+        wire EJ_NC   = 1'bz;
+        wire EJ_TCK  = GPIO[17];
+        wire EJ_RST  = GPIO[20];
+        wire EJ_TDI  = GPIO[21];
+        wire EJ_TRST = GPIO[22];
+        wire EJ_TMS  = GPIO[23];
+        wire EJ_DINT = 1'b0;
+        wire EJ_TDO;
+
+        assign GPIO[12] = EJ_VCC;
+        assign GPIO[13] = EJ_VCC;
+        assign GPIO[14] = EJ_GND;
+        assign GPIO[15] = EJ_GND;
+        assign GPIO[16] = EJ_NC;
+        assign GPIO[18] = EJ_NC;
+        assign GPIO[19] = EJ_TDO;
+    `endif
+
+    `ifdef MFP_DEMO_LIGHT_SENSOR
+        //  ALS   CONN   PIN         DIRECTION
+        // ===== ====== =====      =============
+        //  VCC    29   3.3V
+        //  GND    31   GPIO[26]   output
+        //  SCK    33   GPIO[28]   output
+        //  SDO    35   GPIO[30]   input
+        //  NC     37   GPIO[32]   not connected
+        //  CS     39   GPIO[34]   output
+
+        wire    ALS_GND = 1'b0;
+        wire    ALS_SCK;
+        wire    ALS_SDO;
+        wire    ALS_NC  = 1'bz;
+        wire    ALS_CS;
+
+        assign GPIO[26] = ALS_GND;
+        assign GPIO[28] = ALS_SCK;
+        assign ALS_SDO  = GPIO[30];
+        assign GPIO[32] = ALS_NC;
+        assign GPIO[34] = ALS_CS;
+    `endif
+
     //This is a workaround to make EJTAG working
     //TODO: add complex reset signals handling module
     wire RESETn = KEY [0] & GPIO [20] & CLK_Lock;
@@ -154,13 +209,15 @@ module de10_lite
         .SDRAM_DQM   ( {DRAM_UDQM, DRAM_LDQM} ),
         `endif
 
-        .EJ_TRST_N_probe  (   GPIO [22]       ),
-        .EJ_TDI           (   GPIO [21]       ),
-        .EJ_TDO           (   GPIO [19]       ),
-        .EJ_TMS           (   GPIO [23]       ),
-        .EJ_TCK           (   GPIO [17]       ),
-        .SI_ColdReset     ( ~ GPIO [20]       ),
-        .EJ_DINT          (   1'b0            ),
+        `ifdef MFP_EJTAG_DEBUGGER
+        .EJ_TRST_N_probe  (   EJ_TRST         ),
+        .EJ_TDI           (   EJ_TDI          ),
+        .EJ_TDO           (   EJ_TDO          ),
+        .EJ_TMS           (   EJ_TMS          ),
+        .EJ_TCK           (   EJ_TCK          ),
+        .SI_ColdReset     ( ~ EJ_RST          ),
+        .EJ_DINT          (   EJ_DINT         ),
+        `endif
 
         .IO_Switches      (   IO_Switches     ),
         .IO_Buttons       (   IO_Buttons      ),
@@ -174,9 +231,9 @@ module de10_lite
         `endif
 
         `ifdef MFP_DEMO_LIGHT_SENSOR
-        .SPI_CS           (   GPIO [34]       ),
-        .SPI_SCK          (   GPIO [28]       ),
-        .SPI_SDO          (   GPIO [30]       ),
+        .SPI_CS           (   ALS_CS          ),
+        .SPI_SCK          (   ALS_SCK         ),
+        .SPI_SDO          (   ALS_SDO         ),
         `endif
 
         `ifdef MFP_USE_ADC_MAX10
@@ -229,13 +286,6 @@ module de10_lite
         defparam mfp_system.matrix_loader.matrix.ram.DELAY_afterWRITE    = `SDRAM_DELAY_afterWRITE;
         defparam mfp_system.matrix_loader.matrix.ram.COUNT_initAutoRef   = `SDRAM_COUNT_initAutoRef;
     `endif
-
-    assign GPIO [15] = 1'b0;
-    assign GPIO [14] = 1'b0;
-    assign GPIO [13] = 1'b1;
-    assign GPIO [12] = 1'b1;
-   
-    assign GPIO [26] = 1'b0;
 
     assign HEX0 [ 7] = 1'b1;
     assign HEX1 [ 7] = 1'b1;

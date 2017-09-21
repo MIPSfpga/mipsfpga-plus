@@ -129,7 +129,7 @@ module mfp_testbench;
         `ifdef MFP_DEMO_LIGHT_SENSOR
         .SPI_CS           ( SPI_CS           ),
         .SPI_SCK          ( SPI_SCK          ),
-        .SPI_SDO          ( SPI_SDO          )
+        .SPI_SDO          ( SPI_SDO          ),
         `endif
 
         .UART_RX          ( UART_RX          ),
