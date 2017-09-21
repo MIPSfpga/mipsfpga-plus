@@ -9,8 +9,7 @@ GDB = mips-mti-elf-gdb
 
 # OpenOCD debugger
 OCD = openocd
-OCD_CONF = ../../scripts/load/mfp_mpsse.cfg
-#OCD_CONF = ../../scripts/load/mfp_busbluster.cfg
+OCD_CONF = ../../scripts/load/openocd.cfg
 
 #########################################################
 # Compile settings and tasks

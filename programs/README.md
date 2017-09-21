@@ -43,12 +43,14 @@
 ## Top Make parameters
 Those make commands can be run program directory
 ```
-  make help         - show this message
-  make all          - builds all in programs subdirs
-  make init_linux   - replaces all programs/*/*.bat and /boards/*/.bat wrapper scripts with *.sh analogs
-  make init_windows - replaces all programs/*/*.sh and /boards/*/.sh wrapper scripts with *.bat analogs
-  make init_clean   - clears all programs/*/*.sh and programs/*/*.bat wrapper scripts
-  make init_vscode  - creates VSCode config folder (.vscode) as a copy of scripts/vscode
+  make help            - show this message
+  make all             - builds all in programs subdirs
+  make init_linux      - replaces all programs/*/*.bat and /boards/*/.bat wrapper scripts with *.sh analogs
+  make init_windows    - replaces all programs/*/*.sh and /boards/*/.sh wrapper scripts with *.bat analogs
+  make init_clean      - clears all programs/*/*.sh and programs/*/*.bat wrapper scripts
+  make init_vscode     - creates VSCode config folder (.vscode) as a copy of scripts/vscode
+  make init_busblaster - change scripts/load/openocd.cfg to use BusBlaster 3 for hardware debug
+  make init_mpsse      - change scripts/load/openocd.cfg to use FTDI MPSSE based board for hardware debug
 ```
 
 ## Program Make parameters
