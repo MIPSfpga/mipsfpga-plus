@@ -128,6 +128,7 @@ module de10_lite
         wire          ADC_R_EOP;
     `endif
 
+    `define MFP_EJTAG_DEBUGGER
     `ifdef MFP_EJTAG_DEBUGGER
         // MIPSfpga EJTAG BusBluster 3 connector pinout
         // EJTAG     DIRECTION   PIN      CONN      PIN    DIRECTION EJTAG 
@@ -147,6 +148,7 @@ module de10_lite
         wire EJ_TDI  = GPIO[21];
         wire EJ_TRST = GPIO[22];
         wire EJ_TMS  = GPIO[23];
+        wire EJ_DINT = 1'b0;
         wire EJ_TDO;
 
         assign GPIO[12] = EJ_VCC;
@@ -207,13 +209,15 @@ module de10_lite
         .SDRAM_DQM   ( {DRAM_UDQM, DRAM_LDQM} ),
         `endif
 
-        .EJ_TRST_N_probe  (   GPIO [22]       ),
-        .EJ_TDI           (   GPIO [21]       ),
-        .EJ_TDO           (   GPIO [19]       ),
-        .EJ_TMS           (   GPIO [23]       ),
-        .EJ_TCK           (   GPIO [17]       ),
-        .SI_ColdReset     ( ~ GPIO [20]       ),
-        .EJ_DINT          (   1'b0            ),
+        `ifdef MFP_EJTAG_DEBUGGER
+        .EJ_TRST_N_probe  (   EJ_TRST         ),
+        .EJ_TDI           (   EJ_TDI          ),
+        .EJ_TDO           (   EJ_TDO          ),
+        .EJ_TMS           (   EJ_TMS          ),
+        .EJ_TCK           (   EJ_TCK          ),
+        .SI_ColdReset     ( ~ EJ_RST          ),
+        .EJ_DINT          (   EJ_DINT         ),
+        `endif
 
         .IO_Switches      (   IO_Switches     ),
         .IO_Buttons       (   IO_Buttons      ),
@@ -282,13 +286,6 @@ module de10_lite
         defparam mfp_system.matrix_loader.matrix.ram.DELAY_afterWRITE    = `SDRAM_DELAY_afterWRITE;
         defparam mfp_system.matrix_loader.matrix.ram.COUNT_initAutoRef   = `SDRAM_COUNT_initAutoRef;
     `endif
-
-    assign GPIO [15] = 1'b0;
-    assign GPIO [14] = 1'b0;
-    assign GPIO [13] = 1'b1;
-    assign GPIO [12] = 1'b1;
-   
-    
 
     assign HEX0 [ 7] = 1'b1;
     assign HEX1 [ 7] = 1'b1;

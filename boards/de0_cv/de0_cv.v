@@ -103,6 +103,38 @@ module de0_cv
     wire [31:0] HADDR, HRDATA, HWDATA;
     wire        HWRITE;
 
+    `define MFP_EJTAG_DEBUGGER
+    `ifdef MFP_EJTAG_DEBUGGER
+        // MIPSfpga EJTAG BusBluster 3 connector pinout
+        // EJTAG     DIRECTION    PIN       CONN      PIN    DIRECTION EJTAG 
+        // =====     ========= ========== ========= ======== ========= ======
+        //  VCC       output   GPIO_1[12]  15 | 16  GPIO_1[13]  output    VCC  
+        //  GND       output   GPIO_1[14]  17 | 18  GPIO_1[15]  output    GND  
+        //  NC        output   GPIO_1[16]  19 | 20  GPIO_1[17]  input    EJ_TCK
+        //  NC        output   GPIO_1[18]  21 | 22  GPIO_1[19]  output   EJ_TDO
+        //  EJ_RST    input    GPIO_1[20]  23 | 24  GPIO_1[21]  input    EJ_TDI
+        //  EJ_TRST   input    GPIO_1[22]  25 | 26  GPIO_1[23]  input    EJ_TMS
+
+        wire EJ_VCC  = 1'b1;
+        wire EJ_GND  = 1'b0;
+        wire EJ_NC   = 1'bz;
+        wire EJ_TCK  = GPIO_1[17];
+        wire EJ_RST  = GPIO_1[20];
+        wire EJ_TDI  = GPIO_1[21];
+        wire EJ_TRST = GPIO_1[22];
+        wire EJ_TMS  = GPIO_1[23];
+        wire EJ_DINT = 1'b0;
+        wire EJ_TDO;
+
+        assign GPIO_1[12] = EJ_VCC;
+        assign GPIO_1[13] = EJ_VCC;
+        assign GPIO_1[14] = EJ_GND;
+        assign GPIO_1[15] = EJ_GND;
+        assign GPIO_1[16] = EJ_NC;
+        assign GPIO_1[18] = EJ_NC;
+        assign GPIO_1[19] = EJ_TDO;
+    `endif
+
     `ifdef MFP_DEMO_LIGHT_SENSOR
         //  ALS   CONN    PIN          DIRECTION
         // ===== ======  =====       =============
@@ -135,14 +167,28 @@ module de0_cv
         .HRDATA           (   HRDATA          ),
         .HWDATA           (   HWDATA          ),
         .HWRITE           (   HWRITE          ),
-                          
-        .EJ_TRST_N_probe  (   GPIO_1 [22]     ),
-        .EJ_TDI           (   GPIO_1 [21]     ),
-        .EJ_TDO           (   GPIO_1 [19]     ),
-        .EJ_TMS           (   GPIO_1 [23]     ),
-        .EJ_TCK           (   GPIO_1 [17]     ),
-        .SI_ColdReset     ( ~ GPIO_1 [20]     ),
-        .EJ_DINT          (   1'b0            ),
+
+        `ifdef MFP_USE_SDRAM_MEMORY
+        .SDRAM_CKE        (   DRAM_CKE        ),
+        .SDRAM_CSn        (   DRAM_CS_N       ),
+        .SDRAM_RASn       (   DRAM_RAS_N      ),
+        .SDRAM_CASn       (   DRAM_CAS_N      ),
+        .SDRAM_WEn        (   DRAM_WE_N       ),
+        .SDRAM_ADDR       (   DRAM_ADDR       ),
+        .SDRAM_BA         (   DRAM_BA         ),
+        .SDRAM_DQ         (   DRAM_DQ         ),
+        .SDRAM_DQM   ( {DRAM_UDQM, DRAM_LDQM} ),
+        `endif
+
+        `ifdef MFP_EJTAG_DEBUGGER
+        .EJ_TRST_N_probe  (   EJ_TRST         ),
+        .EJ_TDI           (   EJ_TDI          ),
+        .EJ_TDO           (   EJ_TDO          ),
+        .EJ_TMS           (   EJ_TMS          ),
+        .EJ_TCK           (   EJ_TCK          ),
+        .SI_ColdReset     ( ~ EJ_RST          ),
+        .EJ_DINT          (   EJ_DINT         ),
+        `endif
 
         .IO_Switches      (   IO_Switches     ),
         .IO_Buttons       (   IO_Buttons      ),
@@ -160,10 +206,19 @@ module de0_cv
         .UART_TX          (   /* TODO */      )
     );
 
-    assign GPIO_1 [15] = 1'b0;
-    assign GPIO_1 [14] = 1'b0;
-    assign GPIO_1 [13] = 1'b1;
-    assign GPIO_1 [12] = 1'b1;
+    `ifdef MFP_USE_SDRAM_MEMORY
+        //SDRAM controller delay params
+        defparam mfp_system.matrix_loader.matrix.ram.DELAY_nCKE          = `SDRAM_DELAY_nCKE;
+        defparam mfp_system.matrix_loader.matrix.ram.DELAY_tREF          = `SDRAM_DELAY_tREF;
+        defparam mfp_system.matrix_loader.matrix.ram.DELAY_tRP           = `SDRAM_DELAY_tRP;
+        defparam mfp_system.matrix_loader.matrix.ram.DELAY_tRFC          = `SDRAM_DELAY_tRFC;
+        defparam mfp_system.matrix_loader.matrix.ram.DELAY_tMRD          = `SDRAM_DELAY_tMRD;
+        defparam mfp_system.matrix_loader.matrix.ram.DELAY_tRCD          = `SDRAM_DELAY_tRCD;
+        defparam mfp_system.matrix_loader.matrix.ram.DELAY_tCAS          = `SDRAM_DELAY_tCAS;
+        defparam mfp_system.matrix_loader.matrix.ram.DELAY_afterREAD     = `SDRAM_DELAY_afterREAD;
+        defparam mfp_system.matrix_loader.matrix.ram.DELAY_afterWRITE    = `SDRAM_DELAY_afterWRITE;
+        defparam mfp_system.matrix_loader.matrix.ram.COUNT_initAutoRef   = `SDRAM_COUNT_initAutoRef;
+    `endif
 
     mfp_single_digit_seven_segment_display digit_5 ( IO_7_SegmentHEX [23:20] , HEX5 );
     mfp_single_digit_seven_segment_display digit_4 ( IO_7_SegmentHEX [19:16] , HEX4 );
