@@ -89,7 +89,7 @@ LDFLAGS += -Wl,--defsym,__memory_size=0x1f800
 LDFLAGS += -Wl,-e,0xbfc00000
 
 ASOURCES= \
-boot.S
+boot.S exceptions.S
 
 CSOURCES= \
 main.c
