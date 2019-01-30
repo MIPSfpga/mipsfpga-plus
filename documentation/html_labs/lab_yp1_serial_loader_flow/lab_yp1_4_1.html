@@ -1,0 +1,47 @@
+
+<p><big><b>4. Running the synthesis and configuring the FPGA with the synthesized MIPSfpga system</b></big></p>
+
+<p><big><b>4.1. Selecting the appropriate hardware configuration for the lab</b></big></p>
+
+<p>Before running synthesis it is necessary to review and possibly modify the file
+<a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a>
+that includes a set of Verilog  <i>`define</i> statements that determine the functionality
+of the synthesized MIPSfpga system. Make sure that <i>`define MFP_USE_UART_PROGRAM_LOADER</i>
+is not commented out:</p>
+
+<blockquote><p>File <i><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a></i></p>
+<pre>                           
+
+//
+//  Configuration parameters
+//
+
+// `define MFP_USE_WORD_MEMORY
+// `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
+// `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+`define MFP_USE_UART_PROGRAM_LOADER
+// `define MFP_DEMO_LIGHT_SENSOR
+// `define MFP_DEMO_CACHE_MISSES
+// `define MFP_DEMO_PIPE_BYPASS
+
+</pre></blockquote>
+
+<p>It also may be necessary to configure memory that is built from FPGA block memory cells. By default
+the memory for bootloader is 1 KB and the memory for user program is 1 KB. Small block memory fits many older
+boards and results in high maximum clock frequency of the synthesized system.
+The defines below can be used to increase block memory size. To avoid low max clock frequency
+with larger memories and if a lot of memory is necessary, we recommend implementing the interface
+to memory chip external to FPGA, such as SDRAM memory present on many FPGA boards.</p>
+
+<blockquote><p>File <i><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a></i></p>
+<pre>                           
+
+`define MFP_RESET_RAM_ADDR_WIDTH    10  // The boot sequence is the same for everything
+
+`ifdef SIMULATION
+`define MFP_RAM_ADDR_WIDTH          16
+`else
+`define MFP_RAM_ADDR_WIDTH          10  // DE1: 10, DE0-Nano: 13, DE0-CV or Basys3: 14, Nexys 4 or DE2-115: 16
+`endif
+
+</pre></blockquote>

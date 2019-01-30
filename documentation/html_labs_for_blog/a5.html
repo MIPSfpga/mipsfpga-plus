@@ -1,0 +1,388 @@
+<h2>MIPSfpga 2.0. Lab YP5 - The first glance into caches</h2>
+<h3>1.  Introduction</h3>
+
+<p>This lab demonstrates how the work of CPU cache can be directly observed in the most obvious and straigtforward fashion when running MIPSfpga-based system on FPGA board.  During this lab a student first makes the design clock running really slow (a dozen of beats per second), and then the student's program fills a two-dimensional memory array in one of two different ways: either with moving row index first or with moving column index first.  The resulting cache hit and miss patterns are clearly visible on blinking LED, which is connected to a signal that indicates cache fill line request.  The student can see that these patterns are different for raw-first and column-first runs.</p>
+
+<p>Each cache line in MIPSfpga CPU cache holds four 32-bit words.  As a result, when the program fills the memory array by moving column index first, the pattern is going to be "cache miss - hit - hit - hit - miss - hit - hit - hit - miss ...".  However when the program fills the array by moving raw index first, the pattern is going to be a series of cache misses followed by a long series of cache hits, since a large portion of the array is already in the cache.</p>
+
+<p>This lab does not attempt to measure, quantify or analyze cache behavior in details.  The only goal of this lab is to create "A-ha" moment for a student who wants to visualize for himself the role a CPU cache plays in the computer system.  The precise analysis requires using different methods, for example performance counters, as described in other cache-related labs in MIPSfpga 2.0 package.</p>
+<h3>2.  The theory of operation</h3>
+
+<p>Why do we need CPU cache?  It solves the problem of so-called "processor-memory performance gap".  The issue is: during the past decades the speed of CPUs grew faster than the speed of dynamic memory, used for storing a large amount of data.  This difference in growth is illustrated on <b><font color=blue>Figure 1</font></b>.  As a result, without cache, a typical transaction (fetch, load or store) from CPU to the memory could take the same amount of time (the same number of clock cycles) as tens, sometimes a hundred or more arithmetic operations inside the CPU.  It means that with a typical memory-intensive application a CPU without caches would waste most program execution time idling, waiting to complete the memory operations.</p>
+
+<center>
+
+<p><b><font color=blue>Figure 1.  Processor-memory performance gap, from Computer Architecture: A Quantitative Approach by David A. Patterson and John L. Hennessy </font></b> </p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2016/09/KgYa8BM.png"
+/>
+
+</center>
+
+<p>One of the best descriptions of cache used in MIPS CPUs is in book <a href="https://www.amazon.com/Second-Morgan-Kaufmann-Computer-Architecture/dp/0120884216">See MIPS Run, Second Edition by Dominic Sweetman</a>.  A fragment of this description is below:</p>
+
+<blockquote>
+
+<p>The cache's job is to keep a copy of memory data that has been recently read or written, so it can be returned to the CPU quickly.  For L1 caches, the read must complete in a fixed period of time to keep the pipeline running.</p>
+
+<p>MIPS CPUs always have separate L1 caches for instructions and data (I-cache and D-cache, respectively) so that an instruction can be read and a load or store done simultaneously.</p>
+
+<p>Conceptually, a cache is an associative memory, a chunk of storage where data is deposited and can be found again using an arbitrary data pattern as a key.  In a cache, the key is the full memory address.  Produce the same key back to an associative memory and you'll get the same data back again.  A real associative memory will accept a new item using an arbitrary key, at least until it's full; however, since a presented key has to be compared with every stored key simultaneously, a genuine associative memory of any size is either hopelessly resource hungry, slow, or both.</p>
+
+<p>So how can we make a useful cache that is fast and efficient?  <b><font color=blue>Figure 2</font></b> shows the basic layout of the simplest kind of cache, the direct-mapped cache used in most MIPS CPUs up to the 1992 generation.</p>
+
+<p>The direct-mapped arrangement uses a simple chunk of high-speed memory (the cache store) indexed by enough low address bits to span its size.  Each line inside the cache store contains one or more words of data and a cache tag field, which records the memory address where this data belongs.</p>
+
+<p>On a read, the cache line is accessed, and the tag field is compared with the higher addresses of the memory address; if the tag matches, we know we've got the right data and have "hit" in the cache.  Where there's more than one word in the line, the appropriate word will be selected based on the very lowest address bits.</p>
+
+<p>If the tag doesn't match, we've missed and the data will be read from memory and copied into the cache.  The data that was previously held in the cache is simply discarded and will need to be fetched from memory again if the CPU references it.</p>
+
+<center>
+
+<p><b><font color=blue>Figure 2.  Direct-mapped cache.</font></b></p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2016/10/direct_mapped_cache.png"
+/>
+
+</center>
+
+<p>A direct-mapped cache like this one has the property that, for any given memory address, there is only one line in the cache store where that data can be kept.<sup>1</sup> That might be good or bad; it's good because such a simple structure will be fast and will allow us to run the whole CPU faster.  But simplicity has its bad side too: If your program makes repeated reference to two data items that happen to share the same cache location (presumably because the low bits of their addresses happen to be close together), then the two data items will keep pushing each other out of the cache and efficiency will fall drastically.  A real associative memory wouldn't suffer from this kind of thrashing, but it is too slow and expensive.</p>
+
+<p>A common compromise is to use a two-way set-associative cache—which is really just a matter of running two direct-mapped caches in parallel and looking up memory locations in both of them, as shown in <b><font color=blue>Figure 3</font></b>.</p>
+
+<sup>1.</sup> <small>In a fully associative memory, data associated with any
+given memory address (key) can be stored anywhere; a direct-mapped cache is
+as far from being content addressable as a cache store can be.</small>
+
+<center>
+
+<p><b><font color=blue>Figure 3.  Two-way set-associative cache.</font></b></p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2016/10/2_way_set_associative_cache.png"
+/>
+
+</center>
+
+<p>Now we've got two chances of getting a hit on any address.  Four-way setassociative caches (where there are effectively four direct-mapped subcaches) are also common in on-chip caches.</p>
+
+<p>In a multiway cache there's more than one choice of the cache location to be used in fixing up a cache miss, and thus more than one acceptable choice of the cache line to be discarded.  The ideal solution is probably to keep track of accesses to cache lines and pick the "least recently used" ("LRU") line to be replaced, but maintaining strict LRU order means updating LRU bits in every cache line every time the cache is read.  Moreover, keeping strict LRU information in a more-than-four-way set-associative cache becomes impractical.  Real caches often use compromise algorithms like "least recently filled" to pick the line to discard.</p>
+
+</blockquote>
+
+<p>CPU caches exploit so-called principle of locality of memory access patterns found in almost all programs.  Below is the explanation for two major types of locality from Wikipedia and <b><font color=blue>Figure 4</font></b> that illustrates the patterns with more specifics.  The understanding of this principle is relevant to this lab because it explains, for example, why MIPSfpga cache loads four words on cache miss (the cache line) rather than just one word.</p>
+
+<blockquote>
+
+<p>From <a href="https://en.wikipedia.org/wiki/Locality_of_reference">https://en.wikipedia.org/wiki/Locality_of_reference</a>:</p>
+
+<ul>
+
+<li>Temporal locality: If at one point a particular memory location is referenced, then it is likely that the same location will be referenced again in the near future.</li>
+
+<li>Spatial locality: If a particular storage location is referenced at a particular time, then it is likely that nearby memory locations will be referenced in the near future.</li>
+
+</ul>
+
+</blockquote>
+
+<center>
+
+<p><b><font color=blue>Figure 4.  Memory access patterns from <a href="https://www.coursera.org/learn/comparch">Computer Architecture</a> course by David Wentzlaff from Princeton University.  2011.</font></b></p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2016/10/cache_locality.png"
+/>
+
+</center>
+
+<p>Finally, <b><font color=blue>Figure 5</font></b> shows the structures associated with each cache line in MIPS microAptiv UP processor core.  The particular configuration of this core used in MIPSfpga has 2-way set-associativity for both instruction and data caches; each cache way has size of 2 KB in both I-cache and D-cache.  The parameters of caches used during the synthesis can be found in Verilog header file <i>m14k_config.vh</i> located in the directory <i>core_rtl</i>:</p>
+
+<blockquote><p>File <i>core_rtl/m14k_config.vh</i></p>
+<font face="Courier"><pre>                           
+
+// *************************************************************************
+// Cache module parameters
+// Not used with scache or cache stub modules
+// *************************************************************************
+// Cache Associativity
+//      1-4 way set associative
+
+`define M14K_ICACHE_ASSOC 2
+`define M14K_DCACHE_ASSOC 2
+
+// Cache Way Size
+//      Size/Way in KB
+//      1,2,4,8,16 KB
+
+`define M14K_ICACHE_WAYSIZE 2
+`define M14K_DCACHE_WAYSIZE 2
+
+
+
+// *************************************************************************
+// Cache Controller parameters
+// *************************************************************************
+// ! If changing manually, remember to change WS Ram Width below to match !
+// Maximum Cache Associativity
+//      1-4 way set associative (including Spram)
+
+`define M14K_MAX_IC_ASSOC 2
+`define M14K_MAX_DC_ASSOC 2
+
+</pre></font></blockquote>
+
+<center>
+
+<p><b><font color=blue>Figure 5.  The structures associated with each cache line in MIPS microAptiv UP processor core processor core.</font></b></p>
+
+<img
+src="http://www.silicon-russia.com/wp-content/uploads/2016/10/mips_microaptiv_up_cache.png"
+/>
+
+</center>
+
+<h3>3.  Lab steps</h3>
+
+<p>This section outlines the sequence of steps, necessary to complete the lab.  Almost all generic steps in this lab are the same as in <i>MIPSfpga 2.0 Lab YP1.  Using MIPSfpga with Serial Loader Flow that does not require BusBlaster board and OpenOCD software</i>.  Such generic steps are not described in this section.  Only the steps different from <i>Lab YP1</i> are explained in details.</p>
+
+<h3>3.1.  Connect the board to the computer</h3>
+
+<p>For <i>Digilent</i> boards, such as <i>Nexys4</i>, <i>Nexys4 DDR</i> or <i>Basys3</i>, this step is obvious.  For <i>Altera/Terasic</i> boards some additional steps required:</p>
+
+<ol>
+
+<li>Connect USB-to-UART connector to FPGA board.  Either <i>FT232RL</i> or <i>PL2303TA</i> that you can by from AliExpress or RadioShack will do the job.  <i>TX</i> output from the connector (green wire on <i>PL2303TA</i>) should go to pin 3 from right bottom on Terasic DE0, DE0-CV, DE1, DE2-115 (right top on DE0-Nano) and <i>GND</i> output (black wire on <i>PL2303TA</i>) should be connected to pin 6 from right bottom on Terasic DE0, DE0-CV, DE1, DE2-115 (right top on DE0-Nano).  Please consult photo picture in <i>Lab YP1</i> to avoid short-circuit or other connection problems.</li>
+
+<li>For <i>FT232RL</i> connector: make sure to set 3.3V/5V jumper on <i>FT232RL</i> part to 3.3V.</li>
+
+<li>For the boards that require external power in addition to the power that comes from USB, connect the power supply.  The boards that require the extra power supply include <i>Terasic DE2-115</i>.</li>
+
+<li>Connect FPGA board to the computer using main connection cable provided by the board manufacturers.  Make sure to put USB cable to the right jack when ambiguity exists (such as in <i>Terasic DE2-115</i> board).</li>
+
+<li>Make sure to power the FPGA board (turn on the power switch) before connecting the UART cable from USB-to-UART connector to the computer.  Failing to do so may result in electric damage to the board.</li>
+
+<li>Connect USB-to-UART connector to FPGA board.</li>
+
+</ol>
+
+<h3>3.2.  Select the appropriate hardware system configuration for the lab</h3>
+
+<p>Before running synthesis it is necessary to review and possibly modify the file <i>system_rtl/mfp_ahb_lite_matrix_config.vh</i> that includes a set of Verilog <i>`define</i> statements that determine the functionality of the synthesized MIPSfpga system.  The configuration should be the following:</p>
+
+<blockquote><p>File <i>system_rtl/mfp_ahb_lite_matrix_config.vh</i></p>
+<font face="Courier"><pre>
+
+//
+//  Configuration parameters
+//
+
+// `define MFP_USE_WORD_MEMORY
+// `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
+   `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+   `define MFP_USE_UART_PROGRAM_LOADER
+// `define MFP_DEMO_LIGHT_SENSOR
+   `define MFP_DEMO_CACHE_MISSES
+// `define MFP_DEMO_PIPE_BYPASS
+
+</pre></font></blockquote>
+
+<h3>3.3.  Run the synthesis and configure the FPGA with the synthesized MIPSfpga system</h3>
+
+<p>This step is identical to the synthesis step in <i>Lab YP1</i></p>
+
+<h3>3.4.  Go to the lab directory and clean it up</h3>
+
+<p>Under Windows:</p>
+
+<blockquote><font face="Courier"><pre>
+cd programs\05_cache_misses
+00_clean_all.bat
+</pre></font></blockquote>
+
+<p>Under Linux:</p>
+
+<blockquote><font face="Courier"><pre>
+cd programs/05_cache_misses
+./00_clean_all.sh
+</pre></font></blockquote>
+
+<h3>3.5.  Review the lab program code</h3>
+
+<p>The main program is located in file <i>programs/05_cache_misses/main.c</i>.</p>
+
+<p>The loop at the beginning (<i>"while ((MFP_SWITCHES & 4) == 0) ;"</i>) is needed so that the program can start with high clock speed (25 MHz) and the switch to very low clock speed (12.5 Hz) happens only after you first switch the speed by turning on switch one and then let the program to continue by turning on switch two.  For more details about the switchable clock see <i>MIPSfpga 2.0 Lab YP2.  Using switchable clock to observe the CPU cycle-by-cycle</i>.</p>
+
+<p>The program has two variants - with uncommented <i>"a [i][j] = i + j;"</i> and with uncommented <i>"a [j][i] = i + j;"</i>.  For the first run make sure <i>"a [i][j] = i + j;"</i> is uncommented and <i>"a [j][i] = i + j;"</i> is commented:</p>
+
+<blockquote><p>File <i>programs/05_cache_misses/main.c</i></p>
+<font face="Courier"><pre>
+
+#include "mfp_memory_mapped_registers.h"
+
+int a [8][8];
+
+int main ()
+{
+    int n = 0;
+    int i, j;
+
+    // Wait for switch 2
+
+    while ((MFP_SWITCHES & 4) == 0)
+        ;
+
+
+    for (i = 0; i &lt; 8; i ++)
+        for (j = 0; j &lt; 8; j ++)
+               a [i][j] = i + j;
+            // a [j][i] = i + j;
+
+    return 0;
+}
+
+</pre></font></blockquote>
+
+<h3>3.6.  Prepare the first software run</h3>
+
+<p>Following the procedure described in <i>Lab YP1</i>, compile and link the program, generate Motorola S-Record file and upload this file into the memory of the synthesized MIPSfpga-based system on the board.</p>
+
+<p>Under Windows:</p>
+
+<ol>
+
+<li>cd programs\05_cache_misses</li>
+
+<li>run 02_compile_and_link.bat</li>
+
+<li>run 08_generate_motorola_s_record_file.bat</li>
+
+<li>run 11_check_which_com_port_is_used.bat</li>
+
+<li>edit 12_upload_to_the_board_using_uart.bat based on the result from the previous step - set the working port in "set a=" assignment.</li>
+
+<li>Make sure the switches 0, 1, 2 on FPGA board are turned off.  Switches 0 and 1 control the speed of the clock, while switch 2 gates the program execution - see <i>3.5.  Review the lab program code</i>.  If the switches 0 and 1 are not off, the loading through UART is not going to work; if the switch 2 is not off, the program will execute before you have a chance to change the clock speed.</li>
+
+<li>run 12_upload_to_the_board_using_uart.bat</li>
+
+</ol>
+
+<p>Under Linux:</p>
+
+<p>If uploading program to the board first time during the current Linux session, add the current user to <i>dialout</i> Linux group. Enter the <i>root</i> password when prompted:</p>
+
+<blockquote><font face="Courier"><pre>
+sudo adduser $USER dialout
+su - $USER
+</pre></font></blockquote>
+
+<p>After that:</p>
+
+<ol>
+
+<li>cd programs/05_cache_misses</li>
+
+<li>run ./02_compile_and_link.sh</li>
+
+<li>run ./08_generate_motorola_s_record_file.sh</li>
+
+<li>run ./11_check_which_com_port_is_used.sh</li>
+
+<li>edit ./12_upload_to_the_board_using_uart.sh based on the result from the previous step - set the working port in "set a=" assignment</li>
+
+<li>Make sure the switches 0, 1, 2 on FPGA board are turned off.  Switches 0 and 1 control the speed of the clock, while switch 2 gates the program execution - see <i>3.5.  Review the lab program code</i>.  If the switches 0 and 1 are not off, the loading through UART is not going to work; if the switch 2 is not off, the program will execute before you have a chance to change the clock speed.</li>
+
+<li>./run 12_upload_to_the_board_using_uart.sh</li>
+
+</ol>
+
+<h3>3.7.  The first run</h3>
+
+<ol>
+
+<li>Make sure the switches 0, 1, 2 on FPGA board are turned off.  Switches 0 and 1 control the speed of the clock, while switch 2 gates the program execution - see <i>3.5.  Review the lab program code</i>.  If the switches 0 and 1 are not off, the boot sequence (a sequence of processor instructions before <i>main</i> function) will take too long.  If the switch 2 is not off, the program will execute before you have a chance to change the clock speed.</li>
+
+<li><p>Reset the processor.  The reset buttons for each board are listed in the table below:</p>
+
+<table border=1 cellpadding=10 cellspacing=0 rules=all>
+<tr>
+<th>Board</th>
+<th>Reset button</th>
+</tr>
+<tr><td>Digilent Basys3</td><td>Up</td></tr>
+<tr><td>Digilent Nexys4</td><td>Dedicated CPU Reset</td></tr>
+<tr><td>Digilent Nexys4 DDR</td><td>Dedicated CPU Reset</td></tr>
+<tr><td>Terasic DE0</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE0-CV</td><td>Dedicated reset button</td></tr>
+<tr><td>Terasic DE0-Nano</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE1</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE2-115</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE10-Lite</td><td>Button/Key 0</td></tr>
+</table>
+
+</li>
+
+<li>Turn the switch 1 on.  This will switch the system clock from 25 MHz to 12.5 Hz.  You should see LED 7 start blinking, it is connected straight to the system clock.</li>
+
+<li><p>Now turn your attention to LED 6, next right from blinking LED 7. LED 6 is connected to the signal that signifies cache fill burst.</p>
+
+<blockquote><p>File <i>system_rtl/mfp_ahb_lite_matrix.v</i></p>
+<font face="Courier"><pre>
+
+    `ifdef MFP_DEMO_CACHE_MISSES
+
+    wire burst = HTRANS == `HTRANS_NONSEQ && HBURST == `HBURST_WRAP4;
+
+    assign IO_GreenLEDs = { { `MFP_N_GREEN_LEDS - (1 + 1 + 6) { 1'b0 } },
+                            HCLK, burst, HADDR [7:2] };
+
+    `endif
+
+</pre></font></blockquote>
+</li>
+
+<li>Turn the switch 2 on.  It will let the program to proceed to fill the array.  Continue watching LED 6.</li>
+
+<li>LED 6 starts blinking.  The first couple of requests are coming from instruction fetches filling L1 instruction cache, not L1 data cache, but after this you can see blinks with the frequency of cache fills.</li>
+
+</ol>
+
+<h3>3.8.  The second run</h3>
+
+<p>Turn all switches to off position and go back to the program code.  Comment out <i>"a [i][j] = i + j;"</i> and uncomment <i>"a [j][i] = i + j;"</i>.  Now we are going to fill the array by rows, not by columns.</p>
+
+<blockquote><p>File <i>programs/05_cache_misses/main.c</i></p>
+<font face="Courier"><pre>
+
+#include "mfp_memory_mapped_registers.h"
+
+int a [8][8];
+
+int main ()
+{
+    int n = 0;
+    int i, j;
+
+    // Wait for switch 2
+
+    while ((MFP_SWITCHES & 4) == 0)
+        ;
+
+
+    for (i = 0; i &lt; 8; i ++)
+        for (j = 0; j &lt; 8; j ++)
+            // a [i][j] = i + j;
+               a [j][i] = i + j;
+
+    return 0;
+}
+
+</pre></font></blockquote>
+
+<p>Repeat the compile, link and other steps as described in sections 3.6 and 3.7.  You should see a different memory access pattern as manifested on LED 6.  Instead of "cache miss - hit - hit - hit - miss - hit - hit - hit - miss ..." manifested in the first run, the pattern is going to be a series of eight cache misses followed by long period of hits (no LED 6 light) with eight back-by-back cache misses followed by silence again.</p>
+
+<h3>4.  Additional question for self-study</h3>
+
+<p>Read the article in Wikipedia <a href="http://en.wikipedia.org/wiki/Row-major_order">Row-major order</a>.  Is C programming language a row-major order language or a column-major order language?  How the lab results would change if C uses the opposite method for arranging multidimensional arrays in memory?</p>

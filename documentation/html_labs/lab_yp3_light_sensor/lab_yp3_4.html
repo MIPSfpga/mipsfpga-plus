@@ -1,0 +1,61 @@
+
+<p><big><b>4.  Follow-up projects and exercises</b></big></p>
+
+<p>In a real embedded system, the input-output is frequently
+interrupt-driven.  Instead of constantly polling memory-mapped input-output
+registers, the software performs more important tasks, such as computations. 
+The input-output actions happen only when the peripheral device sends an
+interrupt request.</p>
+
+<p>After going through the next lab (<i>MIPSfpga 2.0.  Lab YP4 - Introducing
+interrupts</i>), come back to this lab and modify the light sensor
+interfacing module.  The modified module should issue an interrupt when the
+measured value changes.  Connect the interrupt pin to <i>SI_Int</i> signal
+of MIPS microAptive UP core.  Measure the system performance improvement
+that comes from offloading input-output to the interrupt service
+routine.</p>
+
+<p>You can use the light sensor lab and the interrupt lab as examples to
+develop multiple projects, integrating sensors and actuators into MIPSfpga
+system.  Digilent, a National Instruments company, offers a number of
+peripheral modules that can be relatively easily integrated with MIPSfpga. 
+These modules can be ordered from <a
+href="http://store.digilentinc.com/pmod-modules">http://store.digilentinc.com/pmod-modules</a>.</p>
+
+<center>
+
+<p><b><font color=blue>Figure 10.  Various <a
+href="http://store.digilentinc.com/pmod-modules/">peripheral modules from
+Digilent</a> that can be relatively easily integrated with
+MIPSfpga</font></b></p>
+
+<a href="http://store.digilentinc.com/pmod-modules/">
+
+<img
+src="http://www.silicon-russia.com/wp-content/uploads/2016/11/Screenshot-2016-11-23-08.18.14.png"
+width="150" /><img
+src="http://www.silicon-russia.com/wp-content/uploads/2016/11/Screenshot-2016-11-23-08.17.47.png"
+width="150" /><img
+src="http://www.silicon-russia.com/wp-content/uploads/2016/11/Screenshot-2016-11-23-08.16.51.png"
+width="150" />
+<br>
+<img
+src="http://www.silicon-russia.com/wp-content/uploads/2016/11/Screenshot-2016-11-23-08.14.23.png"
+width="150" /><img
+src="http://www.silicon-russia.com/wp-content/uploads/2016/11/Screenshot-2016-11-23-08.15.01.png"
+width="150" /><img
+src="http://www.silicon-russia.com/wp-content/uploads/2016/11/Screenshot-2016-11-23-08.15.42.png"
+width="150" />
+<br>
+<img
+src="http://www.silicon-russia.com/wp-content/uploads/2016/11/Screenshot-2016-11-23-08.13.59.png"
+width="150" /><img
+src="http://www.silicon-russia.com/wp-content/uploads/2016/11/Screenshot-2016-11-23-08.13.38.png"
+width="150" /><img
+src="http://www.silicon-russia.com/wp-content/uploads/2016/11/Screenshot-2016-11-23-08.12.55.png"
+width="150" />
+
+</a>
+
+</center>
+

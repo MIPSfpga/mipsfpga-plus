@@ -1,0 +1,95 @@
+<p><big><b>2. The theory of operation</b></big></p>
+
+<p><big><b>2.1. MIPSfpga 2.0 hardware module hierarchy without Serial Loader Flow support</b></big></p>
+
+<p><b><font color=blue>Figure 2.1</font></b> shows the basic hierarchy of synthesizable modules of MIPSfpga 2.0 for Digilent Nexys 4 DDR board with Xilinx Artix-7 FPGA and without Serial Loader hardware:</p>
+
+<p><center><b><font color=blue>Figure 2.1</font></b></center></p>
+
+<img width=500 src="http://silicon-russia.com/pages/2015_12_28/hierarchy_de0_cv__narrow_write_support__wo_7_segment_display.png">
+
+<p>The contents and functionality of each module:</p>
+
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/boards/nexys4_ddr/nexys4_ddr.v">de0_cv</a> - an external wrapper module, specific for each FPGA board type. The ports of this module correspond to physical ports on FPGA chip itself. The specific module <i>nexys4_ddr</i> is written for Digilent Nexys 4 DDR board with Xilinx Artix-7 FPGA.</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_system.v">mfp_system</a> - system module, common for all FPGA boards that support MIPSfpga 2.0.
+<ul>
+<li><a href="http://www.silicon-russia.com/2015/12/11/mipsfpga-download-instructions">m14k_top</a> - top-level module of the microprocessor core <a href="http://imgtec.com/mips/aptiv/microaptiv/">MIPS microAptiv UP (also referenced in some documentation as MIPS microAptiv MPU)</a>. The name <i>m14k</i> is left from the earlier variant of the processor core - MIPS M14Kc.</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_system.v">mfp_ejtag_reset</a> - a utility module to reset EJTAG debug interface used in Bus Blaster / OpenOCD Flow<a href="http://www.linux-mips.org/wiki/JTAG">EJTAG</a></li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_matrix</a> - a module that combines memory blocks, the controller for <a href="http://www.eecs.umich.edu/courses/eecs373/readings/ARM_IHI0033A_AMBA_AHB-Lite_SPEC.pdf">AHB-Lite</a> bus and I/O logic. The I/O logic links the addresses coming from the software running on CPU core via AHB-Lite bus, with the signals that control hardware peripherals: buttons, LED indicators etc.
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_decoder</a> - a module that decode an address on AHB-Lite bus and determines which hardware slave (a memory of an input/output device is going to process the corresponding transaction on the bus</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_ram_slave.v">mfp_ahb_ram_slave</a> <i>reset_ram</i> - an AHB-Lite wrapper for memory blocks. This particular group of memory blocks (<i>reset_ram</i>) is intended for the part of software that starts immediately after the processor exits the reset. This part of software is called "the bootloader".
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_dual_port_ram.v">mfp_dual_port_ram</a> <i>i0-i3</i> - modules that infer FPGA block memory during the synthesize. In order for the synthesizer to interpret the code for the module in appropriate way, The code in these modules was written according to <a href="http://quartushelp.altera.com/14.1/mergedProjects/hdl/vlog/vlog_pro_ram_inferred.htm">special guidelines</a> from EDA (Electronic Design Automation) tool vendors, including Xilinx and Altera, so that the synthesizer interprets the code in appropriate way and infers FPGA-specific block memory. There are four 8-bit wide memory blocks in order to implement 32-bit wide random access memory (RAM). Such design is needed in order to support a single byte-wide AHB-Lite transfer. The alternative idea with 32-bit wide memory would be not sufficient since neither Xilinx nor Altera support writing 32-bit date in memory with a mask.</li>
+</ul></li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_ram_slave.v">mfp_ahb_ram_slave</a> <i>ram</i> - another AHB-Lite memory wrapper. This group of memory blocks (<i>ram</i>) is intended for the main part of the software program, that is fetched from the cacheable region of the virtual memory map.
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_dual_port_ram.v">mfp_dual_port_ram</a> <i>i0-i3</i> - same as above</li>
+</ul></li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_gpio_slave.v">mfp_ahb_gpio_slave</a> - AHB-Lite slave implementing GPIO - General Purpose Input / Output. The logic in this module maps bus addresses to the signals used for the peripheral devices: buttons, LED indicators etc.</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_response_mux</a> - one of submodules used for implementing AHB-Lite bus protocol. Contains a multiplexer that produces correct read data for the CPU based on read data from all memories and I/O slaves. This multiplexer uses the id of a slave stored during the address phase of the corresponding bus transaction in flight</li>
+</ul></li>
+</ul></li></ul>
+
+<p><big><b>2.2. Serial Loader Flow support in MIPSfpga 2.0 hardware module hierarchy</b></big></p>
+
+<p>To support the Serial Loader Flow, for extra modules are added to this structure:</p>
+
+<p><center><b><font color=blue>Figure 2.2</font></b></center></p>
+
+<img width=500 src="http://silicon-russia.com/pages/2015_12_28/hierarchy_de0_cv__narrow_write_support__serial_loader__wo_7_segment_display.png">
+
+<p>The contents and functionality of the added modules:</p>
+
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_with_loader.v">mfp_ahb_lite_matrix_with_loader</a> - this module replaces <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_matrix</a> from the previous hierarchy. <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_with_loader.v">mfp_ahb_lite_matrix_with_loader</a> contains both <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_matrix</a>, as well as three modules with new functionality:
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_uart_receiver.v">mfp_uart_receiver</a> - this module receives data from PC through UART and converts this data into a stream of bytes / ASCII characters</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_srec_parser.v">mfp_srec_parser</a> - parses the stream of ASCII characters received from <i>mfp_uart_receiver</i>, interprets these characters as text in Motorola S-Record format, and generates as sequence of transactions (address / data) to fill the memory of a synthesized system with the data described in Motorola S-Record text</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_srec_parser_to_ahb_lite_bridge.v">mfp_srec_parser_to_ahb_lite_bridge</a> - converts the transactions, obtained from <i>mfp_srec_parser</i> into transactions that confirm AHB-Lite protocol. This module also converts the virtual addresses used by the software, into physical addresses used by hardware. The conversion is done using simple fixed mapping (nothing complicated like TLB MMU is involved).</li>
+</ul>
+</li>
+</ul>
+
+<p><b><font color=blue>Figure 2.3</font></b> shows the schematics of <i>mfp_ahb_lite_matrix_with_loader</i> created after Verilog synthesis but before FPGA technology-specific mapping, placement and routing. Note the multiplexer between <i>mfp_srec_parser_to_ahb_lite_bridge</i> and <i>mfp_ahb_lite_matrix</i>. This multiplexer directs to the memory subsystem either the transactions from the CPU core, or the transactions from the Serial Loader:</p>
+
+<p><center><b><font color=blue>Figure 2.3</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/02/mfp_ahb_lite_matrix_with_loader.png" rel="attachment wp-att-861"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/02/mfp_ahb_lite_matrix_with_loader-1024x277.png" alt="mfp_ahb_lite_matrix_with_loader"  class="alignnone size-large wp-image-861" /></a>
+
+<p><big><b>2.3. More details about module <i>mfp_uart_receiver</i></b></big></p>
+
+<p><i>mfp_uart_receiver</i> receives data serially from UART RX pin and outputs 8-bit bytes when data is ready. It assumes a simple version of <a href="https://reference.digilentinc.com/pmod:communication_protocols:uart">UART protocol</a>, without control signals, and with one start bit. The baud rate and the expected main clock rate is hardcoded. The module contains a state machine that waits for a negative edge (detecting a start bit) and samples data bits by counting clock cycles. Since the width of each symbol is quite big 50,000,000 Hz / 115,200 baud = 434 clock cycles (or 217 for 25 MHz), this method of getting the data is quite reliable:</p>
+
+<p><center><b><font color=blue>Figure 2.4</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.41.49.png" rel="attachment wp-att-673"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.41.49.png" class="alignnone size-full wp-image-673" /></a>
+
+<p><big><b>2.4. More details about module <i>mfp_srec_parser</i></b></big></p>
+
+<p><i>mfp_srec_parser</i> received data from <i>mfp_uart_receiver</i> and parses them as text in Motorola S-record file format. During parsing the state machine inside <i>mfp_srec_parser</i> forms the transactions to the memory of MIPSfpga+ synthesized system, filling the memory with specified bytes at specified locations. The module header is shown below:</p>
+
+<p><center><b><font color=blue>Figure 2.5</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.42.17.png" rel="attachment wp-att-674"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.42.17.png" class="alignnone size-large wp-image-674" /></a>
+
+<p>See <a href="https://en.wikipedia.org/wiki/SREC_(file_format)">the description of Motorola S-record format from Wikipedia</a>:</p>
+
+<p><center><b><font color=blue>Figure 2.6</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/11/Motorola_SREC_Chart.png" rel="attachment wp-att-366"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/11/Motorola_SREC_Chart-1024x705.png" class="alignnone size-large wp-image-366" /></a>
+
+<p><big><b>2.5. More details about module <i>mfp_srec_parser_to_ahb_lite_bridge</i></b></big></p>
+
+<p><i>mfp_srec_parser_to_ahb_lite_bridge</i> is a glue between <i>mfp_srec_parser</i> and AHB-Lite bus. It also edits the addresses, converting virtual addresses into physical according to the rules of fixed mapping (see MIPS microAptiv UP core software documentation):</p>
+
+<p><center><b><font color=blue>Figure 2.7</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.43.08.png" rel="attachment wp-att-675"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.43.08.png" class="alignnone size-large wp-image-675" /></a>
+
+<p><big><b>2.6. Miscellaneous</b></big></p>
+
+<p>The output of <i>mfp_srec_parser</i>, a signal called <i>in_progress</i> is used as a reset for microAptiv UP processor core. It means that while the serial loader fills the memory with S-record file data, the processor is not accessing the memory. Once <i>mfp_srec_parser</i> gets the termination record (S7), the core wakes up and starts to fetch the program from the newly filled memory.</p>
+
+<p>The serial loader mechanism does not disable interfacing with regular Bus Blaster / Open OCD. Both ways of loading programs, serial loader and Bus Blaster, can be used without re-synthesizing the system.</p>

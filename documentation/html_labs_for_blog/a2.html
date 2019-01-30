@@ -1,0 +1,520 @@
+<h2> MIPSfpga 2.0. Lab YP2 - Using switchable clock to observe the CPU cycle-by-cycle </h2>
+<h3>1.  Introduction</h3>
+
+<p>This lab introduces switchable clock, a feature of MIPSfpga 2.0 that enables the whole new category of student labs.  With this feature you can first run the processor with its usual multi megahertz frequency, then switch it to the frequence of a few clocks per second and observe how the processor works live.  A typical usage is to connect to external LEDs the CPU signals that control cache evictions or pipeline forwarding and observe the LED patterns when running different sequence of code.  This usage is demonstrated in <i>MIPSfpga 2.0.  Lab YP5 - The first glance into caches</i> and <i>MIPSfpga 2.0.  Lab YP6 - The first glance into pipelining</i>.</p>
+<h3>2.  The theory of operation</h3>
+
+<p>When implemented in ASIC using 28 nm technology, MIPS microAptiv UP can run up to 500 MHz; when implemented using 65 nm - more than 300 MHz.</p>
+
+<p>When MIPS microAptiv UP is synthesized for FPGA together with block memory in MIPSfpga system, the frequency is much lower - around 50-60 MHz, both for Xilinx and Altera.  The best case for any FPGA is around 150 MHz, with the smallest amount of block memory on some FPGAs.</p>
+
+<p>The introductory student boards tested for MIPSfpga all have clock generators able to generate a clock signal with the frequency of 50-100 MHz.  This frequency can be increased or decreased using phase-locked loop (PLL).  Unfortunately, PLL cannot be used to lower the frequency below approximately 100 KHz.  In order to lower the frequency even further, other methods have to be used.</p>
+
+<p>Altera has a special macro for such situation called <i>ALTCLKCTLR</i>, but it does not work for all cases.  As a result, the switchable clock in MIPSfpga 2.0 is implemented using a combination of a counter and a global buffer (Xilinx macro <i>BUFG</i> and Altera macro <i>global</i>).  The buffer is necessary, without it the synthesizer will not treat the output of the switchable clock module as a clock and the design will not work.  It is also necessary to have timing constraints in the constraint file for Altera Quartus.</p>
+
+<p>The frequency is controlled by two switches on the board.  Switches also have to be debounced.</p>
+
+<p><b><font color=blue>Figure 1</font></b> show how the switchable clock module is instantiated in the module hierarchy for Digilent Nexys4 DDR board that carries Xilinx Artix-7 FPGA.  <b><font color=blue>Figure 2</font></b> shows the same for Terasic DE0-CV board that carries Altera Cyclon V FPGA.</p>
+
+<center>
+
+<p><b><font color=blue>Figure 1.  MIPSfpga module hierarchy, including the switchable clock module, for <a href="http://store.digilentinc.com/nexys-4-ddr-artix-7-fpga-trainer-board-recommended-for-ece-curriculum/">Digilent Nexys4 DDR board</a> that carries Xilinx Artix-7 FPGA</font></b></p>
+
+<a
+href="http://store.digilentinc.com/nexys-4-ddr-artix-7-fpga-trainer-board-recommended-for-ece-curriculum/"><img
+width=500
+src="http://silicon-russia.com/pages/2015_12_28/hierarchy_nexys4_ddr__narrow_write_support__light_sensor__serial_loader__switchable_clock.png"
+></a>
+
+</center>
+
+<center>
+
+<p><b><font color=blue>Figure 2.  MIPSfpga module hierarchy, including the switchable clock module, for <a href="http://de0-cv.terasic.com">Terasic DE0-CV board</a> that carries Altera Cyclon V FPGA</font></b></p>
+
+<a href="http://de0-cv.terasic.com"><img width=500
+src="http://silicon-russia.com/pages/2015_12_28/hierarchy_de0_cv__narrow_write_support__light_sensor__serial_loader__switchable_clock.png"
+></a>
+
+</center>
+
+<p>This lab also uses a special module to drive multi-digit seven-segment display on the board.  A variant of such module for Digilent boards contains the code that handles dynamic displays and a variant for Terasic boards handles static displays.</p>
+
+<h3>3.  Lab steps</h3>
+
+<p>This section outlines the sequence of steps, necessary to complete the lab.  Almost all generic steps in this lab are the same as in <i>MIPSfpga 2.0 Lab YP1.  Using MIPSfpga with Serial Loader Flow that does not require BusBlaster board and OpenOCD software</i>.  Such generic steps are not described in this section.  Only the steps different from <i>Lab YP1</i> are explained in details.</p>
+
+<h3>3.1.  Review the lab code modifications in <i>boards</i> and <i>system_rtl</i> directories</h3>
+
+<p>Search for <i>MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX</i> symbol in <i>boards</i> and <i>system_rtl</i> directories.  Review the code fragments where that symbol occurs.</p>
+
+<p><b>3.1.1  System configuration</b></p>
+
+<p>Review and possibly modify the configuration parameters in the file <i>system_rtl/mfp_ahb_lite_matrix_config.vh</i> as follows:</p>
+
+<blockquote><p>File <i>mfp_ahb_lite_matrix_config.vh</i></p><font face="Courier"><pre>
+
+//
+//  Configuration parameters
+//
+
+// `define MFP_USE_WORD_MEMORY
+// `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
+`define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+`define MFP_USE_UART_PROGRAM_LOADER
+// `define MFP_DEMO_LIGHT_SENSOR
+// `define MFP_DEMO_INTERRUPTS
+// `define MFP_DEMO_CACHE_MISSES
+// `define MFP_DEMO_PIPE_BYPASS
+
+</pre></font></blockquote>
+
+<p><b>3.1.2  Review board wrapper file for Xilinx</b></p>
+
+<p>The board wrapper for Digilent Nexys4 DDR board with Xilinx Artix-7 FPGA instantiates three new modules:</p>
+
+<ol>
+
+<li>A module that divides the clock - <i>mfp_clock_divider_100_MHz_to_25_MHz_12_Hz_0_75_Hz</i></li>
+
+<li>A module that debounces the switches that control the clock - <i>mfp_multi_switch_or_button_sync_and_debouncer</i></li>
+
+<li>A Xilinx-specific module <i>BUFG</i> that tells Vivado software that the generated signal should be treated as a clock by synthesis and routed like a clock during place-and-route</li>
+
+</ol>
+
+<blockquote><p>File <i>nexys4_ddr.v</i></p><font face="Courier"><pre>
+`include "mfp_ahb_lite_matrix_config.vh"
+
+module nexys4_ddr
+(
+    input         CLK100MHZ,
+    input         CPU_RESETN,
+
+    . . . . . . . . . . . . . . . . . . . .
+
+    input  [15:0] SW, 
+
+    . . . . . . . . . . . . . . . . . . . .
+);
+
+    wire clk;
+
+    `ifdef MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+
+    wire       muxed_clk;
+    wire [1:0] sw_db;
+
+    mfp_multi_switch_or_button_sync_and_debouncer
+    # (.WIDTH (2))
+    mfp_multi_switch_or_button_sync_and_debouncer
+    (   
+        .clk    ( CLK100MHZ ),
+        .sw_in  ( SW [1:0]  ),
+        .sw_out ( sw_db     )
+    );
+
+    mfp_clock_divider_100_MHz_to_25_MHz_12_Hz_0_75_Hz 
+    mfp_clock_divider_100_MHz_to_25_MHz_12_Hz_0_75_Hz
+    (
+        .clki    ( CLK100MHZ ),
+        .sel_lo  ( sw_db [0] ),
+        .sel_mid ( sw_db [1] ),
+        .clko    ( muxed_clk )
+    );
+
+    BUFG BUFG_slow_clk (.O ( clk ), .I ( muxed_clk ));
+
+    `else
+
+    clk_wiz_0 clk_wiz_0 (.clk_in1 (CLK100MHZ), .clk_out1 (clk));
+
+    `endif
+
+    . . . . . . . . . . . . . . . . . . . .
+
+    mfp_system mfp_system
+    (
+        .SI_ClkIn         (   clk           ),
+        .SI_Reset         ( ~ CPU_RESETN    ),
+                          
+        . . . . . . . . . . . . . . . . . .
+    );
+
+    . . . . . . . . . . . . . . . . . . . .
+
+endmodule
+</pre></font></blockquote>
+
+<p><b>3.1.3  Review board wrapper file and timing constraints for Altera</b></p>
+
+<p>The board wrapper for Terasic DE0-CV board with Altera Cyclone V FPGA instantiates three new modules:</p>
+
+<ol>
+
+<li>A module that divides the clock - <i>mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz </i></li>
+
+<li>A module that synchronizes and debounces the switches that control the clock - <i>mfp_multi_switch_or_button_sync_and_debouncer.  Without debouncing the control signals, the clock may not work reliably during the mode switching.</i></li>
+
+<li>An Altera-specific module <i>global</i> that tells Vivado software that the generated signal should be treated as a clock by synthesis and routed like a clock during place-and-route</li>
+
+</ol>
+
+<blockquote><p>File <i>de0_cv.v</i></p><font face="Courier"><pre>
+`include "mfp_ahb_lite_matrix_config.vh"
+
+module de0_cv
+(
+    input           CLOCK2_50,
+    input           CLOCK3_50,
+    inout           CLOCK4_50,
+    input           CLOCK_50,
+                   
+    input           RESET_N,
+
+    input   [ 3:0]  KEY,
+    input   [ 9:0]  SW,
+
+    . . . . . . . . . . . . . . . . . . . .
+);
+
+    wire clk;
+
+    `ifdef MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+
+    wire       muxed_clk;
+    wire [1:0] sw_db;
+
+    mfp_multi_switch_or_button_sync_and_debouncer
+    # (.WIDTH (2))
+    mfp_multi_switch_or_button_sync_and_debouncer
+    (   
+        .clk    ( CLOCK_50 ),
+        .sw_in  ( SW [1:0] ),
+        .sw_out ( sw_db    )
+    );
+
+    mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz 
+    mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz
+    (
+        .clki    ( CLOCK_50  ),
+        .sel_lo  ( sw_db [0] ),
+        .sel_mid ( sw_db [1] ),
+        .clko    ( muxed_clk )
+    );
+
+    global gclk
+    (
+        .in     ( muxed_clk  ), 
+        .out    ( clk        )
+    );
+
+    `else
+
+    assign clk = CLOCK_50;
+
+    `endif
+
+    . . . . . . . . . . . . . . . . . . . .
+
+    mfp_system mfp_system
+    (
+        .SI_ClkIn         (   clk             ),
+        .SI_Reset         ( ~ RESET_N         ),
+                          
+        . . . . . . . . . . . . . . . . . .
+    );
+
+    . . . . . . . . . . . . . . . . . . . .
+
+endmodule
+</pre></font></blockquote>
+
+<p>It is also necessary to modify the timing constrains in the board-specific SDC file:</p>
+
+<blockquote><p>File <i>de0_cv.sdc</i></p><font face="Courier"><pre>
+#**************************************************************
+# Create Clock
+#**************************************************************
+
+create_clock -period 20 [get_ports CLOCK2_50]
+create_clock -period 20 [get_ports CLOCK3_50]
+create_clock -period 20 [get_ports CLOCK_50]
+create_clock -period 20 [get_ports CLOCK4_50]
+create_clock -period 40 [get_nets mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz|clko]
+create_clock -period 20 [get_nets de0_cv|clk]
+create_clock -period 20 [get_ports GPIO_1[17]]
+
+. . . . . . . . . . . . . . . . . . . . . .
+</pre></font></blockquote>
+
+<p><b>3.1.4 Review clock divider modules</b></p>
+
+<p>The clock divider modules use simple counter to generate a clock with the needed frequency:</p>
+
+<blockquote><p>File <i>mfp_clock_dividers.v</i></p><font face="Courier"><pre>
+module mfp_clock_divider
+(
+    input      clki,
+    input      sel_lo,
+    input      sel_mid,
+    output reg clko
+);
+
+    // 50 MHz / 2 ** 26 = 0.75 Hz
+
+    parameter DIV_POW_FASTEST = 1;
+    parameter DIV_POW_SLOWEST = 26;
+
+    reg [DIV_POW_SLOWEST - 1: 0] counter;
+
+    always @ (posedge clki)
+        counter &lt;= counter + 1'b1;
+
+    always @ (posedge clki)
+	clko &lt;= sel_lo  ? counter [DIV_POW_SLOWEST - 1] : 
+                sel_mid ? counter [DIV_POW_SLOWEST - 5] :
+                          counter [DIV_POW_FASTEST - 1] ;
+
+endmodule
+
+//--------------------------------------------------------------------
+
+module mfp_clock_divider_100_MHz_to_25_MHz_12_Hz_0_75_Hz
+(
+    input  clki,
+    input  sel_lo,
+    input  sel_mid,
+    output clko
+);
+
+    mfp_clock_divider # (.DIV_POW_FASTEST (2), .DIV_POW_SLOWEST (27))
+    mfp_clock_divider (clki, sel_lo, sel_mid, clko);
+
+endmodule
+
+//--------------------------------------------------------------------
+
+module mfp_clock_divider_50_MHz_to_25_MHz_12_Hz_0_75_Hz
+(
+    input  clki,
+    input  sel_lo,
+    input  sel_mid,
+    output clko
+);
+
+    mfp_clock_divider # (.DIV_POW_FASTEST (1), .DIV_POW_SLOWEST (26))
+    mfp_clock_divider (clki, sel_lo, sel_mid, clko);
+
+endmodule
+
+. . . . . . . . . . . . . . . . . . . . . .
+</pre></font></blockquote>
+
+<p><b>3.1.5 Review the debouncing modules</b></p>
+
+<p>Synchronizing and debouncing the clock control signals is necessary for the clock to work reliably during the mode switching.  Otherwise signal bouncing and a possibility of metastable state can introduce bugs in the work of the processor.</p>
+
+<blockquote><p>File <i>mfp_switch_and_button_debouncers.v</i></p><font face="Courier"><pre>
+module mfp_switch_or_button_sync_and_debouncer
+# (
+    parameter DEPTH = 8
+)
+(   
+    input      clk,
+    input      sw_in,
+    output reg sw_out
+);
+
+    reg  [ DEPTH - 1 : 0] cnt;
+    reg  [         2 : 0] sync;
+    wire                  sw_in_s;
+
+    assign sw_in_s = sync [2];
+
+    always @ (posedge clk)
+        sync &lt;= { sync [1:0], sw_in };
+
+    always @ (posedge clk)
+        if (sw_out ^ sw_in_s)
+            cnt &lt;= cnt + 1'b1;
+        else
+            cnt &lt;= { DEPTH { 1'b0 } };
+
+    always @ (posedge clk)
+        if (cnt == { DEPTH { 1'b1 } })
+            sw_out &lt;= sw_in_s;
+
+endmodule
+
+//-------------------------------------------------------------------
+
+module mfp_multi_switch_or_button_sync_and_debouncer
+# (
+    parameter WIDTH = 1, DEPTH = 8
+)
+(   
+    input                    clk,
+    input  [ WIDTH - 1 : 0 ] sw_in,
+    output [ WIDTH - 1 : 0 ] sw_out
+);
+
+    genvar sw_cnt;
+
+    generate
+        for (sw_cnt = 0; sw_cnt &lt; WIDTH; sw_cnt = sw_cnt + 1)
+        begin : GEN_DB_B
+           
+           mfp_switch_or_button_sync_and_debouncer
+           # (.DEPTH (8))
+           mfp_switch_or_button_sync_and_debouncer
+           (    
+              .clk    ( clk             ),
+              .sw_in  ( sw_in  [sw_cnt] ),
+              .sw_out ( sw_out [sw_cnt] )
+           );
+
+        end
+    endgenerate 
+
+endmodule
+</pre></font></blockquote>
+
+<h3>3.2.  Connect the board to the computer</h3>
+
+<p>For <i>Digilent</i> boards, such as <i>Nexys4</i>, <i>Nexys4 DDR</i> or <i>Basys3</i>, this step is obvious.  For <i>Altera/Terasic</i> boards some additional steps required:</p>
+
+<ol>
+
+<li>Connect USB-to-UART connector to FPGA board.  Either <i>FT232RL</i> or <i>PL2303TA</i> that you can by from AliExpress or Radio Shack will do the job.  <i>TX</i> output from the connector (green wire on <i>PL2303TA</i>) should go to pin 3 from right bottom on Terasic DE0, DE0-CV, DE1, DE2-115 (right top on DE0-Nano) and <i>GND</i> output (black wire on <i>PL2303TA</i>) should be connected to pin 6 from right bottom on Terasic DE0, DE0-CV, DE1, DE2-115 (right top on DE0-Nano).  Please consult photo picture in <i>Lab YP1</i> to avoid short-circuit or other connection problems.</li>
+
+<li>For <i>FT232RL</i> connector: make sure to set 3.3V/5V jumper on <i>FT232RL</i> part to 3.3V.</li>
+
+<li>For the boards that require external power in addition to the power that comes from USB, connect the power supply.  The boards that require the extra power supply include <i>Terasic DE2-115</i>.</li>
+
+<li>Connect FPGA board to the computer using main connection cable provided by the board manufacturers.  Make sure to put USB cable to the right jack when ambiguity exists (such as in <i>Terasic DE2-115</i> board).</li>
+
+<li>Make sure to power the FPGA board (turn on the power switch) before connecting the UART cable from USB-to-UART connector to the computer.  Failing to do so may result in electric damage to the board.</li>
+
+<li>Connect USB-to-UART connector to FPGA board.</li>
+
+</ol>
+
+<h3>3.3  Run the synthesis and configure the FPGA with the synthesized MIPSfpga system</h3>
+
+<p>This step is identical to the synthesis step in <i>Lab YP1</i></p>
+
+<h3>3.4  Go to the lab directory and clean it up</h3>
+
+<p>Under Windows:</p>
+
+<blockquote><font face="Courier"><pre>
+cd programs\lab_yp2
+00_clean_all.bat
+</pre></font></blockquote>
+
+<p>Under Linux:</p>
+
+<blockquote><font face="Courier"><pre>
+cd programs/lab_yp2
+00_clean_all.sh
+</pre></font></blockquote>
+
+<p><b>3.5 Review the lab program code</b></p>
+
+<p>The lab program code is a simple counter.  The value output to multi-digit seven-segment display is constructed in a way that shows the incrementing digits with both fast multi-MHz clock and slow ~1 Hz clock:</p>
+
+<blockquote><p>File <i>main.c</i></p><font face="Courier"><pre>
+#include "mfp_memory_mapped_registers.h"
+
+int main ()
+{
+    int n;
+
+    for (n = 0;; n ++)
+    {
+        MFP_RED_LEDS      = n;
+        MFP_GREEN_LEDS    = n;
+        MFP_7_SEGMENT_HEX = ((n >> 8) & 0xffffff00) | (n & 0xff);
+    }
+
+    return 0;
+}
+</pre></font></blockquote>
+
+<h3>3.6  Prepare the first software run</h3>
+
+<p>Following the procedure described in <i>Lab YP1</i>, compile and link the program, generate Motorola S-Record file and upload this file into the memory of the synthesized MIPSfpga-based system on the board.</p>
+
+<p>Under Windows:</p>
+
+<ol>
+
+<li>cd programs\lab_yp2</li>
+
+<li>run 02_compile_and_link.bat</li>
+
+<li>run 08_generate_motorola_s_record_file.bat</li>
+
+<li>run 11_check_which_com_port_is_used.bat</li>
+
+<li>edit 12_upload_to_the_board_using_uart.bat based on the result from the previous step - set the working port in "set a=" assignment.</li>
+
+<li>Make sure the switches 0 and 1 on FPGA board are turned off.  Switches 0 and 1 control the speed of the clock.  If the switches 0 and 1 are not off, the loading through UART is not going to work.</li>
+
+<li>run 12_upload_to_the_board_using_uart.bat</li>
+
+</ol>
+
+<p>Under Linux:</p>
+
+<p>If uploading program to the board first time during the current Linux session, add the current user to <i>dialout</i> Linux group. Enter the <i>root</i> password when prompted:</p>
+
+<blockquote><font face="Courier"><pre>
+sudo adduser $USER dialout
+su - $USER
+</pre></font></blockquote>
+
+<p>After that:</p>
+
+<ol>
+
+<li>cd programs/lab_yp2</li>
+
+<li>run ./02_compile_and_link.sh</li>
+
+<li>run ./08_generate_motorola_s_record_file.sh</li>
+
+<li>run ./11_check_which_com_port_is_used.sh</li>
+
+<li>edit ./12_upload_to_the_board_using_uart.sh based on the result from the previous step - set the working port in "set a=" assignment</li>
+
+<li>Make sure the switches 0 and 1 on FPGA board are turned off.  Switches 0 and 1 control the speed of the clock.  If the switches 0 and 1 are not off, the loading through UART is not going to work.</li>
+
+<li>./run 12_upload_to_the_board_using_uart.sh</li>
+
+</ol>
+
+<h3>3.7 Run the software on the board</h3>
+
+<p>Reset the processor.  The reset buttons for each board are listed in the table below:</p>
+
+<table border=1 cellpadding=10 cellspacing=0 rules=all>
+<tr>
+<th>Board</th>
+<th>Reset button</th>
+</tr>
+<tr><td>Digilent Basys3</td><td>Up</td></tr>
+<tr><td>Digilent Nexys4</td><td>Dedicated CPU Reset</td></tr>
+<tr><td>Digilent Nexys4 DDR</td><td>Dedicated CPU Reset</td></tr>
+<tr><td>Terasic DE0</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE0-CV</td><td>Dedicated reset button</td></tr>
+<tr><td>Terasic DE0-Nano</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE1</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE2-115</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE10-Lite</td><td>Button/Key 0</td></tr>
+</table>
+
+<p>At this moment you should see the counter running and generating the output on seven-segment diplay on FPGA board.  Turn the switch 0 on.  This will switch the system clock from 25 MHz to 0.75 Hz, less than one beat per second.  Can you see the sharp difference in counter output?  If you don't, check the synthesis configuration.</p>
+
+<p>Now try to turn switch 1 on and switch 0 off.  What happened with the speed of counting?  Now you are ready to use the switchable clock feature for the subsequent labs.</p>

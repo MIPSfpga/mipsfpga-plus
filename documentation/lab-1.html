@@ -1,0 +1,1230 @@
+<html>
+<head>
+<style>
+a, body, td
+{
+    font-family : 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
+    font-size   : 12px;
+}
+pre
+{
+    font-family : 'Lucida Console', Monaco, monospace;
+    font-size   : 12px;
+}
+</style> 
+</head>
+<body>
+<p><big><big><b>MIPSfpga 2.0. Lab YP1. Использование MIPSfpga с помощью Serial Loader Flow не требует платы BusBlaster и программное обеспечение OpenOCD</b></big></big></p>
+
+<p><big><b>1. Введение</b></big></p>
+
+<p>
+Эта лабораторная работа охватывает альтернативный способ использования MIPSfbga, называемый "Serial Loader Flow". Этот технологический процесс не требует использования <a href="http://blog.imgtec.com/mips-processors/bus-blaster-v3c-is-an-affordable-debug-probe-for-mips-cpus">BusBlaster отладочной платы и программное обеспечение OpenOCD.</a>. В то время как комбинирование BusBlaster/OpenOCD является удобным и дешевым способом для отладки
+программ загруженных в синтезированную MIPSfpbga систему, способ BusBlaster/OpenOCD имеет два недостатка:</p>
+
+<ol>
+<li>Пользователю требуется купить дополнительное оборудование (BusBlaster) которое может быть не доступным для многих пользователей.</li>
+<li>Драйвера для OpenOCD частично зависят от операционных систем и могут быть несовместимым с некоторыми версиями Windows и Linux.</li>
+</ol>
+
+<p>Альтернативный способ Serial Loader Flow использует USB-to-UART переходник прилагающийся в комплекте в Digilent boards с Xilinx Artix-7 FPBGA, включающий в себя платы Basys3, Nexys 4 DDR. В платах базирующихся на Alter в которых нет встроенных Usb-to-UART, есть возможность использовать Serial Loader Flow. Это может быть выплолнено подключнием платы с одним часто встречающимся $5 FTDI-based USB-to-UART переходником который доступный во многих магазинах и на вебсайтах для любителей Arduino. Такое подключение легко доступно чем $50 Bus Blaster который доступен в малых количествах в продаже.</p>
+
+<p>В дополнение альтернативного способа загрузки программ в синтезированную систему MIPSfpbga на FPBGA плате, эта лабораторная работа показывает некоторые идеи коротые будут полезные для студентов, включающее в себя:
+</p>
+
+<ol>
+<li>Реализация протокола UART</li>
+<li>Пример использования finite state machine (FSM) для анализирования(parse) текста, с написанным на Verilog кодом FSM и исполнен в виде цифрового оборудования, которое лучше для анализирования текста чем FSM выполненый в программе.</li>
+</ol>
+
+<p>Serial Loader Flow также имееет недостатки:</p>
+
+<ol>
+<li>Serial Loader Flow не позволяет делать отладку(debug) программы на плате используемую отладчиком типа Codescape работающий на компьютере.</li>
+<li>Под этим технологическим процессом оборудование имеет осведомленность о разметке от виртуальных до физических адресов. Если пользователь хочет поменять разметку, он должен обновить программный скрипт для его программы и написанный код Verilog для компонентов оборудования, особенно код что транслирует виртуальные адреса в физические во время как пользовательская программа находится в синтезированной системе MIPSfpbga.</li>
+</ol>
+
+<p>Несмотря на эти недостатки, Serial Loader Flow является полезной опцией для многих пользователей и может быть использована на ряду с технологических процессом Bus Blaster/OpenOCD.</p>
+<p><big><b>2. В теории</b></big></p>
+
+<p><big><b>2.1. Иерархия модуля оборудования MIPSfbpga 2.0 без поддержки Serial Loader Flow.</b></big></p>
+
+<p><b><font color=blue>Рисунок 2.1</font></b> показывает простую иерархию синтезируемого модуля от MIPSfpbga 2.0 для Digilent Nexys 4 DDR платы с Xilinx Artix-7 FPGA и без аппаратного средства Serial Loader:</p>
+
+<p><center><b><font color=blue>Рисунок 2.1</font></b></center></p>
+
+<img width=500 src="http://silicon-russia.com/pages/2015_12_28/hierarchy_de0_cv__narrow_write_support__wo_7_segment_display.png">
+
+<p>Содержание и функциональность каждого модуля:</p>
+
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/boards/nexys4_ddr/nexys4_ddr.v">de0_cv</a> - внешняя оболочка модуля, индивидуальная для каждого типа платы FPBGA. Порты этих модулей соотвествуют физическим портам на FPBGA чипе. Специфический модуль  <i>nexys4_ddr</i> написан для Digilent 4 DDR board и Xilinx Artix-7 FPGA.</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_system.v">mfp_system</a> - системный модуль, общий для всех FPGA плат которые поддерживают MIPSfpbga 2.0
+<ul>
+<li><a href="http://www.silicon-russia.com/2015/12/11/mipsfpga-download-instructions">m14k_top</a> - высоко-уровневый модуль микропроцессорного ядра <a href="http://imgtec.com/mips/aptiv/microaptiv/">MIPS microAptiv UP (также упомянутый в некоторых документациях такие как MIPS microAptiv MPU)</a>. Название <i>m14k</i> произошло из названия раннего варианта микропроцессорного ядра - MIPS M14Kc</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_system.v">mfp_ejtag_reset</a> - модуль для сброса интерфейса отладчика EJTAG использованный в Bus Blaster / OpenOCD Flow<a href="http://www.linux-mips.org/wiki/JTAG">EJTAG</a></li>
+<li>
+<a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_matrix</a> - модуль который комбинирует блоки памяти, контроллер для <a href="http://www.eecs.umich.edu/courses/eecs373/readings/ARM_IHI0033A_AMBA_AHB-Lite_SPEC.pdf">AHB-Lite</a> шины и логики I/O. Логика I/O ссылается на адреса приходяшие с программы запущенной на процессорном ядре с помощью AHB-Lite шины, с помощью сигналов что контролируют аппаратную переферию: кнопки, индикаторы LED и тд.
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_decoder</a> -  модуль который программирует адреса на AHB-Lite шину и определяет какая аппаратная часть является slave (память входа\вывода оборудования является процессом соотвествующей транзакции на шине)</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_ram_slave.v">mfp_ahb_ram_slave</a> <i>reset_ram</i> - AHB-Lite оболочка для блоков памяти. Эта специальная часть группы для блоков памяти (<i>reset_ram</i>) служит для программной части которая стартует немедленно после выхода процессора из состояния сброса. Эта часть программы называется "Загрузчик" (the bootloader)
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_dual_port_ram.v">mfp_dual_port_ram</a> <i>i0-i3</i> - модуль который разрешает блокировку памяти FPGA во время синтеза. Для того, чтобы синтезатор правильно интерпретировал код для модуля, код в этих модулях был написан в соответствии с <a href="http://quartushelp.altera.com/14.1/mergedProjects/hdl/vlog/vlog_pro_ram_inferred.htm">правилами спецификациям</a> из набора инструментов для разработчиков EDA (Electronic Design Automation), включая Xilinx и Alterа, и так синтезатор 
+интерпретирует код и передает в специальный  блок памяти FPGA. Для реализации 32-разрядной памяти произвольного доступа (ОЗУ) имеются четыре 8-разрядные блока памяти. Такая разработка необходима для поддержки однобайтовой передачи AHB-Lite. Альтернативная идея с 32-разрядной памятью будет недостаточно, так как ни поддержка Xilinx, ни Altera не записывают 32-битные данные в памяти с помощью маски.</li>
+</ul></li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_ram_slave.v">mfp_ahb_ram_slave</a> <i>ram</i> - another AHB-Lite memory wrapper. Эта группа блоков памяти (<i>ram</i>) Эта группа блоков памяти (ram) предназначена для главной части программного обеспечния, приведенная из области для кеша виртуальной карты памяти. !!!!!!!!!!!
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_dual_port_ram.v">mfp_dual_port_ram</a> <i>i0-i3</i> - Тоже самое что описано выше</li>
+</ul></li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_gpio_slave.v">mfp_ahb_gpio_slave</a> - AHB-Lite slave реализующая GPIO - General Purpose Input / Output. Логика в этом модуле создает карту адресов шины для сигналов использованных для переферии: кнопки, LED-индикаторы и тд.</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_response_mux</a> - один из подмодулей использованный для реализации протокола шины AHB-Lite. Включает в себя мультиплексоры которые обеспечивают коректное чтение для процессора готовый к чтению иформации из всей памяти и I/O slaves. Этот мультиплексор использует Id slave сохраненное во время фазы адресации соотвествующей шины транзакции.</li>
+</ul></li>
+</ul></li></ul>
+
+<p><big><b>2.2. Serial Loader Flow поддерживается в аппаратном модуле иерархии MIPSfpga 2.0. </b></big></p>
+
+<p>Для поддержки Serial Loader Flow, дополнительные модули добавляются в эту структуру:</p>
+
+<p><center><b><font color=blue>Рисунок 2.2</font></b></center></p>
+
+<img width=500 src="http://silicon-russia.com/pages/2015_12_28/hierarchy_de0_cv__narrow_write_support__serial_loader__wo_7_segment_display.png">
+
+<p>Содержание и функциональность добавленных модулей:</p>
+
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_with_loader.v">mfp_ahb_lite_matrix_with_loader</a> - этот модуль заменяет <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_matrix</a> из предыдущей 
+иерархии. <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_with_loader.v">mfp_ahb_lite_matrix_with_loader</a> Включает в себя оба <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_matrix</a>, а также три модуля с новой функциональностью:
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_uart_receiver.v">mfp_uart_receiver</a> - Этот модуль получает данные с ПК через UART и преобразует эти данные в поток байтов / символы ASCII</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_srec_parser.v">mfp_srec_parser</a> - разбирает поток символов ASCII полученные из <i>mfp_uart_receiver</i>, разбирает поток символов ASCII полученные из mfp_uart_receiver, интепретирует эти символы как текст в формат Motorola S-record и геренрирует последовательные транзакции (address/data) для заполнения памяти синтезированной системой, данными записанные файле Motorola S-Record в виде текста.</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_srec_parser_to_ahb_lite_bridge.v">mfp_srec_parser_to_ahb_lite_bridge</a> - конвертирует транзакции, полученные из <i>mfp_srec_parser</i> в транзакции подтверждающие протокол  AHB-Lite. Эти модули также конвертируют виртуальные адреса использованные программным обеспечением, в физические адреса использованным аппаратными средствами. Преобразование законченно с использованием зафиксированной mapping (ничего сложного, как и TLB MMU)</li>
+</ul>
+</li>
+</ul>
+
+<p><b><font color=blue>Рисунок 2.3</font></b> показывает схему <i>mfp_ahb_lite_matrix_with_loader</i> созданного после синтеза Verilog но перед спецефической технологии маппинга FPGA, размещение и маршутизации. Обратите внимание на мультиплексор между <i>mfp_srec_parser_to_ahb_lite_bridge</i> и <i>mfp_ahb_lite_matrix</i>. Этот мультиплексор управляет подсистемой памяти и также транзакцией
+от процессорного ядра, или транзакцией от Serial Loader:</p>
+
+<p><center><b><font color=blue>Рисунок 2.3</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/02/mfp_ahb_lite_matrix_with_loader.png" rel="attachment wp-att-861"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/02/mfp_ahb_lite_matrix_with_loader-1024x277.png" alt="mfp_ahb_lite_matrix_with_loader"  class="alignnone size-large wp-image-861" /></a>
+
+<p><big><b>2.3. Более подробнее о модуле <i>mfp_uart_receiver</i></b></big></p>
+
+<p><i>mfp_uart_receiver</i> переодично отправляет данные из контакта RX UART и 8-битных выводов, когда данные готовы. Так работает простая версия <a href="https://reference.digilentinc.com/pmod:communication_protocols:uart">UART протокола</a>, без контрольнных сигналов, и с одним стартовым битом. Скорость бодов и ожидаемая главная 
+скорость частоты точно запрограммирована. Модуль включает в себя состояние машины которое ожидает отрицатльный фронт сигнала(определяемый как стартовывй бит) и фрагменты данных в виде битов подсчитывающие такты циклов. Поскольку ширина каждого символа довольно большая 50,000 Hz / 115.200 baud = 434 тактовых циклов (или 217 для 25 MHz), этот метод получения данных довольно надежный: </p>
+
+<p><center><b><font color=blue>Рисунок 2.4</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.41.49.png" rel="attachment wp-att-673"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.41.49.png" class="alignnone size-full wp-image-673" /></a>
+
+<p><big><b>2.4. Более детально о модуле <i>mfp_srec_parser</i></b></big></p>
+
+<p><i>mfp_srec_parser</i> получает данные от <i>mfp_uart_receiver</i> и анализирует его как текст в формате файла Motorola S-Record. Во время анализирования конечный автомат внутри <i>mfp_srec_parser</i> формирует транзакции в память синтезированной системы MIPSfpga+, заполняя память указанными байтами в указанную область. Заголовок модуля показан внизу:</p>
+
+<p><center><b><font color=blue>Рисунок 2.5</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.42.17.png" rel="attachment wp-att-674"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.42.17.png" class="alignnone size-large wp-image-674" /></a>
+
+<p>See <a href="https://en.wikipedia.org/wiki/SREC_(file_format)">описание формата Motorola S-record из Wikipedia</a>:</p>
+
+<p><center><b><font color=blue>Рисунок 2.6</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/11/Motorola_SREC_Chart.png" rel="attachment wp-att-366"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/11/Motorola_SREC_Chart-1024x705.png" class="alignnone size-large wp-image-366" /></a>
+
+<p><big><b>2.5. Более детально о модуле <i>mfp_srec_parser_to_ahb_lite_bridge</i></b></big></p>
+
+<p><i>mfp_srec_parser_to_ahb_lite_bridge</i> является соединяющим звеном между <i>mfp_srec_parser</i> и AHB-Lite шиной. Также изменяет адреса, конвертирует виртуальные адреса в физические адреса в соотвествии с правилами фиксированного маппинга (смотрите прграммную документацию MIPS microAptiv UP ядра):</p>
+
+<p><center><b><font color=blue>Рисунок 2.7</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.43.08.png" rel="attachment wp-att-675"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.43.08.png" class="alignnone size-large wp-image-675" /></a>
+
+<p><big><b>2.6. Miscellaneous</b></big></p>
+
+<p>Вывод <i>mfp_srec_parser</i>, сигнал называемый <i>in_progress</i> используемый как сброс процессорного ядра microAptiv UP. Это означет что когда serial loader заполняет память данными файла S-record, процессор не имеет доступа к памяти. Как только <i>mfp_srec_parser</i> получит запись о завершении (S7), ядро просыпается и начинает получать программу от только что заполненной памяти.</p>
+
+<p>Механизм serial loader не исклчает подключение с обычной шиной Bus Blaster / Open OCD. Оба способа загрузки программы serial loader и Bus Blaster, могут быть использованы без повторной синтезированной системой.</p>
+
+<p><big><b>3. Настройка платы и разъемов</b></big></p>
+
+<p><big><b>3.1. Настройка Digilent boards с Artix-7 FPGA</b></big></p>
+
+<p>Предлагающиеся платы не требуют дополнительных каких-то переходников потому-что они уже имеют USB-to-UART разъемы встроенные в плату:</p>
+
+<ol>
+<li><a href="http://store.digilentinc.com/nexys-4-ddr-artix-7-fpga-trainer-board-recommended-for-ece-curriculum/">Digilent Nexys 4 DDR</a> плата с Xilinx Artix-7 FPGA. Смотрите Appendix 4  о том как плата подключается к применяющийся перефирией.</li>
+<li><a href="http://store.digilentinc.com/nexys-4-artix-7-fpga-trainer-board-limited-time-see-nexys4-ddr/">Digilent Nexys 4</a> плата с Xilinx Artix07 FPGA (без DDR, скоро будет прекращено.)</li>
+<li><a href="http://store.digilentinc.com/basys-3-artix-7-fpga-trainer-board-recommended-for-introductory-users/">Digilent Basys 3</a> с Xilinx Artix-7.</li>
+</ol>
+
+<p>Документация USB-to-UART взятая из Digilent докуменатции.</p>
+
+<p><center><b><font color=blue>Рисунок 3.1</font></b></center></p>
+
+<a href="https://reference.digilentinc.com/_media/nexys4-ddr:nexys4ddr_rm.pdf"><img border=1 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-27-21.22.12.png" alt="screenshot-2016-09-27-21-22-12" /></a>
+
+<p><big><b>3.2. Настройка Terasic плат с Altera Cyclone II, III, IV и V FPGA</b></big></p>
+
+<p>Внимание! Избегайте попадании напряжения питаний на какой либо GPIO контакт FPGA платы, когда плата запитана. Это может повредить контакт или в худшем случае саму FPGA.</p>
+
+<p>Некоторые платы Terasic имеют USB-to-UART разъем, который для некоторых других плат возможно использовать для других интерфейсов, но для простоты эта лабораторная работа использует USB-to-UART переходник подключенный к контактам ввода / вывода общего назначения.</p>
+
+<p>Картинка показывающая FTDI USB-TO-UART переходник реализованный при помощи <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> микросхемы подключенной к GPIO контактам <a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA. Uart TX подключен к третьему контакту снизу и земля подключена к шестому контакту от низа. Обратите внимание что вам нужно установить перемычку 3.3V/5V в положение 3.3V чтобы избежать повреждение некоторых потенциальных чувствительных областей FPGA:</p>
+
+<p><center><b><font color=blue>Рисунок 3.2</font></b></center></p>
+
+<a href="http://de0-cv.terasic.com.tw"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_160527-1024x683.jpg" /></a>
+
+<p><center><b><font color=blue>Рисунок 3.3</font></b></center></p>
+
+<a href="http://de0-cv.terasic.com.tw"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_171948-1024x1024.jpg" /></a>
+
+<p>Serial Loader также совместим с <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a>. Это другой альтернативный кабель базирующийся на <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182718&SearchText=PL2303HX">микросхеме PL2303HX</a> однако кабель имеет больше проблем с совместимостью с Windows 8.x и мы рекомендуем использовать кабели базирующиеся на PL2303TA.</p>
+
+<p><center><b><font color=blue>Рисунок 3.4</font></b></center></p>
+
+<a href="http://de0-cv.terasic.com.tw"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_pl2303ta_160926_163515-1024x767.jpg" /></a>
+
+<p><center><b><font color=blue>Рисунок 3.5</font></b></center></p>
+
+<a href="http://de0-cv.terasic.com.tw"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_pl2303ta_160926_163235-1024x683.jpg" /></a>
+
+<p>Теже разъемы могут быть использованы с многими популярными платами Terasic которые поддерживают MIPSfpbga:</p>
+
+<ol>
+<li><a href="http://de10-lite.terasic.com">Terasic DE10-Lite</a> with Altera MAX10</li>
+<li><a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V</li>
+<li><a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV</li>
+<li><a href="http://de0-nano.terasic.com.tw">Terasic DE0-Nano</a> board with Altera Cyclone IV FPGA</li>
+<li><a href="http://de0.terasic.com">Terasic DE0</a> with Altera Cyclone III</li>
+<li><a href="http://de1.terasic.com">Terasic DE1</a> with Altera Cyclone II</li>
+</ol>
+
+<p>Смотрите картинки всех разъемов плат Terasic Cyclone в Appendix А.</p>
+
+<p>В маловероятных случаях спецефическая Windows или Linux не имеет драйверов для работа с FTDI USB-to-UART переходника, драйвер может быть скачать отсюда <a
+href="http://www.ftdichip.com/Drivers/VCP.htm">http://www.ftdichip.com/Drivers/VCP.htm</a>.</p>
+
+<p><big><b>4. Запуск синтеза и конфигурирование FPGA с синтезированной системой MIPSfpga</b></big></p>
+
+<p><big><b>4.1. Выбор подходящей конфигурации оборудования для лабораторной работы.</b></big></p>
+
+<p>Перед запуском синтеза необходимо посмотреть и возможно модифицировать файл
+<a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a>
+который включает в себя набор Verilog <i>`define</i> состоянии которые требуются для функциональности синтезированной системы MIPSfpbga. Удостоверьтесь что <i>`define MFP_USE_UART_PROGRAM_LOADER</i>
+не является закоментированной строкой.</p>
+
+<blockquote><p>File <i><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a></i></p>
+<pre>                           
+
+//
+//  Configuration parameters
+//
+
+// `define MFP_USE_WORD_MEMORY
+// `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
+// `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+`define MFP_USE_UART_PROGRAM_LOADER
+// `define MFP_DEMO_LIGHT_SENSOR
+// `define MFP_DEMO_CACHE_MISSES
+// `define MFP_DEMO_PIPE_BYPASS
+
+</pre></blockquote>
+
+<p>Это также может быть необходимым для конфигурации памяти которая построена из ячеек блоков памяти FPGA.  По умолчанию память bootloader 1 кб, память для пользовательской программы также 1кб. Маленький блок памяти соотвествует многим старым платам и результатам в максимальных тактовой частоты синтезированной системы. Присвоения снизу может быть использованно для увелечения размера блока памяти. Во избежание максимально низкой тактовой частоты с большой памятью и если большая часть памяти не требуется, мы рекомендуем реализовывать интерфейс для внешней микросхемы памяти для FPGA, такие как SDRAM память прилагается к многим FPGA платам.</p>
+
+<blockquote><p>File <i><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a></i></p>
+<pre>                           
+
+`define MFP_RESET_RAM_ADDR_WIDTH    10  // The boot sequence is the same for everything
+
+`ifdef SIMULATION
+`define MFP_RAM_ADDR_WIDTH          16
+`else
+`define MFP_RAM_ADDR_WIDTH          10  // DE1: 10, DE0-Nano: 13, DE0-CV or Basys3: 14, Nexys 4 or DE2-115: 16
+`endif
+
+</pre></blockquote>
+<p><big><b>4.2. Xilinx Vivado flow</b></big></p>
+
+<p>Эта глава показывает последовательность шагов требуемых для синтеза системной платы MIPSfpga 2.0 используя Xilinx Vivado среду разработки и загружать это в плату, такие как
+<a href="http://store.digilentinc.com/nexys-4-ddr-artix-7-fpga-trainer-board-recommended-for-ece-curriculum/">
+Digilent Nexys 4 DDR</a> платы с Xilinx Artix-7 FPGA на <b><font color=blue>Рисунке 4.2.1</font></b>.</p>
+
+<p><center><b><font color=blue>Рисунок 4.2.1. <a href="http://store.digilentinc.com/nexys-4-ddr-artix-7-fpga-trainer-board-recommended-for-ece-curriculum/">
+Digilent Nexys 4 DDR</a> board with Xilinx Artix-7 FPGA, с переферии и интерфейсами.
+Дополнительные части не требуются для этой лабораторной работы.</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010837.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010837.jpg" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.2. Запусе Xilinx Vivado</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.32.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.32.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.3. Создание нового проекта</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.41.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.41.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.4. Присваивание имени проекту</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.48.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.48.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.5. Присваивание тип проекту RTL</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.53.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.53.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.6. Добавление папок с исходными файлами</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.58.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.58.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.7. Добавление дериктории Verilog фалов для высоко-уровневой оболочки</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.39.54.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.39.54.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.8. Добавление дериктории с файлами Verilog для плата-зависимой системы включающей в себя логику для AHB-Lite шины и Serial Loader</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.08.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.08.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.9. Добавление дериктории с файлами Verilog для ядра MIPS microAptiv UP</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.23.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.23.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.10. Все необходимые дериктории добавленны</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.30.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.30.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.11. No extra IP is necessary</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.39.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.39.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.12. Need to add the constraints</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.46.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.46.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.13. Add constraints file that maps I/O pins and defines the clocks</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.21.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.21-1024x496.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.14. Constraints are added</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.34.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.34.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.15. Выбор сооответвующей части FPGA используя фильтры и пакеты семейства (Artix-7)</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.47.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.47.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.16. Выбор среди выбранных частей FPGA</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.42.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.42.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.17. Краткое изложение окончание работы мастера проекта</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.50.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.50.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.18. Запуск синтеза, разметки, размещения, маршутизации и генерации</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.52.33.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.52.33.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.19. Запуск устройства программирования</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.48.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.48.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.2.20. Specify the appropriate bitfile</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.57.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.57.png" /></a>
+
+<p>После окончания этого шага, плата должна быть сконфигурированной с помощью синтезированной разработки и готовой принимать программное обеспечение.</p>
+<p><big><b>4.3. Altera Quartus II flow</b></big></p>
+
+<p>Эта глава показывает последовательность шагов требуемых для синтеза системы базирующейся на MIPSfpga 2.0 используя Quartus II среду разработки и загружать это в плату, такие как
+<a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> с Altera Cyclone V FPGA показанно на <b><font color=blue>Рисунке 4.3.1</font></b>.</p>
+
+<p><font color=blue><b>Рисунок 4.3.1.</b> Картинка
+<a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA, с переферии и интерфейсами.
+Дополнительные части (except FT232RL USB-to-UART) не требуются для этой лабораторной работы.</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_114528.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_114528.jpg" /></a>
+
+<p><big><b>4.3.1. Перед установкой Altera Quartus II</b></big></p>
+
+<p>Обратите внимание на разные платы Terasic и на различие версии: Windows и Linux требуют разные версии Quartus II:</p>
+
+<ul>
+<li>Чтобы запустить Altera Quartus II на компьютере с 32-битной Windows <i>или</i> 32-битной Linux, необходимо использовать <a href="http://dl.altera.com/13.1/?edition=web">Altera Quartus II Web Edition version 13.1</a>
+или более ранюю верисю.</li>
+
+<li>Для старых плат (Terasic DE0, DE1, DE2) with Altera Cyclone II/III FPGA, необходимо использовать
+<a href="http://dl.altera.com/13.0sp1/?edition=web">Altera Quartus II Web Edition version 13.0 Service Pack 1</a>
+или более ранюю верисю.</li>
+</ul>
+
+<p><big><b>4.3.2. Перед запуском Altera Quartus II</b></big></p>
+
+<p>Самый быстрый способ для создания проекта MIPSfpbga для Quartus II, использвать существующие файлы проекты находящиеся в комплекте, такие как <i>boards/de0_cv</i>. Содержание этой директории включает в себя:</p>
+
+<blockquote><p>Содержание <i>boards/de0_cv</i> директории</p><pre>               
+de0_cv.qpf
+de0_cv.qsf
+de0_cv.sdc
+de0_cv.v
+make_project.bat
+make_project.sh
+</pre></blockquote>
+
+<p>Файл bat для Windows <i>make_project.bat</i> и аналогичный для Linux,
+Bourne shell script <i>make_project.sh</i>,создает копию файлов проекта во временной директории, названной <i>project</i>. Причиной того стало то что: Quartus II создает много временных файлов в дериктории где находятся проекты. Создается такая же копия файлов проекта, позволяя эти временные файлы удалять не затронув файлов проекта.
+</p>
+
+<blockquote><p>Содержание файла <i>boards/de0_cv/make_project.bat</i> Windows batch file</p><pre>               
+rd /s /q project
+mkdir project
+copy *.qpf project
+copy *.qsf project
+copy *.sdc project
+</pre></blockquote>
+
+<p><big><b>4.3.4.  Модификация пути в
+<i>boards/de_common/quartus_add_core_and_system_verilog_files.tcl</i></b></big></p>
+
+<p>В некоторых пакетах установок MIPSfpga, дериктории с системным RTL и ядром RTL Verilog файлами могут иметь разные локации схожими с дерикториями <i>board</i>. Если это ваш случай, вам может понадобится пересмотреть и возможно модифицировать следующие значения внутри файла <i>boards/de_common/quartus_add_core_and_system_verilog_files.tcl</i>. 
+Этот файл получен из TCL скрипта <i>de0_cv.qsf</i> используемый для проектов Altera Quartus II.</p>
+
+<blockquote><p>Фрагмент скрипта <i>boards/de_common/quartus_add_core_and_system_verilog_files.tcl</i></p><pre>               
+set CORE_RTL_PATH   ../../../core_rtl
+set SYSTEM_RTL_PATH ../../../system_rtl
+</pre></blockquote>
+
+<p><big><b>4.3.5. Последовательность шагов</b></big></p>
+
+<p><center><b><font color=blue>Рисунок 4.3.2. Запуск Altera Quartus II</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.02.18.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.02.18.png" /></a>
+
+<p><center><b><font color=blue>рисунок 4.3.3. Открыть проект в дериктории <i>project</i></font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.03.16.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.03.16.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.3.4. Компиляция разработки</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.04.04.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.04.04.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.3.5. Разработка скомпилирована. Просмотр созданного отчета</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.13.58.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.13.58.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.3.6. Запуск "Program Device"</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.15.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.15.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.3.7. Открыть "Programmer"</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.31.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.31.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.3.8. Запуск "Hardware Setup"</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.40.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.40.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.3.9. Выбор "USB Blaster"</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.45.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.45.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.3.10. USB Blaster выбран</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.52.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.52.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.3.11. Запуск "Select Programming File"</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.06.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.06.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.3.12. Программируемый файл выбран</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.14.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.14.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.3.13. Click "Start"</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.24.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.24.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 4.3.14. Оборудование запрограммировано</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.33.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.33.png" /></a>
+
+<p>После выполнения этого этапа плату нужно сконфигурировать с синтезированным дизайном и подготовить к получению программного обеспечения.</p>
+
+<p><big><b>5. Компиляция ПО и загрузка в синтезированную систему используя Serial Loader</b></big></p>
+
+<p><big><b>5.1. Файлы в первом каталоге лабораторной работы</b></big></p>
+
+<table border=1 cellpadding=10 cellspacing=0 rules=all>
+<col width=50% />
+<col width=50% />
+<tr>
+<th>File</th>
+<th>Description</th>
+</tr><tr><td>
+
+<i>00_clean_all.bat<br>
+01_compile_c_to_assembly.bat<br>
+02_compile_and_link.bat<br>
+03_check_program_size.bat<br>
+04_disassemble.bat<br>
+05_generate_verilog_readmemh_file.bat<br>
+06_simulate_with_modelsim.bat<br>
+07_simulate_with_icarus.bat<br>
+08_generate_motorola_s_record_file.bat<br>
+09_upload_to_xilinx_board_using_bus_blaster.bat<br>
+10_upload_to_altera_board_using_bus_blaster.bat<br>
+11_check_which_com_port_is_used.bat<br>
+12_upload_to_the_board_using_uart.bat<br></i>
+
+</td><td>
+
+<p>Набор файлов для Windows с именами которые описывают шаг за шагом для руководства пользователя к этой лабораторной. Некоторые из этих шагов копируют действия в <i>makefile</i>. Мы примененяли эти bat файлы во время первого опыта с MIPSfpga которое делает лабораторную работу удобнее и менее путает многих людей, так как они могут просто кликнуть на bat файлы в Проводнике или в других фаловых менеджеров чтобы пройти все шаги, вместо того чтобы набирать вручную "make action". Эти файлы более подробно рассматриваются в последующих подразделах.</p>
+
+<p>Для этой лабораторной работы требуются только <i>02_compile_and_link.bat</i>, <i>08_generate_motorola_s_record_file.bat</i> и <i>12_upload_to_the_board_using_uart.bat</i> Запуск остальных пакетных файлов является необязательным.</p>
+
+</td></tr><tr><td>
+
+<i>00_clean_all.sh<br>
+01_compile_c_to_assembly.sh<br>
+02_compile_and_link.sh<br>
+03_check_program_size.sh<br>
+04_disassemble.sh<br>
+05_generate_verilog_readmemh_file.sh<br>
+06_simulate_with_modelsim.sh<br>
+07_simulate_with_icarus.sh<br>
+08_generate_motorola_s_record_file.sh<br>
+09_upload_to_xilinx_board_using_bus_blaster.sh<br>
+10_upload_to_altera_board_using_bus_blaster.sh<br>
+11_check_which_com_port_is_used.sh<br>
+12_upload_to_the_board_using_uart.sh<br></i>
+
+</td><td>
+
+<p>Набор скриптов для Linux Bourne с названиями которые описывают шаг за шагом для руководства пользователя к этой лабораторной работе. Смотрите описание bat фалов Windows выше. Скрипты для Linux и Windows файлы bat обычно аналогичны друг другу, за исключением <i>12_upload_to_the_board_using_uart.sh</i> которые использует разные команды для Linux и Windows соотвественно. <i>12_upload_to_the_board_using_uart.bat</i>.</p>
+
+<p>Только <i>02_compile_and_link.sh</i>, <i>08_generate_motorola_s_record_file.sh</i>
+и <i>12_upload_to_the_board_using_uart.sh</i> требуются для запуска лабораторной работы; 
+Запуск остальных bat файлов является необязательным.
+</p>
+
+</td></tr><tr><td>
+<i>boot.S</i>
+</td><td>
+
+Последовательность загрузки, готовая собранная программа стартует после снятия сигнала сброса с процессора, инициализирует регисты системного процессора, кеши и TLB MMU, затем переходит в пользовательскую программу.
+
+</td></tr><tr><td>
+<i>main.c</i>
+</td><td>
+
+Пользовательская программа написанная на C.
+
+</td></tr><tr><td>
+<i>makefile</i>
+</td><td>
+
+Makefile, который содержит основные задачи для компиляции и компоновки программы. Может использоваться вместо поставляемых пакетных файлов Windows и скриптов Linux.
+
+</td></tr><tr><td>
+<i>mfp_memory_mapped_registers.h</i>
+</td><td>
+
+Header file that contains definitions for the memory-mapped I/O registers
+used to communicate the software with I/O devices on the board - buttons, LEDs,
+as well as external devices connected through general-purpose I/O ports. 
+
+</td></tr><tr><td>
+<i>modelsim_script.tcl</i>
+</td><td>
+
+Скрипт на языке Tcl, используемый имитатором Mentor ModelSim RTL для симуляции автоматизированной компиляции Verilog, запуска симуляции и управления отображением осциллограмм.
+
+</td></tr><tr><td>
+<i>program.ld</i>
+</td><td>
+
+Скрипт, используемый набор инструментов GCH. Определяет места виртуальной памяти для последовательности загрузки пользовательской программы и данных.
+
+</td></tr>
+</table>
+
+<p><big><b>5.2. Первая лабораторная программа</b></big></p>
+
+<p>Первая программа просто увеличивает счетчик и выводит свои самые высокие биты на зависимые от платы чтения и зеленые светодиоды, а также абстрактное семисегментное многозначное периферийное устройство отображения, реализованное в виде модуля в оболочке верхнего уровня.</p>
+
+<blockquote><p>File <i>01_compile_c_to_assembly.bat</i></p><pre>                      
+#include "mfp_memory_mapped_registers.h"
+
+int main ()
+{
+    long long int n = 0;
+
+    for (;;)
+    {
+        MFP_RED_LEDS   = n >> 16;
+        MFP_GREEN_LEDS = n >> 16;
+        MFP_7_SEGMENT_HEX = ((n >> 8) & 0xffffff00) | (n & 0xff);
+
+        n ++;
+    }
+
+    return 0;
+}
+</pre></blockquote>
+
+<p>Зарезервированные в памяти регисты I/O являются псевдо-переменными, созданные с использованием конструкции <i>#define</i>
+в файле заголовка <i>mfp_memory_mapped_registers.h</i> header file.
+Конструкция "* (volatile unsigned *)" нужна если компилятор неоптимизирует доступ памяти к адресам зарезервированных в памяти регистров I/O:</p>
+
+<blockquote><p>Файл <i>mfp_memory_mapped_registers.h</i></p><pre>                      
+#ifndef MFP_MEMORY_MAPPED_REGISTERS_H
+#define MFP_MEMORY_MAPPED_REGISTERS_H
+
+#define MFP_RED_LEDS_ADDR       0xBF800000
+#define MFP_GREEN_LEDS_ADDR     0xBF800004
+#define MFP_SWITCHES_ADDR       0xBF800008
+#define MFP_BUTTONS_ADDR        0xBF80000C
+#define MFP_7_SEGMENT_HEX_ADDR  0xBF800010
+
+#define MFP_RED_LEDS            (* (volatile unsigned *) MFP_RED_LEDS_ADDR      )
+#define MFP_GREEN_LEDS          (* (volatile unsigned *) MFP_GREEN_LEDS_ADDR    )
+#define MFP_SWITCHES            (* (volatile unsigned *) MFP_SWITCHES_ADDR      )
+#define MFP_BUTTONS             (* (volatile unsigned *) MFP_BUTTONS_ADDR       )
+#define MFP_7_SEGMENT_HEX       (* (volatile unsigned *) MFP_7_SEGMENT_HEX_ADDR )
+
+// This define is used in boot.S code
+
+#define BOARD_16_LEDS_ADDR      MFP_RED_LEDS_ADDR
+
+#endif
+</pre></blockquote>
+
+<p><big><b>5.3. Шаг первый: очистка всего</b></big></p>
+
+<p>Этот шаг необязателен. Тут удаляются все файлы созданные во время предыдущих действий или шагов.</p>
+
+<blockquote><p>File <i>00_clean_all.bat</i></p><pre>                                  
+rd /s /q sim
+
+del *.o
+del main.s
+del program.elf
+del program.map
+del program.dis
+del program*.hex
+del program.rec
+del FPGA_Ram.elf
+
+</pre></blockquote>
+
+<p><big><b>5.4. Компиляция программного обеспечения</b></big></p>
+
+<p><big><b>5.4.1. Компиляция С программ в ассемблер для изучения сгенерированого кода.</b></big></p>
+
+<p>Этот шаг не обязателен. Это можно использовать для просмотра кода ассемблера MIPS созданного компилятором который обработал С код. Когда компиляция С программ для платформы MIPS использует GCC toolchain это не обходимо для использования оптимизации, меньше <i>-O1</i>. Без оптимизации (<i>-O1</i>) the compiler located all C variable on memory locations rather then
+on registers, de facto erasing all the performance advantage of high-performance
+RISC core with large register set.</p>
+
+<blockquote><p>File <i>01_compile_c_to_assembly.bat</i></p><pre>                      
+rem -EL           - Little-endian
+rem -march=m14kc  - MIPSfpga = MIPS microAptiv UP based on MIPS M14Kc
+rem -msoft-float  - should not use floating-point processor instructions
+rem -O2           - optimization level
+rem -S            - compile to assembly
+
+mips-mti-elf-gcc -EL -march=m14kc -msoft-float -O2 -S main.c
+
+</pre></blockquote>
+
+<p>Внизу вы можете сравнить сгенерированный код с оптимизацией и без:</p>
+
+<blockquote><p>Сгенерированный файл ассемблера MIPS <i>main.s</i> комплировался с оптимизацией (<i>-O2</i> option)</p>
+<pre>                      
+main:
+	.frame	$sp,0,$31		# vars= 0, regs= 0/0, args= 0, gp= 0
+	.mask	0x00000000,0
+	.fmask	0x00000000,0
+	.set	noreorder
+	.set	nomacro
+	move	$3,$0
+	move	$5,$0
+	li	$6,-1082130432			# 0xffffffffbf800000
+	li	$11,-256			# 0xffffffffffffff00
+	sll	$4,$5,24
+.L4:
+	srl	$2,$3,8
+	or	$2,$4,$2
+	sll	$8,$5,16
+	srl	$4,$3,16
+	andi	$10,$3,0xff
+	addiu	$7,$3,1
+	and	$2,$2,$11
+	or	$4,$8,$4
+	sltu	$9,$7,$3
+	or	$2,$2,$10
+	sw	$4,0($6)
+	move	$3,$7
+	sw	$4,4($6)
+	addu	$5,$9,$5
+	sw	$2,16($6)
+	b	.L4
+	sll	$4,$5,24
+</pre></blockquote>
+
+<blockquote><p>Сгенерированный  файл ассемблера MIPS <i>main.s</i> комплировался без оптимизации (<i>-O0</i> option)</p>
+<pre>                      
+main:
+	.frame	$fp,16,$31		# vars= 8, regs= 1/0, args= 0, gp= 0
+	.mask	0x40000000,-4
+	.fmask	0x00000000,0
+	.set	noreorder
+	.set	nomacro
+	addiu	$sp,$sp,-16
+	sw	$fp,12($sp)
+	move	$fp,$sp
+	move	$2,$0
+	move	$3,$0
+	sw	$2,0($fp)
+	sw	$3,4($fp)
+.L2:
+	li	$2,-1082130432			# 0xffffffffbf800000
+	lw	$3,4($fp)
+	sll	$3,$3,16
+	lw	$10,0($fp)
+	srl	$8,$10,16
+	or	$8,$3,$8
+	lw	$3,4($fp)
+	sra	$9,$3,16
+	move	$3,$8
+	sw	$3,0($2)
+	li	$2,-1082130432			# 0xffffffffbf800000
+	ori	$2,$2,0x4
+	lw	$3,4($fp)
+	sll	$3,$3,16
+	lw	$10,0($fp)
+	srl	$6,$10,16
+	or	$6,$3,$6
+	lw	$3,4($fp)
+	sra	$7,$3,16
+	move	$3,$6
+	sw	$3,0($2)
+	li	$2,-1082130432			# 0xffffffffbf800000
+	ori	$2,$2,0x10
+	lw	$3,4($fp)
+	sll	$3,$3,24
+	lw	$10,0($fp)
+	srl	$4,$10,8
+	or	$4,$3,$4
+	lw	$3,4($fp)
+	sra	$5,$3,8
+	move	$10,$4
+	li	$3,-256			# 0xffffffffffffff00
+	and	$10,$10,$3
+	lw	$3,0($fp)
+	andi	$3,$3,0xff
+	or	$3,$10,$3
+	sw	$3,0($2)
+	lw	$10,0($fp)
+	lw	$11,4($fp)
+	li	$12,1			# 0x1
+	move	$13,$0
+	addu	$2,$10,$12
+	sltu	$14,$2,$10
+	addu	$3,$11,$13
+	addu	$10,$14,$3
+	move	$3,$10
+	sw	$2,0($fp)
+	sw	$3,4($fp)
+	b	.L2
+	nop
+</pre></blockquote>
+
+<p><big><b>5.4.2. Компиляция С и assembly программ и их объединение в файл ELFile</b></big></p>
+
+<p>Этот шаг обязателен. Генерируется файл в формате ELF используемый для присвоения программного обеспечения для голого железа. (ELF - Executable and Linkable Format)</p>
+
+<blockquote><p>File <i>02_compile_and_link.bat</i></p><pre>                           
+rem -EL             - Little-endian
+rem -march=m14kc    - MIPSfpga = MIPS microAptiv UP based on MIPS M14Kc
+rem -msoft-float    - should not use floating-point processor instructions
+rem -o program.elf  - output file name
+rem -O2             - optimization level
+rem -T, -Wl         - linked options
+
+mips-mti-elf-gcc -EL -march=m14kc -msoft-float -O2
+    -Wl,-Map=program.map -T program.ld
+    -Wl,--defsym,__flash_start=0xbfc00000
+    -Wl,--defsym,__flash_app_start=0x80000000
+    -Wl,--defsym,__app_start=0x80000000
+    -Wl,--defsym,__stack=0x80040000
+    -Wl,--defsym,__memory_size=0x1f800
+    -Wl,-e,0xbfc00000
+    boot.S main.c -o program.elf
+
+</pre></blockquote>
+
+<p><big><b>5.4.3. Проверка размера программы</b></big></p>
+
+<p>Этот шаг не обязателен. Эта утилита выводит информацию которую мы могли бы использовать для проверки если программа соответствует размеру памяти.</p>
+
+<blockquote><p>File <i>03_check_program_size.bat</i></p><pre>                         
+mips-mti-elf-size program.elf
+</pre></blockquote>
+
+<blockquote><p>The output of <i>03_check_program_size.bat</i></p>
+<pre>                         
+   text	   data	    bss	    dec	    hex	filename
+   1292	     32	     32	   1356	    54c	program.elf
+</pre></blockquote>
+
+<p><big><b>5.4.4. Использование дизассемблера</b></big></p>
+
+<p>Этот шаг не обязательный. Это может быть использованно для просмотра содержимого исполняемого собранного файла ELF</p>
+
+<blockquote><p>File <i>04_disassemble.bat</i></p><pre>                                
+mips-mti-elf-objdump -D program.elf &gt; program.dis
+
+</pre></blockquote>
+<p><big><b>5.5. Использование Verilog симуляции для моделирования и отладки, железа и программного обеспечения.</b></big></p>
+
+<p>Этот шаг не обязательный или может быть использован как отдельная лабораторная работа.</p>
+
+<p><big><b>5.5.1. Подготовка файла Verilog $ readmemh и образ памяти для программного обеспечения</b></big></p>
+
+<p>Этот шаг не обязательный и нужен только для симуляции используя Mentor ModelSim, Icarus Verilog, Xilinx Vivado simulator или каких либо других симуляторов Verilog.</p>
+
+<blockquote><p>File <i>05_generate_verilog_readmemh_file.bat</i></p><pre>             
+mips-mti-elf-objcopy program.elf -O verilog program.hex
+..\utilities\ad_hoc_program_hex_splitter
+
+</pre></blockquote>
+
+<p>Пакет MIPSfpga 1.0 подготовил файл HEX для загрузки в ModelSim для моделирования с использованием утилиты <i>objdump</i> из стандартного набора инструментов GCC в сочетании с скриптом для Windows, который был медленным. Файл HEX в MIPSfpga 2.0 был создан отличным, более быстрым и несколько более стандартным способом, используя утилиту <i>objcopy</i> из стандартного набора инструментов GCC с опцией «-O verilog» в сочетании с специальной утилитой MIPSfpga 2.0, называемой 
+<a href="https://github.com/MIPSfpga/mipsfpga-plus/blob/master/programs/utilities/ad_hoc_program_hex_splitter.c">ad_hoc_program_hex_splitter</a>.</p>
+
+<p>Утилита <a href="https://github.com/MIPSfpga/mipsfpga-plus/blob/master/programs/utilities/ad_hoc_program_hex_splitter.c">ad_hoc_program_hex_splitter</a>
+делит файл <i>program.hex</i> в два файла, <i>program_00000000.hex</i> и <i>program_1fc00000.hex</i>,
+которые соответствуют двум физическим областям памяти - начинается с адреса 0x00000000 и 0x1fc00000 соответствующе.
+Во время деления, <i>ad_hoc_program_hex_splitter</i> также конвертируется виртуальный адрес в байтовое смещение в соответствующую память.</p>
+
+<p>In order to load the file created with <i>objcopy</i> and <i>ad_hoc_program_hex_splitter</i>
+into 4-byte-wide ram register array, the following testbench code is used in <i>MFP_USE_WORD_MEMORY</i> and non-<i>MFP_USE_WORD_MEMORY</i> modes:</p>
+
+<p><a href="http://www.silicon-russia.com/wp-content/uploads/2016/02/Screenshot-2016-02-02-23.30.05.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/02/Screenshot-2016-02-02-23.30.05.png" /></a></p>
+
+<p><a href="http://www.silicon-russia.com/wp-content/uploads/2016/02/Screenshot-2016-02-02-23.30.23.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/02/Screenshot-2016-02-02-23.30.23.png"  /></a></p>
+
+<p>Последний шаг требуется для загрузки данных hex-файла в не !!!!!!обьемные байтовые ячейки, необходимые для правильной поддержки однобайтовых не кешированных записей, вызванных инструкциями MIPS<i>SB</i> которые предназначены на не кешированные виртуальные адресса.</p>
+<p><big><b>5.5.2. Симуляция системы используя Mentor Graphics ModelSim</b></big></p>
+
+<p>Этот шаг необходим. Verilog симуляция основной способ отладки кода Verolog RTL. Mentor ModelSim популярный недорогой симулятор имеющий также и бесплатную версию. Эта лабораторная работа предназначена использовать ModelSim, который имеет сложный GUI и язык скриптов для управления им пользователем. Эта лабораторная работа использует скрипт Tcl который запускает симуляцию и показывает результаты в виде осциллограмм(waveforms). Tcl или Tool Control Language скриптовый язык используемый многими Electronic Design Automation (EDA).</p>
+
+<p>Bat-файл Windows, который вызывает ModelSim с помощью скрипта Tcl</p>
+
+<blockquote><p>File <i>06_simulate_with_modelsim.bat</i></p><pre>                     
+rd /s /q sim
+md sim
+cd sim
+
+copy ..\*.hex .
+
+vsim -do ../modelsim_script.tcl
+
+</pre></blockquote>
+
+<p>Скрипт Tcl, используемый для компиляции исходного кода Verilog, установки осциллограмм и запуска моделирования:</p>
+
+<blockquote><p>File <i>modelsim_script.tcl</i></p><pre>                     
+vlib work
+vlog -vlog01compat +define+SIMULATION +incdir+../../../../../MIPSfpga/rtl_up +incdir+../../.. ../../../../../MIPSfpga/rtl_up/*.v ../../../*.v
+vsim work.mfp_testbench
+add wave sim:/mfp_testbench/*
+run -all
+</pre></blockquote>
+
+<p>На скриншотах описываются шаги, необходимые для изучения результатов</p>
+
+<p><center><b><font color=blue>Figure 5.1. После теста останавливается запуск и симулятор спрашивает хочет ли пользовател выйти. Кликните "No":</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.33.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.33.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 5.2. ModelSim имеет сложный "нагруженный" интерфейс (GUI). Кликните на маленькую иконку с изображением окна с осциллограммы:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.38.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.38.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 5.3. Мы можем увдеть окно с осциллоргаммами</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.42.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.42.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 5.4. Маленькая иконка, вторая от правого углв, позволяет "разблокировать" окно осциллограмм:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.01.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.01.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 5.5. Нажмите самую правую иконку "zoom" для просмотра всю осциллограмму:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.15.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.15.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 5.6. Наведите курсор на правую сторону осциллограммы, после выполненого порядок загрузки ядра:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.19.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.19.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 5.7. Используйте '+' иконку для увеличения:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.36.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.36.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 5.8. Select the signal you want to change radix from binary to hexadecimal:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.31.51.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.31.51.png" /></a>
+
+<p><center><b><font color=blue>Рисунок 5.9. Change radix and observe how the value on GPIO outputs is incrementing:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.33.05.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.33.05.png" /></a>
+<p><big><b>5.5.3. Симуляция системы используя Icarus Verilog</b></big></p>
+
+<p>Этот шаг не обязательный. Verilog симуляция основной способ отладки кода Verilog RTL. Icarus Verilog самый легкий способ использования симулятора Verilog доступный для студентов. Это бесплатно но довольно медленно для больших разработок, на порядок медленне чем дорогие коммерческие симуляторы такие как Synopsys VCS и даже коммерческая версия ModelSim.</p>
+
+<p>Icarus Verilog часто используется вместе с другими бесплатными утилитами, GTKWave программа для просмотра осциллограм. Внизу скрипт компилирующие файлы Verilog для MIPSfpga используя Icarus Verilog, запускает симуляцию и вызывает GTKWave программу, которая имеет простой и понятный GUI интерфейс.
+</p>
+
+<blockquote><p>File <i>07_simulate_with_icarus.bat</i></p><pre>                       
+rd /s /q sim
+md sim
+cd sim
+
+copy ..\*.hex .
+
+\iverilog\bin\iverilog -D SIMULATION -g2005
+    -I ../../..
+    -I ../../../../../MIPSfpga/rtl_up
+    ../../../../../MIPSfpga/rtl_up/mvp*.v
+    ../../../../../MIPSfpga/rtl_up/RAM*.v
+    ../../../../../MIPSfpga/rtl_up/*xilinx.v
+    ../../../../../MIPSfpga/rtl_up/m14k*.v
+    ../../../*.v
+
+\iverilog\bin\vvp a.out &gt; a.lst
+\iverilog\gtkwave\bin\gtkwave.exe dump.vcd
+
+</pre></blockquote>
+
+<p><center><b><font color=blue>Рисунок 5.10. GTKWave показывает ваши сгенерированные осциллограммы во время симуляции MIPSfpga используя Icarus Verilog симулятора</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.12.40.png">
+<img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.12.40.png" /></a>
+<p><big><b>5.6. Загрузка программного обеспечения в плату</b></big></p>
+
+<p><big><b>5.6.1. Генерирование файла в формате Motorola S-Record.</b></big></p>
+
+<p>Этот шаг не обязательный. Motorola S-Record формат использованный Serial Loader для загрузки ПО в синтезированную систему MIPSfpga на плату FPGA. Скрипт использует утилиту в стандартном наборе GCC называемой
+<i>mips-mti-elf-objcopy</i>. Для более детальной информации смотрите <i>Section 2.
+The theory of operation</i></p>
+
+<blockquote><p>File <i>08_generate_motorola_s_record_file.bat</i></p><pre>            
+mips-mti-elf-objcopy program.elf -O srec program.rec
+</pre></blockquote>
+
+<p><big><b>5.6.2. Загрузка файла ELF в Xilinx FPGA плату используя BusBlaster и OpenOCD программное обеспечение.</b></big></p>
+
+<p>Этот шаг неявляется обязательным. Перед выполнением загрузки необходимо подключить BusBlaster к плате Digilent, как показано на <b><font color=blue>Рисунке 5.11</font></b>:</p>
+
+<p><center><b><font color=blue>Рисунок 5.11. Подключение BusBlaster к плате Digilent Nexys4 DDR</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010905.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010905.jpg" /></a>
+
+<p>Следующий скрипт основан на скрипте OpenOCD, который разработан для другой лабораторной работы:</p>
+
+<blockquote><p>File <i>09_upload_to_xilinx_board_using_bus_blaster.bat</i></p><pre>   
+copy program.elf FPGA_Ram.elf
+rem Yes, it is working with DE2_115 script
+cd C:\MIPSfpga\Codescape\ExamplePrograms\Scripts\DE2_115
+loadMIPSfpga.bat C:\github\mipsfpga-plus\programs\00_serial_load_flow
+cd C:\github\mipsfpga-plus\programs\00_serial_load_flow
+del FPGA_Ram.elf
+
+</pre></blockquote>
+
+<p><big><b>5.6.3. Загрузка ELF-файла в платы FPGA Altera с использованием программного обеспечения Blast и OpenOCD</b></big></p>
+
+<p>Этот шаг неявляется обязательным. Перед выполнением загрузки необходимо подключить BusBlaster к плате Terasic DE0-CV, как показано на <b><font color=blue>Рисунках 5.12 и 5.13</font></b>:</p>
+
+<p><center><b><font color=blue>Рисунок 5.12. Подключение BusBlaster к плате Terasic DE0-CV</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121639.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121639.jpg" /></a>
+
+<p><center><b><font color=blue>Рисунок 5.13. Подключение BusBlaster к плате Terasic DE0-CV</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121534.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121534.jpg" /></a>
+
+<p>Следующий скрипт основан на скрипте OpenOCD, который разработанный для другой лабораторной работы:</p>
+
+<blockquote><p>File <i>10_upload_to_altera_board_using_bus_blaster.bat</i></p><pre>   
+copy program.elf FPGA_Ram.elf
+cd C:\MIPSfpga\Codescape\ExamplePrograms\Scripts\DE2_115
+loadMIPSfpga.bat C:\github\mipsfpga-plus\programs\00_serial_load_flow
+cd C:\github\mipsfpga-plus\programs\00_serial_load_flow
+del FPGA_Ram.elf
+
+</pre></blockquote>
+
+<p><big><b>5.6.4. Проверяем какой виртуальный COM-порт используется переходником USB-to-UART</b></big></p>
+
+<p>Проверяем какой виртуальный COM-порт используется переходником USB-to-UART
+Этот шаг необходим если пользователь не знает какой виртуальный COM-порт используется переходником USB-to-UART. В Windows эта информация может быть получена либо из диспетчера устройств, либо из попытки выполнить команду режима работы для нескольких виртуальных COM-портов.</p>
+
+<blockquote><p>File <i>11_check_which_com_port_is_used.bat</i></p><pre>               
+mode com0
+mode com1
+mode com2
+mode com3
+mode com4
+mode com5
+mode com6
+mode com7
+mode com8
+mode com9
+pause
+mode com10
+mode com11
+. . . . . . . . .
+
+</pre></blockquote>
+
+<p><big><b>5.6.5. И наконец! Загрузка скомпилированного и собранного ПО в синтезированную систему MIPSfpga на плату FPGA с помощью Serial Loader.</b></big></p>
+
+<p>Этот шаг необходим.</p>
+
+<p>Скрипт для Windows просто копирует сгенерированный файл Motorola S-record в псевдо-файл который соотвествует виртуальному COM-порту использованный переходником USB-to-UART. СОМ-порты существовали в Windows с самого начала и присутствовали даже до Microsoft Windows в Microsoft MS-DOS. Обе комманды <i>mode</i> и <i>type</i> существовали в MS-DOS и в более поздних версиях Windows с самого начала.</p>
+
+<p>Перед использованием этого скрипта пользователь  has to modify it by setting the appropriate port number in "a" variable.</p>
+
+<p>Возможнык проблемы во время использования FTDI-based USB-to-UART отсутсвие драйверов
+(можно найти на сайте FTDI) или в доступе контроля виртуальной машины если использовалась виртуализация (незначительная проблема для многих администраторов).</p>
+
+<blockquote><p>Файл <i>12_upload_to_the_board_using_uart.bat</i></p><pre>             
+set a=16
+set a=39
+mode com%a% baud=115200 parity=n data=8 stop=1 to=off xon=off odsr=off octs=off dtr=off rts=off idsr=off
+type program.rec &gt;\\.\COM%a%
+</pre></blockquote>
+
+<p>Для Linux скрипт отличается, одновременно простой и использует простые комманды.
+Для запуска скрипта в Linux пользователь должен состоять в группе <i>dialout</i></p>
+
+<p>Если загружаемая программа впервые запускается в данной сессии Linux, то добавьте пользователя в группу <i>dialout</i>. Затем введите пароль <i>root</i> после запроса:</p>
+
+<blockquote><pre>
+sudo adduser $USER dialout
+su - $USER
+</pre></blockquote>
+
+<p>Следующий скрипт загружает программу в синтезированную систему MIPSfpga на FPGA плату:</p>
+
+<blockquote><p>File <i>12_upload_to_the_board_using_uart.sh</i></p><pre>             
+stty -F /dev/ttyUSB0 raw speed 115200 -crtscts cs8 -parenb -cstopb
+cat program.rec > /dev/ttyUSB0
+</pre></blockquote>
+
+<p>После того как программа была загружена, пользователь должен был увидеть рабочую систему (counting, flashing LEDs).
+Если этого не произошло то проверьте номер порта, наличие файла Motorola S-record и повторите снова.</p>
+<p><big><b>Appendix A. Больше картинок по настройке плат Terasic с Altera Cyclone II, III, IV и V FPGA</b></big></p>
+
+<p>Многие платы Terasic имеют разъем USB-to-UART, для некотрых плат есть возможность использовать другие интерфейсы,
+но для простоты этого учебного материала используется внешний переходник USB-to-UART подключенный к выводам общего назначения - GPIO.</p>
+
+<p><font color=blue><b>Рисунок A.1.</b> Рисунок переходника FTDI USB-to-UART на микросхеме
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a>.
+Внимание! Вам нужно установить джампер 3.3V/5V в позицию 3.3V во избежание повреждений чувствительной FPGA:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/02/IMG_1423.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/02/IMG_1423.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.2.</b> Serial Loader также совместим с
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a>.
+Есть другой альтернативный кабель-переходник базирующийся на микросхеме <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182718&SearchText=PL2303HX">PL2303HX</a>
+однако этот переходник имеет больше проблем совместимости с Windows 8.x и мы рекомендуем использовать переходник базирующийся на PL2303TA:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/pl2303ta_160926_175832.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/pl2303ta_160926_175832-1024x1024.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.3.</b> Картинка FTDI-based USB-to-UART переходника
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a>
+микросхема подключена к выводам GPIO <a href="http://de0.terasic.com">Terasic DE0</a> with Altera Cyclone III FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правой стороны и "земля" подключен к 6 контаету от правой стороны.
+Внимание! Вам нужно установить джампер 3.3V/5V в позицию 3.3V во избежание повреждений чувствительной FPGA:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_and_ft232rl_160926_213603.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_and_ft232rl_160926_213603-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.4.</b> Картинка FTDI-based USB-to-UART переходника
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a>
+микросхема подключена к выводам GPIO <a href="http://de0.terasic.com">Terasic DE0</a> with Altera Cyclone III FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правой стороны и "земля" подключен к 6 контакту от правой стороны.
+Внимание! Вам нужно установить джампер 3.3V/5V в позицию 3.3V во избежание повреждений чувствительной FPGA:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_and_ft232rl_160926_213705.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_and_ft232rl_160926_213705-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.5.</b> Картинка
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a>
+подключен к выводам GPIO <a href="http://de0.terasic.com">Terasic DE0</a> with Altera Cyclone III FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правой стороны и "земля" (черный) подключен к 6 контакту от правой стороны:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_and_pl2303ta_160926_213033.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_and_pl2303ta_160926_213033-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.6.</b> Картинка
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a>
+подключен к выводам GPIO  <a href="http://de0.terasic.com">Terasic DE0</a> with Altera Cyclone III FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правой стороны и "земля" (черный) подключен к 6 контакту от правой стороны:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_and_pl2303ta_160926_213338.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_and_pl2303ta_160926_213338-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.7.</b> Картинка FTDI-based USB-to-UART переходника
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a>
+микросхема подключена к выводам GPIO <a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правой стороны и "земля" подключен к 6 контакту от правой стороны.
+Внимание! Вам нужно установить джампер 3.3V/5V в позицию 3.3V во избежание повреждений чувствительной FPGA:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_160527.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_160527-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.8.</b> A picture of FTDI-based USB-to-UART переходника
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a>
+микросхема подключена к выводам GPIO <a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правой стороны и "земля" подключен к 6 контакту от правой стороны.
+Внимание! Вам нужно установить джампер 3.3V/5V в позицию 3.3V во избежание повреждений чувствительной FPGA:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_171948.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_171948-1024x1024.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.9.</b> Картинка FTDI-based USB-to-UART переходника
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> микросхема подключена к выводам GPIO <a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA. UART TX (зеленый) подключенный к 3 контакту от правой стороны и "земля" подключен к 6 контакту от правого края.
+Внимание! Вам нужно установить джампер 3.3V/5V в позицию 3.3V во избежание повреждений чувствительной FPGA:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_175703.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_175703-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.10.</b> Картинка
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a>
+подключен к выводам GPIO  <a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правой стороны и "земля" (черный) подключен к 6 контакту от правой стороны:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_pl2303ta_160926_163235.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_pl2303ta_160926_163235-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.11.</b> Картинка
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a>
+одключен к выводам GPIO <a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правой стороны и "земля" (черный) подключен к 6 контакту от правой стороны:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_pl2303ta_160926_163515.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_pl2303ta_160926_163515-1024x767.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.12.</b> Картинка FTDI-based USB-to-UART переходника
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a>
+микросхема подключена к выводам GPIO <a href="http://de0-nano.terasic.com.tw">Terasic DE0-Nano</a> board with Altera Cyclone IV FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правой стороны и "земля" подключен к 6 контакту от правой верха.
+Внимание! Вам нужно установить джампер 3.3V/5V в позицию 3.3V во избежание повреждений чувствительной FPGA:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_nano_and_ft232rl_160926_200247.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_nano_and_ft232rl_160926_200247-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.13.</b> Картинка FTDI-based USB-to-UART переходника
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a>
+микросхема подключена к выводам GPIO <a href="http://de0-nano.terasic.com.tw">Terasic DE0-Nano</a> board with Altera Cyclone IV FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правой стороны и "земля" подключен к 6 контакту от правой верха.
+Внимание! Вам нужно установить джампер 3.3V/5V в позицию 3.3V во избежание повреждений чувствительной FPGA::</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_nano_and_ft232rl_160926_200325.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_nano_and_ft232rl_160926_200325-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.14.</b> Картинка
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a>
+микросхема подключена к выводам GPIO <a href="http://de0-nano.terasic.com.tw">Terasic DE0-Nano</a> board with Altera Cyclone IV FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правой стороны и "земля"(черный) подключен к 6 контакту от правой верха.</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_nano_and_pl2303ta_160926_195706.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_nano_and_pl2303ta_160926_195706-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.15.</b> Картинка
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a>
+подключенного к выводам GPIO <a href="http://de0-nano.terasic.com.tw">Terasic DE0-Nano</a> board with Altera Cyclone IV FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правой стороны и "земля"(черный) подключен к 6 контакту от правой верха.</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_nano_and_pl2303ta_160926_200109.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_nano_and_pl2303ta_160926_200109-683x1024.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.16.</b> Картинка FTDI-based USB-to-UART переходника
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a>
+микросхема подключенная к выводам GPIO  <a href="http://de1.terasic.com">Terasic DE1</a> with Altera Cyclone II FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правого края и "земля" подключен к 6 контакту от правого края.
+Внимание! Вам нужно установить джампер 3.3V/5V в позицию 3.3V во избежание повреждений чувствительной FPGA:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de1_and_ft232rl_160926_202017.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de1_and_ft232rl_160926_202017-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.17.</b> Картинка FTDI-based USB-to-UART переходника
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a>
+микросхема подключенная к выводам GPIO <a href="http://de1.terasic.com">Terasic DE1</a> with Altera Cyclone II FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правого края и "земля" подключен к 6 контакту от правого края.
+Внимание! Вам нужно установить джампер 3.3V/5V в позицию 3.3V во избежание повреждений чувствительной FPGA:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de1_and_ft232rl_160926_202330.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de1_and_ft232rl_160926_202330-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.18.</b> Картинка
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a>
+подключенного к выводам GPIO <a href="http://de1.terasic.com">Terasic DE1</a> with Altera Cyclone II FPGA.
+UART TX (зеленый) подключенный к 3 контакту справа от края и "земля"(черный) подключен к 6 контакту справа от края</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de1_and_pl2303ta_160926_202449.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de1_and_pl2303ta_160926_202449-1024x1024.jpg" /></a>
+
+<p><font color=blue><b>рисунок A.19.</b> Картинка
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a>
+подключенного к выводам GPIO  <a href="http://de1.terasic.com">Terasic DE1</a> with Altera Cyclone II FPGA.
+UART TX (зеленый) подключенный к 3 контакту справа от края и "земля"(черный) подключен к 6 контакту справа от края:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de1_and_pl2303ta_160926_202733.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de1_and_pl2303ta_160926_202733-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.20.</b> Картинка FTDI-based USB-to-UART переходника
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a>
+микросхема подключенная к выводам GPIO <a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правого края и "земля" подключен к 6 контакту от правого края.
+Внимание! Вам нужно установить джампер 3.3V/5V в позицию 3.3V во избежание повреждений чувствительной FPGA:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_215000.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_215000-1024x768.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.21.</b> Картинка FTDI-based USB-to-UART переходника
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a>
+микросхема подключенная к выводам GPIO <a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правого края и "земля" подключен к 6 контакту от правого края.
+Внимание! Вам нужно установить джампер 3.3V/5V в позицию 3.3V во избежание повреждений чувствительной FPGA:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_232001.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_232001-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Рисунок A.22.</b> Картинка FTDI-based USB-to-UART переходника
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a>
+микросхема подключенная к выводам GPIO <a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правого края и "земля" подключен к 6 контакту от правого края.
+Внимание! Вам нужно установить джампер 3.3V/5V в позицию 3.3V во избежание повреждений чувствительной FPGA:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_232040.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_232040-1024x1024.jpg" /></a>
+
+<p><font color=blue><b>Picture A.23.</b> Картинка FTDI-based USB-to-UART переходника
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a>
+микросхема подключенная к выводам GPIO <a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правого края и "земля" подключен к 6 контакту от правого края.
+Внимание! Вам нужно установить джампер 3.3V/5V в позицию 3.3V во избежание повреждений чувствительной FPGA:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_232207.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_232207-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Picture A.24.</b> Картинка FTDI-based USB-to-UART переходника
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a>
+микросхема подключенная к выводам GPIO <a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV FPGA.
+UART TX (зеленый) подключенный к 3 контакту от правого края и "земля" подключен к 6 контакту от правого края.
+Внимание! Вам нужно установить джампер 3.3V/5V в позицию 3.3V во избежание повреждений чувствительной FPGA:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_232333.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_232333-683x1024.jpg" /></a>
+
+<p><font color=blue><b>Picture A.25.</b> Картинка
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a>
+подключенного к выводам GPIOы <a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV FPGA.
+UART TX (зеленый) подключенный к 3 контакту справа от края и "земля"(черный) подключен к 6 контакту справа от края:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_pl2303ta_160926_215112.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_pl2303ta_160926_215112-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Picture A.26.</b> Картинка
+<a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a>
+подключенного к выводам GPIO <a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV FPGA.
+UART TX (зеленый) подключенный к 3 контакту справа от края и "земля"(черный) подключен к 6 контакту справа от края:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_pl2303ta_160926_231019.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_pl2303ta_160926_231019-1024x683.jpg" /></a>
+</body>
+</html>
+Contact GitHub API Training Shop Blog About
+© 2017 GitHub, Inc. Terms Privacy Security Status Help

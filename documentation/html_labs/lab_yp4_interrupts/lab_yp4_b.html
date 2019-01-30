@@ -1,0 +1,222 @@
+
+<p><big><b>Appendix B.  Excerpts from a book <i>See MIPS Run, Second
+Edition, by Dominic Sweetman</i> about the interrupt
+processing.</b></big></p>
+
+<blockquote>
+
+<p><big><b>Chapter 5.  Exceptions, Interrupts, and
+Initialization</b></big></p>
+
+<p>In the MIPS architecture interrupts, traps, system calls, and everything
+else that can disrupt the normal flow of execution are called exceptions and
+are handled by a single mechanism.  What sort of events are they?</p>
+
+<ul>
+
+<li><p><i>External events</i>: Some event outside the CPU core—that is, from
+some real "wire" input signal.  These are interrupts.  (Note: There are some
+more obscure noninterrupt external events like bus errors reported on a
+read—for now, just assume that they are a special sort of interrupt). 
+Interrupts are used to direct the attention of the CPU to some external
+event: an essential feature of an OS that attends to more than one different
+event at a time.  Interrupts are the only exception conditions that arise
+from something independent of the CPU's normal instruction stream.  Since
+you can't avoid interrupts just by being careful, there have to be software
+mechanisms to inhibit the effect of interrupts when necessary.</p></li>
+
+<li><p><i>Memory translation exceptions</i>: These happen when an address
+needs to be translated, but no valid translation is available to the
+hardware or perhaps on a write to a write-protected page.</p>
+
+<p>The OS must decide whether such an exception is an error or not.  If the
+exception is a symptom of an application program stepping outside its
+permitted address space, it will be fixed by terminating the application to
+protect the rest of the system.  The more common benign memory translation
+exceptions can be used to initiate operating system functions as complex as
+a complete demand-paged virtual memory system or as simple as extending the
+space available for a stack.</p></li>
+
+<li><p><i>Other unusual program conditions for the kernel to fix</i>:
+Notable among these are conditions resulting from floating-point
+instructions, where the hardware is unable to cope with some difficult and
+rare combination of operation and operands and is seeking the services of a
+software emulator.  This category is fuzzy, since different kernels have
+different ideas about what they're willing to fix.  An unaligned load may be
+an error on one system and something to be handled in software on
+another.</p></li>
+
+<li><p><i>Program or hardware-detected errors</i>: This includes nonexistent
+instructions, instructions that are illegal at user-privilege level,
+coprocessor instructions executed with the appropriate SR flag disabled,
+integer overflow, address alignment errors, and accesses outside
+<i>kuseg</i> in user mode.</p></li>
+
+<li><p><i>Data integrity problems</i>: Many MIPS CPUs continually check data
+on the bus or data coming from the cache for a per-byte parity or for word-
+wide error-correcting code.  Cache or parity errors generate an exception in
+CPUs that support data checking.</p></li>
+
+<li><p><i>System calls and traps</i>: These are instructions whose whole
+purpose is to generate recognizable exceptions; they are used to build
+software facilities in a secure way (system calls, conditional traps planted
+by careful code, and breakpoints).</p></li>
+
+</ul>
+
+</blockquote>
+
+<blockquote>
+
+<p><big><b>5.3 Exception Vectors: Where Exception Handling
+Starts</b></big></p>
+
+<p>.  .  .  .  .  .  .  .  .  .</p>
+
+<p>Here's what a MIPS CPU does when it decides to take an exception:</p>
+
+<ol>
+
+<li>It sets up <b>EPC</b> to point to the restart location.</li>
+
+<li>It sets <b>SR(EXL)</b>, which forces the CPU into kernel
+(high-privilege) mode and disables interrupts.</li>
+
+<li><b>Cause</b> is set up so that software can see the reason for the
+exception.  On address exceptions, <b>BadVAddr</b> is also set.  Memory
+management system exceptions set up some of the MMU registers too; more
+details are given in Chapter 6.</li>
+
+<li>The CPU then starts fetching instructions from the exception entry
+point, and everything else is up to software.</li>
+
+</ol>
+
+<p>.  .  .  .  .  .  .  .  .  .</p>
+
+<p><big><b>5.5 Returning from an Exception</b></big></p>
+
+<p>The return of control to the exception victim and the change (if
+required) back from kernel to a lower-privilege level must be done at the
+same time ("atomically," in the jargon of computer science).  It would be a
+security hole if you ran even one instruction of application code at
+kernel-privilege level; on the other hand, the attempt to run a kernel
+instruction with user privileges would lead to a fatal exception.</p>
+
+<p>MIPS CPUs have an instruction, <b>eret</b>, that does the whole job; it
+both clears the <b>SR(EXL)</b> bit and returns control to the address stored
+in <b>EPC</b>.</p>
+
+</blockquote>
+
+<blockquote>
+
+<p><big><b>5.8.1 Interrupt Resources in MIPS CPUs</b></big></p>
+
+<p>MIPS CPUs have a set of eight independent (Note: Not so independent if
+you're using EIC mode; see section 5.8.5.) interrupt bits in their
+<b>Cause</b> register.  On most CPUs you'll find five or six of these are
+signals from external logic into the CPU, while two of them are purely
+software accessible.  The on-chip counter/timer (made of the <b>Count</b>
+and <b>Compare</b> registers, described in section 3.3.5) will be wired to
+one of them; it's sometimes possible to share the counter/timer interrupt
+with an external device, but rarely a good idea to do so.</p>
+
+<p>An active level on any input signal is sensed in each cycle and will
+cause an exception if enabled.</p>
+
+<p>The CPU's willingness to respond to an interrupt is affected by bits in
+<b>SR</b>.</p>
+
+<p>There are three relevant fields:</p>
+
+<ul>
+
+<li>The global interrupt enable bit <b>SR(IE)</b> must be set to 1, or no
+interrupt will be serviced.</li>
+
+<li>The <b>SR(EXL)</b> (exception level) and <b>SR(ERL)</b> (error level)
+bits will inhibit interrupts if set (as one of them will be immediately
+after any exception).</li>
+
+<li>The status register also has eight individual interrupt mask bits
+<b>SR(IM)</b>, one for each interrupt bit in <b>Cause</b>.  Each
+<b>SR(IM)</b> bit should be set to 1 to enable the corresponding interrupt
+so that programs can determine exactly which interrupts can happen and which
+cannot.</li>
+
+</ul>
+
+<p>To discover which interrupt inputs are currently active, you look inside
+the <b>Cause</b> register.  Note that these are exactly that—current
+levels—and do not necessarily correspond to the signal pattern that caused
+the interrupt exception in the first place.  The active input levels in
+<b>Cause(IP)</b> and the masks in <b>SR(IM)</b> are helpfully aligned to the
+same bit positions, in case you want to "and" them together.  The software
+interrupts are at the lowest positions, and the hardware interrupts are
+arranged in increasing order.</p>
+
+<p>In architectural terms, all interrupts are equal.  (Note: That's not
+quite true in vectored interrupt and "EIC mode," described in section 5.8.5,
+but they're not widely used).  When an interrupt exception is taken, an
+older CPU uses the "general" exception entry point—though MIPS 32/64 CPUs
+and some other modern CPUs offer an optional distinct exception entry point
+reserved for interrupts, which can save a few cycles.  You can select this
+with the <b>Cause(IV)</b> register bit.</p>
+
+<p>Interrupt processing proper begins after you have received an exception
+and discovered from <b>Cause(ExcCode)</b> that it was a hardware interrupt. 
+Consulting <b>Cause(IP)</b>, we can find which interrupt is active and thus
+which device is signaling us.  Here is the usual sequence:</p>
+
+<ul>
+
+<li><p>Consult the <b>Cause</b> register IP field and logically "and" it
+with the current interrupt masks in <b>SR(IM)</b> to obtain a bit map of
+active, enabled interrupt requests.  There may be more than one, any of
+which would have caused the interrupt.</p></li>
+
+<li><p>Select one active, enabled interrupt for attention.  Most OSs assign
+the different inputs to fixed priorities and deal with the highest priority
+first, but it is all decided by the software.</p></li>
+
+<li><p>You need to save the old interrupt mask bits in <b>SR(IM)</b>, but
+you probably already saved the whole <b>SR</b> register in the main
+exception routine.</p></li>
+
+<li><p>Change <b>SR(IM)</b> to ensure that the current interrupt and all
+interrupts your software regards as being of equal or lesser priority are
+inhibited.</p></li>
+
+<li><p>If you haven't already done it in the main exception routine, save
+the state (user registers, etc.) required for nested exception
+processing.</p></li>
+
+<li><p>Now change your CPU state to that appropriate to the higher-level
+part of the interrupt handler, where typically some nested interrupts and
+exceptions are permitted.</p>
+
+<p>In all cases, set the global interrupt enable bit <b>SR(IE)</b> to allow
+higher priority interrupts to be processed.  You'll also need to change the
+CPU privilege-level field <b>SR(KSU)</b> to keep the CPU in kernel mode as
+you clear exception level and, of course, clear <b>SR(EXL)</b> itself to
+leave exception mode and expose the changes made in the status
+register.</p></li>
+
+<li><p>Call your interrupt routine.</p></li>
+
+<li><p>On return you'll need to disable interrupts again so you can restore
+the preinterrupt values of registers and resume execution of the interrupted
+task.  To do that you'll set <b>SR(EXL)</b>.  But in practice you're likely
+to do this implicitly when you restore the just-after-exception value of the
+whole <b>SR</b> register, before getting into your end-of-exception
+sequence.</p></li>
+
+</ul>
+
+<p>When making changes to <b>SR</b>, you need to be careful about changes
+whose effect is delayed due to the operation of the pipeline — "CP0
+hazards." See section 3.4 for more details and how to program around the
+hazards.</p>
+
+</blockquote>
