@@ -41,6 +41,7 @@ module nexys4_ddr
 
     wire clk;
 
+    `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
     `ifdef MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 
     wire       muxed_clk;
