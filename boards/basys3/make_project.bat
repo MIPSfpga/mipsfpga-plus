@@ -1,5 +1,4 @@
-rd /s /q project
-mkdir project
-copy *.qpf project
-copy *.qsf project
-copy *.sdc project
+
+echo "Please use 'make all' to create and build the FPGA project."
+echo "be careful, the MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX is enabled in the Digilent board top module."
+echo "To disable it add the PLL IP to the design and change the board top source"
