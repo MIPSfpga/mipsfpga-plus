@@ -1,2 +1,0 @@
-make icarus
-make gtkwave
