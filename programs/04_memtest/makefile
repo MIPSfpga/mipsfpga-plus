@@ -44,6 +44,9 @@ endif
 OCD = openocd
 OCD_CONF = ../../scripts/load/openocd.cfg
 
+# UART interface for memory programming
+UART_MEM_LOADER_DEV=/dev/ttyUSB0
+
 #########################################################
 # Compile settings and tasks
 
@@ -167,6 +170,13 @@ load:
 
 debug:
 	$(GDB) $(GDBCMD_ATTACH) $(GDBCMD_LOAD) $(GDBCMD_BREAK)
+
+#########################################################
+# UART programming
+
+uart:
+	stty -F $(UART_MEM_LOADER_DEV) raw speed 115200 -crtscts cs8 -parenb -cstopb
+	cat program.rec > $(UART_MEM_LOADER_DEV)
 
 #########################################################
 # Modelsim simulation
