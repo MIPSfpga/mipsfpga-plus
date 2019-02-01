@@ -59,15 +59,16 @@ ifeq ($(MAKECMDGOALS), init_clean)
 endif
 
 $(BOARDS):
-ifeq ($(MAKECMDGOALS), init_linux)
-	rm -f $@/*.bat
-	cp ../scripts/make_wrappers/board/*.sh $@
-endif
+	@true
+# ifeq ($(MAKECMDGOALS), init_linux)
+# 	rm -f $@/*.bat
+# 	cp ../scripts/make_wrappers/board/*.sh $@
+# endif
 
-ifeq ($(MAKECMDGOALS), init_windows)
-	rm -f $@/*.sh
-	cp ../scripts/make_wrappers/board/*.bat $@
-endif
+# ifeq ($(MAKECMDGOALS), init_windows)
+# 	rm -f $@/*.sh
+# 	cp ../scripts/make_wrappers/board/*.bat $@
+# endif
 
 init_vscode:
 	rm -rf ../.vscode
