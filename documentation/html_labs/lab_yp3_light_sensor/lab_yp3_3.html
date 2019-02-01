@@ -1,0 +1,661 @@
+
+<p><big><b>3.  Lab steps</b></big></p>
+
+<p>This section outlines the sequence of steps, necessary to complete the
+lab.  Almost all generic steps in this lab are the same as in <i>MIPSfpga
+2.0 Lab YP1.  Using MIPSfpga with Serial Loader Flow that does not require
+BusBlaster board and OpenOCD software</i>.  Such generic steps are not
+described in this section.  Only the steps different from <i>Lab YP1</i> are
+explained in details.</p>
+
+<p><big><b>3.1 Review the software part of the lab</b></big></p>
+
+<p>In order to understand what we are trying to achieve in this lab, it
+makes sense to start from the software.  Review the following C program. 
+The program reads a value from a memory-mapped I/O register that contains
+the current light sensor value.  After reading the value, the program sends
+it to output devices: red and green LEDs and multiple-digit seven-segment
+display (if present on the board).</p>
+
+<blockquote><p>File <i>programs/03_light_sensor/main.c</i></p><pre>
+
+#include "mfp_memory_mapped_registers.h"
+
+int main ()
+{
+    int n = 0;
+
+    for (;;)
+    {
+        MFP_RED_LEDS      = MFP_LIGHT_SENSOR &gt;&gt; 4;
+        MFP_7_SEGMENT_HEX = MFP_LIGHT_SENSOR;
+        MFP_GREEN_LEDS    = MFP_LIGHT_SENSOR &gt;&gt; 4;
+    }
+
+    return 0;
+}
+</pre></blockquote>
+
+<p>Memory-mapped registers are defined in the following header file,
+included in the main program.  As you can see, the address of the
+light-sensor I/O register is located in the uncached area of the memory with
+virtual address 0xBF800010 (physical address 0x1F800010).  C <i>#define</i>
+macro <i>MFP_LIGHT_SENSOR</i> makes this register look just like a
+variable.</p>
+
+<blockquote><p>File <i>programs/03_light_sensor/mfp_memory_mapped_registers.h</i></p><pre>
+
+#ifndef MFP_MEMORY_MAPPED_REGISTERS_H
+#define MFP_MEMORY_MAPPED_REGISTERS_H
+
+#define MFP_RED_LEDS_ADDR       0xBF800000
+#define MFP_GREEN_LEDS_ADDR     0xBF800004
+#define MFP_SWITCHES_ADDR       0xBF800008
+#define MFP_BUTTONS_ADDR        0xBF80000C
+#define MFP_7_SEGMENT_HEX_ADDR  0xBF800010
+#define MFP_LIGHT_SENSOR_ADDR   0xBF800014
+
+#define MFP_RED_LEDS            (* (volatile unsigned *) MFP_RED_LEDS_ADDR      )
+#define MFP_GREEN_LEDS          (* (volatile unsigned *) MFP_GREEN_LEDS_ADDR    )
+#define MFP_SWITCHES            (* (volatile unsigned *) MFP_SWITCHES_ADDR      )
+#define MFP_BUTTONS             (* (volatile unsigned *) MFP_BUTTONS_ADDR       )
+#define MFP_7_SEGMENT_HEX       (* (volatile unsigned *) MFP_7_SEGMENT_HEX_ADDR )
+#define MFP_LIGHT_SENSOR        (* (volatile unsigned *) MFP_LIGHT_SENSOR_ADDR  )
+</pre></blockquote>
+
+<p><big><b>3.2 Review the hardware module that handles SPI
+protocol</b></big></p>
+
+<p>In this lab we don't need to handle all cases of SPI protocol.  A generic
+flexible interface module would be quite long and complicated, such module
+can be licensed as a licensable IP core.  However in this lab we are dealing
+with a specific sensor, and its interface is fixed: it simply produces 16
+bits of data serially when <i>cs</i> ("chip select:) signal goes low.  This
+specific version of SPI interface is also relatively slow, so we can sample
+the data simply by counting clock cycles and putting the received bits into
+a shift register on specific clock cycles.</p>
+
+<p>Study the code below.  How frequently does the signal <i>sample_bit</i>
+go high?  What about the signal <i>value_done</i>?  Can you explain or guess
+what would happen if we store the result in <i>value</i> more
+frequently?</p>
+
+<blockquote><p>File <i>system_rtl/mfp_pmod_als_spi_receiver.v</i></p><pre>
+
+module mfp_pmod_als_spi_receiver
+(
+    input             clock,
+    input             reset_n,
+    output            cs,
+    output            sck,
+    input             sdo,
+    output reg [15:0] value
+);
+
+    reg [21:0] cnt;
+    reg [15:0] shift;
+
+    always @ (posedge clock or negedge reset_n)
+    begin       
+        if (! reset_n)
+            cnt &lt;= 22'b100;
+        else
+            cnt &lt;= cnt + 22'b1;
+    end
+
+    assign sck = ~ cnt [3];
+    assign cs  =   cnt [8];
+
+    wire sample_bit = ( cs == 1'b0 && cnt [3:0] == 4'b1111 );
+    wire value_done = ( cnt [21:0] == 22'b0 );
+
+    always @ (posedge clock or negedge reset_n)
+    begin       
+        if (! reset_n)
+        begin       
+            shift &lt;= 16'h0000;
+            value &lt;= 16'h0000;
+        end
+        else if (sample_bit)
+        begin       
+            shift &lt;= (shift &lt;&lt; 1) | sdo;
+        end
+        else if (value_done)
+        begin       
+            value &lt;= shift;
+        end
+    end
+
+endmodule
+</pre></blockquote>
+
+<p><big><b>3.3 Review the glue logic that interface SPI interfacing module
+in AHB-Lite fabric</b></big></p>
+
+<p>Search for <i>MFP_DEMO_LIGHT_SENSOR</i> symbol in <i>boards</i> and
+<i>system_rtl</i> directories.  Review the code fragments where that symbol
+occurs.</p>
+
+<p><b>3.3.1  System configuration</b></p>
+
+<p>Review and possibly modify the configuration parameters in the file
+<i>system_rtl/mfp_ahb_lite_matrix_config.vh</i> as follows:</p>
+
+<blockquote><p>File <i>mfp_ahb_lite_matrix_config.vh</i></p><pre>
+
+//
+//  Configuration parameters
+//
+
+// `define MFP_USE_WORD_MEMORY
+// `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
+// `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+`define MFP_USE_UART_PROGRAM_LOADER
+`define MFP_DEMO_LIGHT_SENSOR
+// `define MFP_DEMO_INTERRUPTS
+// `define MFP_DEMO_CACHE_MISSES
+// `define MFP_DEMO_PIPE_BYPASS
+
+. . . . . . . . . . . . . . . . . . . . . .
+</pre></blockquote>
+
+<p>Review the added `defines for the physical address of the memory-mapped
+register and I/O identification number for the added light sensor peripheral
+in the same file <i>system_rtl/mfp_ahb_lite_matrix_config.vh</i>:</p>
+
+<blockquote><p>File <i>system_rtl/mfp_ahb_lite_matrix_config.vh</i></p><pre>
+. . . . . . . . . . . . . . . . . . . . . .
+
+`define MFP_RED_LEDS_ADDR           32'h1f800000
+`define MFP_GREEN_LEDS_ADDR         32'h1f800004
+`define MFP_SWITCHES_ADDR           32'h1f800008
+`define MFP_BUTTONS_ADDR            32'h1f80000C
+`define MFP_7_SEGMENT_HEX_ADDR      32'h1f800010
+
+`ifdef MFP_DEMO_LIGHT_SENSOR
+`define MFP_LIGHT_SENSOR_ADDR       32'h1f800014
+`endif
+
+`define MFP_RED_LEDS_IONUM          4'h0
+`define MFP_GREEN_LEDS_IONUM        4'h1
+`define MFP_SWITCHES_IONUM          4'h2
+`define MFP_BUTTONS_IONUM           4'h3
+`define MFP_7_SEGMENT_HEX_IONUM     4'h4
+                                    
+`ifdef MFP_DEMO_LIGHT_SENSOR            
+`define MFP_LIGHT_SENSOR_IONUM      4'h5
+`endif
+</pre></blockquote>
+
+<p><b>3.3.2  Review the board wrapper file for Xilinx</b></p>
+
+<p>The top-level module <i>nexys4_ddr</i> instantiates a board-independent
+module <i>mfp_system</i> and connect the designated GPIO pins to SPI inputs
+of <i>mfp_system</i> module:</p>
+
+<blockquote><p>File <i>boards/nexys4_ddr/nexys4_ddr.v</i></p><pre>
+
+module nexys4_ddr
+(
+    input         CLK100MHZ,
+    input         CPU_RESETN,
+
+    . . . . . . . . . . . . . . . . . . . .
+
+    inout  [12:1] JA,
+    inout  [12:1] JB,
+
+    . . . . . . . . . . . . . . . . . . . .
+);
+
+    . . . . . . . . . . . . . . . . . . . .
+
+    mfp_system mfp_system
+    (
+        .SI_ClkIn         (   clk           ),
+        .SI_Reset         ( ~ CPU_RESETN    ),
+                          
+        . . . . . . . . . . . . . . . . . .
+
+        .SPI_CS           (   JA [ 1]       ),
+        .SPI_SCK          (   JA [ 4]       ),
+        .SPI_SDO          (   JA [ 3]       )
+    );
+
+    assign JA [7] = 1'b0;
+</pre></blockquote>
+
+<p><b>3.3.3  Review the board wrapper file for Altera</b></p>
+
+<p>The top-level module <i>de0_cv</i> instantiates a board-independent
+module <i>mfp_system</i> and connect the designated GPIO pins to SPI inputs
+of <i>mfp_system</i> module:</p>
+
+<blockquote><p>File <i>boards/de0_cv/de0_cv.v</i></p><pre>
+
+module de0_cv
+(
+    input           CLOCK2_50,
+    input           CLOCK3_50,
+    inout           CLOCK4_50,
+    input           CLOCK_50,
+                   
+    input           RESET_N,
+
+    . . . . . . . . . . . . . . . . . . . .
+
+    inout   [35:0]  GPIO_0,
+    inout   [35:0]  GPIO_1
+);
+
+    . . . . . . . . . . . . . . . . . . . .
+
+    mfp_system mfp_system
+    (
+        .SI_ClkIn         (   clk             ),
+        .SI_Reset         ( ~ RESET_N         ),
+                          
+        . . . . . . . . . . . . . . . . . .
+
+        .SPI_CS           (   GPIO_1 [34]     ),
+        .SPI_SCK          (   GPIO_1 [28]     ),
+        .SPI_SDO          (   GPIO_1 [30]     )
+    );
+
+    . . . . . . . . . . . . . . . . . . . .
+
+    assign GPIO_1 [26] = 1'b0;
+</pre></blockquote>
+
+<p><b>3.3.4  Review the board-independent top system module</b></p>
+
+<p>Note this module instantiates the CPU core, the AHB-Lite interconnect and
+the newly added SPI interfacing module that works with the light sensor:</p>
+
+<blockquote><p>File <i>system_rtl/mfp_system.v</i></p><pre>
+
+module mfp_system
+(
+    input         SI_ClkIn,
+    input         SI_ColdReset,
+    input         SI_Reset,
+
+    . . . . . . . . . . . . . . . . . . . .
+
+    output        SPI_CS,
+    output        SPI_SCK,
+    input         SPI_SDO
+);
+
+    . . . . . . . . . . . . . . . . . . . .
+
+    `ifdef MFP_DEMO_LIGHT_SENSOR
+    wire [15:0] IO_LightSensor;
+    `endif
+
+    mfp_ahb_lite_matrix_with_loader ahb_lite_matrix
+    (
+        .HCLK             (   HCLK             ),
+        .HRESETn          ( ~ SI_Reset         ),  // Not HRESETn - this is necessary for serial loader
+                                               
+        . . . . . . . . . . . . . . . . . .
+
+        `ifdef MFP_DEMO_LIGHT_SENSOR           
+        .IO_LightSensor   (   IO_LightSensor   ), 
+        `endif                                 
+                                               
+        . . . . . . . . . . . . . . . . . .
+
+    );
+
+    `ifdef MFP_DEMO_LIGHT_SENSOR
+
+    mfp_pmod_als_spi_receiver mfp_pmod_als_spi_receiver
+    (
+        .clock   (   SI_ClkIn       ),
+        .reset_n ( ~ SI_Reset       ),
+        .cs      (   SPI_CS         ),
+        .sck     (   SPI_SCK        ),
+        .sdo     (   SPI_SDO        ),
+        .value   (   IO_LightSensor )
+    );
+
+    `endif
+</pre></blockquote>
+
+<p><b>3.3.5  Review the code that propagates the received light sensor value
+down the module hierarchy</b></p>
+
+<blockquote><p>File <i>system_rtl/mfp_ahb_lite_matrix_with_loader.v</i></p><pre>
+
+module mfp_ahb_lite_matrix_with_loader
+(
+    input         HCLK,
+    input         HRESETn,
+
+    . . . . . . . . . . . . . . . . . . . .
+
+    `ifdef MFP_DEMO_LIGHT_SENSOR
+    input  [15:0] IO_LightSensor,
+    `endif
+
+    . . . . . . . . . . . . . . . . . . . .
+);
+
+    . . . . . . . . . . . . . . . . . . . .
+
+    mfp_ahb_lite_matrix ahb_lite_matrix
+    (
+        .HCLK             ( HCLK            ),
+        .HRESETn          ( HRESETn         ),
+                         
+        . . . . . . . . . . . . . . . . . .
+
+        `ifdef MFP_DEMO_LIGHT_SENSOR
+        .IO_LightSensor   ( IO_LightSensor  ), 
+        `endif
+                                       
+        . . . . . . . . . . . . . . . . . .
+    );
+</pre></blockquote>
+
+<blockquote><p>File <i>system_rtl/mfp_ahb_lite_matrix.v</i></p><pre>
+
+module mfp_ahb_lite_matrix
+(
+    input         HCLK,
+    input         HRESETn,
+
+    . . . . . . . . . . . . . . . . . . . .
+
+    `ifdef MFP_DEMO_LIGHT_SENSOR
+    input  [15:0] IO_LightSensor,
+    `endif
+
+    . . . . . . . . . . . . . . . . . . . .
+);
+
+    . . . . . . . . . . . . . . . . . . . .
+
+    mfp_ahb_gpio_slave gpio
+    (
+        .HCLK             ( HCLK            ),
+        .HRESETn          ( HRESETn         ),
+
+        . . . . . . . . . . . . . . . . . .
+
+        `ifdef MFP_DEMO_LIGHT_SENSOR
+        ,
+        .IO_LightSensor   ( IO_LightSensor  )
+        `endif
+    );
+</pre></blockquote>
+
+<p><b>3.3.6  Review how GPIO slave connects the received value to the system
+bus</b></p>
+
+<p>The general-purpose input-output module connects the wires coming from
+several peripherals to AHB-Lite system bus in order to make these
+peripherals visible to the software.  The peripherals include buttons,
+switches, LEDs and now the light sensor:</p>
+
+<blockquote><p>File <i>mfp_ahb_gpio_slave.v</i></p><pre>
+
+`include "mfp_ahb_lite.vh"
+`include "mfp_ahb_lite_matrix_config.vh"
+
+module mfp_ahb_gpio_slave
+(
+    input             HCLK,
+    input             HRESETn,
+    input      [31:0] HADDR,
+    input      [ 2:0] HBURST,
+    input             HMASTLOCK,
+    input      [ 3:0] HPROT,
+    input      [ 2:0] HSIZE,
+    input             HSEL,
+    input      [ 1:0] HTRANS,
+    input      [31:0] HWDATA,
+    input             HWRITE,
+    output reg [31:0] HRDATA,
+    output            HREADY,
+    output            HRESP,
+    input             SI_Endian,
+               
+    input      [`MFP_N_SWITCHES          - 1:0] IO_Switches,
+    input      [`MFP_N_BUTTONS           - 1:0] IO_Buttons,
+    output reg [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs,
+    output reg [`MFP_N_GREEN_LEDS        - 1:0] IO_GreenLEDs,
+    output reg [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX
+
+    `ifdef MFP_DEMO_LIGHT_SENSOR
+    ,
+    input      [15:0] IO_LightSensor
+    `endif
+);
+
+    // Ignored: HMASTLOCK, HPROT
+    // TODO: SI_Endian
+
+    // Assignments to HREADY and HTRANS should be modified
+    // for more complicated peripherals
+
+    assign HREADY = 1'b1;
+    assign HRESP  = 1'b0;
+
+    reg [ 1:0] HTRANS_dly;
+    reg [31:0] HADDR_dly;
+    reg        HWRITE_dly;
+    reg        HSEL_dly;
+
+    always @ (posedge HCLK)
+    begin
+        HTRANS_dly &lt;= HTRANS;
+        HADDR_dly  &lt;= HADDR;
+        HWRITE_dly &lt;= HWRITE;
+        HSEL_dly   &lt;= HSEL;
+    end
+
+    wire [3:0] read_ionum   = HADDR     [5:2];
+    wire [3:0] write_ionum  = HADDR_dly [5:2];
+    wire       write_enable = HTRANS_dly != `HTRANS_IDLE && HSEL_dly && HWRITE_dly;
+
+    always @ (posedge HCLK or negedge HRESETn)
+    begin
+        if (! HRESETn)
+        begin
+            IO_RedLEDs      &lt;= `MFP_N_RED_LEDS'b0;
+            IO_GreenLEDs    &lt;= `MFP_N_GREEN_LEDS'b0;
+            IO_7_SegmentHEX &lt;= `MFP_7_SEGMENT_HEX_WIDTH'b0;
+        end
+        else if (write_enable)
+        begin
+            case (write_ionum)
+            `MFP_RED_LEDS_IONUM      : IO_RedLEDs      &lt;= HWDATA [`MFP_N_RED_LEDS          - 1:0];
+            `MFP_GREEN_LEDS_IONUM    : IO_GreenLEDs    &lt;= HWDATA [`MFP_N_GREEN_LEDS        - 1:0];
+            `MFP_7_SEGMENT_HEX_IONUM : IO_7_SegmentHEX &lt;= HWDATA [`MFP_7_SEGMENT_HEX_WIDTH - 1:0];
+            endcase
+        end
+    end
+
+    always @ (posedge HCLK or negedge HRESETn)
+    begin
+        if (! HRESETn)
+        begin
+            HRDATA &lt;= 32'h00000000;
+        end
+        else
+        begin
+            case (read_ionum)
+            `MFP_SWITCHES_IONUM      : HRDATA &lt;= { { 32 - `MFP_N_SWITCHES { 1'b0 } } , IO_Switches };
+            `MFP_BUTTONS_IONUM       : HRDATA &lt;= { { 32 - `MFP_N_BUTTONS  { 1'b0 } } , IO_Buttons  };
+            
+            `ifdef MFP_DEMO_LIGHT_SENSOR
+            `MFP_LIGHT_SENSOR_IONUM  : HRDATA &lt;= { 16'b0, IO_LightSensor };
+            `endif
+            
+            default:                   HRDATA &lt;= 32'h00000000;
+            endcase
+        end
+    end
+
+endmodule
+</pre></blockquote>
+
+<p><big><b>3.5.  Connect the light sensor to the board</b></big></p>
+
+<p>For <i>Digilent</i> boards, such as <i>Nexys4</i>, <i>Nexys4 DDR</i> or
+<i>Basys3</i>, the light sensor can be just inserted into the proper
+position of JA or JB port.  Please see the pin information in .XDC file and
+in the board documentation from Digilent to figure out how to connect the
+sensor to Digulent boards.  For <i>Altera/Terasic</i> boards you need to use
+female-to-female jumper wires to connect the sensor to the appropriate GPIO
+pins.</p>
+
+<p><big><b>3.6.  Connect the board to the computer</b></big></p>
+
+<p>For <i>Digilent</i> boards, such as <i>Nexys4</i>, <i>Nexys4 DDR</i> or
+<i>Basys3</i>, this step is obvious.  For <i>Altera/Terasic</i> boards some
+additional steps required:</p>
+
+<ol>
+
+<li>Connect USB-to-UART connector to FPGA board.  Either <i>FT232RL</i> or
+<i>PL2303TA</i> that you can by from AliExpress or Radio Shack will do the
+job.  <i>TX</i> output from the connector (green wire on <i>PL2303TA</i>)
+should go to pin 3 from right bottom on Terasic DE0, DE0-CV, DE1, DE2-115
+(right top on DE0-Nano) and <i>GND</i> output (black wire on
+<i>PL2303TA</i>) should be connected to pin 6 from right bottom on Terasic
+DE0, DE0-CV, DE1, DE2-115 (right top on DE0-Nano).  Please consult photo
+picture in <i>Lab YP1</i> to avoid short-circuit or other connection
+problems.</li>
+
+<li>For <i>FT232RL</i> connector: make sure to set 3.3V/5V jumper on
+<i>FT232RL</i> part to 3.3V.</li>
+
+<li>For the boards that require external power in addition to the power that
+comes from USB, connect the power supply.  The boards that require the extra
+power supply include <i>Terasic DE2-115</i>.</li>
+
+<li>Connect FPGA board to the computer using main connection cable provided
+by the board manufacturers.  Make sure to put USB cable to the right jack
+when ambiguity exists (such as in <i>Terasic DE2-115</i> board).</li>
+
+<li>Make sure to power the FPGA board (turn on the power switch) before
+connecting the UART cable from USB-to-UART connector to the computer. 
+Failing to do so may result in electric damage to the board.</li>
+
+<li>Connect USB-to-UART connector to FPGA board.</li>
+
+</ol>
+
+<p><big><b>3.6  Run the synthesis and configure the FPGA with the
+synthesized MIPSfpga system</b></big></p>
+
+<p>This step is identical to the synthesis step in <i>Lab YP1</i></p>
+
+<p><big><b>3.7  Go to the lab directory and clean it up</b></big></p>
+
+<p>Under Windows:</p>
+
+<blockquote><pre>
+cd programs\lab_yp2
+00_clean_all.bat
+</pre></blockquote>
+
+<p>Under Linux:</p>
+
+<blockquote><pre>
+cd programs/lab_yp2
+00_clean_all.sh
+</pre></blockquote>
+
+<p><big><b>3.8  Prepare the first software run</b></big></p>
+
+<p>Following the procedure described in <i>Lab YP1</i>, compile and link the
+program, generate Motorola S-Record file and upload this file into the
+memory of the synthesized MIPSfpga-based system on the board.</p>
+
+<p>Under Windows:</p>
+
+<ol>
+
+<li>cd programs\lab_yp2</li>
+
+<li>run 02_compile_and_link.bat</li>
+
+<li>run 08_generate_motorola_s_record_file.bat</li>
+
+<li>run 11_check_which_com_port_is_used.bat</li>
+
+<li>edit 12_upload_to_the_board_using_uart.bat based on the result from the
+previous step - set the working port in "set a=" assignment.</li>
+
+<li>Make sure the switches 0 and 1 on FPGA board are turned off.  Switches 0
+and 1 control the speed of the clock.  If the switches 0 and 1 are not off,
+the loading through UART is not going to work.</li>
+
+<li>run 12_upload_to_the_board_using_uart.bat</li>
+
+</ol>
+
+<p>Under Linux:</p>
+
+<p>If uploading program to the board first time during the current Linux
+session, add the current user to <i>dialout</i> Linux group. Enter the
+<i>root</i> password when prompted:</p>
+
+<blockquote><pre>
+sudo adduser $USER dialout
+su - $USER
+</pre></blockquote>
+
+<p>After that:</p>
+
+<ol>
+
+<li>cd programs/lab_yp2</li>
+
+<li>run ./02_compile_and_link.sh</li>
+
+<li>run ./08_generate_motorola_s_record_file.sh</li>
+
+<li>run ./11_check_which_com_port_is_used.sh</li>
+
+<li>edit ./12_upload_to_the_board_using_uart.sh based on the result from the
+previous step - set the working port in â_oset a=â__ assignment</li>
+
+<li>Make sure the switches 0 and 1 on FPGA board are turned off.  Switches 0
+and 1 control the speed of the clock.  If the switches 0 and 1 are not off,
+the loading through UART is not going to work.</li>
+
+<li>./run 12_upload_to_the_board_using_uart.sh</li>
+
+</ol>
+
+<p><big><b>3.9 Run the software on the board</b></big></p>
+
+<p>Reset the processor.  The reset buttons for each board are listed
+in the table below:</p>
+
+<table border=1 cellpadding=10 cellspacing=0 rules=all>
+<tr>
+<th>Board</th>
+<th>Reset button</th>
+</tr>
+<tr><td>Digilent Basys3</td><td>Up</td></tr>
+<tr><td>Digilent Nexys4</td><td>Dedicated CPU Reset</td></tr>
+<tr><td>Digilent Nexys4 DDR</td><td>Dedicated CPU Reset</td></tr>
+<tr><td>Terasic DE0</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE0-CV</td><td>Dedicated reset button</td></tr>
+<tr><td>Terasic DE0-Nano</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE1</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE2-115</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE10-Lite</td><td>Button/Key 0</td></tr>
+</table>
+
+<p>At this moment you should see the light meter working - the seven-segment
+display should start displaying the level of light.  If it is not working,
+check the cables, software and hardware configuration.  Try bringing the
+board to the source of light, then cover it with your hand and watch the
+result on the display going to 0.</p>

@@ -1,0 +1,189 @@
+
+<p><big><b>Appendix A.  Modules to support seven segment
+displays used in this and subsequent labs</b></big></p>
+
+<p><big><b>A.1 Module for Digilent boards contains the code that handles
+dynamic displays</b></big></p>
+
+<blockquote><p>File <i>mfp_seven_segment_displays.v</i></p><pre>
+. . . . . . . . . . . . . . . . . . . . . .
+
+module mfp_multi_digit_display
+(
+    input             clock,
+    input             resetn,
+    input      [31:0] number,
+
+    output reg [ 6:0] seven_segments,
+    output reg        dot,
+    output reg [ 7:0] anodes
+);
+
+    function [6:0] bcd_to_seg (input [3:0] bcd);
+
+        case (bcd)
+        'h0: bcd_to_seg = 'b1000000;  // a b c d e f g
+        'h1: bcd_to_seg = 'b1111001;
+        'h2: bcd_to_seg = 'b0100100;  //   --a--
+        'h3: bcd_to_seg = 'b0110000;  //  |     |
+        'h4: bcd_to_seg = 'b0011001;  //  f     b
+        'h5: bcd_to_seg = 'b0010010;  //  |     |
+        'h6: bcd_to_seg = 'b0000010;  //   --g--
+        'h7: bcd_to_seg = 'b1111000;  //  |     |
+        'h8: bcd_to_seg = 'b0000000;  //  e     c
+        'h9: bcd_to_seg = 'b0011000;  //  |     |
+        'ha: bcd_to_seg = 'b0001000;  //   --d-- 
+        'hb: bcd_to_seg = 'b0000011;
+        'hc: bcd_to_seg = 'b1000110;
+        'hd: bcd_to_seg = 'b0100001;
+        'he: bcd_to_seg = 'b0000110;
+        'hf: bcd_to_seg = 'b0001110;
+        endcase
+
+    endfunction
+
+    reg [2:0] i;
+
+    always @ (posedge clock or negedge resetn)
+    begin
+        if (! resetn)
+        begin
+            seven_segments &lt;=   bcd_to_seg (0);
+            dot            &lt;= ~ 0;
+            anodes         &lt;= ~ 8'b00000001;
+
+            i &lt;= 0;
+        end
+        else
+        begin
+            seven_segments &lt;=   bcd_to_seg (number [i * 4 +: 4]);
+            dot            &lt;= ~ 0;
+            anodes         &lt;= ~ (1 &lt;&lt; i);
+
+            i &lt;= i + 1;
+        end
+    end
+
+endmodule
+</pre></blockquote>
+
+<p><b>The instantiation:</b></p>
+
+<blockquote><p>File <i>nexys4_ddr.v</i></p><pre>
+module nexys4_ddr
+(
+    input         CLK100MHZ,
+    input         CPU_RESETN,
+
+    . . . . . . . . . . . . . . . . . . . .
+
+    input  [15:0] SW, 
+
+    . . . . . . . . . . . . . . . . . . . .
+
+    output        CA,
+    output        CB,
+    output        CC,
+    output        CD,
+    output        CE,
+    output        CF,
+    output        CG,
+    output        DP,
+
+    output [ 7:0] AN,
+
+    . . . . . . . . . . . . . . . . . . . .
+);
+    . . . . . . . . . . . . . . . . . . . .
+
+    wire [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX;
+
+    . . . . . . . . . . . . . . . . . . . .
+
+    wire display_clock;
+
+    mfp_clock_divider_100_MHz_to_763_Hz mfp_clock_divider_100_MHz_to_763_Hz
+        (CLK100MHZ, display_clock);
+
+    mfp_multi_digit_display multi_digit_display
+    (
+        .clock          ( display_clock                  ),
+        .resetn         ( CPU_RESETN                     ),
+        .number         ( IO_7_SegmentHEX                ),
+
+        .seven_segments ( { CG, CF, CE, CD, CC, CB, CA } ),
+        .dot            ( DP                             ),
+        .anodes         ( AN                             )
+    );
+
+endmodule
+</pre></blockquote>
+
+<p><big><b>A.2 Module for Terasic boards handles static
+displays</b></big></p>
+
+<blockquote><p>File <i>mfp_seven_segment_displays.v</i></p><pre>
+module mfp_single_digit_seven_segment_display
+(
+    input      [3:0] digit,
+    output reg [6:0] seven_segments
+);
+
+    always @*
+        case (digit)
+        'h0: seven_segments = 'b1000000;  // a b c d e f g
+        'h1: seven_segments = 'b1111001;
+        'h2: seven_segments = 'b0100100;  //   --a--
+        'h3: seven_segments = 'b0110000;  //  |     |
+        'h4: seven_segments = 'b0011001;  //  f     b
+        'h5: seven_segments = 'b0010010;  //  |     |
+        'h6: seven_segments = 'b0000010;  //   --g--
+        'h7: seven_segments = 'b1111000;  //  |     |
+        'h8: seven_segments = 'b0000000;  //  e     c
+        'h9: seven_segments = 'b0011000;  //  |     |
+        'ha: seven_segments = 'b0001000;  //   --d-- 
+        'hb: seven_segments = 'b0000011;
+        'hc: seven_segments = 'b1000110;
+        'hd: seven_segments = 'b0100001;
+        'he: seven_segments = 'b0000110;
+        'hf: seven_segments = 'b0001110;
+        endcase
+
+endmodule
+
+. . . . . . . . . . . . . . . . . . . . . .
+</pre></blockquote>
+
+<p><b>The instantiation:</b></p>
+
+<blockquote><p>File <i>de0_cv.v</i></p><pre>
+`include "mfp_ahb_lite_matrix_config.vh"
+
+module de0_cv
+(
+    . . . . . . . . . . . . . . . . . . . .
+
+    output  [ 6:0]  HEX0,
+    output  [ 6:0]  HEX1,
+    output  [ 6:0]  HEX2,
+    output  [ 6:0]  HEX3,
+    output  [ 6:0]  HEX4,
+    output  [ 6:0]  HEX5,
+
+    . . . . . . . . . . . . . . . . . . . .
+);
+    . . . . . . . . . . . . . . . . . . . .
+
+    wire [`MFP_7_SEGMENT_HEX_WIDTH - 1:0] IO_7_SegmentHEX;
+
+    . . . . . . . . . . . . . . . . . . . .
+
+    mfp_single_digit_seven_segment_display digit_5 ( IO_7_SegmentHEX [23:20] , HEX5 );
+    mfp_single_digit_seven_segment_display digit_4 ( IO_7_SegmentHEX [19:16] , HEX4 );
+    mfp_single_digit_seven_segment_display digit_3 ( IO_7_SegmentHEX [15:12] , HEX3 );
+    mfp_single_digit_seven_segment_display digit_2 ( IO_7_SegmentHEX [11: 8] , HEX2 );
+    mfp_single_digit_seven_segment_display digit_1 ( IO_7_SegmentHEX [ 7: 4] , HEX1 );
+    mfp_single_digit_seven_segment_display digit_0 ( IO_7_SegmentHEX [ 3: 0] , HEX0 );
+
+endmodule
+</pre></blockquote>

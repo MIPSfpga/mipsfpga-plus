@@ -1,0 +1,8 @@
+# Bus-Blaster
+
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="7780", MODE:="0666", SYMLINK+="busblaster"
+
+ACTION=="add", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="7780", \
+  RUN+="/sbin/modprobe ftdi_sio", \
+  RUN+="/bin/sh -c 'echo 0403 7780 > /sys/bus/usb-serial/drivers/ftdi_sio/new_id'"
+

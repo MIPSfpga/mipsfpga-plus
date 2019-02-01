@@ -1,0 +1,746 @@
+<h2> MIPSfpga 2.0. Lab YP4 - Introducing interrupts </h2>
+<h3>1.  Introduction</h3>
+
+<p>This lab shows the basic usage of interrupts in MIPS CPUs.  The lab also demonstrates how the interrupts can offload the processor from constantly polling I/O ports.  Such offloading increases the number of cycles available to the processor to spend on computation and other non-I/O tasks.  The lab example can be used as a basis for a number of follow-up exercises that explore MIPS CPU features related to the interrupts.  Another group of follow-up exercises can link the interrupts to software parallelism and context switching in operating systems.  A number of recommended follow-up exercises are listed at the end of this lab.</p>
+
+<p>This lab can be also combined with the previous lab, <i>MIPSfpga 2.0.  Lab YP3 - Integrating a peripheral: the light sensor example</i>, to create a student project that demonstrates the interrupt-driven approach to input/output, and compares this approach to polling I/O ports without using interrupts.</p>
+<h3>2.  The theory of operation</h3>
+
+<p>Interrupt is one of the key concepts in computer programming and system design.  Interrupt is basically a feature of a CPU that forces the processor to suspend the regular flow of instruction execution and to jump to a certain program address in response to some external event.  The external event is usually a change in a hardware signal from outside of the CPU.  The memory location (or, in some processors, an index in an array of memory locations) where the processor jumps to, is called the interrupt vector.  The piece of code where the control goes after landing on the interrupt vector, is called the interrupt service routine, or ISR.  After the ISR is executed, the control goes back to the program location that was executed by the processor when it received the interrupt.</p>
+
+<p>The external event that causes the interrupt can be a tick of a timer clock.  Such timer interrupts are useful to organize task switching in a system where several software tasks, or programs, share the same processor, which switches between them.  Another example of an external event that causes an interrupt is a signal about the completion of an input/output operation.  Such I/O interrupts are useful to offload the regular program flow from constant polling of I/O registers, checking their status, as shown on <b><font color=blue>Figure 1</font></b>.</p>
+
+<center>
+
+<p><b><font color=blue>Figure 1.  The action of an I/O interrupt.</font></b> The source of the figure: <a href="http://virtualirfan.com/history-of-interrupts">http://virtualirfan.com/history-of-interrupts</a>.</p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/WhatIsAnInterrupt.png"
+/>
+
+</center>
+
+<p>Interrupt, sometimes called more specifically hardware interrupt, is a special case of a more general term "exception".  An exception is suspending the regular instruction flow and jumping to a vector in response not only to an external signal, but also to some internal conditions of the CPU, the conditions that require immediate attention.  Such conditions include errors: arithmetic overflows, accessing out of range address, running a privileged instruction in non-privileged (user) mode, bus errors, and other unusual conditions.  Some of those errors should terminate the offending program, while others should cause the program to recover, though the action of the exception service routine.  Some of those conditions, like memory address exceptions, may be not considered errors at all, but parts of the mechanics of virtual memory implementation.  There are also so-called software interrupts, the exceptions that are intentionally caused by the program to request the services of the operating system.  Exceptions are also used in the processor's debug interface.  During this lab we will deal strictly with "true" hardware interrupts.  To learn about the other aspects of exceptions, please consult the core and architecture documentation.</p>
+
+<p>Historically, the need for exceptions and interrupts was so obvious that they appeared very early in the history of computers, as shown on <b><font color=blue>Figure 2</font></b>.</p>
+
+<center>
+
+<p><b><font color=blue>Figure 2.  The history of exceptions and interrupts.</font></b> The source of the figure: <a href="http://virtualirfan.com/history-of-interrupts">http://virtualirfan.com/history-of-interrupts</a>.</p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/HistoryOfInterrupts.png"
+/>
+
+</center>
+
+<p>According to the article <i>Interrupts</i> by Mark Smotherman (<a href="https://people.cs.clemson.edu/~mark/interrupts.html#dyseac">https://people.cs.clemson.edu/~mark/interrupts.html#dyseac</a>), the first computer that employed I/O interrupts was DYSEAC, the second version of SEAC, the Standards Electronic Automatic Computer.  According to Wikipedia (<a href="https://en.wikipedia.org/wiki/DYSEAC">https://en.wikipedia.org/wiki/DYSEAC</a>), "DYSEAC was a first-generation computer built by the National Bureau of Standards for the US Army Signal Corps.  It went into operation in April 1954".  According to Smotherman, DYSEAC was perhaps also the first mobile computer, carried in two tractor trailers at 12 and 8 tons, as shown on <b><font color=blue>Figure 3</font></b>.</p>
+
+<center>
+
+<p><b><font color=blue>Figure 3.  DYSEAC, the first computer with I/O interrupts.</font></b> The source of the figure: <a href="http://ed-thelen.org/comp-hist">http://ed-thelen.org/comp-hist</a>.</p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/BRL61-0234.jpg"
+/>
+
+</center>
+
+<h3>3. Lab steps</h3>
+
+<p>This section outlines the sequence of steps, necessary to complete the lab.  Almost all generic steps in this lab are the same as in <i>MIPSfpga 2.0 Lab YP1.  Using MIPSfpga with Serial Loader Flow that does not require BusBlaster board and OpenOCD software</i>.  Such generic steps are not described in this section.  Only the steps different from <i>Lab YP1</i> are explained in details.</p>
+
+<h3>3.1. Briefly review the reference materials</h3>
+
+<p>Look into <i>Appendix A.  A list of recommended materials to review before and during the interrupt lab</i>.  Briefly review the listed materials to get understanding where to look for the reference information during the lab.</p>
+
+<h3>3.2.  Review the information about interrupt-related hardware signals</h3>
+
+<p>Review <i>MIPS32&reg; microAptiv&trade; UP Integrator's Guide</i>, <i>Chapter 4: Interrupt Interface</i>.  This manual is included in <i>MIPSfpga</i> package.  The most important information is the description of interrupt pin signal <i>SI_Int</i> used in the lab.  In the course of the lab this multi-bit signal is connected to the buttons on FPGA board.  This allows triggering different interrupt by pressing the corresonding buttons.</p>
+
+
+<h3>3.3. Setup the hardware configuration parameters</h3>
+
+<p>Modify the configuration parameters in the file <i>system_rtl/mfp_ahb_lite_matrix_config.vh</i> as follows:</p>
+
+<img
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/Screenshot-2017-01-15-20.39.30.png"
+/>
+
+<h3>3.4. Review the lab-specific hardware modifications</h3>
+
+<p>Review the following fragment of <i>system_rtl/mfp_system.v</i>:</p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/Screenshot-2017-01-15-20.38.43.png"
+/>
+
+<h3>3.5.  Connect the board to the computer</h3>
+
+<p>For <i>Digilent</i> boards, such as <i>Nexys4</i>, <i>Nexys4 DDR</i> or <i>Basys3</i>, this step is obvious.  For <i>Altera/Terasic</i> boards some additional steps required:</p>
+
+<ol>
+
+<li>Connect USB-to-UART connector to FPGA board.  Either <i>FT232RL</i> or <i>PL2303TA</i> that you can by from AliExpress or Radio Shack will do the job.  <i>TX</i> output from the connector (green wire on <i>PL2303TA</i>) should go to pin 3 from right bottom on Terasic DE0, DE0-CV, DE1, DE2-115 (right top on DE0-Nano) and <i>GND</i> output (black wire on <i>PL2303TA</i>) should be connected to pin 6 from right bottom on Terasic DE0, DE0-CV, DE1, DE2-115 (right top on DE0-Nano).  Please consult photo picture in <i>Lab YP1</i> to avoid short-circuit or other connection problems.</li>
+
+<li>For <i>FT232RL</i> connector: make sure to set 3.3V/5V jumper on <i>FT232RL</i> part to 3.3V.</li>
+
+<li>For the boards that require external power in addition to the power that comes from USB, connect the power supply.  The boards that require the extra power supply include <i>Terasic DE2-115</i>.</li>
+
+<li>Connect FPGA board to the computer using main connection cable provided by the board manufacturers.  Make sure to put USB cable to the right jack when ambiguity exists (such as in <i>Terasic DE2-115</i> board).</li>
+
+<li>Make sure to power the FPGA board (turn on the power switch) before connecting the UART cable from USB-to-UART connector to the computer.  Failing to do so may result in electric damage to the board.</li>
+
+<li>Connect USB-to-UART connector to FPGA board.</li>
+
+</ol>
+
+<h3>3.6.  Run the synthesis and configure the FPGA with the synthesized MIPSfpga system</h3>
+
+<p>This step is identical to the synthesis step in <i>Lab YP1</i></p>
+
+<h3>3.7.  Go to the lab directory and clean it up</h3>
+
+<p>Under Windows:</p>
+
+<blockquote><font face="Courier"><pre>
+cd programs\04_interrupts
+00_clean_all.bat
+</pre></font></blockquote>
+
+<p>Under Linux:</p>
+
+<blockquote><font face="Courier"><pre>
+cd programs/04_interrupts
+./00_clean_all.sh
+</pre></font></blockquote>
+
+<h3>3.8.  Review the portion of the lab program code that does not use interrupts</h3>
+
+<p>The <i>main()</i> function is located in file <i>programs/04_interrupts/main.c</i>.  This function is executed after the reset and running the boot sequence.  The main function in this lab simply runs a counter and outputs its value on a multi-digit seven-segment display on FPGA board.</p>
+
+<p>The output value is constructed from both high and low bits of the counter.  This allows the student to observe the digits on the display changing when running the synthesized system with either fast clock (50 MHz) and ultra-slow clock (0.75 Hz or 12.5 Hz).  For more details about the switchable clock see <i>MIPSfpga 2.0 Lab YP2.  Using switchable clock to observe the CPU cycle-by-cycle</i>.</p>
+
+<p>Depending on the position of a switch 2, the program can either run with or without interrupts.  In both cases it resets the counter to predefined values when either button 0 or button 1 is pressed.</p>
+
+<p>Note that on some FPGA boards button 0 is used as system reset.  For such boards you can either do the whole lab only using button 1 or resynthesize the system, connecting reset to a button or a switch other than button 0.</p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/Screenshot-2017-01-15-20.18.06.png"
+/>
+
+<h3>3.9.  Prepare the first software run</h3>
+
+<p>Following the procedure described in <i>Lab YP1</i>, compile and link the program, generate Motorola S-Record file and upload this file into the memory of the synthesized MIPSfpga-based system on the board.</p>
+
+<p>Under Windows:</p>
+
+<ol>
+
+<li>cd programs\04_interrupts</li>
+
+<li>run 02_compile_and_link.bat</li>
+
+<li>run 08_generate_motorola_s_record_file.bat</li>
+
+<li>run 11_check_which_com_port_is_used.bat</li>
+
+<li>edit 12_upload_to_the_board_using_uart.bat based on the result from the previous step - set the working port in "set a=" assignment.</li>
+
+<li>Make sure the switches 0 and 1 on FPGA board are turned off and switch 2 is turned on.  Switches 0 and 1 control the speed of the clock, while switch 2 determines whether the program uses interrupts (switch 2 is off) or does not use interrupts (switch 2 is on).  See <i>3.8.  Review the lab program code</i>.  If the switches 0 and 1 are not off, the loading through UART is not going to work.</li>
+
+<li>run 12_upload_to_the_board_using_uart.bat</li>
+
+</ol>
+
+<p>Under Linux:</p>
+
+<p>If uploading program to the board first time during the current Linux session, add the current user to <i>dialout</i> Linux group. Enter the <i>root</i> password when prompted:</p>
+
+<blockquote><font face="Courier"><pre>
+sudo adduser $USER dialout
+su - $USER
+</pre></font></blockquote>
+
+<p>After that:</p>
+
+<ol>
+
+<li>cd programs/04_interrupts</li>
+
+<li>run ./02_compile_and_link.sh</li>
+
+<li>run ./08_generate_motorola_s_record_file.sh</li>
+
+<li>run ./11_check_which_com_port_is_used.sh</li>
+
+<li>edit ./12_upload_to_the_board_using_uart.sh based on the result from the previous step - set the working port in "set a=" assignment</li>
+
+<li>Make sure the switches 0 and 1 on FPGA board are turned off and switch 2 is turned on.  Switches 0 and 1 control the speed of the clock, while switch 2 determines whether the program uses interrupts (switch 2 is off) or does not use interrupts (switch 2 is on).  See <i>3.8.  Review the lab program code</i>.  If the switches 0 and 1 are not off, the loading through UART is not going to work.</li>
+
+<li>./run 12_upload_to_the_board_using_uart.sh</li>
+
+</ol>
+
+<h3>3.10. The first run</h3>
+
+<ol>
+
+<li>Set the switches 0 and 1 on FPGA board to off position and switch 2 to on position. Make sure the switches 0 and 1 are off, otherwise the boot sequence (a sequence of processor instructions before <i>main</i> function) will take too long, since these switches control the clock frequency.</li>
+
+<li><p>Reset the processor.  The reset buttons for each board are listed in the table below:</p>
+
+<table border=1 cellpadding=10 cellspacing=0 rules=all>
+<tr>
+<th>Board</th>
+<th>Reset button</th>
+</tr>
+<tr><td>Digilent Basys3</td><td>Up</td></tr>
+<tr><td>Digilent Nexys4</td><td>Dedicated CPU Reset</td></tr>
+<tr><td>Digilent Nexys4 DDR</td><td>Dedicated CPU Reset</td></tr>
+<tr><td>Terasic DE0</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE0-CV</td><td>Dedicated reset button</td></tr>
+<tr><td>Terasic DE0-Nano</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE1</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE2-115</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE10-Lite</td><td>Button/Key 0</td></tr>
+</table>
+
+</li>
+
+<li>Notice the output on seven-segment display.  Press button 1, observe how it resets the counter value.</li>
+
+<li>Turn the switch 1 on.  This will switch the system clock from 25 MHz to 12.5 Hz / beats per second.  You should see LED 7 start blinking, it is connected straight to the system clock.  Notice the speed of counting.</li>
+
+<li>Press button 1, observe how it resets the counter value.</li>
+
+</ol>
+
+<h3>3.12.  Review the material that explains the <i>interrupt</i> function attribute</h3>
+
+<p>Use the following internet material to make sense of interrupt-specific function attributes in the code: <i>Using the GNU Compiler Collection (GCC).  6.31.18 MIPS Function Attributes</i> (<a href="http://gcc.gnu.org/onlinedocs/gcc/MIPS-Function-Attributes.html"> http://gcc.gnu.org/onlinedocs/gcc/MIPS-Function-Attributes.html</a>).</p>
+
+<h3>3.13.  Review C macros that are used to access Coprocessor 0 registers</h3>
+
+<p>Search for <i>mips/cpu.h</i> header file in Codescape GCC compiler package.  This file contains a set of macro definitions like <i>mips32_getcr</i> and <i>mips32_bicsr</i> that aid in accessing Coprocessor 0 registers.  These registers are needed to setup the interrupts.</p>
+
+<h3>3.14.  Review <i>Status</i> and <i>Cause</i> Coprocessor 0 register descriptions</h3>
+
+<p>The following materials are useful for the review:</p>
+
+<ul>
+
+<li>Book <i>See MIPS Run, Second Edition, by Dominic Sweetman</i>, <i>Chapter 3.  Coprocessor 0: MIPS Process Control</i></li>
+
+<li><i>MIPS32&reg; microAptiv&trade; UP Processor Core Family Software User's Manual</i>, <i>Chapter 6: CP0 Registers of the microAptiv&trade; UP Core</i></li>
+
+<li><i>MIPS&reg; Architecture For Programmers Volume III: The MIPS32&reg; and microMIPS32&trade; Privileged Resource Architecture</i></li>
+
+</ul>
+
+<h3>3.15.  Review the portion of the lab program code that uses interrupts</h3>
+
+<p>The interrupt handler in <i>programs/04_interrupts/main.c</i>:</p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/Screenshot-2017-01-15-20.17.21.png"
+/>
+
+<p>Setting up the Coprocessor 0 registers for handling the interrupts in <i>programs/04_interrupts/main.c</i>:</p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/Screenshot-2017-01-15-20.18.51.png"
+/>
+
+<p>Code to setup the exception vector in <i>programs/04_interrupts/exceptions.S</i>:</p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/Screenshot-2017-01-15-20.27.09.png"
+/>
+
+<p>The linker script which includes a new section for the exception vector in <i>programs/04_interrupts/program.ld</i>:</p>
+
+<img
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/Screenshot-2017-01-15-20.31.16.png"
+/>
+
+<h3>3.16. Running the program that uses interrupts</h3>
+
+<p>Re-run the step <i>3.10. The first run</i> with switch 2 in "off" position. Do you notice the difference in program performance? Can you explain the difference?</p>
+
+<h3>4. Homework: doing everything in assembly</h3>
+
+<p>This section guides the student through the activity of analyzing the interrupt processing on assembly level.  This activity helps to have a clear picture on how everything works.</p>
+
+<h3>4.1. Disassemble the ELF file created during the lab</h3>
+
+<p>Under Windows:</p>
+
+<blockquote><font face="Courier"><pre>
+cd programs\04_interrupts
+04_disassemble.bat
+</pre></font></blockquote>
+
+<p>Under Linux:</p>
+
+<blockquote><font face="Courier"><pre>
+cd programs/04_interrupts
+./04_disassemble.sh
+</pre></font></blockquote>
+
+<p>The generated file is called <i>program.dis</i>.  It is located in the current directory.</p>
+
+<h3>4.2.  Review and explain the interrupt-related sections of the code</h3>
+
+<p>Analyze the following sections of <i>programs/04_interrupts/program.dis</i> file:</p>
+
+<p>The code for the interrupt vector:</p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/Screenshot-2017-01-15-21.09.07.png"
+/>
+
+<p>The code for the interrupt handler:</p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/Screenshot-2017-01-15-21.09.56.png"
+/>
+
+<p>The code for setting up the interrupts:</p>
+
+<img
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/Screenshot-2017-01-15-21.17.34.png"
+/>
+
+<p>The code that guards incrementing the counter in the main loop against interrupts.  Such guarding is accomplished using <i>di/ei</i> instruction pair (disable interrupts / enable interrupts).  Can you explain why is it necessary?  What wrong could happen if these instructions are missing?  Can you guess a scenario when such guarding is not going to work?</p>
+
+<img
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/Screenshot-2017-01-15-21.11.05.png"
+/>
+
+<h3>4.3.  Rewrite the whole lab in assembly.  Can you hand-write an interrupts service routine in assembly that has fewer instructions and works faster than the routine generated by GNU C compiler?</h3>
+
+<h3>5.  Follow-up projects and exercises</h3>
+
+<p>The topic of interrupts is an important one, and we recommend additional exercises to understand it fully.</p>
+
+<h3>5.1 Lab enhancements</h3>
+
+<h4>5.1.1 Lab enhancement: Modify the system testbench to study interrupts using Verilog simulation, without synthesizing the design</h4>
+
+<p>Create all the necessary scripts to show the main interrupt-related signals on the waveform.</p>
+
+<h4>5.1.2 Student exercise: Improve the interrupt lab by exposing program counter (PC) to the outside seven-segment display</h4>
+
+<p>Create a variant of the interrupt lab that connects the processor's program counter (PC) to the outside multiple-digit seven-segment display.  This connection should be muxed with the regular seven-segment display output and should be dependent on whether some selected switch or button is pressed.  With this setup, when the system clock is turned into slow mode, it will be possible to observe how the processor enters interrupt service routune.  For more details about the switchable clock see <i>MIPSfpga 2.0 Lab YP2.  Using switchable clock to observe the CPU cycle-by-cycle</i>.</p>
+
+<h4>5.1.3 Student investigation: Which Coprocessor 0 register bits should be exposed to outside LEDs to observe interrupts in action in slow-clock mode?</h4>
+
+<p>Find on the Imagination Technologies website <a href="http://imgtec.com">http://imgtec.com</a> a manual called <i>MIPS&reg; Architecture For Programmers Volume III: The MIPS32&reg; and microMIPS32&trade; Privileged Resource Architecture</i>. Investigate which Coprocessor 0 register fields are interesting to observe when the processor core takes an interrupt and enters the interrupt service routine in slow-clock mode. An example of such field is the <i>EXL</i> (<i>Exception Level</i>) bit of the Coprocessor 0 <i>Status</i> register.</p>
+
+<p>Modify the core and system RTL to connect these Coprocessor 0 registers to external LEDs on FPGA board. Some fields, like <i>Status.EXL</i> do not require changes in core RTL because the original core RTL already outputs its value to the external pin, <i>SI_EXL</i>. Exposing such fields requires only changes in the system RTL (<i>system_rtl/mfp_*.v</i> files) . Other fields may require adding additional ports and connections to the core's RTL (<i>core_rtl/m14k_*.v</i> files) as well.</p>
+
+<p>Document your changes and create a post on MIPSfpga forum of the Imagination Technologies website.</p>
+
+<h3>5.2 Synchronising memory access in interrupts</h3>
+
+<h4>5.2.1 Exercise: Observe the effect of not disabling the interrupts around critical section that updates the same variable as the interrupt handler</h4>
+
+<p>Comment out the assembly commands that enable and disable interrupts (<i>asm ("di");</i> and <i>asm ("ei")</i>) around incrementing the counter variable <i>n</i> in <i>main</i> function inside <i>main.c</i> file:</p>
+
+<blockquote><font face="Courier"><pre>
+   // asm ("di");
+   n ++;
+   // asm ("ei");
+</pre></font></blockquote>
+
+<p>Build and re-run the program, using both fast and slow clocks. Can you see the difference in system responsiveness to the interrupts? You may observe cases when the system takes the interrupt and executes the interrupt service routine that resets the counter. However after returning from the interrupt, the counter appears not to be reset. Instead it continues to increment its old value, set before entering the interrupt service routine. Can you explain what is going on? We recommend to analyze the assembly output of <i>gcc</i> compiler by running <i>01_compile_c_to_assembly.sh</i> under Linux or <i>01_compile_c_to_assembly.bat</i> under Windows.</p>
+
+<h4>5.2.2 Exercise: Synchronize the updates of a counter variable using <i>LL/SC</i> (Load-Linked / Store-Conditional) pair of instructions</h4>
+
+<p>MIPS architecture provides a way of synchronizing variable updates without disabling interrupts, using a special pair of instructions <i>LL/SC</i> (Load-Linked / Store-Conditional).  Create a version of <i>main.c</i> that uses this feature of the processor instead of <i>DI/EI</i> pair of instructions used in this lab and <i>Exercise 5.2.1</i>.  If you are not familiar with <i>LL/SC</i>, you can review the following materials:</p>
+
+<ul>
+
+<li><i>MIPS32&reg; microAptiv&trade; UP Processor Core Family Software User's Manual</i>, section 12.3, the descriptions of <i>LL</i> and <i>SC</i> instructions. This manual is included in <i>MIPSfpga</i> package</li>
+
+<li>Book <i>See MIPS Run, Second Edition, by Dominic Sweetman</i>, sections <i>5.8.4 Critical Regions with Interrupts Enabled: Semaphores the MIPS Way</i> and <i>8.5.2 Load-Linked / Store-Conditional</i>.</li>
+
+</ul>
+
+<p>You can implement this exercise using either a function written in assembly and called from <i>main</i>, or, alternatively, using <i>asm</i> construct in C with parameters, as described in online GCC documentation (<a href="https://gcc.gnu.org/onlinedocs">https://gcc.gnu.org/onlinedocs</a>), see <a href="https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html">6.45.2 Extended Asm - Assembler Instructions with C Expression Operands</a></p>
+
+<h4>5.2.3 Investigation: Why do we need <i>volatile</i> qualifier for the counter variable?</h4>
+
+<p>Review the code of <i>main.c</i>. Why do we need counter variable <i>n</i> to be declared with <i>volatile</i> qualifier? How does the absence of this qualifier change the result of program execution? Try to run the program without <i>volatile</i> with different levels of compiler optimizations. Is there any change in behavior? Review the code produced by <i>gcc</i> compiler with different <i>-O</i> settings.</p>
+
+<h3>5.3 Timer interrupts</h3>
+
+<h4>5.3.1 Student project: Timer interrupt lab using <i>Count/Compare</i> pair of Coprocessor 0 registers present inside <i>MIPS microAptiv UP</i> core</h4>
+
+<p>The timer interrupt is a special kind of hardware interrupt that occurs regularly, with a set frequency, usually in kilohertz range. Such interrupts are used to measure time intervals and to implement software multitasking, including parallel task execution in operating systems.</p>
+
+<p>Read both hardware and software documentation about an embedded timer interrupt used in MIPS cores in conjunction with the <i>Count/Compare</i> pair of Coprocessor 0 registers. Is this feature present in MIPSfpga? If yes, implement a lab that uses this feature. This lab may for example measure time between pressing some button, or do some computation while the interrupt service routine polls some input.</p>
+
+<h4>5.3.2 Student project: Timer interrupt lab using a custom timer module implemented outside <i>MIPS microAptiv UP</i> core</h4>
+
+<p>Create an alternative implementation of the timer interrupt lab (Exercise 5.3.1), without using the timer interrupt already implemented in <i>MIPS microAptiv UP</i> core.  In order to create such implementation, write a custom timer interrupt-generating module in Verilog.  Then connect it to one of hardware interrupt pins, bits of <i>SI_Int</i> external signal.</p>
+
+<h4>5.3.3 Student project: Programmable timer interrupt lab using a custom timer module implemented outside <i>MIPS microAptiv UP</i> core</h4>
+
+<p>Extend the student project 5.3.2 by interfacing the timer interrupt-generating module not only to system clock, reset and <i>SI_Int</i> signal, but also to the system's <i>AHB-Lite</i> bus.  The goal is that the frequency of interrupts can be controlled by the software running on MIPSfpga CPU core.  For the details of <i>AHB-Lite</i> interfacing, see <i>Lab YP3 - Integrating a peripheral: light sensor example</i>.</p>
+
+<h4>5.3.4 Student project: A variant of programmable timer interrupt lab that uses multiple counters and interrupt pins</h4>
+
+<p>Create a version of the student project 5.3.3 that uses multiple counters to generate hardware interrupts with different frequences on different hardware pins (bits of the signal <i>SI_Int</i>).</p>
+
+<h4>5.3.5 Medium-to-advanced student project: Create a lab demonstrating the multitasking / context switching</h4>
+
+<p>An important application of timer interrupts is to facilitate a variant of parallel programming called task switching, or context switching.  Context switching is widely used in operating systems, from relatively simple, like FreeRTOS, to complicated, like Linux.</p>
+
+<p>The idea of context switching is to periodically switch between different threads of execution, that are also sometimes called processes or tasks.  The "context" is a reference to a set of information associated with the task, including program counter (PC) and general-purpose registers (GPR).  The switch happens inside the timer interrupt service routine that saves the current context in some memory structure (called in some systems Process Control Block - PCB), then restores the context of a different process from another PCB and exits the timer interrupt into the new thread of execution.</p>
+
+<p>Create a lab that switches between two different C functions, running in parallel.  You don't need to use any operating system to do this.  Just save and restore all the necessary registers inside the timer interrupt service routine, and maintain an illusion of parallel execution of two C programs for the end-user.  The end-user would observe the outputs from two programs on LEDs or other output devices.</p>
+
+<h4>5.3.6 Advanced student project: Port some open-source RTOS, like FreeRTOS, to MIPSfpga</h4>
+
+<p>FreeRTOS is a popular real-time operating system, used as an example RTOS in the course <i>Connected MCU</i> created by Dr.Alexander Dean of North Carolina State University.  The <i>Connected MCU</i> course demonstrates FreeRTOS on Microchip PIC32MZ microcontroller that uses a processor core common with MIPSfpga.  However PIC32MZ uses External Interrupt Controller which is absent in the default MIPSfpga system which uses Interrupt Compatibility Mode.  Porting FreeRTOS on MIPSfpga should be an appropriate project for a graduate student of embedded programming or computer architecture.</p>
+
+<h4>5.3.7 Medium-to-advanced student project: Create a lab demonstrating switching from the user mode to the kernel mode when entering the interrupt service routine</h4>
+
+<p>Processor mode is one of the most important concepts in computer science, particularly in the operating system design.  Different CPUs have somewhat different modes with different names: user, kernel, priviledged, superuser and others.  MIPS32 architecture supports user mode, kernel mode and supervisor mode.  According to <i>See MIPS Run, Second Edition, by Dominic Sweetman</i> the supervisor mode in MIPS is a historical accident, a feature that was added by a customer request, but was practially never used in a real system.  So only the user and kernel modes are really used.</p>
+
+<p>In the latest releases of MIPS32 architecture there are some additional modes: root mode and guest mode.  These modes are related to hardware-assisted CPU virtualization, which should not to be confused with the virtual memory feature.  The virtual memory is present even in CPU cores without hardware-assisted virtualization, including MIPS microAptiv UP core used in MIPSfpga.  However the hardware-assisted virtualization is not present in MIPSfpga, so we are not concern about root and guest modes here.</p>
+
+<p>The processor in kernel mode has complete access to all its architecture resources, it can execute all instructions, access all memory locations and all system Coprocessor 0 registers.  This mode is used to run operating system and device drivers.</p>
+
+<p>The processor in user mode can execute only a subset of instructions, has no access to system coprocessor registers, and controlled access to memory locations.  This mode is used to run application programs that may be less reliable than the operating system.</p>
+
+<p>When an interrupt or, in general, an exception occures, a processor switches its mode from user to kernel and jumps to an exception handler, a piece of code that handles the exception.  When process the exception, the operating system performs the necessary actions.  Examples of such actions:</p>
+
+<ul>
+
+<li>If the user code attempted to access a location in memory it should not acess, the operating system can terminate the user code, keeping the memory of the rest of the system (both OS and other application's memory) in order.</li>
+
+<li>If the exception is caused by the system timer interrupt, the interrupt service routine can switch the task/process context and return from the exception into another user task/process.</li>
+
+<li>If the interrupt came from an input-output device, the interrupt service routine can perform some action related to access to memory-mapped input-output registers.  An example of such action is getting a byte transmitted by SPI protocol and putting it into a buffer that can be later accessed by the application code.</li>
+
+<li>There are also special user-mode instructions that cause the intentional exeptions, requesting the system to perform some action in kernel mode.  In MIPS such instruction is called <i>syscall.</i></li>
+
+<li>Finally, an exception can be caused by an illegal instruction or an instruction that is not permitted in user mode.  The exception handler can try to emulate the instruction instead of terminating the user code.</li>
+
+</ul>
+
+<p>Create a lab using MIPSfpga that demonstrates how the processor entering the user mode.  This lab can expose <i>KSU</i> ("kernel/supervisor/user") field of Coprocessor 0 <i>Status</i> register by connecting it to the LEDs on FPGA board and running the system using slow 0.75 Hz or 12.5 Hz clock.</p>
+
+<p>The main challenge in creating this lab is the need to modify the boot code of the software example.  The current boot code exists the reset into kernel mode, this should be changed into user mode.  The current boot code also does not initialize virtual address mapping for the user mode.  See the documentation on translation lookaside buffer (TLB) and memory-management unit and modify the boot code to support the new lab.</p>
+
+<h3>5.4 Special kinds of interrupts, interrupt features and interrupt-like exceptions</h3>
+
+<h4>5.4.1 Student project and investigation: Non-maskable-interrupt (NMI) lab</h4>
+
+<p>Study the information about non-maskable-interrupts (NMI) in <i>MIPS32&reg; microAptiv&trade; UP Processor Core Family Software User's Manual</i> and <i>MIPS32&reg; microAptiv&trade; UP Integrator's Guide</i>, included in <i>MIPSfpga</i> package.</p>
+
+<p>Create a lab that demonstrates NMI interrupts.  Investigate using the internet the history of NMI in different computers.  Why was this feature necessary in the past?  How useful is this feature for the modern applications?</p>
+
+<h4>5.4.2 Investigation: Evaluate the usefulness and applications of Vectored Interrupt (VI) mode in MIPS architecture</h4>
+
+<p>MIPS microAptiv UP core, used in MIPSfpga, supports three interrupt modes: Interrupt Compatibility mode, Vectored Interrupt (VI) mode, and External Interrupt Controller (EIC) mode.  So far, the lab and exercises were using the Interrupt Compatibility mode.  An alternative Vectored Interrupt (VI) mode adds the ability to prioritize and vector interrupts to a handler dedicated to that interrupt.  Vectored Interrupt mode also allows assigning a GPR (General Purpose Register) shadow set for use during interrupt processing.</p>
+
+<p>Study the documentation and create a lab demonstrating interrupts in Vectored Interrupt mode.  How many clock cycles does this mode save when an interrupt is taken?  When does it make sense to use this mode?  Consider very low-power / low-frequency applications, interrupt response time, usage of shadow GPR registers (not present in MIPSfpga).</p>
+
+<p>Which interrupt mode is used in Linux?  Can you offer an explanation why?</p>
+
+<h4>5.4.3 Investigation: The purpose of <i>IV</i> bit of <i>Cause</i> Coprocessor 0 register</h4>
+
+<p>Read about <i>IV</i> bit of <i>Cause</i> Coprocessor 0 register.  Why would anybody need such interrupt option?  What problem is solved by this option?  Propose possible answers.</p>
+
+<h4>5.4.4 Investigation: The purpose of <i>EBase</i> Coprocessor 0 register</h4>
+
+<p>Read about <i>EBase</i> Coprocessor 0 register and try to explain its usefulness.  It is only for multiprocessor systems?  How would you use it in a single-processor system?</p>
+
+<h4>5.4.5 Advanced student project: Building External Interrupt Controller (EIC)</h4>
+
+<p>The External Interrupt Controller (EIC) mode is another interrupt mode, supported by MIPS microAptiv UP core used in MIPSfpga. EIC mode redefines the way interrupts are handled to provide full support for an external interrupt controller that handles prioritization and vectoring of interrupts. EIC mode is used in MIPS-based microcontrollers from Microchip Technology, including some microcontrollers from the Microchip PIC32MZ family that are built around MIPS microAptiv UP core, the same core used in MIPSfpga.</p>
+
+<p>The functionality of External Interrupt Controller created by Microchip is described in Microchip software documentation, the courses taught by Microchip during Microchip Master Conference, as well as in Imagination, Microchip and Digilent-sponsored course <i>Connected MCU</i> created by Dr. Alexander Dean of North Carolina State University.</p>
+
+<p>MIPSfpga allows you to create an alternative External Interrupt Controller, with its own interrupt scheduling and prioritization, and compare your solution to the solution from Microchip Technology. This is a significant research project that can be combined with studies on Real-Time Operating Systems (RTOS).</p>
+
+<h4>5.4.6 Student project: Create a lab demonstrating imprecise Bus Error exception</h4>
+
+<p>All interrupts are exceptions triggered by changes in external signals, but not all exceptions triggered by changes in external signals are in fact interrupts.  There is an exception called Bus Error, which is triggered by a specific AHB-Lite bus response.  This exception is also remarkable because it is not always precise, i.e.  it may occur with <i>EPC</i> pointing to a different instruction.</p>
+
+<p>Read about imprecise exceptions and bus errors in documentation and create a lab that demonstrates this feature.  The useful chapters to read are:</p>
+
+<ul>
+
+<li><i>MIPS32&reg; microAptiv&trade; UP Integrator's Guide</i>, <i>Table 2.3 Signal Descriptions for m14k_cpu Level</i>, the description of <i>HRESP</i> signal: <i>"The transfer response.  When LOW, the HRESP signal indicates that the transfer status is OKAY.  When HIGH, the HRESP signal indicates that the transfer status is ERROR."</i>.  This manual is included in <i>MIPSfpga</i> package.</li>
+
+<li><i>MIPS32&reg; microAptiv&trade; UP Processor Core Family Software User's Manual</i>, section <i>5.8.15 Bus Error Exception - Instruction Fetch or Data Access</i>.  Notice the statement <i>"Bus errors taken on the requested (critical) word of an instruction fetch or data load are precise.  Other bus errors, such as stores or non-critical words of a burst read, can be imprecise."</i> This manual is included in <i>MIPSfpga</i> package.</li>
+
+<li>Book <i>See MIPS Run, Second Edition, by Dominic Sweetman</i>, section <i>5.1 Precise Exceptions</i> and <i>Table 3.2 ExcCode Values: Different Kinds of Exceptions</i>.</li>
+
+</ul>
+
+<h3>5.5 Effect of interrupt on processor microarchitecture</h3>
+
+<h4>5.5.1 Advanced student project: Create a lab demonstrating the effect of interrupts on processor pipelining</h4>
+
+<p>Create all the necessary scripts to show the main interrupt-related signals on the waveform during the simulation in Verilog simulator.  Show on the waveform how an interrupt flushes the processor pipeline.  Which stage of the pipeline is used to take a pending interrupt?</p>
+
+<p>Connect the pipeline control signals to external LEDs on FPGA board and demonstrate how an interrupt flushes the processor pipeline from the instructions which are not going to graduate because of the interrupt.</p>
+
+<p>If you need more information about CPU pipelining in MIPSfpga, you can review <i>MIPSfpga 2.0.  Lab YP6 - The first glance into pipelining</i>.</p>
+
+<h3>5.6 Reimplement the light sensor lab making it interrupt-driven</h3>
+
+<p>After going through this lab, go back to the light sensor lab <i>MIPSfpga 2.0.  Lab YP3 - Integrating a peripheral: the light sensor example</i>) and re-implement it using interrupt-driven approach.  Modify the light sensor interfacing module so it issues an interrupt when the measured value changes.  Connect the interrupt pin to <i>SI_Int</i> signal of MIPS microAptive UP core.  Measure the system performance improvement that comes from offloading input-output to the interrupt service routine.</p>
+<h3>Appendix A.  A list of recommended materials to review before and during the interrupt lab</h3>
+
+<ul>
+
+<li><p>Book <i>See MIPS Run, Second Edition, by Dominic Sweetman</i>.  <i>Chapter 5.  Exceptions, Interrupts, and Initialization</i>, sections 5.1-5.8.  If you don't have this book, see <i>Appendix B</i> in this lab for critical excerpts from Sweetman's book.  The specific book sections to study:</p>
+
+<ul>
+
+<li><p><i>Chapter 5.  Exceptions, Interrupts, and Initialization</i>, sections 5.1-5.8</p></li>
+
+<li><p><i>Chapter 3.  Coprocessor 0: MIPS Process Control</i>, sections:</p>
+
+<ul>
+
+<li><i>3.3.1 Status Register (SR)</i></li>
+
+<li><i>3.3.2 Cause Register</i></li>
+
+<li><i>3.3.3 Exception Restart Address (EPC) Register</i></li>
+
+<li><i>3.3.5 Count/Compare Registers: The On-CPU Timer</i></li>
+
+<li><i>3.3.8 EBase and IntCtl: Interrupt and Exception Setup</i></li>
+
+<li><i>3.3.9 SRSCtl and SRSMap: Shadow Register Setup</i></li>
+
+<li><i>3.3.10 Load-Linked Address (LLAddr) Register</i></li>
+
+</ul>
+
+</li>
+
+<li><p><i>Chapter 8.  Complete Guide to the MIPS Instruction Set</i>, section <i>8.5.2 Load-Linked / Store-Conditional</i></p></li>
+
+</ul>
+</li>
+
+<li><p><i>MIPS32&reg; microAptiv&trade; UP Integrator's Guide</i>, <i>Chapter 4: Interrupt Interface</i>.  This manual is included in <i>MIPSfpga</i> package.</p></li>
+
+<li><p><i>MIPS32&reg; microAptiv&trade; UP Processor Core Family Software User's Manual</i>, relevant sections from:</p>
+
+<ul>
+
+<li>  <i>Chapter 5: Exceptions and Interrupts in the microAptiv&trade; UP Core</i></li>
+
+<li><i>Chapter 6: CP0 Registers of the microAptiv&trade; UP Core</i></li>
+
+<li>section 12.3, the descriptions of <i>LL</i> and <i>SC</i> instructions</li>
+
+</ul>
+
+<p>This manual is included in <i>MIPSfpga</i> package.</p>
+
+</li>
+
+<li><p>Relevant sections from the manual <i>MIPS&reg; Architecture For Programmers Volume III: The MIPS32&reg; and microMIPS32&trade; Privileged Resource Architecture</i>.  This manual can be downloaded from Imagination Technologies website <a href="http://imgtec.com">http://imgtec.com</a></p></li>
+
+</ul>
+
+<h3>Appendix B.  Excerpts from a book <i>See MIPS Run, Second Edition, by Dominic Sweetman</i> about the interrupt processing.</h3>
+
+<blockquote>
+
+<h3>Chapter 5.  Exceptions, Interrupts, and Initialization</h3>
+
+<p>In the MIPS architecture interrupts, traps, system calls, and everything else that can disrupt the normal flow of execution are called exceptions and are handled by a single mechanism.  What sort of events are they?</p>
+
+<ul>
+
+<li><p><i>External events</i>: Some event outside the CPU core—that is, from some real "wire" input signal.  These are interrupts.  (Note: There are some more obscure noninterrupt external events like bus errors reported on a read—for now, just assume that they are a special sort of interrupt).  Interrupts are used to direct the attention of the CPU to some external event: an essential feature of an OS that attends to more than one different event at a time.  Interrupts are the only exception conditions that arise from something independent of the CPU's normal instruction stream.  Since you can't avoid interrupts just by being careful, there have to be software mechanisms to inhibit the effect of interrupts when necessary.</p></li>
+
+<li><p><i>Memory translation exceptions</i>: These happen when an address needs to be translated, but no valid translation is available to the hardware or perhaps on a write to a write-protected page.</p>
+
+<p>The OS must decide whether such an exception is an error or not.  If the exception is a symptom of an application program stepping outside its permitted address space, it will be fixed by terminating the application to protect the rest of the system.  The more common benign memory translation exceptions can be used to initiate operating system functions as complex as a complete demand-paged virtual memory system or as simple as extending the space available for a stack.</p></li>
+
+<li><p><i>Other unusual program conditions for the kernel to fix</i>: Notable among these are conditions resulting from floating-point instructions, where the hardware is unable to cope with some difficult and rare combination of operation and operands and is seeking the services of a software emulator.  This category is fuzzy, since different kernels have different ideas about what they're willing to fix.  An unaligned load may be an error on one system and something to be handled in software on another.</p></li>
+
+<li><p><i>Program or hardware-detected errors</i>: This includes nonexistent instructions, instructions that are illegal at user-privilege level, coprocessor instructions executed with the appropriate SR flag disabled, integer overflow, address alignment errors, and accesses outside <i>kuseg</i> in user mode.</p></li>
+
+<li><p><i>Data integrity problems</i>: Many MIPS CPUs continually check data on the bus or data coming from the cache for a per-byte parity or for word- wide error-correcting code.  Cache or parity errors generate an exception in CPUs that support data checking.</p></li>
+
+<li><p><i>System calls and traps</i>: These are instructions whose whole purpose is to generate recognizable exceptions; they are used to build software facilities in a secure way (system calls, conditional traps planted by careful code, and breakpoints).</p></li>
+
+</ul>
+
+</blockquote>
+
+<blockquote>
+
+<h3>5.3 Exception Vectors: Where Exception Handling Starts</h3>
+
+<p>.  .  .  .  .  .  .  .  .  .</p>
+
+<p>Here's what a MIPS CPU does when it decides to take an exception:</p>
+
+<ol>
+
+<li>It sets up <b>EPC</b> to point to the restart location.</li>
+
+<li>It sets <b>SR(EXL)</b>, which forces the CPU into kernel (high-privilege) mode and disables interrupts.</li>
+
+<li><b>Cause</b> is set up so that software can see the reason for the exception.  On address exceptions, <b>BadVAddr</b> is also set.  Memory management system exceptions set up some of the MMU registers too; more details are given in Chapter 6.</li>
+
+<li>The CPU then starts fetching instructions from the exception entry point, and everything else is up to software.</li>
+
+</ol>
+
+<p>.  .  .  .  .  .  .  .  .  .</p>
+
+<h3>5.5 Returning from an Exception</h3>
+
+<p>The return of control to the exception victim and the change (if required) back from kernel to a lower-privilege level must be done at the same time ("atomically," in the jargon of computer science).  It would be a security hole if you ran even one instruction of application code at kernel-privilege level; on the other hand, the attempt to run a kernel instruction with user privileges would lead to a fatal exception.</p>
+
+<p>MIPS CPUs have an instruction, <b>eret</b>, that does the whole job; it both clears the <b>SR(EXL)</b> bit and returns control to the address stored in <b>EPC</b>.</p>
+
+</blockquote>
+
+<blockquote>
+
+<h3>5.8.1 Interrupt Resources in MIPS CPUs</h3>
+
+<p>MIPS CPUs have a set of eight independent (Note: Not so independent if you're using EIC mode; see section 5.8.5.) interrupt bits in their <b>Cause</b> register.  On most CPUs you'll find five or six of these are signals from external logic into the CPU, while two of them are purely software accessible.  The on-chip counter/timer (made of the <b>Count</b> and <b>Compare</b> registers, described in section 3.3.5) will be wired to one of them; it's sometimes possible to share the counter/timer interrupt with an external device, but rarely a good idea to do so.</p>
+
+<p>An active level on any input signal is sensed in each cycle and will cause an exception if enabled.</p>
+
+<p>The CPU's willingness to respond to an interrupt is affected by bits in <b>SR</b>.</p>
+
+<p>There are three relevant fields:</p>
+
+<ul>
+
+<li>The global interrupt enable bit <b>SR(IE)</b> must be set to 1, or no interrupt will be serviced.</li>
+
+<li>The <b>SR(EXL)</b> (exception level) and <b>SR(ERL)</b> (error level) bits will inhibit interrupts if set (as one of them will be immediately after any exception).</li>
+
+<li>The status register also has eight individual interrupt mask bits <b>SR(IM)</b>, one for each interrupt bit in <b>Cause</b>.  Each <b>SR(IM)</b> bit should be set to 1 to enable the corresponding interrupt so that programs can determine exactly which interrupts can happen and which cannot.</li>
+
+</ul>
+
+<p>To discover which interrupt inputs are currently active, you look inside the <b>Cause</b> register.  Note that these are exactly that—current levels—and do not necessarily correspond to the signal pattern that caused the interrupt exception in the first place.  The active input levels in <b>Cause(IP)</b> and the masks in <b>SR(IM)</b> are helpfully aligned to the same bit positions, in case you want to "and" them together.  The software interrupts are at the lowest positions, and the hardware interrupts are arranged in increasing order.</p>
+
+<p>In architectural terms, all interrupts are equal.  (Note: That's not quite true in vectored interrupt and "EIC mode," described in section 5.8.5, but they're not widely used).  When an interrupt exception is taken, an older CPU uses the "general" exception entry point—though MIPS 32/64 CPUs and some other modern CPUs offer an optional distinct exception entry point reserved for interrupts, which can save a few cycles.  You can select this with the <b>Cause(IV)</b> register bit.</p>
+
+<p>Interrupt processing proper begins after you have received an exception and discovered from <b>Cause(ExcCode)</b> that it was a hardware interrupt.  Consulting <b>Cause(IP)</b>, we can find which interrupt is active and thus which device is signaling us.  Here is the usual sequence:</p>
+
+<ul>
+
+<li><p>Consult the <b>Cause</b> register IP field and logically "and" it with the current interrupt masks in <b>SR(IM)</b> to obtain a bit map of active, enabled interrupt requests.  There may be more than one, any of which would have caused the interrupt.</p></li>
+
+<li><p>Select one active, enabled interrupt for attention.  Most OSs assign the different inputs to fixed priorities and deal with the highest priority first, but it is all decided by the software.</p></li>
+
+<li><p>You need to save the old interrupt mask bits in <b>SR(IM)</b>, but you probably already saved the whole <b>SR</b> register in the main exception routine.</p></li>
+
+<li><p>Change <b>SR(IM)</b> to ensure that the current interrupt and all interrupts your software regards as being of equal or lesser priority are inhibited.</p></li>
+
+<li><p>If you haven't already done it in the main exception routine, save the state (user registers, etc.) required for nested exception processing.</p></li>
+
+<li><p>Now change your CPU state to that appropriate to the higher-level part of the interrupt handler, where typically some nested interrupts and exceptions are permitted.</p>
+
+<p>In all cases, set the global interrupt enable bit <b>SR(IE)</b> to allow higher priority interrupts to be processed.  You'll also need to change the CPU privilege-level field <b>SR(KSU)</b> to keep the CPU in kernel mode as you clear exception level and, of course, clear <b>SR(EXL)</b> itself to leave exception mode and expose the changes made in the status register.</p></li>
+
+<li><p>Call your interrupt routine.</p></li>
+
+<li><p>On return you'll need to disable interrupts again so you can restore the preinterrupt values of registers and resume execution of the interrupted task.  To do that you'll set <b>SR(EXL)</b>.  But in practice you're likely to do this implicitly when you restore the just-after-exception value of the whole <b>SR</b> register, before getting into your end-of-exception sequence.</p></li>
+
+</ul>
+
+<p>When making changes to <b>SR</b>, you need to be careful about changes whose effect is delayed due to the operation of the pipeline — "CP0 hazards." See section 3.4 for more details and how to program around the hazards.</p>
+
+</blockquote>
+
+<h3>Appendix C.  Excerpts from the article <i>Using the GNU Compiler Collection (GCC).  6.31.18 MIPS Function Attributes</i></h3>
+
+<blockquote>
+
+<p><a href="http://gcc.gnu.org/onlinedocs/gcc/MIPS-Function-Attributes.html"> http://gcc.gnu.org/onlinedocs/gcc/MIPS-Function-Attributes.html</a></p>
+
+<p>These function attributes are supported by the MIPS back end:</p>
+
+<p><font face="Courier">interrupt</font></p>
+
+<blockquote>
+
+<p>Use this attribute to indicate that the specified function is an interrupt handler.  The compiler generates function entry and exit sequences suitable for use in an interrupt handler when this attribute is present.  An optional argument is supported for the interrupt attribute which allows the interrupt mode to be described.  By default GCC assumes the external interrupt controller (EIC) mode is in use, this can be explicitly set using <font face="Courier">eic</font>.  When interrupts are non-masked then the requested Interrupt Priority Level (IPL) is copied to the current IPL which has the effect of only enabling higher priority interrupts.  To use vectored interrupt mode use the argument <font face="Courier">vector=[sw0|sw1|hw0|hw1|hw2|hw3|hw4|hw5]</font>, this will change the behavior of the non-masked interrupt support and GCC will arrange to mask all interrupts from sw0 up to and including the specified interrupt vector.</p>
+
+<p>You can use the following attributes to modify the behavior of an interrupt handler:</p>
+
+<p><font face="Courier">use_shadow_register_set</font></p>
+
+<blockquote>
+
+<p>Assume that the handler uses a shadow register set, instead of the main general-purpose registers.  An optional argument intstack is supported to indicate that the shadow register set contains a valid stack pointer.</p>
+
+</blockquote>
+
+<p><font face="Courier">keep_interrupts_masked</font></p>
+
+<blockquote>
+
+<p>Keep interrupts masked for the whole function.  Without this attribute, GCC tries to reenable interrupts for as much of the function as it can.</p>
+
+</blockquote>
+
+<p><font face="Courier">use_debug_exception_return</font></p>
+
+<blockquote>
+
+<p>Return using the deret instruction.  Interrupt handlers that don't have this attribute return using eret instead.</p>
+
+</blockquote>
+
+<p>You can use any combination of these attributes, as shown below:</p>
+
+<blockquote>
+
+<font face="Courier"><font face="Courier"><pre>
+          void __attribute__ ((interrupt)) v0 ();
+
+          void __attribute__ ((interrupt, use_shadow_register_set)) v1 ();
+
+          void __attribute__ ((interrupt, keep_interrupts_masked)) v2 ();
+
+          void __attribute__ ((interrupt, use_debug_exception_return)) v3 ();
+
+          void __attribute__ ((interrupt, use_shadow_register_set,
+                               keep_interrupts_masked)) v4 ();
+
+          void __attribute__ ((interrupt, use_shadow_register_set,
+                               use_debug_exception_return)) v5 ();
+
+          void __attribute__ ((interrupt, keep_interrupts_masked,
+                               use_debug_exception_return)) v6 ();
+
+          void __attribute__ ((interrupt, use_shadow_register_set,
+                               keep_interrupts_masked,
+                               use_debug_exception_return)) v7 ();
+
+          void __attribute__ ((interrupt("eic"))) v8 ();
+
+          void __attribute__ ((interrupt("vector=hw3"))) v9 ();
+</pre></font></font>
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>

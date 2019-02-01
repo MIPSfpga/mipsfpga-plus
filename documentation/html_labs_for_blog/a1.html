@@ -1,0 +1,1068 @@
+<h2>MIPSfpga 2.0. Lab YP1. Using MIPSfpga with Serial Loader Flow that does not require BusBlaster board and OpenOCD software</h2>
+
+<h3>1. Introduction</h3>
+
+<p>This lab walks through the alternative usage flow of MIPSfpga, called "Serial Loader Flow". This alternative flow does not require using <a href="http://blog.imgtec.com/mips-processors/bus-blaster-v3c-is-an-affordable-debug-probe-for-mips-cpus">BusBlaster debugger board and OpenOCD software</a>. While BusBlaster / OpenOCD combination is a flexible and inexpensive way to debug the software uploaded into a synthesized MIPSfpga system, the flow with BusBlaster/OpenOCD has two drawbacks:</p>
+
+<ol>
+<li>A user is required to buy an additional hardware (BusBlaster) which may not be readily available for some users</li>
+<li>The drivers for OpenOCD depend on third-party software that may not be compatible with some versions of Windows and Linux</li>
+</ol>
+
+<p>The alternative Serial Loader Flow uses USB-to-UART connection already present in Digilent boards with Xilinx Artix-7 FPGA, including Basys3, Nexys4 and Nexys 4 DDR boards. For Altera-based boards that do not have integrated USB-to-UART connections it is still possible to use Serial Loader Flow. This can be accomplished by connecting the board with one of the ubiquitous $5 FTDI-based USB-to-UART connectors readily available in many stores and websites for Arduino hobbyists. Such connectors are easier to get than $50 Bus Blasters available on a smaller number of websites.</p>
+
+<p>In addition to offering the alternative way of uploading software programs into the synthesized MIPSfpga system on FPGA board, this lab illustrates several ideas useful for a digital design student, including:</p>
+
+<ol>
+<li>The implementation of serial UART protocol</li>
+<li>An example of using a finite state machine (FSM) to parse a text, with FSM coded in Verilog and synthesized in digital hardware rather than parsing the text using an FSM implemented in software</li>
+</ol>
+
+<p>The Serial Loader Flow is also not without drawbacks:</p>
+
+<ol>
+<li>The Serial Loader Flow does not allow debugging the software on the board using a debugger like Codescape working on a computer,</li>
+<li>Under this flow the hardware has to be aware of virtual-to-physical address mapping. If a user wants to change such mapping, he has to update both software linker script for his programs and Verilog code for the hardware component, specifically the code that translates virtual addresses into physical addresses during uploading the user's program into a synthesized MIPSfpga system.</li>
+</ol>
+
+<p>Despite those drawbacks, the Serial Loader Flow is a useful option for many users, and it can be used alongside with Bus Blaster / OpenOCD Flow.</p>
+
+<h3>2. The theory of operation</h3>
+
+<h3>2.1. MIPSfpga 2.0 hardware module hierarchy without Serial Loader Flow support</h3>
+
+<p><b>Figure 2.1</font></b> shows the basic hierarchy of synthesizable modules of MIPSfpga 2.0 for Digilent Nexys 4 DDR board with Xilinx Artix-7 FPGA and without Serial Loader hardware:</p>
+
+<p><center><b><font color=blue>Figure 2.1</font></b></center></p>
+
+<img width=500 src="http://silicon-russia.com/pages/2015_12_28/hierarchy_de0_cv__narrow_write_support__wo_7_segment_display.png">
+
+<p>The contents and functionality of each module:</p>
+
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/boards/nexys4_ddr/nexys4_ddr.v">de0_cv</a> - an external wrapper module, specific for each FPGA board type. The ports of this module correspond to physical ports on FPGA chip itself. The specific module <i>nexys4_ddr</i> is written for Digilent Nexys 4 DDR board with Xilinx Artix-7 FPGA.</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_system.v">mfp_system</a> - system module, common for all FPGA boards that support MIPSfpga 2.0. <ul> <li><a href="http://www.silicon-russia.com/2015/12/11/mipsfpga-download-instructions">m14k_top</a> - top-level module of the microprocessor core <a href="http://imgtec.com/mips/aptiv/microaptiv/">MIPS microAptiv UP (also referenced in some documentation as MIPS microAptiv MPU)</a>. The name <i>m14k</i> is left from the earlier variant of the processor core - MIPS M14Kc.</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_system.v">mfp_ejtag_reset</a> - a utility module to reset EJTAG debug interface used in Bus Blaster / OpenOCD Flow<a href="http://www.linux-mips.org/wiki/JTAG">EJTAG</a></li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_matrix</a> - a module that combines memory blocks, the controller for <a href="http://www.eecs.umich.edu/courses/eecs373/readings/ARM_IHI0033A_AMBA_AHB-Lite_SPEC.pdf">AHB-Lite</a> bus and I/O logic. The I/O logic links the addresses coming from the software running on CPU core via AHB-Lite bus, with the signals that control hardware peripherals: buttons, LED indicators etc. <ul> <li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_decoder</a> - a module that decode an address on AHB-Lite bus and determines which hardware slave (a memory of an input/output device is going to process the corresponding transaction on the bus</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_ram_slave.v">mfp_ahb_ram_slave</a> <i>reset_ram</i> - an AHB-Lite wrapper for memory blocks. This particular group of memory blocks (<i>reset_ram</i>) is intended for the part of software that starts immediately after the processor exits the reset. This part of software is called "the bootloader". <ul> <li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_dual_port_ram.v">mfp_dual_port_ram</a> <i>i0-i3</i> - modules that infer FPGA block memory during the synthesize. In order for the synthesizer to interpret the code for the module in appropriate way, The code in these modules was written according to <a href="http://quartushelp.altera.com/14.1/mergedProjects/hdl/vlog/vlog_pro_ram_inferred.htm">special guidelines</a> from EDA (Electronic Design Automation) tool vendors, including Xilinx and Altera, so that the synthesizer interprets the code in appropriate way and infers FPGA-specific block memory. There are four 8-bit wide memory blocks in order to implement 32-bit wide random access memory (RAM). Such design is needed in order to support a single byte-wide AHB-Lite transfer. The alternative idea with 32-bit wide memory would be not sufficient since neither Xilinx nor Altera support writing 32-bit date in memory with a mask.</li>
+</ul></li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_ram_slave.v">mfp_ahb_ram_slave</a> <i>ram</i> - another AHB-Lite memory wrapper. This group of memory blocks (<i>ram</i>) is intended for the main part of the software program, that is fetched from the cacheable region of the virtual memory map. <ul> <li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_dual_port_ram.v">mfp_dual_port_ram</a> <i>i0-i3</i> - same as above</li>
+</ul></li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_gpio_slave.v">mfp_ahb_gpio_slave</a> - AHB-Lite slave implementing GPIO - General Purpose Input / Output. The logic in this module maps bus addresses to the signals used for the peripheral devices: buttons, LED indicators etc.</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_response_mux</a> - one of submodules used for implementing AHB-Lite bus protocol. Contains a multiplexer that produces correct read data for the CPU based on read data from all memories and I/O slaves. This multiplexer uses the id of a slave stored during the address phase of the corresponding bus transaction in flight</li>
+</ul></li>
+</ul></li></ul>
+
+<h3>2.2. Serial Loader Flow support in MIPSfpga 2.0 hardware module hierarchy</h3>
+
+<p>To support the Serial Loader Flow, for extra modules are added to this structure:</p>
+
+<p><center><b><font color=blue>Figure 2.2</font></b></center></p>
+
+<img width=500 src="http://silicon-russia.com/pages/2015_12_28/hierarchy_de0_cv__narrow_write_support__serial_loader__wo_7_segment_display.png">
+
+<p>The contents and functionality of the added modules:</p>
+
+<ul>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_with_loader.v">mfp_ahb_lite_matrix_with_loader</a> - this module replaces <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_matrix</a> from the previous hierarchy. <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_with_loader.v">mfp_ahb_lite_matrix_with_loader</a> contains both <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix.v">mfp_ahb_lite_matrix</a>, as well as three modules with new functionality: <ul> <li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_uart_receiver.v">mfp_uart_receiver</a> - this module receives data from PC through UART and converts this data into a stream of bytes / ASCII characters</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_srec_parser.v">mfp_srec_parser</a> - parses the stream of ASCII characters received from <i>mfp_uart_receiver</i>, interprets these characters as text in Motorola S-Record format, and generates as sequence of transactions (address / data) to fill the memory of a synthesized system with the data described in Motorola S-Record text</li>
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_srec_parser_to_ahb_lite_bridge.v">mfp_srec_parser_to_ahb_lite_bridge</a> - converts the transactions, obtained from <i>mfp_srec_parser</i> into transactions that confirm AHB-Lite protocol. This module also converts the virtual addresses used by the software, into physical addresses used by hardware. The conversion is done using simple fixed mapping (nothing complicated like TLB MMU is involved).</li>
+</ul>
+</li>
+</ul>
+
+<p><b>Figure 2.3</font></b> shows the schematics of <i>mfp_ahb_lite_matrix_with_loader</i> created after Verilog synthesis but before FPGA technology-specific mapping, placement and routing. Note the multiplexer between <i>mfp_srec_parser_to_ahb_lite_bridge</i> and <i>mfp_ahb_lite_matrix</i>. This multiplexer directs to the memory subsystem either the transactions from the CPU core, or the transactions from the Serial Loader:</p>
+
+<p><center><b><font color=blue>Figure 2.3</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/02/mfp_ahb_lite_matrix_with_loader.png" rel="attachment wp-att-861"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/02/mfp_ahb_lite_matrix_with_loader-1024x277.png" alt="mfp_ahb_lite_matrix_with_loader"  class="alignnone size-large wp-image-861" /></a>
+
+<h3>2.3. More details about module <i>mfp_uart_receiver</i></h3>
+
+<p><i>mfp_uart_receiver</i> receives data serially from UART RX pin and outputs 8-bit bytes when data is ready. It assumes a simple version of <a href="https://reference.digilentinc.com/pmod:communication_protocols:uart">UART protocol</a>, without control signals, and with one start bit. The baud rate and the expected main clock rate is hardcoded. The module contains a state machine that waits for a negative edge (detecting a start bit) and samples data bits by counting clock cycles. Since the width of each symbol is quite big 50,000,000 Hz / 115,200 baud = 434 clock cycles (or 217 for 25 MHz), this method of getting the data is quite reliable:</p>
+
+<p><center><b><font color=blue>Figure 2.4</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.41.49.png" rel="attachment wp-att-673"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.41.49.png" class="alignnone size-full wp-image-673" /></a>
+
+<h3>2.4. More details about module <i>mfp_srec_parser</i></h3>
+
+<p><i>mfp_srec_parser</i> received data from <i>mfp_uart_receiver</i> and parses them as text in Motorola S-record file format. During parsing the state machine inside <i>mfp_srec_parser</i> forms the transactions to the memory of MIPSfpga+ synthesized system, filling the memory with specified bytes at specified locations. The module header is shown below:</p>
+
+<p><center><b><font color=blue>Figure 2.5</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.42.17.png" rel="attachment wp-att-674"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.42.17.png" class="alignnone size-large wp-image-674" /></a>
+
+<p>See <a href="https://en.wikipedia.org/wiki/SREC_(file_format)">the description of Motorola S-record format from Wikipedia</a>:</p>
+
+<p><center><b><font color=blue>Figure 2.6</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/11/Motorola_SREC_Chart.png" rel="attachment wp-att-366"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/11/Motorola_SREC_Chart-1024x705.png" class="alignnone size-large wp-image-366" /></a>
+
+<h3>2.5. More details about module <i>mfp_srec_parser_to_ahb_lite_bridge</i></h3>
+
+<p><i>mfp_srec_parser_to_ahb_lite_bridge</i> is a glue between <i>mfp_srec_parser</i> and AHB-Lite bus. It also edits the addresses, converting virtual addresses into physical according to the rules of fixed mapping (see MIPS microAptiv UP core software documentation):</p>
+
+<p><center><b><font color=blue>Figure 2.7</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.43.08.png" rel="attachment wp-att-675"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/01/Screenshot-2015-12-31-18.43.08.png" class="alignnone size-large wp-image-675" /></a>
+
+<h3>2.6. Miscellaneous</h3>
+
+<p>The output of <i>mfp_srec_parser</i>, a signal called <i>in_progress</i> is used as a reset for microAptiv UP processor core. It means that while the serial loader fills the memory with S-record file data, the processor is not accessing the memory. Once <i>mfp_srec_parser</i> gets the termination record (S7), the core wakes up and starts to fetch the program from the newly filled memory.</p>
+
+<p>The serial loader mechanism does not disable interfacing with regular Bus Blaster / Open OCD. Both ways of loading programs, serial loader and Bus Blaster, can be used without re-synthesizing the system.</p>
+
+<h3>3. Setting up the board and connectors</h3>
+
+<h3>3.1. Setting up Digilent boards with Artix-7 FPGA</h3>
+
+<p>The following Digilent boards do no require adding any connectors because they already have USB-to-UART connection embedded in the board:</p>
+
+<ol>
+<li><a href="http://store.digilentinc.com/nexys-4-ddr-artix-7-fpga-trainer-board-recommended-for-ece-curriculum/">Digilent Nexys 4 DDR</a> board with Xilinx Artix-7 FPGA. See the Appendix A about how the board is connected with the applicable peripherals.</li>
+<li><a href="http://store.digilentinc.com/nexys-4-artix-7-fpga-trainer-board-limited-time-see-nexys4-ddr/">Digilent Nexys 4</a> board with Xilinx Artix-7 FPGA (no DDR, soon to be discontinued).</li>
+<li><a href="http://store.digilentinc.com/basys-3-artix-7-fpga-trainer-board-recommended-for-introductory-users/">Digilent Basys 3</a> with Xilinx Artix-7.</li>
+</ol>
+
+<p>Here is an exempt from Digilent documentation about USB-to-UART:</p>
+
+<p><center><b><font color=blue>Figure 3.1</font></b></center></p>
+
+<a href="https://reference.digilentinc.com/_media/nexys4-ddr:nexys4ddr_rm.pdf"><img border=1 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-27-21.22.12.png" alt="screenshot-2016-09-27-21-22-12" /></a>
+
+<h3>3.2. Setting up Terasic boards with Altera Cyclone II, III, IV and V FPGA</h3>
+
+<p>Warning! Make sure to avoid applying voltage to any GPIO pin of FPGA board when the board is not powered. This can damage the pin connection or in severe case FPGA itself.</p>
+
+<p>Some Terasic boards have USB-to-UART connector, for some other boards it is possible to use other interfaces, but for simplicity this lab uses external USB-to-UART connectors attached to general purpose I/O pins.</p>
+
+<p>A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip connected to GPIO pins of <a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA. UART TX is connected to the pin 3 from bottom and the ground is connected to pin 6 from the bottom. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</p>
+
+<p><center><b><font color=blue>Figure 3.2</font></b></center></p>
+
+<a href="http://de0-cv.terasic.com.tw"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_160527-1024x683.jpg" /></a>
+
+<p><center><b><font color=blue>Figure 3.3</font></b></center></p>
+
+<a href="http://de0-cv.terasic.com.tw"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_171948-1024x1024.jpg" /></a>
+
+<p>Serial Loader is also compatible with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a>. There is another, alternative cable, based on <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182718&SearchText=PL2303HX">PL2303HX chip</a> however this cable has more compatibility problems with Windows 8.x and we recommend to use cables based on PL2303TA instead:</p>
+
+<p><center><b><font color=blue>Figure 3.4</font></b></center></p>
+
+<a href="http://de0-cv.terasic.com.tw"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_pl2303ta_160926_163515-1024x767.jpg" /></a>
+
+<p><center><b><font color=blue>Figure 3.5</font></b></center></p>
+
+<a href="http://de0-cv.terasic.com.tw"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_pl2303ta_160926_163235-1024x683.jpg" /></a>
+
+<p>Same connections can be used with many popular Terasic boards that support MIPSfpga:</p>
+
+<ol>
+<li><a href="http://de10-lite.terasic.com">Terasic DE10-Lite</a> with Altera MAX10</li>
+<li><a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V</li>
+<li><a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV</li>
+<li><a href="http://de0-nano.terasic.com.tw">Terasic DE0-Nano</a> board with Altera Cyclone IV FPGA</li>
+<li><a href="http://de0.terasic.com">Terasic DE0</a> with Altera Cyclone III</li>
+<li><a href="http://de1.terasic.com">Terasic DE1</a> with Altera Cyclone II</li>
+</ol>
+
+<p>See Appendix A for the pictures of all Terasic Cyclone board connections.</p>
+
+<p>In the unlikely event a particular version of Windows or Linux does not have a driver that work with FTDI-based USB-to-UART connector, the driver can be downloaded from <a href="http://www.ftdichip.com/Drivers/VCP.htm">http://www.ftdichip.com/Drivers/VCP.htm</a>.</p>
+
+<h3>4. Running the synthesis and configuring the FPGA with the synthesized MIPSfpga system</h3>
+
+<h3>4.1. Selecting the appropriate hardware configuration for the lab</h3>
+
+<p>Before running synthesis it is necessary to review and possibly modify the file <a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a> that includes a set of Verilog  <i>`define</i> statements that determine the functionality of the synthesized MIPSfpga system. Make sure that <i>`define MFP_USE_UART_PROGRAM_LOADER</i> is not commented out:</p> 
+<blockquote><p>File <i><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a></i></p>
+<font face="Courier"><pre>                           
+
+//
+//  Configuration parameters
+//
+
+// `define MFP_USE_WORD_MEMORY
+// `define MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
+// `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+`define MFP_USE_UART_PROGRAM_LOADER
+// `define MFP_DEMO_LIGHT_SENSOR
+// `define MFP_DEMO_CACHE_MISSES
+// `define MFP_DEMO_PIPE_BYPASS
+
+</pre></font></blockquote>
+
+<p>It also may be necessary to configure memory that is built from FPGA block memory cells. By default the memory for bootloader is 1 KB and the memory for user program is 1 KB. Small block memory fits many older boards and results in high maximum clock frequency of the synthesized system. The defines below can be used to increase block memory size. To avoid low max clock frequency with larger memories and if a lot of memory is necessary, we recommend implementing the interface to memory chip external to FPGA, such as SDRAM memory present on many FPGA boards.</p> 
+<blockquote><p>File <i><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_ahb_lite_matrix_config.vh">mfp_ahb_lite_matrix_config.vh</a></i></p>
+<font face="Courier"><pre>                           
+
+`define MFP_RESET_RAM_ADDR_WIDTH    10  // The boot sequence is the same for everything
+
+`ifdef SIMULATION
+`define MFP_RAM_ADDR_WIDTH          16
+`else
+`define MFP_RAM_ADDR_WIDTH          10  // DE1: 10, DE0-Nano: 13, DE0-CV or Basys3: 14, Nexys 4 or DE2-115: 16
+`endif
+
+</pre></font></blockquote>
+<h3>4.2. Xilinx Vivado flow</h3>
+
+<p>This chapter shows the sequence of steps necessary to synthesize a system based MIPSfpga 2.0 using Xilinx Vivado software and upload it into the board, such as <a href="http://store.digilentinc.com/nexys-4-ddr-artix-7-fpga-trainer-board-recommended-for-ece-curriculum/"> Digilent Nexys 4 DDR</a> board with Xilinx Artix-7 FPGA on <b><font color=blue>Picture 4.2.1</font></b>.</p> 
+
+<p><center><b><font color=blue>Picture 4.2.1. <a href="http://store.digilentinc.com/nexys-4-ddr-artix-7-fpga-trainer-board-recommended-for-ece-curriculum/"> Digilent Nexys 4 DDR</a> board with Xilinx Artix-7 FPGA, with optional interfaces and peripherals. The extra parts are not required for this lab.</font></b></center></p> 
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010837.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010837.jpg" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.2. Start Xilinx Vivado software</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.32.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.32.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.3. Create a new project</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.41.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.41.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.4. Specify the project name</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.48.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.48.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.5. Specify RTL project type</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.53.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.53.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.6. Add directories with the source files</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.58.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.38.58.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.7. Add the directory with Verilog files for the board top-level wrapper</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.39.54.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.39.54.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.8. Add the directory with Verilog files for the board-independent system that includes logic for AHB-Lite bus and the Serial Loader</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.08.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.08.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.9. Add the directory with Verilog files for MIPS microAptiv UP core</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.23.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.23.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.10. All the necessary directories are added</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.30.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.30.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.11. No extra IP is necessary</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.39.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.39.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.12. Need to add the constraints</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.46.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.40.46.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.13. Add constraints file that maps I/O pins and defines the clocks</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.21.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.21-1024x496.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.14. Constraints are added</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.34.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.34.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.15. Choose the appropriate FPGA parts using filers by family (Artix-7) and package</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.47.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.41.47.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.16. Select among filtered FPGA parts</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.42.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.42.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.17. The summary when finishing project wizard</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.50.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.42.50.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.18. Run synthesis, mapping, placement, routing and bitfile generation</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.52.33.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-11.52.33.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.19. Run device programming</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.48.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.48.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.2.20. Specify the appropriate bitfile</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.57.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-13.32.57.png" /></a>
+
+<p>After finishing this step the board should be configured with the synthesized design and ready to receive the software.</p>
+<h3>4.3. Altera Quartus II flow</h3>
+
+<p>This chapter shows the sequence of steps necessary to synthesize a system based MIPSfpga 2.0 using Altera Quartus II software and upload it into the board, such as <a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA shown on <b><font color=blue>Picture 4.3.1</font></b>.</p> 
+<p><font color=blue><b>Picture 4.3.1.</b> A picture of <a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA, with interfaces and peripherals. The extra parts (except FT232RL USB-to-UART) are not required for this lab.</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_114528.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_114528.jpg" /></a>
+
+<h3>4.3.1. Before installing Altera Quartus II</h3>
+
+<p>Note that different Terasic boards and different versions of Windows and Linux require different versions of Quartus II:</p>
+
+<ul>
+
+<li>In order to run Altera Quartus II on a computer with 32-bit Windows <i>or</i> 32-Linux, it is necessary to use <a href="http://dl.altera.com/13.1/?edition=web">Altera Quartus II Web Edition version 13.1</a> or earlier instead of the later versions.</li> 
+
+<li>For older boards (Terasic DE0, DE1, DE2) with Altera Cyclone II/III FPGA, it is necessary to use <a href="http://dl.altera.com/13.0sp1/?edition=web">Altera Quartus II Web Edition version 13.0 Service Pack 1</a> or earlier version.</li> 
+</ul>
+
+<h3>4.3.2. Before running Altera Quartus II</h3>
+
+<p>The fastest way to create MIPSfpga project for Quartus II is to use the existing project files located in board-related directory, such as <i>boards/de0_cv</i>. The contents of such directory include:</p>
+
+<blockquote><p>The contents of <i>boards/de0_cv</i> directory</p><font face="Courier"><pre>               
+de0_cv.qpf
+de0_cv.qsf
+de0_cv.sdc
+de0_cv.v
+make_project.bat
+make_project.sh
+</pre></font></blockquote>
+
+<p>Windows batch file <i>make_project.bat</i> and its Linux equivalent, Bourne shell script <i>make_project.sh</i>, create a copy of projects files in a temporary directory named <i>project</i>. The reason for it is: Quartus II creates a lot of temporary files in the directory where project files are located. Creating such copy of project files allows to remove those temporary files without removing project files.</p>
+
+<blockquote><p>The contents of <i>boards/de0_cv/make_project.bat</i> Windows batch file</p><font face="Courier"><pre>               
+rd /s /q project
+mkdir project
+copy *.qpf project
+copy *.qsf project
+copy *.sdc project
+</pre></font></blockquote>
+
+<h3>4.3.4.  Modifying paths in <i>boards/de_common/quartus_add_core_and_system_verilog_files.tcl</i></h3>
+
+<p>In some setups of MIPSfpga packages, the directories with the system RTL and core RTL Verilog files may have different locations relative to the <i>board</i> directory.  If this is the case with your setup, you may need to review and possibly modify the following assignments inside <i>boards/de_common/quartus_add_core_and_system_verilog_files.tcl</i> file.  This file is sourced by <i>de0_cv.qsf</i> TCL script used by Altera Quartus II for the project:</p>
+
+<blockquote><p>A fragment of <i>boards/de_common/quartus_add_core_and_system_verilog_files.tcl</i> script file</p><font face="Courier"><pre>               
+set CORE_RTL_PATH   ../../../core_rtl
+set SYSTEM_RTL_PATH ../../../system_rtl
+</pre></font></blockquote>
+
+<h3>4.3.5. The sequence of steps</h3>
+
+<p><center><b><font color=blue>Picture 4.3.2. Start Altera Quartus II software</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.02.18.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.02.18.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.3. Open the project in <i>project</i> directory</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.03.16.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.03.16.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.4. Compile the design</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.04.04.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.04.04.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.5. The design is compiled. Review the synthesis report</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.13.58.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.13.58.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.6. Run "Program Device"</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.15.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.15.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.7. Opens "Programmer"</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.31.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.31.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.8. Run "Hardware Setup"</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.40.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.40.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.9. Select "USB Blaster"</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.45.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.45.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.10. USB Blaster is selected</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.52.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.14.52.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.11. Run "Select Programming File"</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.06.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.06.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.12. Programming file is selected</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.14.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.14.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.13. Click "Start"</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.24.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.24.png" /></a>
+
+<p><center><b><font color=blue>Picture 4.3.14. The device is programmed</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.33.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/Screenshot-2015-10-25-14.15.33.png" /></a>
+
+<p>After finishing this step the board should be configured with the synthesized design and ready to receive the software.</p>
+
+<h3>5. Compiling the software and uploading it into the synthesized system using Serial Loader</h3>
+
+<h3>5.1. Files in the first lab directory</h3>
+
+<table border=1 cellpadding=10 cellspacing=0 rules=all>
+<col width=50% />
+<col width=50% />
+<tr>
+<th>File</th>
+<th>Description</th>
+</tr><tr><td>
+
+<i>00_clean_all.bat<br>
+01_compile_c_to_assembly.bat<br>
+02_compile_and_link.bat<br>
+03_check_program_size.bat<br>
+04_disassemble.bat<br>
+05_generate_verilog_readmemh_file.bat<br>
+06_simulate_with_modelsim.bat<br>
+07_simulate_with_icarus.bat<br>
+08_generate_motorola_s_record_file.bat<br>
+09_upload_to_xilinx_board_using_bus_blaster.bat<br>
+10_upload_to_altera_board_using_bus_blaster.bat<br>
+11_check_which_com_port_is_used.bat<br>
+12_upload_to_the_board_using_uart.bat<br></i>
+
+</td><td>
+
+<p>A set of Windows batch files with self-descriptive names to guide a user through the lab step-by-step. Some of these steps duplicate actions in the <i>makefile</i>. We found using these batch files during the first experience with MIPSfpga makes lab more digestible and less confusing for a number of people since they can just click on batch files in Windows explorer or other file manager instead of typing "make action" to go through the steps. These files are discussed in more details in subsequent subchapters.</p>
+
+<p>Only <i>02_compile_and_link.bat</i>, <i>08_generate_motorola_s_record_file.bat</i> and <i>12_upload_to_the_board_using_uart.bat</i> are required for running the lab; running the rest of batch files is optional.</p>
+
+</td></tr><tr><td>
+
+<i>00_clean_all.sh<br>
+01_compile_c_to_assembly.sh<br>
+02_compile_and_link.sh<br>
+03_check_program_size.sh<br>
+04_disassemble.sh<br>
+05_generate_verilog_readmemh_file.sh<br>
+06_simulate_with_modelsim.sh<br>
+07_simulate_with_icarus.sh<br>
+08_generate_motorola_s_record_file.sh<br>
+09_upload_to_xilinx_board_using_bus_blaster.sh<br>
+10_upload_to_altera_board_using_bus_blaster.sh<br>
+11_check_which_com_port_is_used.sh<br>
+12_upload_to_the_board_using_uart.sh<br></i>
+
+</td><td>
+
+<p>A set of Linux Bourne shell scripts with self-descriptive names to guide a user through the lab step-by-step. See the description of Windows batch files above. Linux shell scripts and Windows batch files generally match each other except for <i>12_upload_to_the_board_using_uart.sh</i> that uses different Linux-specific commands comparing to Windows-specific <i>12_upload_to_the_board_using_uart.bat</i>.</p>
+
+<p>Only <i>02_compile_and_link.sh</i>, <i>08_generate_motorola_s_record_file.sh</i> and <i>12_upload_to_the_board_using_uart.sh</i> are required for running the lab; running the rest of batch files is optional.</p>
+
+</td></tr><tr><td>
+<i>boot.S</i>
+</td><td>
+
+Boot sequence, a program in assembly that starts after the processor reset,
+initializes system coprocessor registers, caches and TLB MMU, then jumps into the user's program.
+
+</td></tr><tr><td>
+<i>main.c</i>
+</td><td>
+
+User's program written in C.
+
+</td></tr><tr><td>
+<i>makefile</i>
+</td><td>
+
+Makefile that contains basic tasks for compiling and linking the program.
+Can be used instead of supplied Windows batch files and Linux scripts.
+
+</td></tr><tr><td>
+<i>mfp_memory_mapped_registers.h</i>
+</td><td>
+
+Header file that contains definitions for the memory-mapped I/O registers
+used to communicate the software with I/O devices on the board - buttons, LEDs,
+as well as external devices connected through general-purpose I/O ports. 
+
+</td></tr><tr><td>
+<i>modelsim_script.tcl</i>
+</td><td>
+
+A script in Tcl language used by Mentor ModelSim RTL simulator
+to automate Verilog compilation, running the simulation and controlling displaying waveforms.
+
+</td></tr><tr><td>
+<i>program.ld</i>
+</td><td>
+
+A linker script used by GCC toolchain.
+Defines virtual memory locations for boot sequence, user program and data.
+
+</td></tr>
+</table>
+
+<h3>5.2. The first lab program</h3>
+
+<p>The first program just increments the counter and outputs its highest bits to board-dependent read and green LEDs, as well as the abstracted seven-segment multiple-digit display peripheral, implemented as a module in top-level board wrapper.</p>
+
+<blockquote><p>File <i>01_compile_c_to_assembly.bat</i></p><font face="Courier"><pre>                      
+#include "mfp_memory_mapped_registers.h"
+
+int main ()
+{
+    long long int n = 0;
+
+    for (;;)
+    {
+        MFP_RED_LEDS   = n >> 16;
+        MFP_GREEN_LEDS = n >> 16;
+        MFP_7_SEGMENT_HEX = ((n >> 8) & 0xffffff00) | (n & 0xff);
+
+        n ++;
+    }
+
+    return 0;
+}
+</pre></font></blockquote>
+
+<p>Memory-mapped I/O registers are pseudo-variables created using <i>#define</i> constructs in <i>mfp_memory_mapped_registers.h</i> header file. The "* (volatile unsigned *)" construct is needed so that the compiler do not optimize memory accesses to the addresses of memory-mapped I/O registers:</p>
+
+<blockquote><p>File <i>mfp_memory_mapped_registers.h</i></p><font face="Courier"><pre>                      
+#ifndef MFP_MEMORY_MAPPED_REGISTERS_H
+#define MFP_MEMORY_MAPPED_REGISTERS_H
+
+#define MFP_RED_LEDS_ADDR       0xBF800000
+#define MFP_GREEN_LEDS_ADDR     0xBF800004
+#define MFP_SWITCHES_ADDR       0xBF800008
+#define MFP_BUTTONS_ADDR        0xBF80000C
+#define MFP_7_SEGMENT_HEX_ADDR  0xBF800010
+
+#define MFP_RED_LEDS            (* (volatile unsigned *) MFP_RED_LEDS_ADDR      )
+#define MFP_GREEN_LEDS          (* (volatile unsigned *) MFP_GREEN_LEDS_ADDR    )
+#define MFP_SWITCHES            (* (volatile unsigned *) MFP_SWITCHES_ADDR      )
+#define MFP_BUTTONS             (* (volatile unsigned *) MFP_BUTTONS_ADDR       )
+#define MFP_7_SEGMENT_HEX       (* (volatile unsigned *) MFP_7_SEGMENT_HEX_ADDR )
+
+// This define is used in boot.S code
+
+#define BOARD_16_LEDS_ADDR      MFP_RED_LEDS_ADDR
+
+#endif
+</pre></font></blockquote>
+
+<h3>5.3. First step: cleaning all</h3>
+
+<p>This step is optional. It removes all files generated by other steps.</p>
+
+<blockquote><p>File <i>00_clean_all.bat</i></p><font face="Courier"><pre>                                  
+rd /s /q sim
+
+del *.o
+del main.s
+del program.elf
+del program.map
+del program.dis
+del program*.hex
+del program.rec
+del FPGA_Ram.elf
+
+</pre></font></blockquote>
+
+<h3>5.4. Compiling the software</h3>
+
+<h3>5.4.1. Compiling C program into assembly to examine the generated code</h3>
+
+<p>This step is optional. It can be used to see MIPS assembly code generated by the compiler for the given C code. When compiling C programs for MIPS platform using GCC toolchain it is essential to use optimization option, at least <i>-O1</i>. Without optimizations (<i>-O1</i>) the compiler located all C variable on memory locations rather then on registers, de facto erasing all the performance advantage of high-performance RISC core with large register set.</p>
+
+<blockquote><p>File <i>01_compile_c_to_assembly.bat</i></p><font face="Courier"><pre>                      
+rem -EL           - Little-endian
+rem -march=m14kc  - MIPSfpga = MIPS microAptiv UP based on MIPS M14Kc
+rem -msoft-float  - should not use floating-point processor instructions
+rem -O2           - optimization level
+rem -S            - compile to assembly
+
+mips-mti-elf-gcc -EL -march=m14kc -msoft-float -O2 -S main.c
+
+</pre></font></blockquote>
+
+<p>You can compare the code generated with and without optimization below:</p>
+
+<blockquote><p>The generated <i>main.s</i> MIPS assembly file when compiling with optimization (<i>-O2</i> option)</p>
+<font face="Courier"><pre>                      
+main:
+	.frame	$sp,0,$31		# vars= 0, regs= 0/0, args= 0, gp= 0
+	.mask	0x00000000,0
+	.fmask	0x00000000,0
+	.set	noreorder
+	.set	nomacro
+	move	$3,$0
+	move	$5,$0
+	li	$6,-1082130432			# 0xffffffffbf800000
+	li	$11,-256			# 0xffffffffffffff00
+	sll	$4,$5,24
+.L4:
+	srl	$2,$3,8
+	or	$2,$4,$2
+	sll	$8,$5,16
+	srl	$4,$3,16
+	andi	$10,$3,0xff
+	addiu	$7,$3,1
+	and	$2,$2,$11
+	or	$4,$8,$4
+	sltu	$9,$7,$3
+	or	$2,$2,$10
+	sw	$4,0($6)
+	move	$3,$7
+	sw	$4,4($6)
+	addu	$5,$9,$5
+	sw	$2,16($6)
+	b	.L4
+	sll	$4,$5,24
+</pre></font></blockquote>
+
+<blockquote><p>The generated <i>main.s</i> MIPS assembly file when compiling without optimization (<i>-O0</i> option)</p>
+<font face="Courier"><pre>                      
+main:
+	.frame	$fp,16,$31		# vars= 8, regs= 1/0, args= 0, gp= 0
+	.mask	0x40000000,-4
+	.fmask	0x00000000,0
+	.set	noreorder
+	.set	nomacro
+	addiu	$sp,$sp,-16
+	sw	$fp,12($sp)
+	move	$fp,$sp
+	move	$2,$0
+	move	$3,$0
+	sw	$2,0($fp)
+	sw	$3,4($fp)
+.L2:
+	li	$2,-1082130432			# 0xffffffffbf800000
+	lw	$3,4($fp)
+	sll	$3,$3,16
+	lw	$10,0($fp)
+	srl	$8,$10,16
+	or	$8,$3,$8
+	lw	$3,4($fp)
+	sra	$9,$3,16
+	move	$3,$8
+	sw	$3,0($2)
+	li	$2,-1082130432			# 0xffffffffbf800000
+	ori	$2,$2,0x4
+	lw	$3,4($fp)
+	sll	$3,$3,16
+	lw	$10,0($fp)
+	srl	$6,$10,16
+	or	$6,$3,$6
+	lw	$3,4($fp)
+	sra	$7,$3,16
+	move	$3,$6
+	sw	$3,0($2)
+	li	$2,-1082130432			# 0xffffffffbf800000
+	ori	$2,$2,0x10
+	lw	$3,4($fp)
+	sll	$3,$3,24
+	lw	$10,0($fp)
+	srl	$4,$10,8
+	or	$4,$3,$4
+	lw	$3,4($fp)
+	sra	$5,$3,8
+	move	$10,$4
+	li	$3,-256			# 0xffffffffffffff00
+	and	$10,$10,$3
+	lw	$3,0($fp)
+	andi	$3,$3,0xff
+	or	$3,$10,$3
+	sw	$3,0($2)
+	lw	$10,0($fp)
+	lw	$11,4($fp)
+	li	$12,1			# 0x1
+	move	$13,$0
+	addu	$2,$10,$12
+	sltu	$14,$2,$10
+	addu	$3,$11,$13
+	addu	$10,$14,$3
+	move	$3,$10
+	sw	$2,0($fp)
+	sw	$3,4($fp)
+	b	.L2
+	nop
+</pre></font></blockquote>
+
+<h3>5.4.2. Compiling C and assembly programs and linking them into ELF file</h3>
+
+<p>This step is required. It generates file in ELF format used to define executables for bare metal software (ELF - Executable and Linkable Format)</p>
+
+<blockquote><p>File <i>02_compile_and_link.bat</i></p><font face="Courier"><pre>                           
+rem -EL             - Little-endian
+rem -march=m14kc    - MIPSfpga = MIPS microAptiv UP based on MIPS M14Kc
+rem -msoft-float    - should not use floating-point processor instructions
+rem -o program.elf  - output file name
+rem -O2             - optimization level
+rem -T, -Wl         - linked options
+
+mips-mti-elf-gcc -EL -march=m14kc -msoft-float -O2
+    -Wl,-Map=program.map -T program.ld
+    -Wl,--defsym,__flash_start=0xbfc00000
+    -Wl,--defsym,__flash_app_start=0x80000000
+    -Wl,--defsym,__app_start=0x80000000
+    -Wl,--defsym,__stack=0x80040000
+    -Wl,--defsym,__memory_size=0x1f800
+    -Wl,-e,0xbfc00000
+    boot.S main.c -o program.elf
+
+</pre></font></blockquote>
+
+<h3>5.4.3. Checking program size</h3>
+
+<p>This step is optional. This utility outputs the information that can be used to check if the program fits memory size.</p>
+
+<blockquote><p>File <i>03_check_program_size.bat</i></p><font face="Courier"><pre>                         
+mips-mti-elf-size program.elf
+</pre></font></blockquote>
+
+<blockquote><p>The output of <i>03_check_program_size.bat</i></p>
+<font face="Courier"><pre>                         
+   text	   data	    bss	    dec	    hex	filename
+   1292	     32	     32	   1356	    54c	program.elf
+</pre></font></blockquote>
+
+<h3>5.4.4. Using disassembly program</h3>
+
+<p>This step is optional. It can be used to see the contents of the linked ELF executable.</p>
+
+<blockquote><p>File <i>04_disassemble.bat</i></p><font face="Courier"><pre>                                
+mips-mti-elf-objdump -D program.elf &gt; program.dis
+
+</pre></font></blockquote>
+<h3>5.5. Using Verilog simulation to model and debug both hardware and software </h3>
+
+<p>This step is optional or can be used as a separate lab.</p>
+
+<h3>5.5.1. Preparing Verilog $readmemh file with memory image for the software</h3>
+
+<p>This step is optional and is needed only for simulation using Mentor ModelSim, Icarus Verilog, Xilinx Vivado simulator or any other Verilog simulator.</p>
+
+<blockquote><p>File <i>05_generate_verilog_readmemh_file.bat</i></p><font face="Courier"><pre>             
+mips-mti-elf-objcopy program.elf -O verilog program.hex
+..\utilities\ad_hoc_program_hex_splitter
+
+</pre></font></blockquote>
+
+<p>MIPSfpga 1.0 package prepared the HEX file to load into ModelSim for simulation using <i>objdump</i> utility from the standard GCC toolchain, in combination with Windows-only script that was slow. The HEX file in MIPSfpga 2.0 is generated in a different, faster and somewhat more standard way, using <i>objcopy</i> utility from GCC toolchain with an option "-O verilog", in combination with MIPSfpga 2.0 -specific utility called <a href="https://github.com/MIPSfpga/mipsfpga-plus/blob/master/programs/utilities/ad_hoc_program_hex_splitter.c">ad_hoc_program_hex_splitter</a>.</p>
+
+<p>The utility <a href="https://github.com/MIPSfpga/mipsfpga-plus/blob/master/programs/utilities/ad_hoc_program_hex_splitter.c">ad_hoc_program_hex_splitter</a> splits the file <i>program.hex</i> into two files, <i>program_00000000.hex</i> and <i>program_1fc00000.hex</i>, that correspond to two physical memory locations - starting from addresses 0x00000000 and 0x1fc00000 correspondingly. When doing splitting, <i>ad_hoc_program_hex_splitter</i> also converts virtual addresses into byte offsets in the corresponding memories.</p>
+
+<p>In order to load the file created with <i>objcopy</i> and <i>ad_hoc_program_hex_splitter</i> into 4-byte-wide ram register array, the following testbench code is used in <i>MFP_USE_WORD_MEMORY</i> and non-<i>MFP_USE_WORD_MEMORY</i> modes:</p>
+
+<p><a href="http://www.silicon-russia.com/wp-content/uploads/2016/02/Screenshot-2016-02-02-23.30.05.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/02/Screenshot-2016-02-02-23.30.05.png" /></a></p>
+
+<p><a href="http://www.silicon-russia.com/wp-content/uploads/2016/02/Screenshot-2016-02-02-23.30.23.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/02/Screenshot-2016-02-02-23.30.23.png"  /></a></p>
+
+<p>The last step is necessary to load word-wide hex file data into narrow byte-wide memories necessary for the proper support od byte-wide uncached writes caused by MIPS instructions <i>SB</i> targeting uncached virtual addresses.</p>
+<h3>5.5.2. Simulating the system using Mentor Graphics ModelSim</h3>
+
+<p>This step is optional. Verilog simulation is the mainstream way of debugging Verilog RTL code. Mentor ModelSim is a popular low-cost simulator with free version. This lab is not intended to teach how to use ModelSim, which has a complex GUI and scripting language to control it by power user. This lab uses a simple Tcl script that runs the simulation and shows the results on waveforms. Tcl, or Tool Control Language is a scripting language utilized by many Electronic Design Automation (EDA) tools.</p>
+
+<p>Windows batch file that invokes ModelSim with Tcl script:</p>
+
+<blockquote><p>File <i>06_simulate_with_modelsim.bat</i></p><font face="Courier"><pre>                     
+rd /s /q sim
+md sim
+cd sim
+
+copy ..\*.hex .
+
+vsim -do ../modelsim_script.tcl
+
+</pre></font></blockquote>
+
+<p>The Tcl script used to compile Verilog source code, setup the waveforms and run the simulation:</p>
+
+<blockquote><p>File <i>modelsim_script.tcl</i></p><font face="Courier"><pre>                     
+vlib work
+vlog -vlog01compat +define+SIMULATION +incdir+../../../../../MIPSfpga/rtl_up +incdir+../../.. ../../../../../MIPSfpga/rtl_up/*.v ../../../*.v
+vsim work.mfp_testbench
+add wave sim:/mfp_testbench/*
+run -all
+</pre></font></blockquote>
+
+<p>The screenshots outline the steps necessary to observe the results:</p>
+
+<p><center><b><font color=blue>Figure 5.1. After the test stops running, the simulator asks whether a user wants to exit. Clock "No":</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.33.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.33.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.2. ModelSim has complicated "busy" GUI. Click on small icon indicating the windows with the waveforms:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.38.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.38.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.3. We can see the windows with the waveforms</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.42.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.42.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.4. A little icon, second from top right corner, allows to "undock" the waveform window:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.01.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.01.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.5. Press the rightmost of "zoom" icons to see the whole waveforms:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.15.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.15.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.6. Set the cursor on right side of the waveform, after core executed the boot sequence:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.19.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.19.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.7. Use '+' zoom icon to zoom in:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.36.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.36.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.8. Select the signal you want to change radix from binary to hexadecimal:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.31.51.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.31.51.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.9. Change radix and observe how the value on GPIO outputs is incrementing:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.33.05.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.33.05.png" /></a>
+<h3>5.5.3. Simulating the system using Icarus Verilog</h3>
+
+<p>This step is optional. Verilog simulation is the mainstream way of debugging Verilog RTL code. Icarus Verilog is the easiest to use Verilog simulator available for the students. It is free but quite slow, for large designs it is order of magnitude slower on long runs that expensive commercial simulators like Synopsys VCS and even commercial version of ModelSim.</p>
+
+<p>Icarus Verilog is frequently used together with another free tool, GTKWave waveform viever. The script below compiles Verilog files for MIPSfpga using Icarus Verilog, runs the simulation and invokes GTKWave viewer with its simple intuitive GUI interface.</p>
+
+<blockquote><p>File <i>07_simulate_with_icarus.bat</i></p><font face="Courier"><pre>                       
+rd /s /q sim
+md sim
+cd sim
+
+copy ..\*.hex .
+
+\iverilog\bin\iverilog -D SIMULATION -g2005
+    -I ../../..
+    -I ../../../../../MIPSfpga/rtl_up
+    ../../../../../MIPSfpga/rtl_up/mvp*.v
+    ../../../../../MIPSfpga/rtl_up/RAM*.v
+    ../../../../../MIPSfpga/rtl_up/*xilinx.v
+    ../../../../../MIPSfpga/rtl_up/m14k*.v
+    ../../../*.v
+
+\iverilog\bin\vvp a.out &gt; a.lst
+\iverilog\gtkwave\bin\gtkwave.exe dump.vcd
+
+</pre></font></blockquote>
+
+<p><center><b><font color=blue>Figure 5.10. GTKWave viewer shows thye waveforms generated during simulation of MIPSfpga using Icarus Verilog simulator</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.12.40.png">
+<img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.12.40.png" /></a>
+<h3>5.6. Uploading software program to the board</h3>
+
+<h3>5.6.1. Generating the file in Motorola S-Record format</h3>
+
+<p>This step is required. Motorola S-Record is a format used by Serial Loader to load the software into the synthesized MIPSfpga system on FPGA board. The script uses a standard utility in GCC toolchain called <i>mips-mti-elf-objcopy</i>. For more information please see <i>Section 2. The theory of operation</i></p>
+
+<blockquote><p>File <i>08_generate_motorola_s_record_file.bat</i></p><font face="Courier"><pre>            
+mips-mti-elf-objcopy program.elf -O srec program.rec
+</pre></font></blockquote>
+
+<h3>5.6.2. Uploading ELF file into Xilinx FPGA board using BusBlaster and OpenOCD software</h3>
+
+<p>This step is optional. Before doing the upload it is necessary to connect BusBlaster to Digilent board as shown on <b><font color=blue>Figure 5.11</font></b>:</p>
+
+<p><center><b><font color=blue>Figure 5.11. Connecting BusBlaster to Digilent Nexys4 DDR board</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010905.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_nexys4_ddr_for_seminars_in_russia_20151021_010905.jpg" /></a>
+
+<p>The following script relies on a script for OpenOCD developed for another lab:</p>
+
+<blockquote><p>File <i>09_upload_to_xilinx_board_using_bus_blaster.bat</i></p><font face="Courier"><pre>   
+copy program.elf FPGA_Ram.elf
+rem Yes, it is working with DE2_115 script
+cd C:\MIPSfpga\Codescape\ExamplePrograms\Scripts\DE2_115
+loadMIPSfpga.bat C:\github\mipsfpga-plus\programs\00_serial_load_flow
+cd C:\github\mipsfpga-plus\programs\00_serial_load_flow
+del FPGA_Ram.elf
+
+</pre></font></blockquote>
+
+<h3>5.6.3. Uploading ELF file into Altera FPGA boards using Bus Blaster and OpenOCD software</h3>
+
+<p>This step is optional. Before doing the upload it is necessary to connect BusBlaster to Terasic DE0-CV board as shown on <b><font color=blue>Figures 5.12 and 5.13</font></b>:</p>
+
+<p><center><b><font color=blue>Figure 5.12. Connecting BusBlaster to Terasic DE0-CV board</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121639.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121639.jpg" /></a>
+
+<p><center><b><font color=blue>Figure 5.13. Connecting BusBlaster to Terasic DE0-CV board</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121534.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2015/10/mipsfpga_setup_on_de0_cv_for_seminars_in_russia_20151018_121534.jpg" /></a>
+
+<p>The following script relies on a script for OpenOCD developed for another lab:</p>
+
+<blockquote><p>File <i>10_upload_to_altera_board_using_bus_blaster.bat</i></p><font face="Courier"><pre>   
+copy program.elf FPGA_Ram.elf
+cd C:\MIPSfpga\Codescape\ExamplePrograms\Scripts\DE2_115
+loadMIPSfpga.bat C:\github\mipsfpga-plus\programs\00_serial_load_flow
+cd C:\github\mipsfpga-plus\programs\00_serial_load_flow
+del FPGA_Ram.elf
+
+</pre></font></blockquote>
+
+<h3>5.6.4. Checking which virtual COM port is used by USB-to-UART connector</h3>
+
+<p>This step is necessary if a user does not know which virtual COM port is used by USB-to-UART connector. On Windows this information can be obtained from either device manager or from attempting to run <i>mode</i> command for a number of virtual COM-ports.</p>
+
+<blockquote><p>File <i>11_check_which_com_port_is_used.bat</i></p><font face="Courier"><pre>               
+mode com0
+mode com1
+mode com2
+mode com3
+mode com4
+mode com5
+mode com6
+mode com7
+mode com8
+mode com9
+pause
+mode com10
+mode com11
+. . . . . . . . .
+
+</pre></font></blockquote>
+
+<h3>5.6.5. Finally! Uploading the compiled and linked software program into the synthesized MIPSfpga system on FPGA board via Serial Loader</h3>
+
+<p>This step is required.</p>
+
+<p>For Windows the script simply copies the generated Motorola S-record file into the pseudo-file which corresponds to virtual COM-port used by USB-to-UART connector. The COM ports existed in Windows from the beginning and were present even before Microsoft Windows in Microsoft MS-DOS. Both <i>mode</i> and <i>type</i> commands existed in MS-DOS and later Windows from the beginning.</p>
+
+<p>Before using this script the user has to modify it by setting the appropriate port number in "a" variable.</p>
+
+<p>The potential problems when using FTDI-based USB-to-UART may be lack of driver (it can be found on FTDI website) or access control in virtual machine if virtualization is used (trivial for any admin to resolve).</p>
+
+<blockquote><p>File <i>12_upload_to_the_board_using_uart.bat</i></p><font face="Courier"><pre>             
+set a=16
+set a=39
+mode com%a% baud=115200 parity=n data=8 stop=1 to=off xon=off odsr=off octs=off dtr=off rts=off idsr=off
+type program.rec &gt;\\.\COM%a%
+</pre></font></blockquote>
+
+<p>For Linux the script is different, but also very simple and uses the standard commands. The user who runs this script should be included in Linux <i>dialout</i> group</p>
+
+<p>If uploading program to the board first time during the current Linux session, add the current user to <i>dialout</i> Linux group. Enter the <i>root</i> password when prompted:</p>
+
+<blockquote><font face="Courier"><pre>
+sudo adduser $USER dialout
+su - $USER
+</pre></font></blockquote>
+
+<p>Now run the following script that uploads the program into the synthesized MIPSfpga system on FPGA board:</p>
+
+<blockquote><p>File <i>12_upload_to_the_board_using_uart.sh</i></p><font face="Courier"><pre>             
+stty -F /dev/ttyUSB0 raw speed 115200 -crtscts cs8 -parenb -cstopb
+cat program.rec > /dev/ttyUSB0
+</pre></font></blockquote>
+
+<p>After the program is uploaded, the user should be able to see the system working (counting, flashing LEDs). If it does not work right away, check the port number, the presence of Motorola S-record file, and repeat again.</p>
+<h3>Appendix A. More pictures for setting up Terasic boards with Altera Cyclone II, III, IV and V FPGA</h3>
+
+<p>Some Terasic boards have USB-to-UART connector, for some other boards it is possible to use other interfaces, but for simplicity this lab uses external USB-to-UART connectors attached to general purpose I/O pins.</p>
+
+<p><font color=blue><b>Picture A.1.</b> A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/02/IMG_1423.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/02/IMG_1423.jpg" /></a>
+
+<p><font color=blue><b>Picture A.2.</b> Serial Loader is also compatible with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a>. There is another, alternative cable, based on <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182718&SearchText=PL2303HX">PL2303HX chip</a> however this cable has more compatibility problems with Windows 8.x and we recommend to use cables based on PL2303TA instead:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/pl2303ta_160926_175832.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/pl2303ta_160926_175832-1024x1024.jpg" /></a>
+
+<p><font color=blue><b>Picture A.3.</b> A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip connected to GPIO pins of <a href="http://de0.terasic.com">Terasic DE0</a> with Altera Cyclone III FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground is connected to pin 6 from right bottom. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_and_ft232rl_160926_213603.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_and_ft232rl_160926_213603-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Picture A.4.</b> A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip connected to GPIO pins of <a href="http://de0.terasic.com">Terasic DE0</a> with Altera Cyclone III FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground is connected to pin 6 from right bottom. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_and_ft232rl_160926_213705.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_and_ft232rl_160926_213705-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Picture A.5.</b> A picture of <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a> connected to GPIO pins of <a href="http://de0.terasic.com">Terasic DE0</a> with Altera Cyclone III FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground (black) is connected to pin 6 from right bottom:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_and_pl2303ta_160926_213033.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_and_pl2303ta_160926_213033-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Picture A.6.</b> A picture of <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a> connected to GPIO pins of <a href="http://de0.terasic.com">Terasic DE0</a> with Altera Cyclone III FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground (black) is connected to pin 6 from right bottom:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_and_pl2303ta_160926_213338.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_and_pl2303ta_160926_213338-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Picture A.7.</b> A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip connected to GPIO pins of <a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground is connected to pin 6 from right bottom. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_160527.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_160527-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Picture A.8.</b> A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip connected to GPIO pins of <a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground is connected to pin 6 from right bottom. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_171948.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_171948-1024x1024.jpg" /></a>
+
+<p><font color=blue><b>Picture A.9.</b> A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip connected to GPIO pins of <a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground is connected to pin 6 from right bottom. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_175703.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_ft232rl_160926_175703-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Picture A.10.</b> A picture of <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a> connected to GPIO pins of <a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground (black) is connected to pin 6 from right bottom:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_pl2303ta_160926_163235.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_pl2303ta_160926_163235-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Picture A.11.</b> A picture of <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a> connected to GPIO pins of <a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground (black) is connected to pin 6 from right bottom:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_pl2303ta_160926_163515.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_cv_and_pl2303ta_160926_163515-1024x767.jpg" /></a>
+
+<p><font color=blue><b>Picture A.12.</b> A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip connected to GPIO pins of <a href="http://de0-nano.terasic.com.tw">Terasic DE0-Nano</a> board with Altera Cyclone IV FPGA. UART TX (green) is connected to the pin 3 from right top and the ground is connected to pin 6 from right top. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_nano_and_ft232rl_160926_200247.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_nano_and_ft232rl_160926_200247-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Picture A.13.</b> A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip connected to GPIO pins of <a href="http://de0-nano.terasic.com.tw">Terasic DE0-Nano</a> board with Altera Cyclone IV FPGA. UART TX (green) is connected to the pin 3 from right top and the ground is connected to pin 6 from right top. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_nano_and_ft232rl_160926_200325.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_nano_and_ft232rl_160926_200325-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Picture A.14.</b> A picture of <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a> connected to GPIO pins of <a href="http://de0-nano.terasic.com.tw">Terasic DE0-Nano</a> board with Altera Cyclone IV FPGA. UART TX (green) is connected to the pin 3 from right top and the ground (black) is connected to pin 6 from right top:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_nano_and_pl2303ta_160926_195706.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_nano_and_pl2303ta_160926_195706-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Picture A.15.</b> A picture of <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a> connected to GPIO pins of <a href="http://de0-nano.terasic.com.tw">Terasic DE0-Nano</a> board with Altera Cyclone IV FPGA. UART TX (green) is connected to the pin 3 from right top and the ground (black) is connected to pin 6 from right top:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_nano_and_pl2303ta_160926_200109.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de0_nano_and_pl2303ta_160926_200109-683x1024.jpg" /></a>
+
+<p><font color=blue><b>Picture A.16.</b> A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip connected to GPIO pins of <a href="http://de1.terasic.com">Terasic DE1</a> with Altera Cyclone II FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground is connected to pin 6 from right bottom. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de1_and_ft232rl_160926_202017.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de1_and_ft232rl_160926_202017-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Picture A.17.</b> A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip connected to GPIO pins of <a href="http://de1.terasic.com">Terasic DE1</a> with Altera Cyclone II FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground is connected to pin 6 from right bottom. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de1_and_ft232rl_160926_202330.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de1_and_ft232rl_160926_202330-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Picture A.18.</b> A picture of <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a> connected to GPIO pins of <a href="http://de1.terasic.com">Terasic DE1</a> with Altera Cyclone II FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground (black) is connected to pin 6 from right bottom:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de1_and_pl2303ta_160926_202449.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de1_and_pl2303ta_160926_202449-1024x1024.jpg" /></a>
+
+<p><font color=blue><b>Picture A.19.</b> A picture of <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a> connected to GPIO pins of <a href="http://de1.terasic.com">Terasic DE1</a> with Altera Cyclone II FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground (black) is connected to pin 6 from right bottom:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de1_and_pl2303ta_160926_202733.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de1_and_pl2303ta_160926_202733-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Picture A.20.</b> A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip connected to GPIO pins of <a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground is connected to pin 6 from right bottom. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_215000.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_215000-1024x768.jpg" /></a>
+
+<p><font color=blue><b>Picture A.21.</b> A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip connected to GPIO pins of <a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground is connected to pin 6 from right bottom. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_232001.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_232001-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Picture A.22.</b> A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip connected to GPIO pins of <a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground is connected to pin 6 from right bottom. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_232040.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_232040-1024x1024.jpg" /></a>
+
+<p><font color=blue><b>Picture A.23.</b> A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip connected to GPIO pins of <a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground is connected to pin 6 from right bottom. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_232207.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_232207-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Picture A.24.</b> A picture of FTDI-based USB-to-UART connector with <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231000536&SearchText=FT232RL+FTDI+USB">FT232RL</a> chip connected to GPIO pins of <a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground is connected to pin 6 from right bottom. Note that you need to setup 3.3V/5V jumper on this connector into 3.3V position to avoid potential damage to some sensitive FPGAs:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_232333.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_ft232rl_160926_232333-683x1024.jpg" /></a>
+
+<p><font color=blue><b>Picture A.25.</b> A picture of <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a> connected to GPIO pins of <a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground (black) is connected to pin 6 from right bottom:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_pl2303ta_160926_215112.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_pl2303ta_160926_215112-1024x683.jpg" /></a>
+
+<p><font color=blue><b>Picture A.26.</b> A picture of <a href="http://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20151231182357&SearchText=PL2303TA+cable">PL2303TA USB TTL to RS232 Converter Serial Cable module for win XP/VISTA/7/8/8.1</a> connected to GPIO pins of <a href="http://de2-115.terasic.com">Terasic DE2-115</a> with Altera Cyclone IV FPGA. UART TX (green) is connected to the pin 3 from right bottom and the ground (black) is connected to pin 6 from right bottom:</font></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_pl2303ta_160926_231019.jpg"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/terasic_de2_115_and_pl2303ta_160926_231019-1024x683.jpg" /></a>

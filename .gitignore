@@ -12,7 +12,7 @@ sim/
 FPGA*.txt
 test.html
 test.html.imgtec_forum
-.vscode/
+.vscode/c_cpp_properties.json
 core_2.0/
 core_1.3/
 core
