@@ -96,15 +96,15 @@ module mfp_ahb_ram_slave
         );
     `endif
 
-    `ifdef SIMULATION1
+    `ifdef SIMULATION
 
         assign HRDATA = HRDATA_from_ram;
 
-    `elsif MFP_INITIALIZE_MEMORY_FROM_TXT_FILE1
+    `elsif MFP_INITIALIZE_MEMORY_FROM_TXT_FILE
 
         assign HRDATA = HRDATA_from_ram;
 
-    `else
+    `elsif MFP_USE_UART_PROGRAM_LOADER
 
         // We check if ram was ever written.
         // If not, we return hardcoded program.
@@ -150,6 +150,10 @@ module mfp_ahb_ram_slave
 
         assign HRDATA = ram_was_ever_written ?
             HRDATA_from_ram : HRDATA_hardcoded_reg;
+
+    `else
+
+        assign HRDATA = HRDATA_from_ram;
 
     `endif
 
