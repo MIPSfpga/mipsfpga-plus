@@ -4,6 +4,7 @@ sim/
 *.bak
 *.o
 *.elf
+*.dis
 *.lst
 *.map
 *.rec
