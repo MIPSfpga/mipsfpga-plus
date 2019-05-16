@@ -200,9 +200,9 @@ set source_files [list \
     "[file normalize "../../../core/mvp_register_s.v"]" \
     "[file normalize "../../../core/mvp_register.v"]" \
     "[file normalize "../../../core/mvp_ucregister_wide.v"]" \
-    "[file normalize "../../../core/RAMB4K_S16.v"]" \
-    "[file normalize "../../../core/RAMB4K_S2.v"]" \
-    "[file normalize "../../../core/RAMB4K_S8.v"]" \
+    "[file normalize "../../../core/RAMB4_S16.v"]" \
+    "[file normalize "../../../core/RAMB4_S2.v"]" \
+    "[file normalize "../../../core/RAMB4_S8.v"]" \
     "[file normalize "../../../core/ram_dual_port.v"]" \
     "[file normalize "../../../core/ram_reset_dual_port.v"]" \
     "[file normalize "../../../core/tagram_2k2way_xilinx.v"]" \
