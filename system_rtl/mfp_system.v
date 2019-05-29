@@ -419,52 +419,49 @@ module mfp_system
     assign SI_TraceDisable = 1'b1;     // Disables trace hardware
     assign SI_AHBStb       = 1'b1;     // AHB: Signal indicating phase and frequency relationship between clk and hclk.
 
-    wire [`MFP_N_GREEN_LEDS - 1:0] IO_GreenLEDs_gpio;
-    wire [`MFP_N_GREEN_LEDS - 1:0] IO_GreenLEDs_cache_misses;
-    wire [`MFP_N_GREEN_LEDS - 1:0] IO_GreenLEDs_pipe_bypass;
-
     `ifdef MFP_DEMO_CACHE_MISSES
 
-    wire burst = HTRANS == `HTRANS_NONSEQ && HBURST == `HBURST_WRAP4;
+         wire burst = (HTRANS == `HTRANS_NONSEQ && HBURST == `HBURST_WRAP4);
 
-    assign IO_GreenLEDs_cache_misses =
-    {
-        { `MFP_N_GREEN_LEDS - (1 + 1 + 2 + 4) { 1'b0 } },
-        HCLK,
-        burst,
-        HADDR [5:4],
-        4'b0
-    };
+        `ifdef MFP_DEMO_PIPE_BYPASS
 
-    `else
+            assign IO_GreenLEDs =
+            {
+                { `MFP_N_GREEN_LEDS - (1 + 1 + 4 + 4) { 1'b0 } },
+                HCLK,
+                burst,
+                HADDR [7:4],
+                mpc_aselwr_e,   // Bypass res_w as src A
+                mpc_bselall_e,  // Bypass res_w as src B
+                mpc_aselres_e,  // Bypass res_m as src A
+                mpc_bselres_e   // Bypass res_m as src B
+            };
 
-    assign IO_GreenLEDs_cache_misses = { `MFP_N_GREEN_LEDS { 1'b0 } };
+        `else
+
+            assign IO_GreenLEDs =
+            {
+                { `MFP_N_GREEN_LEDS - (1 + 1 + 6) { 1'b0 } },
+                HCLK,
+                burst,
+                HADDR [7:2]
+            };
+            
+        `endif
+
+    `elsif MFP_DEMO_PIPE_BYPASS
+
+        assign IO_GreenLEDs =
+        {
+            { `MFP_N_GREEN_LEDS - 5 { 1'b0 } },
+            HCLK,
+            mpc_aselwr_e,   // Bypass res_w as src A
+            mpc_bselall_e,  // Bypass res_w as src B
+            mpc_aselres_e,  // Bypass res_m as src A
+            mpc_bselres_e   // Bypass res_m as src B
+        };
 
     `endif
-
-    `ifdef MFP_DEMO_PIPE_BYPASS
-
-    assign IO_GreenLEDs_pipe_bypass =
-    {
-        { `MFP_N_GREEN_LEDS - (1 + 3 + 4) { 1'b0 } },
-        HCLK,
-        3'b0,
-        mpc_aselwr_e,   // Bypass res_w as src A
-        mpc_bselall_e,  // Bypass res_w as src B
-        mpc_aselres_e,  // Bypass res_m as src A
-        mpc_bselres_e   // Bypass res_m as src B
-    };
-
-    `else
-
-    assign IO_GreenLEDs_pipe_bypass = { `MFP_N_GREEN_LEDS { 1'b0 } };
-
-    `endif
-
-    assign IO_GreenLEDs =
-           IO_GreenLEDs_gpio
-         | IO_GreenLEDs_cache_misses
-         | IO_GreenLEDs_pipe_bypass;
 
     mfp_ahb_lite_matrix_with_loader matrix_loader
     (
@@ -498,7 +495,15 @@ module mfp_system
         .IO_Switches      (   IO_Switches       ),
         .IO_Buttons       (   IO_Buttons        ),
         .IO_RedLEDs       (   IO_RedLEDs        ),
-        .IO_GreenLEDs     (   IO_GreenLEDs_gpio ),
+
+        `ifdef MFP_DEMO_CACHE_MISSES
+        .IO_GreenLEDs     (                    ),
+        `elsif MFP_DEMO_PIPE_BYPASS
+        .IO_GreenLEDs     (                    ),
+        `else
+        .IO_GreenLEDs     (   IO_GreenLEDs     ),
+        `endif
+
         .IO_7_SegmentHEX  (   IO_7_SegmentHEX   ),
                                                
         `ifdef MFP_DEMO_LIGHT_SENSOR           
