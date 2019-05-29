@@ -46,7 +46,8 @@ OCD = openocd
 OCD_CONF = ../../scripts/load/openocd.cfg
 
 # UART interface for memory programming
-UART_MEM_LOADER_DEV=/dev/ttyUSB0
+UART ?= 0
+UART_MEM_LOADER_DEV = /dev/ttyUSB$(UART)
 
 #########################################################
 # Compile settings and tasks
