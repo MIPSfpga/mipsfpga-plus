@@ -18,6 +18,7 @@ help:
 	$(info make load       - load program into the device memory, run it and detach gdb)
 	$(info make debug      - load program into the device memory, wait for gdb commands)
 	$(info make attach     - attach to the device, wait for gdb commands)
+	$(info make uart       - load program into the device memory using UART loader)
 	$(info make modelsim   - simulate program and device using Modelsim)
 	$(info make icarus     - simulate program and device using Icarus Verilog)
 	$(info make gtkwave    - show the result of Icarus Verilog simulation in GTKWave)
