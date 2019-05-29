@@ -84,7 +84,11 @@ module nexys4_ddr
     assign IO_Buttons  = { { `MFP_N_BUTTONS  -  5 { 1'b0 } } ,
                            BTNU, BTND, BTNL, BTNC, BTNR };
 
-    assign LED = IO_GreenLEDs [15:0];
+    `ifdef MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+    assign LED = (sw_db == 2'b00 ? IO_RedLEDs [15:0] : IO_GreenLEDs [15:0]);
+    `else
+    assign LED = IO_RedLEDs [15:0];
+    `endif
 
     assign LED16_B = 1'b0;
     assign LED16_G = 1'b0;

@@ -111,6 +111,8 @@ module de10_lite
     `ifdef MFP_USE_SDRAM_MEMORY
         assign LEDR[9] = ~DRAM_CKE;
         assign LEDR[8:0] = IO_RedLEDs [8:0];
+    `elsif MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+        assign LEDR = (sw_db == 2'b00 ? IO_RedLEDs [9:0] : IO_GreenLEDs [9:0]);
     `else
         assign LEDR = IO_RedLEDs [9:0];
     `endif

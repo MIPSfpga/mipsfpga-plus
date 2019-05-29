@@ -419,111 +419,132 @@ module mfp_system
     assign SI_TraceDisable = 1'b1;     // Disables trace hardware
     assign SI_AHBStb       = 1'b1;     // AHB: Signal indicating phase and frequency relationship between clk and hclk.
 
+    wire [`MFP_N_GREEN_LEDS - 1:0] IO_GreenLEDs_gpio;
+    wire [`MFP_N_GREEN_LEDS - 1:0] IO_GreenLEDs_cache_misses;
+    wire [`MFP_N_GREEN_LEDS - 1:0] IO_GreenLEDs_pipe_bypass;
+
     `ifdef MFP_DEMO_CACHE_MISSES
 
     wire burst = HTRANS == `HTRANS_NONSEQ && HBURST == `HBURST_WRAP4;
-    assign IO_GreenLEDs = { { `MFP_N_GREEN_LEDS - (1 + 1 + 6) { 1'b0 } }, HCLK, burst, HADDR [7:2] };
 
-    `elsif MFP_DEMO_PIPE_BYPASS
-
-    assign IO_GreenLEDs = { { `MFP_N_GREEN_LEDS - 5 { 1'b0 } },
-
+    assign IO_GreenLEDs_cache_misses =
+    {
+        { `MFP_N_GREEN_LEDS - (1 + 1 + 2 + 4) { 1'b0 } },
         HCLK,
+        burst,
+        HADDR [5:4],
+        4'b0
+    };
+
+    `else
+
+    assign IO_GreenLEDs_cache_misses = { `MFP_N_GREEN_LEDS { 1'b0 } };
+
+    `endif
+
+    `ifdef MFP_DEMO_PIPE_BYPASS
+
+    assign IO_GreenLEDs_pipe_bypass =
+    {
+        { `MFP_N_GREEN_LEDS - (1 + 3 + 4) { 1'b0 } },
+        HCLK,
+        3'b0,
         mpc_aselwr_e,   // Bypass res_w as src A
         mpc_bselall_e,  // Bypass res_w as src B
         mpc_aselres_e,  // Bypass res_m as src A
         mpc_bselres_e   // Bypass res_m as src B
     };
 
+    `else
+
+    assign IO_GreenLEDs_pipe_bypass = { `MFP_N_GREEN_LEDS { 1'b0 } };
+
     `endif
+
+    assign IO_GreenLEDs =
+           IO_GreenLEDs_gpio
+         | IO_GreenLEDs_cache_misses
+         | IO_GreenLEDs_pipe_bypass;
 
     mfp_ahb_lite_matrix_with_loader matrix_loader
     (
-        .HCLK             (   HCLK             ),
-        .HRESETn          ( ~ SI_Reset         ),  // Not HRESETn - this is necessary for serial loader
-        .HADDR            (   HADDR            ),
-        .HBURST           (   HBURST           ),
-        .HMASTLOCK        (   HMASTLOCK        ),
-        .HPROT            (   HPROT            ),
-        .HSIZE            (   HSIZE            ),
-        .HTRANS           (   HTRANS           ),
-        .HWDATA           (   HWDATA           ),
-        .HWRITE           (   HWRITE           ),
-        .HRDATA           (   HRDATA           ),
-        .HREADY           (   HREADY           ),
-        .HRESP            (   HRESP            ),
-        .SI_Endian        (   SI_Endian        ),
+        .HCLK             (   HCLK              ),
+        .HRESETn          ( ~ SI_Reset          ),  // Not HRESETn - this is necessary for serial loader
+        .HADDR            (   HADDR             ),
+        .HBURST           (   HBURST            ),
+        .HMASTLOCK        (   HMASTLOCK         ),
+        .HPROT            (   HPROT             ),
+        .HSIZE            (   HSIZE             ),
+        .HTRANS           (   HTRANS            ),
+        .HWDATA           (   HWDATA            ),
+        .HWRITE           (   HWRITE            ),
+        .HRDATA           (   HRDATA            ),
+        .HREADY           (   HREADY            ),
+        .HRESP            (   HRESP             ),
+        .SI_Endian        (   SI_Endian         ),
         
         `ifdef MFP_USE_SDRAM_MEMORY
-        .SDRAM_CKE        (   SDRAM_CKE        ),
-        .SDRAM_CSn        (   SDRAM_CSn        ),
-        .SDRAM_RASn       (   SDRAM_RASn       ),
-        .SDRAM_CASn       (   SDRAM_CASn       ),
-        .SDRAM_WEn        (   SDRAM_WEn        ),
-        .SDRAM_ADDR       (   SDRAM_ADDR       ),
-        .SDRAM_BA         (   SDRAM_BA         ),
-        .SDRAM_DQ         (   SDRAM_DQ         ),
-        .SDRAM_DQM        (   SDRAM_DQM        ),
+        .SDRAM_CKE        (   SDRAM_CKE         ),
+        .SDRAM_CSn        (   SDRAM_CSn         ),
+        .SDRAM_RASn       (   SDRAM_RASn        ),
+        .SDRAM_CASn       (   SDRAM_CASn        ),
+        .SDRAM_WEn        (   SDRAM_WEn         ),
+        .SDRAM_ADDR       (   SDRAM_ADDR        ),
+        .SDRAM_BA         (   SDRAM_BA          ),
+        .SDRAM_DQ         (   SDRAM_DQ          ),
+        .SDRAM_DQM        (   SDRAM_DQM         ),
         `endif
                                                 
-        .IO_Switches      (   IO_Switches      ),
-        .IO_Buttons       (   IO_Buttons       ),
-        .IO_RedLEDs       (   IO_RedLEDs       ),
-
-        `ifdef MFP_DEMO_CACHE_MISSES
-        .IO_GreenLEDs     (                    ),
-        `elsif MFP_DEMO_PIPE_BYPASS
-        .IO_GreenLEDs     (                    ),
-        `else
-        .IO_GreenLEDs     (   IO_GreenLEDs     ),
-        `endif
-
-        .IO_7_SegmentHEX  (   IO_7_SegmentHEX  ),
+        .IO_Switches      (   IO_Switches       ),
+        .IO_Buttons       (   IO_Buttons        ),
+        .IO_RedLEDs       (   IO_RedLEDs        ),
+        .IO_GreenLEDs     (   IO_GreenLEDs_gpio ),
+        .IO_7_SegmentHEX  (   IO_7_SegmentHEX   ),
                                                
         `ifdef MFP_DEMO_LIGHT_SENSOR           
-        .SPI_CS           ( SPI_CS             ),
-        .SPI_SCK          ( SPI_SCK            ),
-        .SPI_SDO          ( SPI_SDO            ),
+        .SPI_CS           ( SPI_CS              ),
+        .SPI_SCK          ( SPI_SCK             ),
+        .SPI_SDO          ( SPI_SDO             ),
         `endif                                 
                                                
-        .UART_RX          (   UART_RX          ), 
-        .UART_TX          (   UART_TX          ),
+        .UART_RX          (   UART_RX           ), 
+        .UART_TX          (   UART_TX           ),
 
         `ifdef MFP_USE_DUPLEX_UART
-        .UART_SRX         (   UART_SRX         ), 
-        .UART_STX         (   UART_STX         ),
+        .UART_SRX         (   UART_SRX          ), 
+        .UART_STX         (   UART_STX          ),
         `endif //MFP_USE_DUPLEX_UART
-        .UART_INT         (   uart_interrupt   ),
+        .UART_INT         (   uart_interrupt    ),
 
         `ifdef MFP_USE_IRQ_EIC
-        .EIC_input        (   EIC_input        ),
-        .EIC_Offset       (   SI_Offset        ),
-        .EIC_ShadowSet    (   SI_EISS          ),
-        .EIC_Interrupt    (   SI_Int           ),
-        .EIC_Vector       (   SI_EICVector     ),
-        .EIC_Present      (   SI_EICPresent    ),
-        .EIC_IAck         (   SI_IAck          ),
-        .EIC_IPL          (   SI_IPL           ),
-        .EIC_IVN          (   SI_IVN           ),
-        .EIC_ION          (   SI_ION           ),
+        .EIC_input        (   EIC_input         ),
+        .EIC_Offset       (   SI_Offset         ),
+        .EIC_ShadowSet    (   SI_EISS           ),
+        .EIC_Interrupt    (   SI_Int            ),
+        .EIC_Vector       (   SI_EICVector      ),
+        .EIC_Present      (   SI_EICPresent     ),
+        .EIC_IAck         (   SI_IAck           ),
+        .EIC_IPL          (   SI_IPL            ),
+        .EIC_IVN          (   SI_IVN            ),
+        .EIC_ION          (   SI_ION            ),
         `endif //MFP_USE_IRQ_EIC
 
         `ifdef MFP_USE_ADC_MAX10
-        .ADC_C_Valid      (   ADC_C_Valid      ),
-        .ADC_C_Channel    (   ADC_C_Channel    ),
-        .ADC_C_SOP        (   ADC_C_SOP        ),
-        .ADC_C_EOP        (   ADC_C_EOP        ),
-        .ADC_C_Ready      (   ADC_C_Ready      ),
-        .ADC_R_Valid      (   ADC_R_Valid      ),
-        .ADC_R_Channel    (   ADC_R_Channel    ),
-        .ADC_R_Data       (   ADC_R_Data       ),
-        .ADC_R_SOP        (   ADC_R_SOP        ),
-        .ADC_R_EOP        (   ADC_R_EOP        ),
-        .ADC_Trigger      (   ADC_Trigger      ),
-        .ADC_Interrupt    (   ADC_Interrupt    ),
+        .ADC_C_Valid      (   ADC_C_Valid       ),
+        .ADC_C_Channel    (   ADC_C_Channel     ),
+        .ADC_C_SOP        (   ADC_C_SOP         ),
+        .ADC_C_EOP        (   ADC_C_EOP         ),
+        .ADC_C_Ready      (   ADC_C_Ready       ),
+        .ADC_R_Valid      (   ADC_R_Valid       ),
+        .ADC_R_Channel    (   ADC_R_Channel     ),
+        .ADC_R_Data       (   ADC_R_Data        ),
+        .ADC_R_SOP        (   ADC_R_SOP         ),
+        .ADC_R_EOP        (   ADC_R_EOP         ),
+        .ADC_Trigger      (   ADC_Trigger       ),
+        .ADC_Interrupt    (   ADC_Interrupt     ),
         `endif //MFP_USE_ADC_MAX10
-                                               
-        .MFP_Reset        (   MFP_Reset        )
+
+        .MFP_Reset        (   MFP_Reset         )
     );
 
 endmodule
