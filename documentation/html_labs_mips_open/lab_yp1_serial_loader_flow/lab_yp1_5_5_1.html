@@ -1,0 +1,36 @@
+<p><big><b>5.5. Using Verilog simulation to model and debug both hardware and software </b></big></p>
+
+<p>This step is optional or can be used as a separate lab.</p>
+
+<p><big><b>5.5.1. Preparing Verilog $readmemh file with memory image for the software</b></big></p>
+
+<p>This step is optional and is needed only for simulation using Mentor ModelSim,
+Icarus Verilog, Xilinx Vivado simulator or any other Verilog simulator.</p>
+
+<blockquote><p>File <i>05_generate_verilog_readmemh_file.bat</i></p><pre>             
+mips-mti-elf-objcopy program.elf -O verilog program.hex
+..\utilities\ad_hoc_program_hex_splitter
+
+</pre></blockquote>
+
+<p>MIPSfpga 1.0 package prepared the HEX file to load into ModelSim for simulation using <i>objdump</i> utility
+from the standard GCC toolchain, in combination with Windows-only script that was slow. The HEX file in MIPSfpga 2.0
+is generated in a different, faster and somewhat more standard way, using <i>objcopy</i> utility from GCC toolchain
+with an option "-O verilog", in combination with MIPSfpga 2.0 -specific utility called
+<a href="https://github.com/MIPSfpga/mipsfpga-plus/blob/master/programs/utilities/ad_hoc_program_hex_splitter.c">ad_hoc_program_hex_splitter</a>.</p>
+
+<p>The utility <a href="https://github.com/MIPSfpga/mipsfpga-plus/blob/master/programs/utilities/ad_hoc_program_hex_splitter.c">ad_hoc_program_hex_splitter</a>
+splits the file <i>program.hex</i> into two files, <i>program_00000000.hex</i> and <i>program_1fc00000.hex</i>,
+that correspond to two physical memory locations - starting from addresses 0x00000000 and 0x1fc00000 correspondingly.
+When doing splitting, <i>ad_hoc_program_hex_splitter</i> also converts virtual addresses into byte offsets in the corresponding memories.</p>
+
+<p>In order to load the file created with <i>objcopy</i> and <i>ad_hoc_program_hex_splitter</i>
+into 4-byte-wide ram register array, the following testbench code is used in <i>MFP_USE_WORD_MEMORY</i> and non-<i>MFP_USE_WORD_MEMORY</i> modes:</p>
+
+<p><a href="http://www.silicon-russia.com/wp-content/uploads/2016/02/Screenshot-2016-02-02-23.30.05.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/02/Screenshot-2016-02-02-23.30.05.png" /></a></p>
+
+<p><a href="http://www.silicon-russia.com/wp-content/uploads/2016/02/Screenshot-2016-02-02-23.30.23.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/02/Screenshot-2016-02-02-23.30.23.png"  /></a></p>
+
+<p>The last step is necessary to load word-wide hex file data into narrow
+byte-wide memories necessary for the proper support od byte-wide uncached writes
+caused by MIPS instructions <i>SB</i> targeting uncached virtual addresses.</p>

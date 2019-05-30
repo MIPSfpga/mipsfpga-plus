@@ -1,0 +1,19 @@
+<p><big><b>1.  Introduction</b></big></p>
+
+<p>In this lab a student directly observes pipeline forwarding in action.
+The pipeline forwarding, or bypassing, is one of the most important
+microarchitectural tricks in CPU design.  During the lab, a student connects
+bypass control signals of MIPSfpga CPU core to LED signals on FPGA board,
+and watches with his eyes the pattern of flashing LEDs, when running
+different assembly programs on the synthesized MIPSfpga system configured
+inside the FPGA.  Obviously, in order to see anything meaningful with this
+way of observation, the design uses a really slow clock, 0.75 Hz, less than
+a beat per second.</p>
+
+<p>The method used in this lab is not a substitute for traditional debug,
+trace and performance measuring methods used to evaluate microarchitectural
+features by an experienced CPU designer.  This lab is intended for a
+beginning student who wants to visualize the work of the pipeline in a most
+straightforward fashion, without using too much imagination.  The subsequent
+labs in MIPSfpga 2.0 package use more complicated and indirect, but more
+generally applicable methods to explore the pipelining.</p>

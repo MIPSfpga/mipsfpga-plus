@@ -1,0 +1,315 @@
+
+<p><big><b>3. Lab steps</b></big></p>
+
+<p>This section outlines the sequence of steps, necessary to complete the
+lab.  Almost all generic steps in this lab are the same as in <i>MIPSfpga
+2.0 Lab YP1.  Using MIPSfpga with Serial Loader Flow that does not require
+BusBlaster board and OpenOCD software</i>.  Such generic steps are not
+described in this section.  Only the steps different from <i>Lab YP1</i> are
+explained in details.</p>
+
+<p><big><b>3.1. Briefly review the reference materials</b></big></p>
+
+<p>Look into <i>Appendix A.  A list of recommended materials to review
+before and during the interrupt lab</i>.  Briefly review the listed
+materials to get understanding where to look for the reference information
+during the lab.</p>
+
+<p><big><b>3.2.  Review the information about interrupt-related hardware
+signals</b></big></p>
+
+<p>Review <i>MIPS32&reg; microAptiv&trade; UP Integrator's Guide</i>,
+<i>Chapter 4: Interrupt Interface</i>.  This manual is included in
+<i>MIPSfpga</i> package.  The most important information is the description
+of interrupt pin signal <i>SI_Int</i> used in the lab.  In the course of the
+lab this multi-bit signal is connected to the buttons on FPGA board.  This
+allows triggering different interrupt by pressing the corresonding
+buttons.</p>
+
+
+<p><big><b>3.3. Setup the hardware configuration parameters</b></big></p>
+
+<p>Modify the configuration parameters in the file
+<i>system_rtl/mfp_ahb_lite_matrix_config.vh</i> as follows:</p>
+
+<img
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/Screenshot-2017-01-15-20.39.30.png"
+/>
+
+<p><big><b>3.4. Review the lab-specific hardware modifications</b></big></p>
+
+<p>Review the following fragment of <i>system_rtl/mfp_system.v</i>:</p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/Screenshot-2017-01-15-20.38.43.png"
+/>
+
+<p><big><b>3.5.  Connect the board to the computer</b></big></p>
+
+<p>For <i>Digilent</i> boards, such as <i>Nexys4</i>, <i>Nexys4 DDR</i> or
+<i>Basys3</i>, this step is obvious.  For <i>Altera/Terasic</i> boards some
+additional steps required:</p>
+
+<ol>
+
+<li>Connect USB-to-UART connector to FPGA board.  Either <i>FT232RL</i> or
+<i>PL2303TA</i> that you can by from AliExpress or Radio Shack will do the
+job.  <i>TX</i> output from the connector (green wire on <i>PL2303TA</i>)
+should go to pin 3 from right bottom on Terasic DE0, DE0-CV, DE1, DE2-115
+(right top on DE0-Nano) and <i>GND</i> output (black wire on
+<i>PL2303TA</i>) should be connected to pin 6 from right bottom on Terasic
+DE0, DE0-CV, DE1, DE2-115 (right top on DE0-Nano).  Please consult photo
+picture in <i>Lab YP1</i> to avoid short-circuit or other connection
+problems.</li>
+
+<li>For <i>FT232RL</i> connector: make sure to set 3.3V/5V jumper on
+<i>FT232RL</i> part to 3.3V.</li>
+
+<li>For the boards that require external power in addition to the power that
+comes from USB, connect the power supply.  The boards that require the extra
+power supply include <i>Terasic DE2-115</i>.</li>
+
+<li>Connect FPGA board to the computer using main connection cable provided
+by the board manufacturers.  Make sure to put USB cable to the right jack
+when ambiguity exists (such as in <i>Terasic DE2-115</i> board).</li>
+
+<li>Make sure to power the FPGA board (turn on the power switch) before
+connecting the UART cable from USB-to-UART connector to the computer. 
+Failing to do so may result in electric damage to the board.</li>
+
+<li>Connect USB-to-UART connector to FPGA board.</li>
+
+</ol>
+
+<p><big><b>3.6.  Run the synthesis and configure the FPGA with the
+synthesized MIPSfpga system</b></big></p>
+
+<p>This step is identical to the synthesis step in <i>Lab YP1</i></p>
+
+<p><big><b>3.7.  Go to the lab directory and clean it up</b></big></p>
+
+<p>Under Windows:</p>
+
+<blockquote><pre>
+cd programs\04_interrupts
+00_clean_all.bat
+</pre></blockquote>
+
+<p>Under Linux:</p>
+
+<blockquote><pre>
+cd programs/04_interrupts
+./00_clean_all.sh
+</pre></blockquote>
+
+<p><big><b>3.8.  Review the portion of the lab program code that does not
+use interrupts</b></big></p>
+
+<p>The <i>main()</i> function is located in file
+<i>programs/04_interrupts/main.c</i>.  This function is executed after the
+reset and running the boot sequence.  The main function in this lab simply
+runs a counter and outputs its value on a multi-digit seven-segment display
+on FPGA board.</p>
+
+<p>The output value is constructed from both high and low bits of the
+counter.  This allows the student to observe the digits on the display
+changing when running the synthesized system with either fast clock (50 MHz)
+and ultra-slow clock (0.75 Hz or 12.5 Hz).  For more details about the
+switchable clock see <i>MIPSfpga 2.0 Lab YP2.  Using switchable clock to
+observe the CPU cycle-by-cycle</i>.</p>
+
+<p>Depending on the position of a switch 2, the program can either run with
+or without interrupts.  In both cases it resets the counter to predefined
+values when either button 0 or button 1 is pressed.</p>
+
+<p>Note that on some FPGA boards button 0 is used as system reset.  For such
+boards you can either do the whole lab only using button 1 or resynthesize
+the system, connecting reset to a button or a switch other than button
+0.</p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/Screenshot-2017-01-15-20.18.06.png"
+/>
+
+<p><big><b>3.9.  Prepare the first software run</b></big></p>
+
+<p>Following the procedure described in <i>Lab YP1</i>, compile and link the
+program, generate Motorola S-Record file and upload this file into the
+memory of the synthesized MIPSfpga-based system on the board.</p>
+
+<p>Under Windows:</p>
+
+<ol>
+
+<li>cd programs\04_interrupts</li>
+
+<li>run 02_compile_and_link.bat</li>
+
+<li>run 08_generate_motorola_s_record_file.bat</li>
+
+<li>run 11_check_which_com_port_is_used.bat</li>
+
+<li>edit 12_upload_to_the_board_using_uart.bat based on the result from the
+previous step - set the working port in "set a=" assignment.</li>
+
+<li>Make sure the switches 0 and 1 on FPGA board are turned off and switch 2
+is turned on.  Switches 0 and 1 control the speed of the clock, while switch
+2 determines whether the program uses interrupts (switch 2 is off) or does
+not use interrupts (switch 2 is on).  See <i>3.8.  Review the lab program
+code</i>.  If the switches 0 and 1 are not off, the loading through UART is
+not going to work.</li>
+
+<li>run 12_upload_to_the_board_using_uart.bat</li>
+
+</ol>
+
+<p>Under Linux:</p>
+
+<p>If uploading program to the board first time during the current Linux
+session, add the current user to <i>dialout</i> Linux group. Enter the
+<i>root</i> password when prompted:</p>
+
+<blockquote><pre>
+sudo adduser $USER dialout
+su - $USER
+</pre></blockquote>
+
+<p>After that:</p>
+
+<ol>
+
+<li>cd programs/04_interrupts</li>
+
+<li>run ./02_compile_and_link.sh</li>
+
+<li>run ./08_generate_motorola_s_record_file.sh</li>
+
+<li>run ./11_check_which_com_port_is_used.sh</li>
+
+<li>edit ./12_upload_to_the_board_using_uart.sh based on the result from the
+previous step - set the working port in "set a=" assignment</li>
+
+<li>Make sure the switches 0 and 1 on FPGA board are turned off and switch 2
+is turned on.  Switches 0 and 1 control the speed of the clock, while switch
+2 determines whether the program uses interrupts (switch 2 is off) or does
+not use interrupts (switch 2 is on).  See <i>3.8.  Review the lab program
+code</i>.  If the switches 0 and 1 are not off, the loading through UART is
+not going to work.</li>
+
+<li>./run 12_upload_to_the_board_using_uart.sh</li>
+
+</ol>
+
+<p><big><b>3.10. The first run</b></big></p>
+
+<ol>
+
+<li>Set the switches 0 and 1 on FPGA board to off position and switch 2 to
+on position. Make sure the switches 0 and 1 are off, otherwise the boot
+sequence (a sequence of processor instructions before <i>main</i> function)
+will take too long, since these switches control the clock frequency.</li>
+
+<li><p>Reset the processor.  The reset buttons for each board are listed
+in the table below:</p>
+
+<table border=1 cellpadding=10 cellspacing=0 rules=all>
+<tr>
+<th>Board</th>
+<th>Reset button</th>
+</tr>
+<tr><td>Digilent Basys3</td><td>Up</td></tr>
+<tr><td>Digilent Nexys4</td><td>Dedicated CPU Reset</td></tr>
+<tr><td>Digilent Nexys4 DDR</td><td>Dedicated CPU Reset</td></tr>
+<tr><td>Terasic DE0</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE0-CV</td><td>Dedicated reset button</td></tr>
+<tr><td>Terasic DE0-Nano</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE1</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE2-115</td><td>Button/Key 0</td></tr>
+<tr><td>Terasic DE10-Lite</td><td>Button/Key 0</td></tr>
+</table>
+
+</li>
+
+<li>Notice the output on seven-segment display.  Press button 1, observe how
+it resets the counter value.</li>
+
+<li>Turn the switch 1 on.  This will switch the system clock from 25 MHz to
+12.5 Hz / beats per second.  You should see LED 7 start blinking, it is
+connected straight to the system clock.  Notice the speed of counting.</li>
+
+<li>Press button 1, observe how it resets the counter value.</li>
+
+</ol>
+
+<p><big><b>3.12.  Review the material that explains the <i>interrupt</i>
+function attribute</b></big></p>
+
+<p>Use the following internet material to make sense of interrupt-specific
+function attributes in the code: <i>Using the GNU Compiler Collection (GCC). 
+6.31.18 MIPS Function Attributes</i> (<a
+href="http://gcc.gnu.org/onlinedocs/gcc/MIPS-Function-Attributes.html">
+http://gcc.gnu.org/onlinedocs/gcc/MIPS-Function-Attributes.html</a>).</p>
+
+<p><big><b>3.13.  Review C macros that are used to access Coprocessor 0
+registers</b></big></p>
+
+<p>Search for <i>mips/cpu.h</i> header file in Codescape GCC compiler
+package.  This file contains a set of macro definitions like
+<i>mips32_getcr</i> and <i>mips32_bicsr</i> that aid in accessing
+Coprocessor 0 registers.  These registers are needed to setup the
+interrupts.</p>
+
+<p><big><b>3.14.  Review <i>Status</i> and <i>Cause</i> Coprocessor 0
+register descriptions</b></big></p>
+
+<p>The following materials are useful for the review:</p>
+
+<ul>
+
+<li>Book <i>See MIPS Run, Second Edition, by Dominic Sweetman</i>,
+<i>Chapter 3.  Coprocessor 0: MIPS Process Control</i></li>
+
+<li><i>MIPS32&reg; microAptiv&trade; UP Processor Core Family Software
+User's Manual</i>, <i>Chapter 6: CP0 Registers of the microAptiv&trade; UP
+Core</i></li>
+
+<li><i>MIPS&reg; Architecture For Programmers Volume III: The MIPS32&reg;
+and microMIPS32&trade; Privileged Resource Architecture</i></li>
+
+</ul>
+
+<p><big><b>3.15.  Review the portion of the lab program code that uses
+interrupts</b></big></p>
+
+<p>The interrupt handler in <i>programs/04_interrupts/main.c</i>:</p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/Screenshot-2017-01-15-20.17.21.png"
+/>
+
+<p>Setting up the Coprocessor 0 registers for handling the interrupts in
+<i>programs/04_interrupts/main.c</i>:</p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/Screenshot-2017-01-15-20.18.51.png"
+/>
+
+<p>Code to setup the exception vector in
+<i>programs/04_interrupts/exceptions.S</i>:</p>
+
+<img width=500
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/Screenshot-2017-01-15-20.27.09.png"
+/>
+
+<p>The linker script which includes a new section for the exception vector
+in <i>programs/04_interrupts/program.ld</i>:</p>
+
+<img
+src="http://www.silicon-russia.com/wp-content/uploads/2017/01/Screenshot-2017-01-15-20.31.16.png"
+/>
+
+<p><big><b>3.16. Running the program that uses interrupts</b></big></p>
+
+<p>Re-run the step <i>3.10. The first run</i> with switch 2 in "off"
+position. Do you notice the difference in program performance? Can you
+explain the difference?</p>

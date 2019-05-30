@@ -1,0 +1,26 @@
+<p><big><b>1. Introduction</b></big></p>
+
+<p>This lab walks through the alternative usage flow of MIPSfpga, called "Serial Loader Flow". This alternative flow does not require using <a href="http://blog.imgtec.com/mips-processors/bus-blaster-v3c-is-an-affordable-debug-probe-for-mips-cpus">BusBlaster debugger board and OpenOCD software</a>. While BusBlaster / OpenOCD combination is a flexible and inexpensive way to debug the software uploaded into a synthesized MIPSfpga system, the flow with BusBlaster/OpenOCD has two drawbacks:</p>
+
+<ol>
+<li>A user is required to buy an additional hardware (BusBlaster) which may not be readily available for some users</li>
+<li>The drivers for OpenOCD depend on third-party software that may not be compatible with some versions of Windows and Linux</li>
+</ol>
+
+<p>The alternative Serial Loader Flow uses USB-to-UART connection already present in Digilent boards with Xilinx Artix-7 FPGA, including Basys3, Nexys4 and Nexys 4 DDR boards. For Altera-based boards that do not have integrated USB-to-UART connections it is still possible to use Serial Loader Flow. This can be accomplished by connecting the board with one of the ubiquitous $5 FTDI-based USB-to-UART connectors readily available in many stores and websites for Arduino hobbyists. Such connectors are easier to get than $50 Bus Blasters available on a smaller number of websites.</p>
+
+<p>In addition to offering the alternative way of uploading software programs into the synthesized MIPSfpga system on FPGA board, this lab illustrates several ideas useful for a digital design student, including:</p>
+
+<ol>
+<li>The implementation of serial UART protocol</li>
+<li>An example of using a finite state machine (FSM) to parse a text, with FSM coded in Verilog and synthesized in digital hardware rather than parsing the text using an FSM implemented in software</li>
+</ol>
+
+<p>The Serial Loader Flow is also not without drawbacks:</p>
+
+<ol>
+<li>The Serial Loader Flow does not allow debugging the software on the board using a debugger like Codescape working on a computer,</li>
+<li>Under this flow the hardware has to be aware of virtual-to-physical address mapping. If a user wants to change such mapping, he has to update both software linker script for his programs and Verilog code for the hardware component, specifically the code that translates virtual addresses into physical addresses during uploading the user's program into a synthesized MIPSfpga system.</li>
+</ol>
+
+<p>Despite those drawbacks, the Serial Loader Flow is a useful option for many users, and it can be used alongside with Bus Blaster / OpenOCD Flow.</p>

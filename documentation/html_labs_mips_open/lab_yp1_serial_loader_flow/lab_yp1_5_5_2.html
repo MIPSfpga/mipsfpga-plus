@@ -1,0 +1,70 @@
+<p><big><b>5.5.2. Simulating the system using Mentor Graphics ModelSim</b></big></p>
+
+<p>This step is optional. Verilog simulation is the mainstream way of debugging Verilog RTL code.
+Mentor ModelSim is a popular low-cost simulator with free version.
+This lab is not intended to teach how to use ModelSim, which has a complex GUI
+and scripting language to control it by power user. This lab uses a simple Tcl script
+that runs the simulation and shows the results on waveforms.
+Tcl, or Tool Control Language is a scripting language utilized by many
+Electronic Design Automation (EDA) tools.</p>
+
+<p>Windows batch file that invokes ModelSim with Tcl script:</p>
+
+<blockquote><p>File <i>06_simulate_with_modelsim.bat</i></p><pre>                     
+rd /s /q sim
+md sim
+cd sim
+
+copy ..\*.hex .
+
+vsim -do ../modelsim_script.tcl
+
+</pre></blockquote>
+
+<p>The Tcl script used to compile Verilog source code, setup the waveforms and run the simulation:</p>
+
+<blockquote><p>File <i>modelsim_script.tcl</i></p><pre>                     
+vlib work
+vlog -vlog01compat +define+SIMULATION +incdir+../../../../../MIPSfpga/rtl_up +incdir+../../.. ../../../../../MIPSfpga/rtl_up/*.v ../../../*.v
+vsim work.mfp_testbench
+add wave sim:/mfp_testbench/*
+run -all
+</pre></blockquote>
+
+<p>The screenshots outline the steps necessary to observe the results:</p>
+
+<p><center><b><font color=blue>Figure 5.1. After the test stops running, the simulator asks whether a user wants to exit. Clock "No":</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.33.png"><img src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.33.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.2. ModelSim has complicated "busy" GUI. Click on small icon indicating the windows with the waveforms:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.38.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.38.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.3. We can see the windows with the waveforms</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.42.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.29.42.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.4. A little icon, second from top right corner, allows to "undock" the waveform window:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.01.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.01.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.5. Press the rightmost of "zoom" icons to see the whole waveforms:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.15.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.15.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.6. Set the cursor on right side of the waveform, after core executed the boot sequence:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.19.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.19.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.7. Use '+' zoom icon to zoom in:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.36.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.30.36.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.8. Select the signal you want to change radix from binary to hexadecimal:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.31.51.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.31.51.png" /></a>
+
+<p><center><b><font color=blue>Figure 5.9. Change radix and observe how the value on GPIO outputs is incrementing:</font></b></center></p>
+
+<a href="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.33.05.png"><img width=500 src="http://www.silicon-russia.com/wp-content/uploads/2016/09/Screenshot-2016-09-29-00.33.05.png" /></a>
