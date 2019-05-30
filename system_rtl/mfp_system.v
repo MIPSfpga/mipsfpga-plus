@@ -408,7 +408,13 @@ module mfp_system
         assign SI_Int[7:5]    =  4'b0;
         assign SI_Int[4]      =  ADC_Interrupt;
         assign SI_Int[3]      =  uart_interrupt;
+
+        `ifdef MFP_DEMO_INTERRUPTS
+        assign SI_Int[2:0]    =  IO_Buttons [2:0];
+        `else
         assign SI_Int[2:0]    =  3'b0;
+        `endif
+ 
         assign SI_EICVector   =  6'b0;
         assign SI_EICPresent  =  1'b0;
         assign SI_IPTI        =  3'h7; //enable MIPS timer interrupt on HW5

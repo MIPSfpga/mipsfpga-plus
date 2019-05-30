@@ -52,9 +52,9 @@ int main ()
         {
             MFP_7_SEGMENT_HEX = ((n >> 8) & 0xffffff00) | (n & 0xff);
             
-            asm ("di");  // Disable interrupts
+            __asm__ volatile ("di");  // Disable interrupts
             n ++;
-            asm ("ei");  // Enable interrupts
+            __asm__ volatile ("ei");  // Enable interrupts
         }
     }
 
