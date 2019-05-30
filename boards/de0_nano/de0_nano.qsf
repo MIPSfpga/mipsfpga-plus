@@ -588,9 +588,9 @@ set_global_assignment -name VERILOG_FILE ../../../core/mvp_register_s.v
 set_global_assignment -name VERILOG_FILE ../../../core/mvp_ucregister_wide.v
 set_global_assignment -name VERILOG_FILE ../../../core/ram_dual_port.v
 set_global_assignment -name VERILOG_FILE ../../../core/ram_reset_dual_port.v
-set_global_assignment -name VERILOG_FILE ../../../core/RAMB4_S16.v
-set_global_assignment -name VERILOG_FILE ../../../core/RAMB4_S2.v
-set_global_assignment -name VERILOG_FILE ../../../core/RAMB4_S8.v
+set_global_assignment -name VERILOG_FILE ../../../core/RAMB4K_S16.v
+set_global_assignment -name VERILOG_FILE ../../../core/RAMB4K_S2.v
+set_global_assignment -name VERILOG_FILE ../../../core/RAMB4K_S8.v
 set_global_assignment -name VERILOG_FILE ../../../core/tagram_2k2way_xilinx.v
 
 set_global_assignment -name SEARCH_PATH ..
