@@ -2,7 +2,7 @@
 <head>
 
 <title>
-MIPSfpga 2.0. Lab YP3 - Integrating a peripheral: the light sensor example
+MIPSfpga 2.0. Lab MO3 - Integrating a peripheral: the light sensor example
 </title>
 
 <style>
@@ -24,7 +24,7 @@ pre
 <body>
 
 <p><big><big><b>
-MIPSfpga 2.0. Lab YP3 - Integrating a peripheral: the light sensor example
+MIPSfpga 2.0. Lab MO3 - Integrating a peripheral: the light sensor example
 </b></big></big></p>
 <p><big><b>1.  Introduction</b></big></p>
 
@@ -61,7 +61,7 @@ controller and an output device (the display) you will construct a
 practically useful gadget, a light meter.</p>
 
 <p>This lab can be further combined with the next lab, <i> MIPSfpga 2.0. 
-Lab YP4 - Introducing interrupts</i>, to demonstrate the interrupt-driven
+Lab MO4 - Introducing interrupts</i>, to demonstrate the interrupt-driven
 approach to input/output used in many real embedded systems.</p>
 <p><big><b>2.  The theory of operation</b></big></p>
 
@@ -281,9 +281,9 @@ src="http://silicon-russia.com/pages/2015_12_28/hierarchy_de0_cv_full.png"
 
 <p>This section outlines the sequence of steps, necessary to complete the
 lab.  Almost all generic steps in this lab are the same as in <i>MIPSfpga
-2.0 Lab YP1.  Using MIPSfpga with Serial Loader Flow that does not require
+2.0 Lab MO1.  Using MIPSfpga with Serial Loader Flow that does not require
 BusBlaster board and OpenOCD software</i>.  Such generic steps are not
-described in this section.  Only the steps different from <i>Lab YP1</i> are
+described in this section.  Only the steps different from <i>Lab MO1</i> are
 explained in details.</p>
 
 <p><big><b>3.1 Review the software part of the lab</b></big></p>
@@ -805,7 +805,7 @@ should go to pin 3 from right bottom on Terasic DE0, DE0-CV, DE1, DE2-115
 (right top on DE0-Nano) and <i>GND</i> output (black wire on
 <i>PL2303TA</i>) should be connected to pin 6 from right bottom on Terasic
 DE0, DE0-CV, DE1, DE2-115 (right top on DE0-Nano).  Please consult photo
-picture in <i>Lab YP1</i> to avoid short-circuit or other connection
+picture in <i>Lab MO1</i> to avoid short-circuit or other connection
 problems.</li>
 
 <li>For <i>FT232RL</i> connector: make sure to set 3.3V/5V jumper on
@@ -830,7 +830,7 @@ Failing to do so may result in electric damage to the board.</li>
 <p><big><b>3.6  Run the synthesis and configure the FPGA with the
 synthesized MIPSfpga system</b></big></p>
 
-<p>This step is identical to the synthesis step in <i>Lab YP1</i></p>
+<p>This step is identical to the synthesis step in <i>Lab MO1</i></p>
 
 <p><big><b>3.7  Go to the lab directory and clean it up</b></big></p>
 
@@ -850,7 +850,7 @@ cd programs/lab_yp2
 
 <p><big><b>3.8  Prepare the first software run</b></big></p>
 
-<p>Following the procedure described in <i>Lab YP1</i>, compile and link the
+<p>Following the procedure described in <i>Lab MO1</i>, compile and link the
 program, generate Motorola S-Record file and upload this file into the
 memory of the synthesized MIPSfpga-based system on the board.</p>
 
@@ -946,7 +946,7 @@ registers, the software performs more important tasks, such as computations.
 The input-output actions happen only when the peripheral device sends an
 interrupt request.</p>
 
-<p>After going through the next lab (<i>MIPSfpga 2.0.  Lab YP4 - Introducing
+<p>After going through the next lab (<i>MIPSfpga 2.0.  Lab MO4 - Introducing
 interrupts</i>), come back to this lab and modify the light sensor
 interfacing module.  The modified module should issue an interrupt when the
 measured value changes.  Connect the interrupt pin to <i>SI_Int</i> signal
