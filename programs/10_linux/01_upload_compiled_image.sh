@@ -1,1 +1,0 @@
-mips-mti-elf-gdb --se=kernel/vmlinux --silent -ex "set pagination off" -ex "target remote | openocd -f ../../scripts/load/openocd.cfg -p -c 'log_output openocd.log'" -ex "monitor reset halt" -ex "load" -ex "continue"
