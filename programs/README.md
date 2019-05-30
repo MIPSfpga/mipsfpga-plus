@@ -68,7 +68,6 @@ Those make commands can be run in program/* directories
   make load       - load program into the device memory, run it and detach gdb
   make debug      - load program into the device memory, wait for gdb commands
   make attach     - attach to the device, wait for gdb commands
-  make uart       - load program into the device memory using UART loader
   make modelsim   - simulate program and device using Modelsim
   make icarus     - simulate program and device using Icarus Verilog
   make gtkwave    - show the result of Icarus Verilog simulation with GTKWave
