@@ -2,6 +2,7 @@
 
 cat \
 lab_mo4_0.html \
+../lab_mo_note.html \
 lab_mo4_1.html \
 lab_mo4_2.html \
 lab_mo4_3.html \

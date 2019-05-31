@@ -20,6 +20,68 @@ pre
 </head>
 <body>
 <p><big><big><b>MIPS Open Developer Day Package. Lab MO5 - The first glance into caches</b></big></big></p>
+<p><big><b>0. Note.  This documentation is in the process of being
+updated</b></big></p>
+
+<p>This documentation is in the process of being updated to match the
+latest version of the source code.  The planned updates include:</p>
+
+<ol>
+
+<li><p>Informing the user how to use makefiles instead of short Linux
+scripts, Windows batch files and GUI.  To see all available make actions
+just run <i>make</i> in any board or program directory example:</p>
+
+<p><i>make</i> in subdirectories of <i>boards</i> directory:</i></p>
+
+<pre>
+make help   - show this message
+make all    - clean, create the board project and run the synthesis
+make clean  - delete synth folder
+make create - create the board project
+make open   - open the board project
+make build  - build the board project
+make load   - program the FPGA board
+</pre>
+
+<p><i>make</i> in subdirectories of <i>programs</i> directory:</i></p>
+
+<pre>
+make help       - show this message
+make all        - alternative for: compile program size disasm readmemh srecord
+make program    - build program.elf from sources
+make compile    - compile all C sources to ASM
+make size       - show program size information
+make disasm     - disassemble program.elf 
+make readmemh   - create verilog memory init file for simulation
+make srecord    - create Motorola S-record file to use it with UART loader
+make clean      - delete all created files
+make load       - load program into the device memory, run it and detach gdb
+make debug      - load program into the device memory, wait for gdb commands
+make attach     - attach to the device, wait for gdb commands
+make uart       - load program into the device memory using UART loader
+make modelsim   - simulate program and device using Modelsim
+make icarus     - simulate program and device using Icarus Verilog
+make gtkwave    - show the result of Icarus Verilog simulation in GTKWave
+</pre>
+</li>
+
+<li><p>Adding support for <i>make uart UART=N</i> where <i>N</i> is USB-to-UART
+device number (<i>/dev/ttyUSB0, 1, 2, ... N</i>).</p></li>
+
+<li><p>Light Sensor in peripheral integration lab is now integrated not as an
+addional GPIO (General Purpose I/O) device inside GPIO AHB-Lite slave, but
+as a separate AHB-Lite slave.</p></li>
+
+<li><p>Source code for pipeline bypass lab (<i>Lab MO6 - The first glance into
+pipelining</i>) does not match the documentation. Please look inside the
+code to see what it does.</p></li>
+
+<li><p>The new CorExtend / UDI - User Defined Instructions example does not
+have an instruction. Please refer to MIPS Open Day slides to figure out what
+it does.</p></li>
+
+</ol>
 <p><big><b>1.  Introduction</b></big></p>
 
 <p>This lab demonstrates how the work of CPU cache can be directly observed
