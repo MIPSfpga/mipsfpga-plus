@@ -21,7 +21,7 @@ This connection should be muxed with the regular seven-segment display
 output and should be dependent on whether some selected switch or button is
 pressed.  With this setup, when the system clock is turned into slow mode,
 it will be possible to observe how the processor enters interrupt service
-routune.  For more details about the switchable clock see <i>MIPSfpga
+routine.  For more details about the switchable clock see <i>MIPSfpga
 Lab MO2.  Using switchable clock to observe the CPU cycle-by-cycle</i>.</p>
 
 <p><b>5.1.3 Student investigation: Which Coprocessor 0 register bits should
@@ -48,7 +48,7 @@ fields may require adding additional ports and connections to the core's RTL
 <p>Document your changes and create a post on MIPSfpga forum of the
 Imagination Technologies website.</p>
 
-<p><big><b>5.2 Synchronising memory access in interrupts</b></big></p>
+<p><big><b>5.2 Synchronizing memory access in interrupts</b></big></p>
 
 <p><b>5.2.1 Exercise: Observe the effect of not disabling the interrupts
 around critical section that updates the same variable as the interrupt
@@ -203,11 +203,11 @@ service routine</b></p>
 
 <p>Processor mode is one of the most important concepts in computer science,
 particularly in the operating system design.  Different CPUs have somewhat
-different modes with different names: user, kernel, priviledged, superuser
+different modes with different names: user, kernel, privileged, superuser
 and others.  MIPS32 architecture supports user mode, kernel mode and
 supervisor mode.  According to <i>See MIPS Run, Second Edition, by Dominic
 Sweetman</i> the supervisor mode in MIPS is a historical accident, a feature
-that was added by a customer request, but was practially never used in a
+that was added by a customer request, but was practically never used in a
 real system.  So only the user and kernel modes are really used.</p>
 
 <p>In the latest releases of MIPS32 architecture there are some additional
@@ -229,7 +229,7 @@ no access to system coprocessor registers, and controlled access to memory
 locations.  This mode is used to run application programs that may be less
 reliable than the operating system.</p>
 
-<p>When an interrupt or, in general, an exception occures, a processor
+<p>When an interrupt or, in general, an exception occurs, a processor
 switches its mode from user to kernel and jumps to an exception handler, a
 piece of code that handles the exception.  When process the exception, the
 operating system performs the necessary actions.  Examples of such
@@ -238,7 +238,7 @@ actions:</p>
 <ul>
 
 <li>If the user code attempted to access a location in memory it should not
-acess, the operating system can terminate the user code, keeping the memory
+access, the operating system can terminate the user code, keeping the memory
 of the rest of the system (both OS and other application's memory) in
 order.</li>
 
