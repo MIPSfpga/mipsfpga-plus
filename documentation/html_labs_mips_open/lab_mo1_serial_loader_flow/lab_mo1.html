@@ -47,9 +47,9 @@ pre
 <p>Despite those drawbacks, the Serial Loader Flow is a useful option for many users, and it can be used alongside with Bus Blaster / OpenOCD Flow.</p>
 <p><big><b>2. The theory of operation</b></big></p>
 
-<p><big><b>2.1. MIPSfpga 2.0 hardware module hierarchy without Serial Loader Flow support</b></big></p>
+<p><big><b>2.1. MIPSfpga hardware module hierarchy without Serial Loader Flow support</b></big></p>
 
-<p><b><font color=blue>Figure 2.1</font></b> shows the basic hierarchy of synthesizable modules of MIPSfpga 2.0 for Digilent Nexys 4 DDR board with Xilinx Artix-7 FPGA and without Serial Loader hardware:</p>
+<p><b><font color=blue>Figure 2.1</font></b> shows the basic hierarchy of synthesizable modules of MIPSfpga for Digilent Nexys 4 DDR board with Xilinx Artix-7 FPGA and without Serial Loader hardware:</p>
 
 <p><center><b><font color=blue>Figure 2.1</font></b></center></p>
 
@@ -59,7 +59,7 @@ pre
 
 <ul>
 <li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/boards/nexys4_ddr/nexys4_ddr.v">de0_cv</a> - an external wrapper module, specific for each FPGA board type. The ports of this module correspond to physical ports on FPGA chip itself. The specific module <i>nexys4_ddr</i> is written for Digilent Nexys 4 DDR board with Xilinx Artix-7 FPGA.</li>
-<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_system.v">mfp_system</a> - system module, common for all FPGA boards that support MIPSfpga 2.0.
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_system.v">mfp_system</a> - system module, common for all FPGA boards that support MIPSfpga.
 <ul>
 <li><a href="http://www.silicon-russia.com/2015/12/11/mipsfpga-download-instructions">m14k_top</a> - top-level module of the microprocessor core <a href="http://imgtec.com/mips/aptiv/microaptiv/">MIPS microAptiv UP (also referenced in some documentation as MIPS microAptiv MPU)</a>. The name <i>m14k</i> is left from the earlier variant of the processor core - MIPS M14Kc.</li>
 <li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_system.v">mfp_ejtag_reset</a> - a utility module to reset EJTAG debug interface used in Bus Blaster / OpenOCD Flow<a href="http://www.linux-mips.org/wiki/JTAG">EJTAG</a></li>
@@ -79,7 +79,7 @@ pre
 </ul></li>
 </ul></li></ul>
 
-<p><big><b>2.2. Serial Loader Flow support in MIPSfpga 2.0 hardware module hierarchy</b></big></p>
+<p><big><b>2.2. Serial Loader Flow support in MIPSfpga hardware module hierarchy</b></big></p>
 
 <p>To support the Serial Loader Flow, for extra modules are added to this structure:</p>
 
@@ -251,7 +251,7 @@ to memory chip external to FPGA, such as SDRAM memory present on many FPGA board
 </pre></blockquote>
 <p><big><b>4.2. Xilinx Vivado flow</b></big></p>
 
-<p>This chapter shows the sequence of steps necessary to synthesize a system based MIPSfpga 2.0
+<p>This chapter shows the sequence of steps necessary to synthesize a system based MIPSfpga
 using Xilinx Vivado software and upload it into the board, such as
 <a href="http://store.digilentinc.com/nexys-4-ddr-artix-7-fpga-trainer-board-recommended-for-ece-curriculum/">
 Digilent Nexys 4 DDR</a> board with Xilinx Artix-7 FPGA on <b><font color=blue>Picture 4.2.1</font></b>.</p>
@@ -341,7 +341,7 @@ The extra parts are not required for this lab.</font></b></center></p>
 <p>After finishing this step the board should be configured with the synthesized design and ready to receive the software.</p>
 <p><big><b>4.3. Altera Quartus II flow</b></big></p>
 
-<p>This chapter shows the sequence of steps necessary to synthesize a system based MIPSfpga 2.0
+<p>This chapter shows the sequence of steps necessary to synthesize a system based MIPSfpga
 using Altera Quartus II software and upload it into the board, such as
 <a href="http://de0-cv.terasic.com.tw">Terasic DE0-CV</a> with Altera Cyclone V FPGA shown on <b><font color=blue>Picture 4.3.1</font></b>.</p>
 
@@ -839,9 +839,9 @@ mips-mti-elf-objcopy program.elf -O verilog program.hex
 </pre></blockquote>
 
 <p>MIPSfpga 1.0 package prepared the HEX file to load into ModelSim for simulation using <i>objdump</i> utility
-from the standard GCC toolchain, in combination with Windows-only script that was slow. The HEX file in MIPSfpga 2.0
+from the standard GCC toolchain, in combination with Windows-only script that was slow. The HEX file in MIPSfpga
 is generated in a different, faster and somewhat more standard way, using <i>objcopy</i> utility from GCC toolchain
-with an option "-O verilog", in combination with MIPSfpga 2.0 -specific utility called
+with an option "-O verilog", in combination with MIPSfpga -specific utility called
 <a href="https://github.com/MIPSfpga/mipsfpga-plus/blob/master/programs/utilities/ad_hoc_program_hex_splitter.c">ad_hoc_program_hex_splitter</a>.</p>
 
 <p>The utility <a href="https://github.com/MIPSfpga/mipsfpga-plus/blob/master/programs/utilities/ad_hoc_program_hex_splitter.c">ad_hoc_program_hex_splitter</a>

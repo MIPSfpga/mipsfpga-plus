@@ -1,8 +1,8 @@
 <p><big><b>2. The theory of operation</b></big></p>
 
-<p><big><b>2.1. MIPSfpga 2.0 hardware module hierarchy without Serial Loader Flow support</b></big></p>
+<p><big><b>2.1. MIPSfpga hardware module hierarchy without Serial Loader Flow support</b></big></p>
 
-<p><b><font color=blue>Figure 2.1</font></b> shows the basic hierarchy of synthesizable modules of MIPSfpga 2.0 for Digilent Nexys 4 DDR board with Xilinx Artix-7 FPGA and without Serial Loader hardware:</p>
+<p><b><font color=blue>Figure 2.1</font></b> shows the basic hierarchy of synthesizable modules of MIPSfpga for Digilent Nexys 4 DDR board with Xilinx Artix-7 FPGA and without Serial Loader hardware:</p>
 
 <p><center><b><font color=blue>Figure 2.1</font></b></center></p>
 
@@ -12,7 +12,7 @@
 
 <ul>
 <li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/boards/nexys4_ddr/nexys4_ddr.v">de0_cv</a> - an external wrapper module, specific for each FPGA board type. The ports of this module correspond to physical ports on FPGA chip itself. The specific module <i>nexys4_ddr</i> is written for Digilent Nexys 4 DDR board with Xilinx Artix-7 FPGA.</li>
-<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_system.v">mfp_system</a> - system module, common for all FPGA boards that support MIPSfpga 2.0.
+<li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_system.v">mfp_system</a> - system module, common for all FPGA boards that support MIPSfpga.
 <ul>
 <li><a href="http://www.silicon-russia.com/2015/12/11/mipsfpga-download-instructions">m14k_top</a> - top-level module of the microprocessor core <a href="http://imgtec.com/mips/aptiv/microaptiv/">MIPS microAptiv UP (also referenced in some documentation as MIPS microAptiv MPU)</a>. The name <i>m14k</i> is left from the earlier variant of the processor core - MIPS M14Kc.</li>
 <li><a href="http://github.com/MIPSfpga/mipsfpga-plus/blob/master/mfp_system.v">mfp_ejtag_reset</a> - a utility module to reset EJTAG debug interface used in Bus Blaster / OpenOCD Flow<a href="http://www.linux-mips.org/wiki/JTAG">EJTAG</a></li>
@@ -32,7 +32,7 @@
 </ul></li>
 </ul></li></ul>
 
-<p><big><b>2.2. Serial Loader Flow support in MIPSfpga 2.0 hardware module hierarchy</b></big></p>
+<p><big><b>2.2. Serial Loader Flow support in MIPSfpga hardware module hierarchy</b></big></p>
 
 <p>To support the Serial Loader Flow, for extra modules are added to this structure:</p>
 

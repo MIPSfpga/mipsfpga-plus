@@ -14,9 +14,9 @@ mips-mti-elf-objcopy program.elf -O verilog program.hex
 </pre></blockquote>
 
 <p>MIPSfpga 1.0 package prepared the HEX file to load into ModelSim for simulation using <i>objdump</i> utility
-from the standard GCC toolchain, in combination with Windows-only script that was slow. The HEX file in MIPSfpga 2.0
+from the standard GCC toolchain, in combination with Windows-only script that was slow. The HEX file in MIPSfpga
 is generated in a different, faster and somewhat more standard way, using <i>objcopy</i> utility from GCC toolchain
-with an option "-O verilog", in combination with MIPSfpga 2.0 -specific utility called
+with an option "-O verilog", in combination with MIPSfpga -specific utility called
 <a href="https://github.com/MIPSfpga/mipsfpga-plus/blob/master/programs/utilities/ad_hoc_program_hex_splitter.c">ad_hoc_program_hex_splitter</a>.</p>
 
 <p>The utility <a href="https://github.com/MIPSfpga/mipsfpga-plus/blob/master/programs/utilities/ad_hoc_program_hex_splitter.c">ad_hoc_program_hex_splitter</a>

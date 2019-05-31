@@ -30,15 +30,15 @@ cycle-by-cycle
 </b></big></big></p>
 <p><big><b>1.  Introduction</b></big></p>
 
-<p>This lab introduces switchable clock, a feature of MIPSfpga 2.0 that
+<p>This lab introduces switchable clock, a feature of MIPSfpga that
 enables the whole new category of student labs.  With this feature you can
 first run the processor with its usual multi megahertz frequency, then
 switch it to the frequence of a few clocks per second and observe how the
 processor works live.  A typical usage is to connect to external LEDs the
 CPU signals that control cache evictions or pipeline forwarding and observe
 the LED patterns when running different sequence of code.  This usage is
-demonstrated in <i>MIPSfpga 2.0.  Lab MO5 - The first glance into caches</i>
-and <i>MIPSfpga 2.0.  Lab MO6 - The first glance into pipelining</i>.</p>
+demonstrated in <i>MIPSfpga.  Lab MO5 - The first glance into caches</i>
+and <i>MIPSfpga.  Lab MO6 - The first glance into pipelining</i>.</p>
 <p><big><b>2.  The theory of operation</b></big></p>
 
 <p>When implemented in ASIC using 28 nm technology, MIPS microAptiv UP can
@@ -58,7 +58,7 @@ to be used.</p>
 
 <p>Altera has a special macro for such situation called <i>ALTCLKCTLR</i>,
 but it does not work for all cases.  As a result, the switchable clock in
-MIPSfpga 2.0 is implemented using a combination of a counter and a global
+MIPSfpga is implemented using a combination of a counter and a global
 buffer (Xilinx macro <i>BUFG</i> and Altera macro <i>global</i>).  The
 buffer is necessary, without it the synthesizer will not treat the output of
 the switchable clock module as a clock and the design will not work.  It is

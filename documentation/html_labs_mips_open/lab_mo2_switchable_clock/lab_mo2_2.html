@@ -17,7 +17,7 @@ to be used.</p>
 
 <p>Altera has a special macro for such situation called <i>ALTCLKCTLR</i>,
 but it does not work for all cases.  As a result, the switchable clock in
-MIPSfpga 2.0 is implemented using a combination of a counter and a global
+MIPSfpga is implemented using a combination of a counter and a global
 buffer (Xilinx macro <i>BUFG</i> and Altera macro <i>global</i>).  The
 buffer is necessary, without it the synthesizer will not treat the output of
 the switchable clock module as a clock and the design will not work.  It is
