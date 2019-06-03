@@ -20,7 +20,7 @@ module pmod_enc_rotary_encoder
     always @ (posedge clk or posedge reset)
         if (reset)
         begin
-            value <= 16'd0;
+            value <= - 16'd1;  // To do: figure out why we have to start with -1 and not 0
         end
         else if (a && ! prev_a)
         begin
