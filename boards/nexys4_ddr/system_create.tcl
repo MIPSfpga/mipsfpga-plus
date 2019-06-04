@@ -171,7 +171,7 @@ set source_files [list \
     "[file normalize "../../../core/m14k_tlb_utlb.v"]" \
     "[file normalize "../../../core/m14k_tlb.v"]" \
     "[file normalize "../../../core/m14k_top.v"]" \
-    "[file normalize "../../../core/m14k_udi_custom.v"]" \
+    "[file normalize "../../../core/m14k_udi_mipsfpga_ai.v"]" \
     "[file normalize "../../../core/m14k_udi_scanio_stub.v"]" \
     "[file normalize "../../../core/m14k_udi_stub.v"]" \
     "[file normalize "../../../core/mvp_cregister_c.v"]" \
