@@ -66,45 +66,51 @@
 
 module m14k_udi_mipsfpga_ai
 (
-    input     UDI_gclk,         // Clock
-    input     UDI_greset,       // Reset
-    input     UDI_gscanenable,  // Scan enable
+    input         UDI_gclk,         // Clock
+    input         UDI_greset,       // Reset
+    input         UDI_gscanenable,  // Scan enable
 
     // Static signals
     
-    input     UDI_endianb_e,    // Endian : 0 = little , 1 = big
-    input     UDI_kd_mode_e,    // Mode   : 0 = user   , 1 = kernel or debug
-    output    UDI_present,      // UDI module is present
+    input         UDI_endianb_e,    // Endian : 0 = little , 1 = big
+    input         UDI_kd_mode_e,    // Mode   : 0 = user   , 1 = kernel or debug
+    output        UDI_present,      // UDI module is present
 
     // E-stage signals (in the order of their timing)
 
-    input [31:0]    UDI_ir_e,           // full 32 bit Spec2 Instruction
-    input           UDI_irvalid_e,      // Instruction reg. valid signal.
+    input  [31:0] UDI_ir_e,         // Instruction register
+    input         UDI_irvalid_e,    // Instruction register valid
 
-    input [31:0]    UDI_rs_e,           // edp_abus_e data from register file
-    input [31:0]    UDI_rt_e,           // edp_bbus_e data from register file
+    output        UDI_ri_e,         // The instruction is illegal
 
-    input           UDI_kill_m,         // Kill signal
-    input           UDI_start_e,        // mpc_run_ie signal to start the UDI.
-    input         UDI_run_m,          // mpc_UDI_run_m signal to qualify UDI_kill_m.
+    input  [31:0] UDI_rs_e,         // Value of register RS from register file
+    input  [31:0] UDI_rt_e,         // Value of register RT from register file
 
-    output [31:0]   UDI_rd_m,          // Result of the UDI in M stage
-    output [4:0]    UDI_wrreg_e,       // Register File address written to
-                                           // 5'b0 indicates not writing to 
-                                           // register file.
-    output          UDI_ri_e,          // Illegal Spec2 Instn.
-    output          UDI_stall_m,       // Stall the pipeline. M stage signal
-    output         UDI_honor_cee,     // UDI module has local state
+    output [ 4:0] UDI_wrreg_e,      // Register file index to write the result
+                                    // Zero index indicates don't write
 
-        /* external UDI signals */
-    input  [`M14K_UDI_EXT_TOUDI_WIDTH-1:0]   UDI_toudi, // External input to UDI module
-    output [`M14K_UDI_EXT_FROMUDI_WIDTH-1:0] UDI_fromudi // Output from UDI module to external system
+    input         UDI_start_e,      // Values of RS and RT valid
+
+    // M-stage signals (in the order of their timing)
+
+    output        UDI_stall_m,      // Stall the pipeline
+    output [31:0] UDI_rd_m,         // Result to write back
+
+    input         UDI_run_m,        // Qualify UDI_kill_m
+    input         UDI_kill_m,       // Kill the instruction
+
+    // Other signals
+
+    output        UDI_honor_cee,    // UDI module has local state
+
+    input  [`M14K_UDI_EXT_TOUDI_WIDTH   - 1:0]  UDI_toudi,   // External input to UDI module
+    output [`M14K_UDI_EXT_FROMUDI_WIDTH - 1:0]  UDI_fromudi  // Output from UDI module to external system
 );
 
     assign UDI_present    = 1'b1;
     assign UDI_wrreg_e    = UDI_ir_e [25:21];  // RS register
     assign UDI_stall_m    = 1'b0;
-    assign UDI_honor_cee  = 1'b0;  // 0 means no local state in the block
+    assign UDI_honor_cee  = 1'b0;
     assign UDI_fromudi    = { `M14K_UDI_EXT_FROMUDI_WIDTH { 1'b0 } };
 
     wire   spc2           = ( UDI_ir_e [31:26] == 6'b011100 );
