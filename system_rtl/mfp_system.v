@@ -61,6 +61,12 @@ module mfp_system
     input                                   ADC_R_EOP,
     `endif //MFP_USE_ADC_MAX10
 
+    `ifdef MFP_USE_VGA
+    output                                  VGA_HS,
+    output                                  VGA_VS,
+    output                                  VGA_RGB,
+    `endif
+
     input  [`MFP_N_SWITCHES          - 1:0] IO_Switches,
     input  [`MFP_N_BUTTONS           - 1:0] IO_Buttons,
     output [`MFP_N_RED_LEDS          - 1:0] IO_RedLEDs,
@@ -554,6 +560,12 @@ module mfp_system
         .ADC_Trigger      (   ADC_Trigger       ),
         .ADC_Interrupt    (   ADC_Interrupt     ),
         `endif //MFP_USE_ADC_MAX10
+
+        `ifdef MFP_USE_VGA
+        .VGA_HS           (   VGA_HS            ),
+        .VGA_VS           (   VGA_VS            ),
+        .VGA_RGB          (   VGA_RGB           ),
+        `endif
 
         .MFP_Reset        (   MFP_Reset         )
     );

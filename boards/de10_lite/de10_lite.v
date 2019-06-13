@@ -29,13 +29,16 @@ module de10_lite
         output          DRAM_UDQM,
         output          DRAM_WE_N,
     `endif
-    
-    `ifdef UNUSED
+
+    `ifdef MFP_USE_VGA
         output  [ 3:0]  VGA_B,
         output  [ 3:0]  VGA_G,
         output          VGA_HS,
         output  [ 3:0]  VGA_R,
         output          VGA_VS,
+    `endif
+
+    `ifdef UNUSED
         output          GSENSOR_CS_N,
         input   [ 2:1]  GSENSOR_INT,
         output          GSENSOR_SCLK,
@@ -105,6 +108,7 @@ module de10_lite
     assign IO_Switches = { { `MFP_N_SWITCHES - 10 { 1'b0 } } ,   SW  [9:0] };
     assign IO_Buttons  = { { `MFP_N_BUTTONS  -  2 { 1'b0 } } , ~ KEY [1:0] };
 
+
     wire [31:0] HADDR, HRDATA, HWDATA;
     wire        HWRITE;
 
@@ -128,6 +132,14 @@ module de10_lite
         wire [ 11:0 ] ADC_R_Data;
         wire          ADC_R_SOP;
         wire          ADC_R_EOP;
+    `endif
+
+    `ifdef MFP_USE_VGA
+        wire [2:0] VGA_RGB;
+
+        assign VGA_R = { 4 { VGA_RGB [2] } };
+        assign VGA_G = { 4 { VGA_RGB [1] } };
+        assign VGA_B = { 4 { VGA_RGB [0] } };
     `endif
 
     `define MFP_EJTAG_DEBUGGER
@@ -249,6 +261,12 @@ module de10_lite
         .ADC_R_Data       (  ADC_R_Data       ),
         .ADC_R_SOP        (  ADC_R_SOP        ),
         .ADC_R_EOP        (  ADC_R_EOP        ),
+        `endif
+
+        `ifdef MFP_USE_VGA
+        .VGA_HS           (  VGA_HS           ),
+        .VGA_VS           (  VGA_VS           ),
+        .VGA_RGB          (  VGA_RGB          ),
         `endif
 
         .UART_RX          (   GPIO [31]       ),

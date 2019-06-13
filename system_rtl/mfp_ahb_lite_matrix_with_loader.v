@@ -82,6 +82,12 @@ module mfp_ahb_lite_matrix_with_loader
     output                                  ADC_Interrupt,
     `endif //MFP_USE_ADC_MAX10
 
+    `ifdef MFP_USE_VGA
+    output                                  VGA_HS,
+    output                                  VGA_VS,
+    output                                  VGA_RGB,
+    `endif
+
     output        MFP_Reset
 );
     wire   in_progress;
@@ -187,6 +193,12 @@ module mfp_ahb_lite_matrix_with_loader
         .ADC_Trigger      ( ADC_Trigger     ),
         .ADC_Interrupt    ( ADC_Interrupt   ),
         `endif //MFP_USE_ADC_MAX10
+
+        `ifdef MFP_USE_VGA
+        .VGA_HS           ( VGA_HS          ),
+        .VGA_VS           ( VGA_VS          ),
+        .VGA_RGB          ( VGA_RGB         ),
+        `endif
 
         .IO_Switches      ( IO_Switches     ),
         .IO_Buttons       ( IO_Buttons      ),
