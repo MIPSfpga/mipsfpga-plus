@@ -1,3 +1,5 @@
+`include "mfp_ahb_lite_matrix_config.vh"
+
 module vdp_hv_sync_generator
 # (
     parameter N_VDP_PIPE  = 0,
@@ -30,7 +32,7 @@ module vdp_hv_sync_generator
 
     // derived constants
 
-    localparam H_SYNC_START  = H_DISPLAY    + H_FRONT + N_PIPE_STAGES_OUTPUT,
+    localparam H_SYNC_START  = H_DISPLAY    + H_FRONT + N_VDP_PIPE,
                H_SYNC_END    = H_SYNC_START + H_SYNC - 1,
                H_MAX         = H_SYNC_END   + H_BACK,
 
@@ -40,57 +42,68 @@ module vdp_hv_sync_generator
 
     // calculating next values of the counters
 
-  reg [HPOS_WIDTH - 1:0] d_hpos;
-  reg [VPOS_WIDTH - 1:0] d_vpos;
+    reg [HPOS_WIDTH - 1:0] d_hpos;
+    reg [VPOS_WIDTH - 1:0] d_vpos;
 
-  always @*
-    if (hpos == H_MAX)
+    always @*
     begin
-      d_hpos = 10'd0;
+        if (hpos == H_MAX)
+        begin
+            d_hpos = 1'd0;
 
-      if (vpos == V_MAX)
-        d_vpos = 10'd0;
-      else
-        d_vpos = vpos + 10'd1;
+            if (vpos == V_MAX)
+                d_vpos = 1'd0;
+            else
+                d_vpos = vpos + 1'd1;
+        end
+        else
+        begin
+          d_hpos = hpos + 1'd1;
+          d_vpos = vpos;
+        end
     end
-    else
+
+    `ifdef MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+
+         wire clk_en = 1'b1;
+
+        // enable to divide clock from 50 MHz to 25 MHz
+
+        reg clk_en;
+
+        always @ (posedge clk or posedge reset)
+            if (reset)
+                clk_en <= 1'b0;
+            else
+                clk_en <= ~ clk_en;
+    `endif
+
+    // making all outputs registered
+
+    always @ (posedge clk or posedge reset)
     begin
-      d_hpos = hpos + 10'd1;
-      d_vpos = vpos;
-    end
+        if (reset)
+        begin
+            hsync       <= 1'b0;
+            vsync       <= 1'b0;
+            display_on  <= 1'b0;
+            hpos        <= 1'b0;
+            vpos        <= 1'b0;
+        end
+        else if (clk_en)
+        begin
+            hsync       <= ~ (    d_hpos >= H_SYNC_START
+                               && d_hpos <= H_SYNC_END   );
 
-  // enable to divide clock from 50 MHz to 25 MHz
+            vsync       <= ~ (    d_vpos >= V_SYNC_START
+                               && d_vpos <= V_SYNC_END   );
 
-  `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
+            display_on  <=   (    d_hpos <  H_DISPLAY    
+                               && d_vpos <  V_DISPLAY    );
 
-  reg clk_en;
-
-  always @ (posedge clk or posedge reset)
-    if (reset)
-      clk_en <= 1'b0;
-    else
-      clk_en <= ~ clk_en;
-
-  // making all outputs registered
-
-  always @ (posedge clk or posedge reset)
-    if (reset)
-    begin
-      hsync       <= 1'b0;
-      vsync       <= 1'b0;
-      display_on  <= 1'b0;
-      hpos        <= 1'b0;
-      vpos        <= 1'b0;
-    end
-    else if (clk_en)
-    begin
-      hsync       <= ~ ( d_hpos >= H_SYNC_START && d_hpos <= H_SYNC_END );
-      vsync       <= ~ ( d_vpos >= V_SYNC_START && d_vpos <= V_SYNC_END );
-
-      display_on  <=   ( d_hpos <  H_DISPLAY    && d_vpos <  V_DISPLAY  );
-
-      hpos        <= d_hpos;
-      vpos        <= d_vpos;
+            hpos        <= d_hpos;
+            vpos        <= d_vpos;
+        end
     end
 
 endmodule
