@@ -1,61 +1,47 @@
-//
-//  Derived from:
-//
-//  1. Designing Video Game Hardware in Verilog by Hugg Steven
-//  https://8bitworkshop.com
-//
-//  2. ZEOWAA board examples on AliExpress
-//
-//  3. An article on VGA controller by Scott Larson
-//  https://www.digikey.com/eewiki/pages/viewpage.action?pageId=15925278
-//
-//  Video sync generator, used to drive a simulated CRT.
-//
-//  To use:
-//
-//      - Wire the hsync and vsync signals to top level outputs
-//      - Add a 3-bit (or more) "rgb" output to the top level
-//
+module vdp_hv_sync_generator
+# (
+    parameter N_VDP_PIPE  = 0,
+              HPOS_WIDTH  = 10,
+              VPOS_WIDTH  = 10,
 
-module vga
+              // horizontal constants
+
+              H_DISPLAY   = 640,  // horizontal display width
+              H_FRONT     =  16,  // horizontal right border (front porch)
+              H_SYNC      =  96,  // horizontal sync width
+              H_BACK      =  48,  // horizontal left border (back porch)
+
+              // vertical constants
+
+              V_DISPLAY   = 480,  // vertical display height
+              V_BOTTOM    =  10,  // vertical bottom border
+              V_SYNC      =   2,  // vertical sync # lines
+              V_TOP       =  33   // vertical top border
+)
 (
-  input            clk,
-  input            reset,
-  output reg       hsync,
-  output reg       vsync,
-  output reg       display_on,
-  output reg [9:0] hpos,
-  output reg [9:0] vpos
+    input                         clk,
+    input                         reset,
+    output reg                    hsync,
+    output reg                    vsync,
+    output reg                    display_on,
+    output reg [HPOS_WIDTH - 1:0] hpos,
+    output reg [VPOS_WIDTH - 1:0] vpos
 );
 
-  // horizontal constants
+    // derived constants
 
-  parameter H_DISPLAY       = 640; // horizontal display width
-  parameter H_FRONT         =  16; // horizontal right border (front porch)
-  parameter H_SYNC          =  96; // horizontal sync width
-  parameter H_BACK          =  48; // horizontal left border (back porch)
+    localparam H_SYNC_START  = H_DISPLAY    + H_FRONT + N_PIPE_STAGES_OUTPUT,
+               H_SYNC_END    = H_SYNC_START + H_SYNC - 1,
+               H_MAX         = H_SYNC_END   + H_BACK,
 
-  // vertical constants
+               V_SYNC_START  = V_DISPLAY    + V_BOTTOM,
+               V_SYNC_END    = V_SYNC_END   + V_SYNC - 1,
+               V_MAX         = V_SYNC_END   + V_TOP;
 
-  parameter V_DISPLAY       = 480; // vertical display height
-  parameter V_BOTTOM        =  10; // vertical bottom border
-  parameter V_SYNC          =   2; // vertical sync # lines
-  parameter V_TOP           =  33; // vertical top border
+    // calculating next values of the counters
 
-  // derived constants
-
-  parameter H_SYNC_START    = H_DISPLAY + H_FRONT;
-  parameter H_SYNC_END      = H_DISPLAY + H_FRONT  + H_SYNC          - 1;
-  parameter H_MAX           = H_DISPLAY + H_FRONT  + H_SYNC + H_BACK - 1;
-
-  parameter V_SYNC_START    = V_DISPLAY + V_BOTTOM;
-  parameter V_SYNC_END      = V_DISPLAY + V_BOTTOM + V_SYNC          - 1;
-  parameter V_MAX           = V_DISPLAY + V_BOTTOM + V_SYNC + V_TOP  - 1;
-
-  // calculating next values of the counters
-
-  reg [9:0] d_hpos;
-  reg [9:0] d_vpos;
+  reg [HPOS_WIDTH - 1:0] d_hpos;
+  reg [VPOS_WIDTH - 1:0] d_vpos;
 
   always @*
     if (hpos == H_MAX)
@@ -74,6 +60,8 @@ module vga
     end
 
   // enable to divide clock from 50 MHz to 25 MHz
+
+  `define MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 
   reg clk_en;
 
