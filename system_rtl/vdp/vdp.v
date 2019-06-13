@@ -45,7 +45,7 @@ module vdp
     wire clk   =   HCLK;
     wire reset = ! HRESETn;
 
-    assign HRDATA    = '0;
+    assign HRDATA    = 32'h0;
     assign HREADYOUT = 1'b1;
     assign HRESP     = 1'b0;
 
@@ -57,22 +57,31 @@ module vdp
 
     vdp_hv_sync_generator
     # (
-        .N_VDP_PIPE  ( N_VDP_PIPE ),
+        .N_VDP_PIPE ( N_VDP_PIPE ),
 
-        .HPOS_WIDTH  ( HPOS_WIDTH ),
-        .VPOS_WIDTH  ( VPOS_WIDTH ),
+        .HPOS_WIDTH ( HPOS_WIDTH ),
+        .VPOS_WIDTH ( VPOS_WIDTH ),
 
-        .H_DISPLAY   ( H_DISPLAY  ),
-        .H_FRONT     ( H_FRONT    ),
-        .H_SYNC      ( H_SYNC     ),
-        .H_BACK      ( H_BACK     ),
+        .H_DISPLAY  ( H_DISPLAY  ),
+        .H_FRONT    ( H_FRONT    ),
+        .H_SYNC     ( H_SYNC     ),
+        .H_BACK     ( H_BACK     ),
 
-        .V_DISPLAY   ( V_DISPLAY  ),
-        .V_BOTTOM    ( V_BOTTOM   ),
-        .V_SYNC      ( V_SYNC     ),
-        .V_TOP       ( V_TOP      )
+        .V_DISPLAY  ( V_DISPLAY  ),
+        .V_BOTTOM   ( V_BOTTOM   ),
+        .V_SYNC     ( V_SYNC     ),
+        .V_TOP      ( V_TOP      )
     )
-    i_vdp_hv_sync_generator (.*);
+    i_vdp_hv_sync_generator
+    (
+        .clk        ( clk        ),
+        .reset      ( reset      ),
+        .hsync      ( hsync      ),
+        .vsync      ( vsync      ),
+        .display_on ( display_on ),
+        .hpos       ( hpos       ),
+        .vpos       ( vpos       )
+    );
 
     wire write =    ( HTRANS == `HTRANS_NONSEQ || HTRANS == `HTRANS_NONSEQ )
                  && ( HBURST == `HBURST_WRAP4  || HSIZE  == `HSIZE_4       )
@@ -90,10 +99,10 @@ module vdp
 
     always @ (posedge clk or posedge reset)
         if (reset)
-            data <= '0;
+            data <= 32'h0;
         else if (write_reg)
             data <= HWDATA;
 
-    assign vga_rgb = data [2:0];
+    assign vga_rgb = data [2:0] ^ { hpos [2], vpos [3], hpos [4] ^ vpos [4] };
 
 endmodule

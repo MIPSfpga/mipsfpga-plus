@@ -383,6 +383,7 @@ module mfp_ahb_lite_matrix
         .RDATA_4          ( RDATA       [4] ),
         .RDATA_5          ( RDATA       [5] ),
         .RDATA_6          ( RDATA       [6] ),
+        .RDATA_7          ( RDATA       [7] ),
         .RESP             ( RESP            ),
         .HRDATA           ( HRDATA          ),
         .HRESP            ( HRESP           ),
@@ -443,6 +444,7 @@ module mfp_ahb_lite_response_mux
     input      [                        31 : 0 ] RDATA_4,
     input      [                        31 : 0 ] RDATA_5,
     input      [                        31 : 0 ] RDATA_6,
+    input      [                        31 : 0 ] RDATA_7,
     input      [ `MFP_AHB_DEVICE_COUNT - 1 : 0 ] RESP,
     input      [ `MFP_AHB_DEVICE_COUNT - 1 : 0 ] HREADYOUT,
 

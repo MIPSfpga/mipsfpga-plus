@@ -37,7 +37,7 @@ module vdp_hv_sync_generator
                H_MAX         = H_SYNC_END   + H_BACK,
 
                V_SYNC_START  = V_DISPLAY    + V_BOTTOM,
-               V_SYNC_END    = V_SYNC_END   + V_SYNC - 1,
+               V_SYNC_END    = V_SYNC_START + V_SYNC - 1,
                V_MAX         = V_SYNC_END   + V_TOP;
 
     // calculating next values of the counters
@@ -66,6 +66,8 @@ module vdp_hv_sync_generator
     `ifdef MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 
          wire clk_en = 1'b1;
+         
+    `else
 
         // enable to divide clock from 50 MHz to 25 MHz
 
