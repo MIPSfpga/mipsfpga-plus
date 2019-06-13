@@ -2,7 +2,7 @@
 `include "mfp_ahb_lite_matrix_config.vh"
 `include "mfp_eic_core.vh"
 
-`define MFP_AHB_DEVICE_COUNT    7
+`define MFP_AHB_DEVICE_COUNT    8
 
 module mfp_ahb_lite_matrix
 (
@@ -335,6 +335,31 @@ module mfp_ahb_lite_matrix
     );
     `endif
 
+    `ifdef MFP_USE_VGA
+    vdp i_vdp
+    (
+        .HCLK             ( HCLK            ),
+        .HRESETn          ( HRESETn         ),
+        .HADDR            ( HADDR           ),
+        .HBURST           ( HBURST          ),
+        .HMASTLOCK        ( HMASTLOCK       ),
+        .HPROT            ( HPROT           ),
+        .HSEL             ( HSEL        [7] ),
+        .HSIZE            ( HSIZE           ),
+        .HTRANS           ( HTRANS          ),
+        .HWDATA           ( HWDATA          ),
+        .HWRITE           ( HWRITE          ),
+        .HRDATA           ( RDATA       [7] ),
+        .HREADYOUT        ( HREADYOUT   [7] ),
+        .HREADY           ( HREADY          ),
+        .HRESP            ( RESP        [7] ),
+        .SI_Endian        ( SI_Endian       ),
+        .vga_hsync        ( VGA_HS          ),
+        .vga_vsync        ( VGA_VS          ),
+        .vga_rgb          ( VGA_RGB         ),
+    );
+    `endif
+
     // bus interconnection part
     mfp_ahb_lite_decoder decoder
     (   
@@ -398,6 +423,9 @@ module mfp_ahb_lite_decoder
     // Light Sensor 4 KB max at 0xb0404000 (physical: 0x10404000 - 0x10404fff)
     assign HSEL [6] = ( HADDR [28:12] == `MFP_ALS_ADDR_MATCH       );
 
+    // Video Processor VDP 4 KB max at 0xb0405000 (physical: 0x10405000 - 0x10405fff)
+    assign HSEL [7] = ( HADDR [28:12] == `MFP_VDP_ADDR_MATCH       );
+
 endmodule
 
 //--------------------------------------------------------------------
@@ -426,14 +454,15 @@ module mfp_ahb_lite_response_mux
 
     always @*
         casez (HSEL_R)
-            7'b??????1 : begin HRDATA = RDATA_0; HRESP = RESP[0]; READY = HREADYOUT[0]; end
-            7'b?????10 : begin HRDATA = RDATA_1; HRESP = RESP[1]; READY = HREADYOUT[1]; end
-            7'b????100 : begin HRDATA = RDATA_2; HRESP = RESP[2]; READY = HREADYOUT[2]; end
-            7'b???1000 : begin HRDATA = RDATA_3; HRESP = RESP[3]; READY = HREADYOUT[3]; end
-            7'b??10000 : begin HRDATA = RDATA_4; HRESP = RESP[4]; READY = HREADYOUT[4]; end
-            7'b?100000 : begin HRDATA = RDATA_5; HRESP = RESP[5]; READY = HREADYOUT[5]; end
-            7'b1000000 : begin HRDATA = RDATA_6; HRESP = RESP[6]; READY = HREADYOUT[6]; end
-            default    : begin HRDATA = RDATA_1; HRESP = RESP[1]; READY = HREADYOUT[1]; end
+            8'b???????1 : begin HRDATA = RDATA_0; HRESP = RESP[0]; READY = HREADYOUT[0]; end
+            8'b??????10 : begin HRDATA = RDATA_1; HRESP = RESP[1]; READY = HREADYOUT[1]; end
+            8'b?????100 : begin HRDATA = RDATA_2; HRESP = RESP[2]; READY = HREADYOUT[2]; end
+            8'b????1000 : begin HRDATA = RDATA_3; HRESP = RESP[3]; READY = HREADYOUT[3]; end
+            8'b???10000 : begin HRDATA = RDATA_4; HRESP = RESP[4]; READY = HREADYOUT[4]; end
+            8'b??100000 : begin HRDATA = RDATA_5; HRESP = RESP[5]; READY = HREADYOUT[5]; end
+            8'b?1000000 : begin HRDATA = RDATA_6; HRESP = RESP[6]; READY = HREADYOUT[6]; end
+            8'b10000000 : begin HRDATA = RDATA_7; HRESP = RESP[7]; READY = HREADYOUT[7]; end
+            default     : begin HRDATA = RDATA_1; HRESP = RESP[1]; READY = HREADYOUT[1]; end
         endcase
 
     //MFP SDRAM bug workaround

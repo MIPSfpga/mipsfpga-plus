@@ -2,6 +2,24 @@
 `include "mfp_ahb_lite.vh"
 
 module vdp
+# (
+    parameter HPOS_WIDTH  = 10,
+              VPOS_WIDTH  = 10,
+
+              // horizontal constants
+
+              H_DISPLAY   = 640,  // horizontal display width
+              H_FRONT     =  16,  // horizontal right border (front porch)
+              H_SYNC      =  96,  // horizontal sync width
+              H_BACK      =  48,  // horizontal left border (back porch)
+
+              // vertical constants
+
+              V_DISPLAY   = 480,  // vertical display height
+              V_BOTTOM    =  10,  // vertical bottom border
+              V_SYNC      =   2,  // vertical sync # lines
+              V_TOP       =  33   // vertical top border
+)
 (
     input         HCLK,
     input         HRESETn,
@@ -35,15 +53,24 @@ module vdp
     wire [HPOS_WIDTH - 1:0] hpos;
     wire [VPOS_WIDTH - 1:0] vpos;
 
-    localparam N_VDP_PIPE  = 0,
-               HPOS_WIDTH  = 10,
-               VPOS_WIDTH  = 10;
+    localparam N_VDP_PIPE  = 0;
 
     vdp_hv_sync_generator
     # (
         .N_VDP_PIPE  ( N_VDP_PIPE ),
+
         .HPOS_WIDTH  ( HPOS_WIDTH ),
-        .VPOS_WIDTH  ( VPOS_WIDTH )
+        .VPOS_WIDTH  ( VPOS_WIDTH ),
+
+        .H_DISPLAY   ( H_DISPLAY  ),
+        .H_FRONT     ( H_FRONT    ),
+        .H_SYNC      ( H_SYNC     ),
+        .H_BACK      ( H_BACK     ),
+
+        .V_DISPLAY   ( V_DISPLAY  ),
+        .V_BOTTOM    ( V_BOTTOM   ),
+        .V_SYNC      ( V_SYNC     ),
+        .V_TOP       ( V_TOP      )
     )
     i_vdp_hv_sync_generator (.*);
 
