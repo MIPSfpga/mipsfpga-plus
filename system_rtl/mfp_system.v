@@ -64,7 +64,7 @@ module mfp_system
     `ifdef MFP_USE_VGA
     output                                  VGA_HS,
     output                                  VGA_VS,
-    output                                  VGA_RGB,
+    output [                        2 : 0 ] VGA_RGB,
     `endif
 
     input  [`MFP_N_SWITCHES          - 1:0] IO_Switches,

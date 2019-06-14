@@ -76,8 +76,8 @@ module vdp
     (
         .clk        ( clk        ),
         .reset      ( reset      ),
-        .hsync      ( hsync      ),
-        .vsync      ( vsync      ),
+        .hsync      ( vga_hsync  ),
+        .vsync      ( vga_vsync  ),
         .display_on ( display_on ),
         .hpos       ( hpos       ),
         .vpos       ( vpos       )

@@ -74,7 +74,7 @@ module mfp_ahb_lite_matrix
     `ifdef MFP_USE_VGA
     output                                     VGA_HS,
     output                                     VGA_VS,
-    output                                     VGA_RGB,
+    output [                           2 : 0 ] VGA_RGB,
     `endif
 
     input  [`MFP_N_SWITCHES          - 1 : 0 ] IO_Switches,
@@ -336,7 +336,7 @@ module mfp_ahb_lite_matrix
     `endif
 
     `ifdef MFP_USE_VGA
-    vdp i_vdp
+    vdp vdp
     (
         .HCLK             ( HCLK            ),
         .HRESETn          ( HRESETn         ),
@@ -356,7 +356,7 @@ module mfp_ahb_lite_matrix
         .SI_Endian        ( SI_Endian       ),
         .vga_hsync        ( VGA_HS          ),
         .vga_vsync        ( VGA_VS          ),
-        .vga_rgb          ( VGA_RGB         ),
+        .vga_rgb          ( VGA_RGB         )
     );
     `endif
 

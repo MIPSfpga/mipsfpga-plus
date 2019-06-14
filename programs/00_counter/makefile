@@ -204,6 +204,7 @@ IVARG += -s $(TOPMODULE)
 IVARG += ../../../core/*.v
 IVARG += ../../../system_rtl/*.v
 IVARG += ../../../system_rtl/uart16550/*.v
+IVARG += ../../../system_rtl/vdp/*.v
 IVARG += ../../../testbench/*.v
 IVARG += ../../../testbench/sdr_sdram/*.v
 

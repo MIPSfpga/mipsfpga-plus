@@ -85,7 +85,7 @@ module mfp_ahb_lite_matrix_with_loader
     `ifdef MFP_USE_VGA
     output                                  VGA_HS,
     output                                  VGA_VS,
-    output                                  VGA_RGB,
+    output [                        2 : 0 ] VGA_RGB,
     `endif
 
     output        MFP_Reset
