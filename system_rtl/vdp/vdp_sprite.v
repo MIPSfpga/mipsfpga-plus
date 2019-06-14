@@ -2,50 +2,39 @@
 
 module vdp_sprite
 (
-    input             clk,
-    input             reset,
+    input                                          clk,
+    input                                          reset,
 
-    input [HPOS_WIDTH - 1:0] hpos,
-    input [VPOS_WIDTH - 1:0] vpos,
+    input      [`VDP_X_WIDTH                - 1:0] pixel_x,
+    input      [`VDP_Y_WIDTH                - 1:0] pixel_y,
 
-    input      [31:0] wr_data,
-    input      [ 2:0] wr_row,
-    input             wr_row_we,
-    input             wr_xy_we,
+    input      [`VDP_WR_DATA_WIDTH          - 1:0] wr_data,
+    input                                          xy_we,
+    input                                          row_we,
+    input      [`VDP_SPRITE_ROW_INDEX_WIDTH - 1:0] wr_row_index,
 
-    output reg        rgb_en,
-    output reg [ 1:0] rgb
+    output reg                                     rgb_en,
+    output reg [`VDP_RGB_WIDTH              - 1:0] rgb
 );
 
-    reg [HPOS_WIDTH - 1:0] x;
-    reg [HPOS_WIDTH - 1:0] y;
-    
-    reg [31:0] rows [0:7];
+    reg sprite_en;
+
+    reg [`VDP_X_WIDTH - 1:0] sprite_x;
+    reg [`VDP_Y_WIDTH - 1:0] sprite_y;
+
+    reg [`VDP_WR_DATA_WIDTH - 1:0] rows [0:`VDP_SPRITE_N_ROWS - 1];
 
     always @ (posedge clk or posedge reset)
-    begin
         if (reset)
+            sprite_en <= 1'b0;
+        else if (coord_we)
+            sprite_en <= wr_data [`VDP_SPRITE_COORD_BIT_ENABLE];
+            
+    always @ (posedge clk)
+        if (coord_we)
         begin
-            hsync       <= 1'b0;
-            vsync       <= 1'b0;
-            display_on  <= 1'b0;
-            hpos        <= 1'b0;
-            vpos        <= 1'b0;
+            x <= wr_data [`VDP_SPRITE_COORD_RANGE_X];
+            y <= wr_data [`VDP_SPRITE_COORD_RANGE_Y];
         end
-        else if (clk_en)
-        begin
-            hsync       <= ~ (    d_hpos >= H_SYNC_START
-                               && d_hpos <= H_SYNC_END   );
-
-            vsync       <= ~ (    d_vpos >= V_SYNC_START
-                               && d_vpos <= V_SYNC_END   );
-
-            display_on  <=   (    d_hpos <  H_DISPLAY    
-                               && d_vpos <  V_DISPLAY    );
-
-            hpos        <= d_hpos;
-            vpos        <= d_vpos;
-        end
-    end
 
 endmodule
