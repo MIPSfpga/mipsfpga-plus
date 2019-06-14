@@ -154,4 +154,4 @@
 `define MFP_EIC_ADDR_MATCH          17'h10402
 `define MFP_ADC_MAX10_ADDR_MATCH    17'h10403
 `define MFP_ALS_ADDR_MATCH          17'h10404
-`define MFP_VDP_ADDR_MATCH          17'h10405
+`define MFP_VDP_ADDR_MATCH          5'h1e

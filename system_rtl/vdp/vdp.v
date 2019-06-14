@@ -55,7 +55,7 @@ module vdp
 
     localparam N_VDP_PIPE  = 0;
 
-    vdp_hv_sync_generator
+    vdp_hvsync
     # (
         .N_VDP_PIPE ( N_VDP_PIPE ),
 

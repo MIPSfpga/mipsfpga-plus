@@ -424,8 +424,8 @@ module mfp_ahb_lite_decoder
     // Light Sensor 4 KB max at 0xb0404000 (physical: 0x10404000 - 0x10404fff)
     assign HSEL [6] = ( HADDR [28:12] == `MFP_ALS_ADDR_MATCH       );
 
-    // Video Processor VDP 4 KB max at 0xb0405000 (physical: 0x10405000 - 0x10405fff)
-    assign HSEL [7] = ( HADDR [28:12] == `MFP_VDP_ADDR_MATCH       );
+    // Video Processor VDP 16 MB max at 0xbe000000 (physical: 0x1e000000 - 0x1effffff)
+    assign HSEL [7] = ( HADDR [28:24] == `MFP_VDP_ADDR_MATCH       );
 
 endmodule
 

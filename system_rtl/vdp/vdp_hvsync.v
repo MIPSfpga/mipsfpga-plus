@@ -1,6 +1,6 @@
 `include "mfp_ahb_lite_matrix_config.vh"
 
-module vdp_hv_sync_generator
+module vdp_hvsync
 # (
     parameter N_VDP_PIPE  = 0,
               HPOS_WIDTH  = 10,

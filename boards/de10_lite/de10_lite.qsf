@@ -464,7 +464,7 @@ set_global_assignment -name VERILOG_FILE ../../../system_rtl/mfp_adc_max10_core.
 set_global_assignment -name VERILOG_FILE ../../../system_rtl/mfp_ahb_lite_adc_max10.v
 
 set_global_assignment -name VERILOG_FILE ../../../system_rtl/vdp/vdp.v
-set_global_assignment -name VERILOG_FILE ../../../system_rtl/vdp/vdp_hv_sync_generator.v
+set_global_assignment -name VERILOG_FILE ../../../system_rtl/vdp/vdp_hvsync.v
 set_global_assignment -name VERILOG_FILE ../../../system_rtl/vdp/vdp_sprite.v
 
 set_global_assignment -name VERILOG_FILE ../../../core/d_wsram_2k2way_xilinx.v
