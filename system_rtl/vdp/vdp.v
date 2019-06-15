@@ -1,5 +1,6 @@
 `include "mfp_ahb_lite_matrix_config.vh"
 `include "mfp_ahb_lite.vh"
+`include "vdp.vh"
 
 module vdp
 # (
@@ -116,7 +117,7 @@ module vdp
     wire [`VDP_Y_WIDTH - 1:0] pixel_y = vpos;
 
     wire [`VDP_WR_DATA_WIDTH - 1:0] wr_data = HWDATA;
-    
+
     wire sprite_we = write_reg &&   addr_reg [`VDP_ADDR_SPRITE_INDICATOR_BIT];
     wire xy_we     = sprite_we &&   addr_reg [`VDP_ADDR_SPRITE_XY_BIT];
     wire row_we    = sprite_we && ~ addr_reg [`VDP_ADDR_SPRITE_XY_BIT];

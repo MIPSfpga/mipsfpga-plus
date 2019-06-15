@@ -64,10 +64,7 @@
 //  ERGB ERGB ERGB ERGB ERGB ERGB ERGB ERGB
 
 `define VDP_RGB_WIDTH   3
-`define VDP_ERGB_WIDTH  (VDP_RGB_WIDTH + 1)
-`define VDP_ERGB_INDEX_WIDTH  2
-`define VDP_ERGB_WIDTH  (VDP_RGB_WIDTH + 1)
-
+`define VDP_ERGB_WIDTH  (`VDP_RGB_WIDTH + 1)
 
 //  Note that the following is assumed:
 //
