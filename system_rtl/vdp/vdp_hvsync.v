@@ -30,6 +30,8 @@ module vdp_hvsync
     output reg [VPOS_WIDTH - 1:0] vpos
 );
 
+    //------------------------------------------------------------------------
+
     // derived constants
 
     localparam H_SYNC_START  = H_DISPLAY    + H_FRONT + N_VDP_PIPE,
@@ -39,6 +41,8 @@ module vdp_hvsync
                V_SYNC_START  = V_DISPLAY    + V_BOTTOM,
                V_SYNC_END    = V_SYNC_START + V_SYNC - 1,
                V_MAX         = V_SYNC_END   + V_TOP;
+
+    //------------------------------------------------------------------------
 
     // calculating next values of the counters
 
@@ -63,6 +67,8 @@ module vdp_hvsync
         end
     end
 
+    //------------------------------------------------------------------------
+
     `ifdef MFP_USE_SLOW_CLOCK_AND_CLOCK_MUX
 
          wire clk_en = 1'b1;
@@ -79,6 +85,8 @@ module vdp_hvsync
             else
                 clk_en <= ~ clk_en;
     `endif
+
+    //------------------------------------------------------------------------
 
     // making all outputs registered
 

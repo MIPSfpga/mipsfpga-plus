@@ -1,5 +1,24 @@
 //  VDP defines
 
+// Screen dimensions
+
+// 10 bits of X and 10 bits of Y can cover 640x480 and 800x600 VGA modes
+
+`define VDP_X_WIDTH  10
+`define VDP_Y_WIDTH  10
+
+// Number and dimensions of sprites
+
+`define VDP_SPRITE_INDEX_WIDTH         3
+`define VDP_SPRITE_COLUMN_INDEX_WIDTH  3
+`define VDP_SPRITE_ROW_INDEX_WIDTH     3
+
+`define VDP_N_SPRITES      (1 << `VDP_SPRITE_INDEX_WIDTH)
+`define VDP_SPRITE_WIDTH   (1 << `VDP_SPRITE_COLUMN_INDEX_WIDTH)
+`define VDP_SPRITE_HEIGHT  (1 << `VDP_SPRITE_ROW_INDEX_WIDTH)
+
+// Word size when writing
+
 `define VDP_WR_DATA_WIDTH  32
 
 //  Address bits
@@ -22,15 +41,9 @@
 //  ...1 1110 S... .... .... .... ..CR RR..
 
 `define VDP_ADDR_SPRITE_INDICATOR_BIT         23
-`define VDP_ADDR_SPRITE_INDEX_RANGE       8 :  6
+`define VDP_ADDR_SPRITE_INDEX_RANGE       8 :  6  // VDP_SPRITE_INDEX_WIDTH
 `define VDP_ADDR_SPRITE_XY_BIT                 5
-`define VDP_ADDR_SPRITE_ROW_INDEX_RANGE   4 :  2
-
-`define VDP_SPRITE_INDEX_WIDTH      3
-`define VDP_SPRITE_ROW_INDEX_WIDTH  3
-
-`define VDP_SPRITE_N_ROWS  (1 << `VDP_SPRITE_ROW_INDEX_WIDTH)
-`define VDP_N_SPRITES      (1 << `VDP_SPRITE_INDEX_WIDTH)
+`define VDP_ADDR_SPRITE_ROW_INDEX_RANGE   4 :  2  // VDP_SPRITE_ROW_INDEX_WIDTH
 
 //  Sprite coordinate data
 //
@@ -43,9 +56,6 @@
 `define VDP_SPRITE_XY_X_RANGE     21 : 12
 `define VDP_SPRITE_XY_Y_RANGE      9 :  0
 
-`define VDP_X_WIDTH  10
-`define VDP_Y_WIDTH  10
-
 //  Sprite row data
 //
 //  3322 2222 2222 1111 1111 1100 0000 0000
@@ -53,5 +63,15 @@
 //
 //  ERGB ERGB ERGB ERGB ERGB ERGB ERGB ERGB
 
-`define VDP_ERGB_WIDTH  4
-`define VDP_RGB_WIDTH   3
+`define VDP_RGB_WIDTH      3
+`define VDP_ERGB_WIDTH     (VDP_RGB_WIDTH + 1)
+
+//  Note that the following is assumed:
+//
+//  `VDP_ADDR_SPRITE_INDEX_RANGE      matches `VDP_SPRITE_INDEX_WIDTH
+//  `VDP_ADDR_SPRITE_ROW_INDEX_RANGE  matches `VDP_SPRITE_ROW_INDEX_WIDTH
+//
+//  `VDP_SPRITE_XY_X_RANGE            matches `VDP_X_WIDTH
+//  `VDP_SPRITE_XY_Y_RANGE            matches `VDP_Y_WIDTH
+//
+//  `VDP_WR_DATA_WIDTH == (`VDP_SPRITE_WIDTH * `VDP_ERGB_WIDTH)

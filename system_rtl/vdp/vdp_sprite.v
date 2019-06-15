@@ -17,24 +17,66 @@ module vdp_sprite
     output reg [`VDP_RGB_WIDTH              - 1:0] rgb
 );
 
+    //------------------------------------------------------------------------
+
     reg sprite_en;
 
     reg [`VDP_X_WIDTH - 1:0] sprite_x;
     reg [`VDP_Y_WIDTH - 1:0] sprite_y;
 
-    reg [`VDP_WR_DATA_WIDTH - 1:0] rows [0:`VDP_SPRITE_N_ROWS - 1];
+    reg [`VDP_SPRITE_WIDTH * `VDP_ERGB_WIDTH - 1:0]
+        rows [0:`VDP_SPRITE_HEIGHT - 1];
+
+    //------------------------------------------------------------------------
 
     always @ (posedge clk or posedge reset)
         if (reset)
             sprite_en <= 1'b0;
-        else if (coord_we)
-            sprite_en <= wr_data [`VDP_SPRITE_COORD_BIT_ENABLE];
+        else if (xy_we)
+            sprite_en <= wr_data [`VDP_SPRITE_XY_ENABLE_BIT];
             
     always @ (posedge clk)
-        if (coord_we)
+        if (xy_we)
         begin
-            x <= wr_data [`VDP_SPRITE_COORD_RANGE_X];
-            y <= wr_data [`VDP_SPRITE_COORD_RANGE_Y];
+            sprite_x <= wr_data [`VDP_SPRITE_XY_X_RANGE];
+            sprite_y <= wr_data [`VDP_SPRITE_XY_Y_RANGE];
+        end
+
+    always @ (posedge clk)
+        if (row_we)
+            rows [wr_row_index] <= wr_data;
+
+    //------------------------------------------------------------------------
+
+    wire [`VDP_X_WIDTH:0] x_pixel_minus_sprite
+        = { 1'b0, pixel_x } - { 1'b0, sprite_x };
+
+    wire [`VDP_X_WIDTH:0] x_sprite_plus_w_minus_pixel
+        = { 1'b0, sprite_x } + `VDP_SPRITE_WIDTH - 1 - { 1'b0, pixel_x };
+        
+    wire [`VDP_Y_WIDTH:0] y_pixel_minus_sprite
+        = { 1'b0, pixel_y } - { 1'b0, sprite_y };
+
+    wire [`VDP_Y_WIDTH:0] y_sprite_plus_h_minus_pixel
+        = { 1'b0, sprite_y } + `VDP_SPRITE_HEIGHT - 1 - { 1'b0, pixel_y };
+
+    //------------------------------------------------------------------------
+
+    wire x_hit =    x_pixel_minus_sprite        [`VDP_X_WIDTH] == 1'b0
+                 && x_sprite_plus_w_minus_pixel [`VDP_X_WIDTH] == 1'b0;
+
+    wire y_hit =    y_pixel_minus_sprite        [`VDP_Y_WIDTH] == 1'b0
+                 && y_sprite_plus_h_minus_pixel [`VDP_Y_WIDTH] == 1'b0;
+
+    //------------------------------------------------------------------------
+
+    always @ (posedge clk or posedge reset)
+        if (reset)
+        begin
+            rgb_en <= 1'b0;
+        end
+        else
+        begin
         end
 
 endmodule
