@@ -41,9 +41,9 @@
 //  ...1 1110 S... .... .... .... ..CR RR..
 
 `define VDP_ADDR_SPRITE_INDICATOR_BIT         23
-`define VDP_ADDR_SPRITE_INDEX_RANGE       8 :  6  // VDP_SPRITE_INDEX_WIDTH
+`define VDP_ADDR_SPRITE_INDEX_RANGE       8 :  6
 `define VDP_ADDR_SPRITE_XY_BIT                 5
-`define VDP_ADDR_SPRITE_ROW_INDEX_RANGE   4 :  2  // VDP_SPRITE_ROW_INDEX_WIDTH
+`define VDP_ADDR_SPRITE_ROW_INDEX_RANGE   4 :  2
 
 //  Sprite coordinate data
 //
@@ -63,8 +63,11 @@
 //
 //  ERGB ERGB ERGB ERGB ERGB ERGB ERGB ERGB
 
-`define VDP_RGB_WIDTH      3
-`define VDP_ERGB_WIDTH     (VDP_RGB_WIDTH + 1)
+`define VDP_RGB_WIDTH   3
+`define VDP_ERGB_WIDTH  (VDP_RGB_WIDTH + 1)
+`define VDP_ERGB_INDEX_WIDTH  2
+`define VDP_ERGB_WIDTH  (VDP_RGB_WIDTH + 1)
+
 
 //  Note that the following is assumed:
 //

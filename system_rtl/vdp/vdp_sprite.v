@@ -70,13 +70,40 @@ module vdp_sprite
 
     //------------------------------------------------------------------------
 
+    wire [`VDP_SPRITE_COLUMN_INDEX_WIDTH - 1:0] column_index
+        = x_pixel_minus_sprite [`VDP_SPRITE_COLUMN_INDEX_WIDTH - 1:0];
+
+    wire [`VDP_SPRITE_ROW_INDEX_WIDTH - 1:0] row_index
+        = y_pixel_minus_sprite [`VDP_SPRITE_ROW_INDEX_WIDTH - 1:0];
+
+    wire [`VDP_SPRITE_WIDTH * `VDP_ERGB_WIDTH - 1:0] row = rows [row_index];
+
+    // Here we assume that `VDP_SPRITE_WIDTH == 8 and `VDP_ERGB_WIDTH == 4
+    // TODO: instantiate here a more generic mux that is handled by all
+    // synthesis tools well
+
+    reg [`VDP_ERGB_WIDTH - 1:0] ergb;
+    
+    always @*
+        case (column_index)
+        3'd0: ergb = row [ 3: 0];
+        3'd1: ergb = row [ 7: 4];
+        3'd2: ergb = row [11: 8];
+        3'd3: ergb = row [15:12];
+        3'd4: ergb = row [19:16];
+        3'd5: ergb = row [23:20];
+        3'd6: ergb = row [27:24];
+        3'd7: ergb = row [31:28];
+        endcase
+
+    //------------------------------------------------------------------------
+
     always @ (posedge clk or posedge reset)
         if (reset)
-        begin
             rgb_en <= 1'b0;
-        end
+        else if (x_hit && y_hit)
+            { rgb_en, rgb } <= ergb;
         else
-        begin
-        end
+            rgb_en <= 1'b0;
 
 endmodule
