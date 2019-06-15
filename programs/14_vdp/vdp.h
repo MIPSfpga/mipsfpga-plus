@@ -96,4 +96,3 @@
 #define VDP_COLOR_MAGENTA  0xd
 #define VDP_COLOR_YELLOW   0xe
 #define VDP_COLOR_WHITE    0xf
-
