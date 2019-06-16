@@ -1,3 +1,6 @@
+#ifndef VDP_H
+#define VDP_H
+
 //  VDP defines
 
 //  Address bits
@@ -19,6 +22,8 @@
 //
 //  ...1 1110 S... .... .... .... ..CR RR..
 
+#define VDP_ADDR_BASE  0xbe000000
+
 #define VDP_ADDR_SPRITE_INDICATOR_BIT    23
 
 #define VDP_ADDR_SPRITE_INDEX_LEFT        8
@@ -28,11 +33,6 @@
 
 #define VDP_ADDR_SPRITE_ROW_INDEX_LEFT    4
 #define VDP_ADDR_SPRITE_ROW_INDEX_RIGHT   2
-
-
-#define VDP_BASE_ADDR  0xbe000000
-#define VDP       ((volatile unsigned *) VDP_ADDR)
-
 
 //  Sprite coordinate data
 //
@@ -96,3 +96,34 @@
 #define VDP_COLOR_MAGENTA  0xd
 #define VDP_COLOR_YELLOW   0xe
 #define VDP_COLOR_WHITE    0xf
+
+//  Macros to access
+
+#define VDP_SPRITE_ROW(sprite_index, row_index, row_ergb)      \
+    (* (volatile unsigned *) (                                 \
+          VDP_ADDR_BASE                                        \
+        | VDP_ADDR_SPRITE_INDICATOR_BIT                        \
+        | ((sprite_index) << VDP_ADDR_SPRITE_INDEX_RIGHT)      \
+        | ((row_index)    << VDP_ADDR_SPRITE_ROW_INDEX_RIGHT)  \
+    ) = row_ergb)
+
+#define VDP_SPRITE_XY(sprite_index, x, y)                      \
+    (* (volatile unsigned *) (                                 \
+          VDP_ADDR_BASE                                        \
+        | VDP_ADDR_SPRITE_INDICATOR_BIT                        \
+        | ((sprite_index) << VDP_ADDR_SPRITE_INDEX_RIGHT)      \
+        | VDP_ADDR_SPRITE_XY_BIT                               \
+    ) =                                                        \
+          VDP_SPRITE_XY_ENABLE_BIT                             \
+        | ((x) << VDP_SPRITE_XY_X_RIGHT)                       \
+        | ((y) << VDP_SPRITE_XY_Y_RIGHT))
+
+#define VDP_SPRITE_DISABLE(sprite_index)                       \
+    (* (volatile unsigned *) (                                 \
+          VDP_ADDR_BASE                                        \
+        | VDP_ADDR_SPRITE_INDICATOR_BIT                        \
+        | ((sprite_index) << VDP_ADDR_SPRITE_INDEX_RIGHT)      \
+        | VDP_ADDR_SPRITE_XY_BIT                               \
+    ) = 0)
+
+#endif
