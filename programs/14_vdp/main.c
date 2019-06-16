@@ -13,6 +13,12 @@ void __attribute__ ((interrupt, keep_interrupts_masked)) general_exception_handl
         ;  // Do something
 }
 
+void delay (int n)
+{
+    while (n > 0)
+        MFP_RED_LEDS = n --;
+}
+
 int main ()
 {
     /*
@@ -32,19 +38,24 @@ int main ()
     __asm__ volatile ("ei");  // Enable interrupts
 
     */
+    
+    int x, y;
 
-    VDP_SPRITE_ROW (0, 0, 0x000cc000);
-    VDP_SPRITE_ROW (0, 1, 0x00cccc00);
-    VDP_SPRITE_ROW (0, 2, 0x0cceecc0);
-    VDP_SPRITE_ROW (0, 3, 0xcceeeecc);
-    VDP_SPRITE_ROW (0, 4, 0xcceeeecc);
-    VDP_SPRITE_ROW (0, 5, 0x0cceecc0);
-    VDP_SPRITE_ROW (0, 6, 0x00cccc00);
-    VDP_SPRITE_ROW (0, 7, 0x000cc000);
+    for (x = 0, y = 0;; x = (x + 1) % (640 - 8), y = (y + 1) % (480 - 8))
+    {
+        VDP_SPRITE_ROW (0, 0, 0x000cc000);
+        VDP_SPRITE_ROW (0, 1, 0x00cccc00);
+        VDP_SPRITE_ROW (0, 2, 0x0cceecc0);
+        VDP_SPRITE_ROW (0, 3, 0xcceeeecc);
+        VDP_SPRITE_ROW (0, 4, 0xcceeeecc);
+        VDP_SPRITE_ROW (0, 5, 0x0cceecc0);
+        VDP_SPRITE_ROW (0, 6, 0x00cccc00);
+        VDP_SPRITE_ROW (0, 7, 0x000cc000);
 
-    VDP_SPRITE_XY (0, 100, 100);
+        VDP_SPRITE_XY (0, x, y);
 
-    for (;;);
+        delay (100000);
+    }
 
     return 0;
 }

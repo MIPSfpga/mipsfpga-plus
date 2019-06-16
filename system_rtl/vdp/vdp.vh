@@ -38,9 +38,28 @@
 //  3322 2222 2222 1111 1111 1100 0000 0000
 //  1098 7654 3210 9876 5432 1098 7654 3210
 //
-//  ...1 1110 S... .... .... .... ..CR RR..
+//  ...1 1110 S... .... .... ...S SSCR RR..
 
-`define VDP_ADDR_SPRITE_INDICATOR_BIT         23
+//  Address bits
+//
+//     +-++++-------------------------------- 28 : 24 VDP memory space
+//     | ||||
+//     | ||||                +---------------      23 sprite indicator
+//     | ||||                |
+//     | ||||                |  + ++---------  8 :  6 sprite index
+//     | ||||                |  | ||
+//     | ||||                |  | ||+--------       5 sprite coordinates
+//     | ||||                |  | |||
+//     | ||||                |  | |||+-++----  4 :  2 sprite row index
+//     | ||||                |  | |||| ||
+//     V VVVV                V  V VVVV VV
+//
+//  3322 2222 2222 1111 1111 1100 0000 0000
+//  1098 7654 3210 9876 5432 1098 7654 3210
+//
+//  ...1 0000 0100 0000 0101 ...S SSCR RR..
+
+`define VDP_ADDR_SPRITE_INDICATOR_BIT         11
 `define VDP_ADDR_SPRITE_INDEX_RANGE       8 :  6
 `define VDP_ADDR_SPRITE_XY_BIT                 5
 `define VDP_ADDR_SPRITE_ROW_INDEX_RANGE   4 :  2

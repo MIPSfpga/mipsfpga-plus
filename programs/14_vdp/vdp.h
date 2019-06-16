@@ -22,9 +22,28 @@
 //
 //  ...1 1110 S... .... .... .... ..CR RR..
 
-#define VDP_ADDR_BASE  0xbe000000
+//  Address bits
+//
+//     +-++++-------------------------------- 28 : 24 VDP memory space
+//     | ||||
+//     | ||||                +---------------      23 sprite indicator
+//     | ||||                |
+//     | ||||                |  + ++---------  8 :  6 sprite index
+//     | ||||                |  | ||
+//     | ||||                |  | ||+--------       5 sprite coordinates
+//     | ||||                |  | |||
+//     | ||||                |  | |||+-++----  4 :  2 sprite row index
+//     | ||||                |  | |||| ||
+//     V VVVV                V  V VVVV VV
+//
+//  3322 2222 2222 1111 1111 1100 0000 0000
+//  1098 7654 3210 9876 5432 1098 7654 3210
+//
+//  ...1 0000 0100 0000 0101 ...S SSCR RR..
 
-#define VDP_ADDR_SPRITE_INDICATOR_BIT    23
+#define VDP_ADDR_BASE  0xb0405000
+
+#define VDP_ADDR_SPRITE_INDICATOR_BIT    11
 
 #define VDP_ADDR_SPRITE_INDEX_LEFT        8
 #define VDP_ADDR_SPRITE_INDEX_RIGHT       6
@@ -99,31 +118,31 @@
 
 //  Macros to access
 
-#define VDP_SPRITE_ROW(sprite_index, row_index, row_ergb)      \
-    (* (volatile unsigned *) (                                 \
-          VDP_ADDR_BASE                                        \
-        | VDP_ADDR_SPRITE_INDICATOR_BIT                        \
-        | ((sprite_index) << VDP_ADDR_SPRITE_INDEX_RIGHT)      \
-        | ((row_index)    << VDP_ADDR_SPRITE_ROW_INDEX_RIGHT)  \
+#define VDP_SPRITE_ROW(sprite_index, row_index, row_ergb)        \
+    (* (volatile unsigned *) (                                   \
+          VDP_ADDR_BASE                                          \
+        | ( 1              << VDP_ADDR_SPRITE_INDICATOR_BIT   )  \
+        | ( (sprite_index) << VDP_ADDR_SPRITE_INDEX_RIGHT     )  \
+        | ( (row_index)    << VDP_ADDR_SPRITE_ROW_INDEX_RIGHT )  \
     ) = row_ergb)
 
-#define VDP_SPRITE_XY(sprite_index, x, y)                      \
-    (* (volatile unsigned *) (                                 \
-          VDP_ADDR_BASE                                        \
-        | VDP_ADDR_SPRITE_INDICATOR_BIT                        \
-        | ((sprite_index) << VDP_ADDR_SPRITE_INDEX_RIGHT)      \
-        | VDP_ADDR_SPRITE_XY_BIT                               \
-    ) =                                                        \
-          VDP_SPRITE_XY_ENABLE_BIT                             \
-        | ((x) << VDP_SPRITE_XY_X_RIGHT)                       \
-        | ((y) << VDP_SPRITE_XY_Y_RIGHT))
+#define VDP_SPRITE_XY(sprite_index, x, y)                        \
+    (* (volatile unsigned *) (                                   \
+          VDP_ADDR_BASE                                          \
+        | ( 1              << VDP_ADDR_SPRITE_INDICATOR_BIT   )  \
+        | ( (sprite_index) << VDP_ADDR_SPRITE_INDEX_RIGHT     )  \
+        | ( 1              << VDP_ADDR_SPRITE_XY_BIT          )  \
+    ) =                                                          \
+          ( 1              << VDP_SPRITE_XY_ENABLE_BIT        )  \
+        | ( (x)            << VDP_SPRITE_XY_X_RIGHT           )  \
+        | ( (y)            << VDP_SPRITE_XY_Y_RIGHT           ))
 
-#define VDP_SPRITE_DISABLE(sprite_index)                       \
-    (* (volatile unsigned *) (                                 \
-          VDP_ADDR_BASE                                        \
-        | VDP_ADDR_SPRITE_INDICATOR_BIT                        \
-        | ((sprite_index) << VDP_ADDR_SPRITE_INDEX_RIGHT)      \
-        | VDP_ADDR_SPRITE_XY_BIT                               \
+#define VDP_SPRITE_DISABLE(sprite_index)                         \
+    (* (volatile unsigned *) (                                   \
+          VDP_ADDR_BASE                                          \
+        | ( 1              << VDP_ADDR_SPRITE_INDICATOR_BIT   )  \
+        | ( (sprite_index) << VDP_ADDR_SPRITE_INDEX_RIGHT     )  \
+        | ( 1              << VDP_ADDR_SPRITE_XY_BIT          )  \
     ) = 0)
 
 #endif

@@ -149,6 +149,6 @@ module vdp
 
     //------------------------------------------------------------------------
 
-    assign vga_rgb = rgb_en ? rgb : `VDP_RGB_WIDTH'b0;
+    assign vga_rgb = rgb_en ? rgb : { 1'b0, pixel_x [4], pixel_y [5] }; // `VDP_RGB_WIDTH'b0;
 
 endmodule
