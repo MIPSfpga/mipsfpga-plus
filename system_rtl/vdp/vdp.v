@@ -118,9 +118,11 @@ module vdp
 
     wire [`VDP_WR_DATA_WIDTH - 1:0] wr_data = HWDATA;
 
-    wire sprite_we = write_reg &&   addr_reg [`VDP_ADDR_SPRITE_INDICATOR_BIT];
-    wire xy_we     = sprite_we &&   addr_reg [`VDP_ADDR_SPRITE_XY_BIT];
-    wire row_we    = sprite_we && ~ addr_reg [`VDP_ADDR_SPRITE_XY_BIT];
+    wire sprite_mem_we
+        = write_reg && addr_reg [`VDP_ADDR_SPRITE_INDICATOR_BIT];
+        
+    wire xy_we  = sprite_mem_we &&   addr_reg [`VDP_ADDR_SPRITE_XY_BIT];
+    wire row_we = sprite_mem_we && ~ addr_reg [`VDP_ADDR_SPRITE_XY_BIT];
     
     wire [`VDP_SPRITE_ROW_INDEX_WIDTH - 1:0] wr_row_index
         = addr_reg [`VDP_ADDR_SPRITE_ROW_INDEX_RANGE];
@@ -128,7 +130,7 @@ module vdp
     //------------------------------------------------------------------------
 
     wire [`VDP_N_SPRITES - 1:0] sprite_we
-        = `VDP_N_SPRITES'b1 << addr_reg [`VDP_ADDR_SPRITE_INDEX_RANGE];
+        = 1 << addr_reg [`VDP_ADDR_SPRITE_INDEX_RANGE];
 
     wire [`VDP_N_SPRITES - 1:0] sprite_rgb_en;
 
@@ -136,27 +138,33 @@ module vdp
 
     //------------------------------------------------------------------------
 
-    genvar i;
+    generate
+
+        genvar i;
+
+        for (i = 0; i < `VDP_N_SPRITES; i = i + 1)
+        begin : gen_vdp_sprite
+
+            vdp_sprite sprite
+            (
+                .clk           ( clk                           ),
+                .reset         ( reset                         ),
+
+                .pixel_x       ( pixel_x                       ),
+                .pixel_y       ( pixel_y                       ),
+
+                .wr_data       ( wr_data                       ),
+                .xy_we         ( xy_we         & sprite_we [i] ),
+                .row_we        ( row_we        & sprite_we [i] ),
+                .wr_row_index  ( wr_row_index                  ),
+
+                .rgb_en        ( sprite_rgb_en [i]             ),
+                .rgb           ( sprite_rgb    [i]             )
+            );
+        end
     
-    for (i = 0; i < `VDP_N_SPRITES; i = i + 1)
-
-        vdp_sprite sprite
-        (
-            .clk           ( clk                           ),
-            .reset         ( reset                         ),
-
-            .pixel_x       ( pixel_x                       ),
-            .pixel_y       ( pixel_y                       ),
-
-            .wr_data       ( wr_data                       ),
-            .xy_we         ( xy_we         & sprite_we [i] ),
-            .row_we        ( row_we        & sprite_we [i] ),
-            .wr_row_index  ( wr_row_index                  ),
-
-            .rgb_en        ( sprite_rgb_en [i]             ),
-            .rgb           ( sprite_rgb    [i]             )
-        );
-
+    endgenerate
+    
     //------------------------------------------------------------------------
 
     // Here we assume that VDP_N_SPRITES == 8
@@ -165,13 +173,13 @@ module vdp
 
     wire [`VDP_RGB_WIDTH - 1:0] selected_sprite_rgb
 
-        = (| sprite_rgb_en [7:4]) ?
-          (| sprite_rgb_en [7:6]) ?
-             sprite_rgb_en [7]    ?  sprite_rgb [7] : sprite_rgb [6]
-             sprite_rgb_en [5]    ?  sprite_rgb [5] : sprite_rgb [4]
-          (| sprite_rgb_en [3:2]) ?
-             sprite_rgb_en [3]    ?  sprite_rgb [3] : sprite_rgb [2]
-             sprite_rgb_en [1]    ?  sprite_rgb [1] : sprite_rgb [0];
+        = (|      sprite_rgb_en [7:4]) ?
+              (|  sprite_rgb_en [7:6]) ?
+                  sprite_rgb_en [7]    ? sprite_rgb [7] : sprite_rgb [6]
+                : sprite_rgb_en [5]    ? sprite_rgb [5] : sprite_rgb [4]
+            : (|  sprite_rgb_en [3:2]) ?
+                  sprite_rgb_en [3]    ? sprite_rgb [3] : sprite_rgb [2]
+                : sprite_rgb_en [1]    ? sprite_rgb [1] : sprite_rgb [0];
 
     // TODO: Compare with:
 
