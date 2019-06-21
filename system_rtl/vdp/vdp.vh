@@ -1,13 +1,13 @@
 //  VDP defines
 
-// Screen dimensions
+//  Screen dimensions
 
-// 10 bits of X and 10 bits of Y can cover 640x480 and 800x600 VGA modes
+//  10 bits of X and 10 bits of Y can cover 640x480 and 800x600 VGA modes
 
 `define VDP_X_WIDTH  10
 `define VDP_Y_WIDTH  10
 
-// Number and dimensions of sprites
+//  Number and dimensions of sprites
 
 `define VDP_SPRITE_INDEX_WIDTH         3
 `define VDP_SPRITE_COLUMN_INDEX_WIDTH  3
@@ -17,42 +17,23 @@
 `define VDP_SPRITE_WIDTH   (1 << `VDP_SPRITE_COLUMN_INDEX_WIDTH)
 `define VDP_SPRITE_HEIGHT  (1 << `VDP_SPRITE_ROW_INDEX_WIDTH)
 
-// Word size when writing
+//  Word size when writing
 
 `define VDP_WR_DATA_WIDTH  32
 
 //  Address bits
 //
-//     +-++++-------------------------------- 28 : 24 VDP memory space
-//     | ||||
-//     | |||| +------------------------------      23 sprite indicator
-//     | |||| |
-//     | |||| |                 + ++---------  8 :  6 sprite index
-//     | |||| |                 | ||
-//     | |||| |                 | ||+--------       5 sprite coordinates
-//     | |||| |                 | |||
-//     | |||| |                 | |||+-++----  4 :  2 sprite row index
-//     | |||| |                 | |||| ||
-//     V VVVV V                 V VVVV VV
-//
-//  3322 2222 2222 1111 1111 1100 0000 0000
-//  1098 7654 3210 9876 5432 1098 7654 3210
-//
-//  ...1 1110 S... .... .... ...S SSCR RR..
-
-//  Address bits
-//
-//     +-++++-------------------------------- 28 : 24 VDP memory space
-//     | ||||
-//     | ||||                +---------------      23 sprite indicator
-//     | ||||                |
-//     | ||||                |  + ++---------  8 :  6 sprite index
-//     | ||||                |  | ||
-//     | ||||                |  | ||+--------       5 sprite coordinates
-//     | ||||                |  | |||
-//     | ||||                |  | |||+-++----  4 :  2 sprite row index
-//     | ||||                |  | |||| ||
-//     V VVVV                V  V VVVV VV
+//               +--------------------------- 28 : 12 VDP memory space
+//               |
+//               |           +---------------      23 sprite indicator
+//               |           |
+//               |           |  + ++---------  8 :  6 sprite index
+//               |           |  | ||
+//               |           |  | ||+--------       5 sprite coordinates
+//               |           |  | |||
+//     +---------+---------+ |  | |||+-++----  4 :  2 sprite row index
+//     |                   | |  | |||| ||
+//     V                   V V  V VVVV VV
 //
 //  3322 2222 2222 1111 1111 1100 0000 0000
 //  1098 7654 3210 9876 5432 1098 7654 3210

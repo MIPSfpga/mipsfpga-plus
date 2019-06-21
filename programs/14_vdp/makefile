@@ -199,12 +199,14 @@ IVARG += -D SIMULATION
 IVARG += -I ../../../core
 IVARG += -I ../../../system_rtl
 IVARG += -I ../../../system_rtl/uart16550
+IVARG += -I ../../../system_rtl/vdp
 IVARG += -I ../../../testbench
 IVARG += -I ../../../testbench/sdr_sdram
 IVARG += -s $(TOPMODULE)
 IVARG += ../../../core/*.v
 IVARG += ../../../system_rtl/*.v
 IVARG += ../../../system_rtl/uart16550/*.v
+IVARG += ../../../system_rtl/vdp/*.v
 IVARG += ../../../testbench/*.v
 IVARG += ../../../testbench/sdr_sdram/*.v
 

@@ -60,7 +60,7 @@ module vdp
 
     //------------------------------------------------------------------------
 
-    localparam N_VDP_PIPE  = 0;
+    localparam N_VDP_PIPE  = 1;
 
     //------------------------------------------------------------------------
 
@@ -125,30 +125,70 @@ module vdp
     wire [`VDP_SPRITE_ROW_INDEX_WIDTH - 1:0] wr_row_index
         = addr_reg [`VDP_ADDR_SPRITE_ROW_INDEX_RANGE];
 
-    wire                        rgb_en;
-    wire [`VDP_RGB_WIDTH - 1:0] rgb;
+    //------------------------------------------------------------------------
+
+    wire [`VDP_N_SPRITES - 1:0] sprite_we
+        = `VDP_N_SPRITES'b1 << addr_reg [`VDP_ADDR_SPRITE_INDEX_RANGE];
+
+    wire [`VDP_N_SPRITES - 1:0] sprite_rgb_en;
+
+    wire [`VDP_RGB_WIDTH - 1:0] sprite_rgb [0:`VDP_N_SPRITES - 1];
 
     //------------------------------------------------------------------------
 
-    vdp_sprite sprite
-    (
-        .clk           ( clk           ),
-        .reset         ( reset         ),
+    genvar i;
+    
+    for (i = 0; i < `VDP_N_SPRITES; i = i + 1)
 
-        .pixel_x       ( pixel_x       ),
-        .pixel_y       ( pixel_y       ),
+        vdp_sprite sprite
+        (
+            .clk           ( clk                           ),
+            .reset         ( reset                         ),
 
-        .wr_data       ( wr_data       ),
-        .xy_we         ( xy_we         ),
-        .row_we        ( row_we        ),
-        .wr_row_index  ( wr_row_index  ),
+            .pixel_x       ( pixel_x                       ),
+            .pixel_y       ( pixel_y                       ),
 
-        .rgb_en        ( rgb_en        ),
-        .rgb           ( rgb           )
-    );
+            .wr_data       ( wr_data                       ),
+            .xy_we         ( xy_we         & sprite_we [i] ),
+            .row_we        ( row_we        & sprite_we [i] ),
+            .wr_row_index  ( wr_row_index                  ),
+
+            .rgb_en        ( sprite_rgb_en [i]             ),
+            .rgb           ( sprite_rgb    [i]             )
+        );
 
     //------------------------------------------------------------------------
 
-    assign vga_rgb = rgb_en ? rgb : { 1'b0, pixel_x [4], pixel_y [5] }; // `VDP_RGB_WIDTH'b0;
+    // Here we assume that VDP_N_SPRITES == 8
+
+    wire any_sprite_rgb_en = | sprite_rgb_en;
+
+    wire [`VDP_RGB_WIDTH - 1:0] selected_sprite_rgb
+
+        = (| sprite_rgb_en [7:4]) ?
+          (| sprite_rgb_en [7:6]) ?
+             sprite_rgb_en [7]    ?  sprite_rgb [7] : sprite_rgb [6]
+             sprite_rgb_en [5]    ?  sprite_rgb [5] : sprite_rgb [4]
+          (| sprite_rgb_en [3:2]) ?
+             sprite_rgb_en [3]    ?  sprite_rgb [3] : sprite_rgb [2]
+             sprite_rgb_en [1]    ?  sprite_rgb [1] : sprite_rgb [0];
+
+    // TODO: Compare with:
+
+    wire [`VDP_RGB_WIDTH - 1:0] selected_sprite_rgb_unoptimized
+
+        =   sprite_rgb_en [7] ? sprite_rgb [7]
+          : sprite_rgb_en [6] ? sprite_rgb [6]
+          : sprite_rgb_en [5] ? sprite_rgb [5]
+          : sprite_rgb_en [4] ? sprite_rgb [4]
+          : sprite_rgb_en [3] ? sprite_rgb [3]
+          : sprite_rgb_en [2] ? sprite_rgb [2]
+          : sprite_rgb_en [1] ? sprite_rgb [1]
+          : sprite_rgb_en [0];
+
+    //------------------------------------------------------------------------
+
+    assign vga_rgb = any_sprite_rgb_en ? selected_sprite_rgb
+        : { 1'b0, pixel_x [4], pixel_y [5] }; // `VDP_RGB_WIDTH'b0;
 
 endmodule

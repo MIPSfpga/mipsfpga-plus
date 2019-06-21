@@ -6,14 +6,14 @@ module vdp_hvsync
               HPOS_WIDTH  = 10,
               VPOS_WIDTH  = 10,
 
-              // horizontal constants
+              // Horizontal constants
 
               H_DISPLAY   = 640,  // horizontal display width
               H_FRONT     =  16,  // horizontal right border (front porch)
               H_SYNC      =  96,  // horizontal sync width
               H_BACK      =  48,  // horizontal left border (back porch)
 
-              // vertical constants
+              // Vertical constants
 
               V_DISPLAY   = 480,  // vertical display height
               V_BOTTOM    =  10,  // vertical bottom border
@@ -32,7 +32,7 @@ module vdp_hvsync
 
     //------------------------------------------------------------------------
 
-    // derived constants
+    // Derived constants
 
     localparam H_SYNC_START  = H_DISPLAY    + H_FRONT + N_VDP_PIPE,
                H_SYNC_END    = H_SYNC_START + H_SYNC - 1,
@@ -44,7 +44,7 @@ module vdp_hvsync
 
     //------------------------------------------------------------------------
 
-    // calculating next values of the counters
+    // Calculating next values of the counters
 
     reg [HPOS_WIDTH - 1:0] d_hpos;
     reg [VPOS_WIDTH - 1:0] d_vpos;
@@ -75,7 +75,7 @@ module vdp_hvsync
          
     `else
 
-        // enable to divide clock from 50 MHz to 25 MHz
+        // Enable to divide clock from 50 MHz to 25 MHz
 
         reg clk_en;
 
@@ -88,7 +88,7 @@ module vdp_hvsync
 
     //------------------------------------------------------------------------
 
-    // making all outputs registered
+    // Making all outputs registered
 
     always @ (posedge clk or posedge reset)
     begin
