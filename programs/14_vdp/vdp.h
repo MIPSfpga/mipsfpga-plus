@@ -70,6 +70,9 @@
 #define VDP_X_WIDTH  (VDP_SPRITE_XY_X_RIGHT - VDP_SPRITE_XY_X_LEFT + 1)
 #define VDP_Y_WIDTH  (VDP_SPRITE_XY_Y_RIGHT - VDP_SPRITE_XY_Y_LEFT + 1)
 
+#define VDP_SCREEN_WIDTH   640
+#define VDP_SCREEN_HEIGHT  480
+
 // Number and dimensions of sprites
 
 #define VDP_SPRITE_INDEX_WIDTH         3
