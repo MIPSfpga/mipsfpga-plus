@@ -20,6 +20,7 @@ module vdp_sprite
     //------------------------------------------------------------------------
 
     reg sprite_en;
+    reg use_as_tile;
 
     reg [`VDP_X_WIDTH - 1:0] sprite_x;
     reg [`VDP_Y_WIDTH - 1:0] sprite_y;
@@ -38,8 +39,9 @@ module vdp_sprite
     always @ (posedge clk)
         if (xy_we)
         begin
-            sprite_x <= wr_data [`VDP_SPRITE_XY_X_RANGE];
-            sprite_y <= wr_data [`VDP_SPRITE_XY_Y_RANGE];
+            use_as_tile <= wr_data [`VDP_SPRITE_XY_TILE_BIT];
+            sprite_x    <= wr_data [`VDP_SPRITE_XY_X_RANGE];
+            sprite_y    <= wr_data [`VDP_SPRITE_XY_Y_RANGE];
         end
 
     always @ (posedge clk)
@@ -62,19 +64,27 @@ module vdp_sprite
 
     //------------------------------------------------------------------------
 
-    wire x_hit =    x_pixel_minus_sprite        [`VDP_X_WIDTH] == 1'b0
-                 && x_sprite_plus_w_minus_pixel [`VDP_X_WIDTH] == 1'b0;
+    wire x_hit =    use_as_tile
+                 ||
+                       x_pixel_minus_sprite        [`VDP_X_WIDTH] == 1'b0
+                    && x_sprite_plus_w_minus_pixel [`VDP_X_WIDTH] == 1'b0;
 
-    wire y_hit =    y_pixel_minus_sprite        [`VDP_Y_WIDTH] == 1'b0
-                 && y_sprite_plus_h_minus_pixel [`VDP_Y_WIDTH] == 1'b0;
+    wire y_hit =    use_as_tile
+                 ||
+                       y_pixel_minus_sprite        [`VDP_Y_WIDTH] == 1'b0
+                    && y_sprite_plus_h_minus_pixel [`VDP_Y_WIDTH] == 1'b0;
 
     //------------------------------------------------------------------------
 
     wire [`VDP_SPRITE_COLUMN_INDEX_WIDTH - 1:0] column_index
-        = x_pixel_minus_sprite [`VDP_SPRITE_COLUMN_INDEX_WIDTH - 1:0];
+        = use_as_tile ?
+              pixel_x              [`VDP_SPRITE_COLUMN_INDEX_WIDTH - 1:0]
+            : x_pixel_minus_sprite [`VDP_SPRITE_COLUMN_INDEX_WIDTH - 1:0];
 
     wire [`VDP_SPRITE_ROW_INDEX_WIDTH - 1:0] row_index
-        = y_pixel_minus_sprite [`VDP_SPRITE_ROW_INDEX_WIDTH - 1:0];
+        = use_as_tile ?
+              pixel_y              [`VDP_SPRITE_ROW_INDEX_WIDTH    - 1:0]
+            : y_pixel_minus_sprite [`VDP_SPRITE_ROW_INDEX_WIDTH    - 1:0];
 
     wire [`VDP_SPRITE_WIDTH * `VDP_ERGB_WIDTH - 1:0] row = rows [row_index];
 
@@ -86,14 +96,14 @@ module vdp_sprite
     
     always @*
         case (column_index)
-        3'd0: ergb = row [ 3: 0];
-        3'd1: ergb = row [ 7: 4];
-        3'd2: ergb = row [11: 8];
-        3'd3: ergb = row [15:12];
-        3'd4: ergb = row [19:16];
-        3'd5: ergb = row [23:20];
-        3'd6: ergb = row [27:24];
-        3'd7: ergb = row [31:28];
+        3'd0: ergb = row [31:28];
+        3'd1: ergb = row [27:24];
+        3'd2: ergb = row [23:20];
+        3'd3: ergb = row [19:16];
+        3'd4: ergb = row [15:12];
+        3'd5: ergb = row [11: 8];
+        3'd6: ergb = row [ 7: 4];
+        3'd7: ergb = row [ 3: 0];
         endcase
 
     //------------------------------------------------------------------------

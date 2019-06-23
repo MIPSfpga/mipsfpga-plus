@@ -381,6 +381,19 @@ module mfp_system
         assign EJ_PartNumber    = 16'b0;
     `endif //MFP_USE_MPSSE_DEBUGGER
 
+    /*
+    
+    TODO Make interrupts triggered by edge, not level
+
+    reg  [`MFP_N_BUTTONS - 1:0] IO_Buttons_prev;
+
+    always @ (posedge SI_ClkIn)
+        IO_Buttons_prev <= IO_Buttons;
+
+    wire [`MFP_N_BUTTONS - 1:0] IO_Buttons_posedge
+        = ~ IO_Buttons_prev & IO_Buttons;
+    */
+
     // Interrupt settings
     //     
     //     vector                vector 

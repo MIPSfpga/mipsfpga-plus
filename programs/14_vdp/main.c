@@ -1,46 +1,36 @@
+#include <stdint.h>
 #include <mips/cpu.h>
 
 #include "mfp_memory_mapped_registers.h"
 #include "vdp.h"
 
-void __attribute__ ((interrupt, keep_interrupts_masked)) general_exception_handler ()
-{
-    unsigned cause = mips32_getcr ();  // Coprocessor 0 Cause register
+//----------------------------------------------------------------------------
 
-    if (cause & CR_HINT0)  // Checking whether interrupt 0 is pending
-        ;  // Do something
-    else if (cause & CR_HINT1)  // Checking whether interrupt 1 is pending
-        ;  // Do something
+#define N_SPRITES 8
+
+struct
+{
+   int x, y, a, b, c;
+}
+sprite [N_SPRITES];
+
+//----------------------------------------------------------------------------
+
+void sprite_coordinate_reset ()
+{
+    int i;
+
+    for (i = 0; i < N_SPRITES; i ++)
+    {
+        sprite [i].x = 0;
+        sprite [i].y = VDP_SCREEN_HEIGHT - VDP_SPRITE_WIDTH;
+    }
 }
 
-void delay (int n)
+//----------------------------------------------------------------------------
+
+void sprite_shape_init ()
 {
-    while (n > 0)
-        MFP_RED_LEDS = n --;
-}
-
-int main ()
-{
-    /*
-
-    Future code for interrupt processing
-
-    // Clear boot interrupt vector bit in Coprocessor 0 Status register
-
-    mips32_bicsr (SR_BEV);
-
-    // Set master interrupt enable bit, as well as individual interrupt enable bits
-    // in Coprocessor 0 Status register
-
-    mips32_bissr (SR_IE | SR_HINT0 | SR_HINT1 | SR_HINT2 | SR_HINT3 | SR_HINT4 | SR_HINT5);
-
-    __asm__ volatile ("di");  // Disable interrupts
-    __asm__ volatile ("ei");  // Enable interrupts
-
-    */
-    
-    unsigned x, y;
-
     VDP_SPRITE_ROW (0, 0, 0x000cc000);
     VDP_SPRITE_ROW (0, 1, 0x00cccc00);
     VDP_SPRITE_ROW (0, 2, 0x0cceecc0);
@@ -112,20 +102,110 @@ int main ()
     VDP_SPRITE_ROW (7, 5, 0x0ee00000);
     VDP_SPRITE_ROW (7, 6, 0xeeeeeeee);
     VDP_SPRITE_ROW (7, 7, 0x00000000);
+}
 
-    for (x = 0, y = 0;; x ++, y ++)
+//----------------------------------------------------------------------------
+
+void sprite_coordinate_update ()
+{
+    int i;
+
+    for (i = 0; i < N_SPRITES; i ++)
     {
-        VDP_SPRITE_XY ( 0, x * 0 % VDP_SCREEN_WIDTH, y * 1 % VDP_SCREEN_HEIGHT );
-        VDP_SPRITE_XY ( 1, x * 1 % VDP_SCREEN_WIDTH, y * 0 % VDP_SCREEN_HEIGHT );
-        VDP_SPRITE_XY ( 2, x * 1 % VDP_SCREEN_WIDTH, y * 1 % VDP_SCREEN_HEIGHT );
-        VDP_SPRITE_XY ( 3, x * 1 % VDP_SCREEN_WIDTH, y * 2 % VDP_SCREEN_HEIGHT );
-        VDP_SPRITE_XY ( 4, x * 2 % VDP_SCREEN_WIDTH, y * 1 % VDP_SCREEN_HEIGHT );
-        VDP_SPRITE_XY ( 5, x * 2 % VDP_SCREEN_WIDTH, y * 3 % VDP_SCREEN_HEIGHT );
-        VDP_SPRITE_XY ( 6, x * 3 % VDP_SCREEN_WIDTH, y * 2 % VDP_SCREEN_HEIGHT );
+        int x, y;
 
-        VDP_SPRITE_XY ( 7, x * 1 % VDP_SCREEN_WIDTH  / 2 + VDP_SCREEN_WIDTH  / 4,
-                           y * 1 % VDP_SCREEN_HEIGHT / 2 + VDP_SCREEN_HEIGHT / 4 );
+        x = sprite [i].x;
+        if (x < 0) x = - x;
+        x %= VDP_SCREEN_WIDTH;
 
+        y = sprite [i].y;
+        if (y < 0) y = - y;
+        y %= VDP_SCREEN_HEIGHT;
+
+        VDP_SPRITE_XY (i, (unsigned) x, (unsigned) y);
+    }
+}
+
+//----------------------------------------------------------------------------
+
+uint16_t rand16 ()
+{
+    static uint16_t lfsr = 0xACE1;
+
+    unsigned bit
+        = ((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5) ) & 1;
+
+    return lfsr = (lfsr >> 1) | (bit << 15);
+}
+
+//----------------------------------------------------------------------------
+
+void __attribute__ ((interrupt, keep_interrupts_masked)) general_exception_handler ()
+{
+    unsigned cause = mips32_getcr ();  // Coprocessor 0 Cause register
+
+    if (cause & CR_HINT1)  // Checking whether interrupt 1 is pending
+        sprite_coordinate_reset ();
+}
+
+void delay (int n)
+{
+    while (n > 0)
+        MFP_RED_LEDS = n --;
+}
+
+#define FACTOR 1024
+
+int main ()
+{
+    // Clear boot interrupt vector bit in Coprocessor 0 Status register
+
+    mips32_bicsr (SR_BEV);
+
+    // Set master interrupt enable bit, as well as individual interrupt enable bits
+    // in Coprocessor 0 Status register
+
+    mips32_bissr (SR_IE | SR_HINT0 | SR_HINT1 | SR_HINT2 | SR_HINT3 | SR_HINT4 | SR_HINT5);
+
+    // __asm__ volatile ("di");  // Disable interrupts
+    // __asm__ volatile ("ei");  // Enable interrupts
+
+    int i;
+
+    sprite_shape_init        ();
+    sprite_coordinate_reset  ();
+
+    for (i = 0; i < N_SPRITES; i ++)
+    {
+        sprite [i].a = 1;  // * FACTOR / FACTOR
+
+        sprite [i].b = - VDP_SCREEN_HEIGHT * FACTOR / (VDP_SCREEN_WIDTH - i * 60)
+                       - (VDP_SCREEN_WIDTH - i * 60) * sprite [i].a;
+
+        sprite [i].c = VDP_SCREEN_HEIGHT * FACTOR;
+    }
+
+    for (;;)
+    {
+        for (i = 0; i < N_SPRITES; i ++)
+        {
+            int x;
+
+            sprite [i].x += (i + 3) % 3 + 1;
+
+            if (sprite [i].x >= 640)
+                sprite [i].x = 0;
+
+            x = sprite [i].x;
+
+            sprite [i].y
+                = (   sprite [i].a * x * x
+                    + sprite [i].b * x
+                    + sprite [i].c )
+                  / FACTOR;
+        }
+
+        sprite_coordinate_update ();
         delay (200000);
     }
 

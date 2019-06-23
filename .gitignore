@@ -10,6 +10,7 @@ sim/
 *.rec
 *.hex
 *.log
+main.s
 FPGA*.txt
 test.html
 test.html.imgtec_forum
