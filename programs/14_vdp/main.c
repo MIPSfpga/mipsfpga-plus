@@ -206,6 +206,8 @@ int main ()
         }
 
         sprite_coordinate_update ();
+        VDP_SPRITE_TILE (4);
+
         delay (200000);
     }
 

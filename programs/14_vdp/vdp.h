@@ -122,6 +122,16 @@
         | ( (x)            << VDP_SPRITE_XY_X_RIGHT           )  \
         | ( (y)            << VDP_SPRITE_XY_Y_RIGHT           ))
 
+#define VDP_SPRITE_TILE(sprite_index)                            \
+    (* (volatile unsigned *) (                                   \
+          VDP_ADDR_BASE                                          \
+        | ( 1              << VDP_ADDR_SPRITE_INDICATOR_BIT   )  \
+        | ( (sprite_index) << VDP_ADDR_SPRITE_INDEX_RIGHT     )  \
+        | ( 1              << VDP_ADDR_SPRITE_XY_BIT          )  \
+    ) =                                                          \
+          ( 1              << VDP_SPRITE_XY_ENABLE_BIT        )  \
+        | ( 1              << VDP_SPRITE_XY_TILE_BIT          ))
+
 #define VDP_SPRITE_DISABLE(sprite_index)                         \
     (* (volatile unsigned *) (                                   \
           VDP_ADDR_BASE                                          \
