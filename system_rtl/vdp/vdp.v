@@ -22,26 +22,26 @@ module vdp
               V_TOP       =  33   // vertical top border
 )
 (
-    input         HCLK,
-    input         HRESETn,
-    input  [31:0] HADDR,
-    input  [ 2:0] HBURST,
-    input         HMASTLOCK,
-    input  [ 3:0] HPROT,
-    input         HSEL,
-    input  [ 2:0] HSIZE,
-    input  [ 1:0] HTRANS,
-    input  [31:0] HWDATA,
-    input         HWRITE,
-    input         HREADY,
-    output [31:0] HRDATA,
-    output        HREADYOUT,
-    output        HRESP,
-    input         SI_Endian,
+    input             HCLK,
+    input             HRESETn,
+    input      [31:0] HADDR,
+    input      [ 2:0] HBURST,
+    input             HMASTLOCK,
+    input      [ 3:0] HPROT,
+    input             HSEL,
+    input      [ 2:0] HSIZE,
+    input      [ 1:0] HTRANS,
+    input      [31:0] HWDATA,
+    input             HWRITE,
+    input             HREADY,
+    output     [31:0] HRDATA,
+    output            HREADYOUT,
+    output            HRESP,
+    input             SI_Endian,
 
-    output        vga_hsync,
-    output        vga_vsync,
-    output [ 2:0] vga_rgb
+    output            vga_hsync,
+    output            vga_vsync,
+    output reg [ 2:0] vga_rgb
 );
     //------------------------------------------------------------------------
 
@@ -60,7 +60,7 @@ module vdp
 
     //------------------------------------------------------------------------
 
-    localparam N_VDP_PIPE  = 1;
+    localparam N_VDP_PIPE  = 2;
 
     //------------------------------------------------------------------------
 
@@ -196,7 +196,8 @@ module vdp
 
     //------------------------------------------------------------------------
 
-    assign vga_rgb = any_sprite_rgb_en ? selected_sprite_rgb
-        : { 1'b0, pixel_x [4], pixel_y [5] }; // `VDP_RGB_WIDTH'b0;
+    always @ (posedge clk)
+        vga_rgb <= any_sprite_rgb_en ? selected_sprite_rgb
+            : { 1'b0, pixel_x [5], pixel_y [5] }; // `VDP_RGB_WIDTH'b0;
 
 endmodule
