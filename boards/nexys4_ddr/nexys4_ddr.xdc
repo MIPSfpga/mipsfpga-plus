@@ -255,7 +255,7 @@ set_property -dict { PACKAGE_PIN C4    IOSTANDARD LVCMOS33 } [get_ports { UART_T
 
 # Slow clock
 
-create_clock -name "slow_clk_g" -period 40.0
+create_clock -name "slow_clk_g" -period 40.0 -waveform {0 20} [get_pins {BUFG_slow_clk/O}]
 
 # I/O virtual clock
 
@@ -265,7 +265,7 @@ create_clock -period 40.000 -name "clk_virt"
 # EJTAG virtual clock
 
 #create_clock -name "ejtag_tck" -period 10.0
-create_clock -name "ejtag_tck" -period 40.0
+create_clock -name "ejtag_tck" -period 40.0 -waveform {0 20} [get_nets {ejtag_tck_in}]
 
 # cut all paths to and from "clk_virt", "tck"
 set_clock_groups -physically_exclusive -group "clk_virt"
